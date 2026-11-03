@@ -25,3 +25,8 @@
 ## 2026-11-04 — samakan efek landing (lanjutan)
 - Selesai: palet hitam/putih-abu, font heading, bracket footer hover-only, cincin tombol Launch App, section terang `#686B6C`, reveal clip-path (roadmap, token), panel demo live (agent + torus canvas, rugcheck, memescope) dari fixture.
 - Belum: panel template (Copy trader dll.) masih placeholder "loading", tab Analyze/Build/Automate, FAQ accordion interaktif, efek JS halaman docs/social.
+
+## 2026-11-04 — palet baru + layar aplikasi
+- Palet baru (Cloud Mist/Signal Blue/Pure White/Deep Charcoal) diterapkan di CSS, generator halaman, glow WebGL, dan komponen.
+- 21 layar aplikasi + signin dari snapshot referensi (statis, identik; tinggi halaman dan jumlah gambar cocok). Dropdown navbar jalan di app.
+- Belum: interaktivitas layar aplikasi (filter, tab, klik baris, chat, builder), panel template landing, tab Analyze/Build/Automate, FAQ accordion, carousel "next ›", /application/token/[mint], /application/admin.

@@ -9,13 +9,13 @@ import memescope from "@fixtures/memescope.json";
 const DOT = { fontFamily: "var(--font-dotmatrix), ui-monospace, monospace", letterSpacing: "0.02em" } as const;
 const GREEN = "#3DD68C";
 const RED = "#FF5C5C";
-const MUTE = "#686B6C";
+const MUTE = "#8E9AA8";
 
 function Panel({ title, sub, badge, badgeColor = MUTE, extra, children, className = "" }: { title: string; sub: string; badge?: string; badgeColor?: string; extra?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={`relative min-w-0 flex flex-col ${className}`} style={{ background: "#000", border: "1px solid rgba(255,255,255,0.08)" }}>
+    <section className={`relative min-w-0 flex flex-col ${className}`} style={{ background: "#13171B", border: "1px solid rgba(255,255,255,0.08)" }}>
       <header className="flex items-center gap-2 px-2.5 h-7 shrink-0 min-w-0 overflow-hidden" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <span style={{ ...DOT, color: "var(--v2-accent)", fontSize: 13 }}>◆</span>
+        <span style={{ ...DOT, color: "var(--v2-accent-text)", fontSize: 13 }}>◆</span>
         <span className="uppercase shrink-0" style={{ ...DOT, color: "#fff", fontSize: 17 }}>{title}</span>
         <span className="uppercase truncate" style={{ ...DOT, color: MUTE, fontSize: 14 }}>· {sub}</span>
         <span className="ml-auto flex items-center gap-2 shrink-0">
@@ -114,7 +114,7 @@ function AgentPanel() {
             return (
               <div key={k} className="flex flex-col gap-1">
                 <div className="flex items-center gap-2" style={{ fontSize: 14 }}>
-                  <span className="px-1.5" style={{ background: reached ? c : "transparent", color: reached ? "#000" : MUTE, border: reached ? "none" : "1px solid #3a3d3e", fontSize: 12, lineHeight: "16px" }}>{k}</span>
+                  <span className="px-1.5" style={{ background: reached ? c : "transparent", color: reached ? "#13171B" : MUTE, border: reached ? "none" : "1px solid #3a3d3e", fontSize: 12, lineHeight: "16px" }}>{k}</span>
                   <span style={{ color: reached ? "#fff" : MUTE }}>{reached && st ? stepText(st) : "not reached"}</span>
                 </div>
                 <div style={{ height: 2, background: reached ? c : "#3a3d3e", opacity: reached ? 0.9 : 0.5, width: `${60 + ((i * 17) % 40)}%` }} />
@@ -204,7 +204,7 @@ function MemePanel() {
             <div className="min-w-0 flex-1">
               <div className="uppercase truncate" style={{ ...DOT, fontSize: 15, color: "#fff" }}>{m.symbol}</div>
               <div className="h-[3px] mt-1.5" style={{ background: "#161616" }}>
-                <div style={{ width: `${Math.min(100, Math.max(2, m.progress))}%`, height: "100%", background: "#fff" }} />
+                <div style={{ width: `${Math.min(100, Math.max(2, m.progress))}%`, height: "100%", background: "var(--v2-accent)" }} />
               </div>
             </div>
             <div className="text-right font-mono text-[12px]" style={{ color: "#fff" }}>
