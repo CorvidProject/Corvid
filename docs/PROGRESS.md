@@ -17,3 +17,7 @@
 - [ ] Screenshot Playwright perbandingan sebelum/sesudah (hanya dicek manual untuk 4 halaman)
 - [ ] Audit kontras teks alfa rendah di docs/legal; `legacy/` belum dihapus
 - Build: `next build` 48 halaman OK, `tsc` OK.
+
+## Tahap 1 — efek hero/landing (menyusul)
+- [x] Glow dot-screen WebGL (port shader lama, warna Casper), typewriter placeholder, banner cookie, tombol TOP, reveal saat scroll, dropdown navbar (Trading/Agents/Tools/Developers)
+- [ ] Belum: widget data live di landing ("Loading smart wallets…"), tab Analyze/Build/Automate dan FAQ accordion interaktif, ring glow tombol "Launch App", efek di halaman docs/social lain yang digerakkan JS
