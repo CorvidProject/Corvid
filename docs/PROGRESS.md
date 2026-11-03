@@ -35,3 +35,7 @@
 - Semua 44 rute dari referensi disajikan dari kode klien asli (efek identik), palet baru ditanam, 0 error hydration di semua rute.
 - API contoh: `/api/*` dari `src/server` (rute belum ada -> 401/404 bersih; tidak ada proxy ke situs lama).
 - Belum: aset raster/video how-* masih berwarna lama; copy EVM; halaman detail token `/application/tokens/[mint]` (404 seperti referensi offline); ganti API contoh dengan backend nyata (Tahap 2).
+
+## 2026-11-04 — TypeScript bertahap
+- Selesai (TypeScript, perilaku diverifikasi vs referensi: loader, cookie, dropdown, indeks aktif, progres, TOC, tinggi halaman): /about, /privacy, /terms, /docs + 16 subhalaman.
+- Belum: landing (/), /social, 22 layar aplikasi, /auth/signin (masih bundel asli), "More" + chain selector di header aplikasi, footer varian lain.

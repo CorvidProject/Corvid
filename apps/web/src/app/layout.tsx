@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { BootLoader } from "@/components/site/boot-loader";
+import { CookieBanner } from "@/components/site/cookie-banner";
 
 // Stylesheet hasil rebrand (palet Corvid) dari build di public/c. Halaman yang masih berupa
 // HTML statis (public/c) membawa stylesheet-nya sendiri; halaman TypeScript memakai layout ini.
@@ -14,7 +16,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <link key={h} rel="stylesheet" href={`/c/_next/static/css/${h}.css`} precedence="default" />
         ))}
       </head>
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        {children}
+        <CookieBanner />
+        <BootLoader />
+      </body>
     </html>
   );
 }
