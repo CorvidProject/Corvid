@@ -37,7 +37,7 @@ export function TermsContent() {
           </h2>
         </div>
         <div className="max-w-[70ch]">
-          <p>Corvid is an Solana-native trading platform that provides:</p>
+          <p>Corvid is an Ethereum-native trading platform that provides:</p>
           <ul>
             <li>On-chain token analysis and risk scoring</li>
             <li>Smart-money tracking across a curated set of wallets</li>
@@ -87,7 +87,7 @@ export function TermsContent() {
             >
               ※ Disclaimer
             </div>
-            <div style={{ color: "#A9B5C2" }}>
+            <div style={{ color: "rgba(255,255,255,0.85)" }}>
               Nothing on Corvid is financial, investment, legal, or tax advice.
               All AI output is informational only.
             </div>
@@ -196,7 +196,7 @@ export function TermsContent() {
             </li>
           </ul>
           <p>
-            Auto Trader executes inside the caps you set (daily SOL spend,
+            Auto Trader executes inside the caps you set (daily ETH spend,
             per-trade size, max trades per day). Swaps proposed by the AI agent
             require your approval in Telegram.
           </p>
@@ -220,7 +220,7 @@ export function TermsContent() {
               Credits are an in-app allowance used to gate AI analysis and
               automation actions
             </li>
-            <li>Credits are purchased with SOL, USDC or USDT</li>
+            <li>Credits are purchased with ETH, USDC or USDT</li>
             <li>Credits are non-refundable once spent</li>
             <li>
               Unused credits do not expire. Any policy change requires 30 days

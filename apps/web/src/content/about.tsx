@@ -39,10 +39,10 @@ export function AboutContent() {
         </div>
         <div className="max-w-[70ch]">
           <p>
-            Autonomous on-chain trading agents and analysis tools for Solana.
-            The platform lets you assess a token before touching it, follow
-            wallets that trade well, and run automated strategies from a wallet
-            you control.
+            Autonomous on-chain trading agents and analysis tools for Ethereum,
+            Base, Arbitrum, BNB Chain and Solana. The platform lets you assess a
+            token before touching it, follow wallets that trade well, and run
+            automated strategies from a wallet you control.
           </p>
           <p>
             Agents execute from their own wallets, funded by you and
@@ -138,7 +138,7 @@ export function AboutContent() {
             >
               ※ We will never ask for a seed phrase
             </div>
-            <div style={{ color: "#A9B5C2" }}>
+            <div style={{ color: "rgba(255,255,255,0.85)" }}>
               No member of our team will ever ask for your seed phrase, private
               key, or to send funds to an address for any reason. Anyone who
               does is impersonating us, whatever account they are writing from.

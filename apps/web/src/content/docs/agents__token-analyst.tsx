@@ -3,7 +3,7 @@ export function DocsAgentsTokenAnalystContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsAgentsTokenAnalystContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Upload your knowledge base. The agent retrieves the relevant chunks,
           combines them with live on-chain data, and writes a short verdict:
@@ -71,7 +71,7 @@ export function DocsAgentsTokenAnalystContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Paste text, docs, tweets, or URLs. Everything gets chunked and
               embedded via OpenAI text-embedding-3-small (1536-dim) into the
@@ -106,7 +106,7 @@ export function DocsAgentsTokenAnalystContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               New token crossing liquidity, watchlist entry, or tag match
             </p>
@@ -139,7 +139,7 @@ export function DocsAgentsTokenAnalystContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               On fire, the agent pulls the most relevant knowledge chunks and
               injects them into the LLM prompt alongside live on-chain stats
@@ -170,7 +170,7 @@ export function DocsAgentsTokenAnalystContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Output: bullish, neutral, or bearish, plus three to five bullet
               reasons and a confidence number
@@ -191,7 +191,7 @@ export function DocsAgentsTokenAnalystContent() {
         >
           ※ Note
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           RAG (retrieval-augmented generation) is currently wired for Token
           Analyst agents. Other agent types run without custom knowledge
           injection for now.
@@ -206,7 +206,7 @@ export function DocsAgentsTokenAnalystContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -229,7 +229,7 @@ export function DocsAgentsTokenAnalystContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

@@ -3,7 +3,7 @@ export function DocsAgentsMarketplaceContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.MKT.026
@@ -22,7 +22,7 @@ export function DocsAgentsMarketplaceContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Every public agent is listed here. Sort by win rate, filter by
           pipeline type, and follow in one click. Following is free. You pay
@@ -57,7 +57,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Follow Wallet, New Tokens, or Token Trading. Each card shows the
               type and current mode
@@ -78,7 +78,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Win rate, signals emitted, trades executed, subscribers. All
               calculated from real data
@@ -99,7 +99,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Free for subscribers; the owner pays the agent's inference credits
             </p>
@@ -119,7 +119,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Creator handle, their other agents, and reputation across the
               platform
@@ -139,7 +139,7 @@ export function DocsAgentsMarketplaceContent() {
             Follow and unfollow anytime
           </h2>
         </div>
-        <p className="mb-4" style={{ color: "#A9B5C2" }}>
+        <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           No subscription. No monthly bill. You pay per signal and can unfollow
           the moment an agent stops making sense.
         </p>
@@ -172,7 +172,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               You get a notification in your inbox, plus Telegram if you've
               wired that up. Nothing executes until you click Buy or Sell
@@ -194,10 +194,10 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               The swap runs in your platform wallet the moment the signal fires,
-              sized to your max-SOL-per-copy setting. No clicks from you. Good
+              sized to your max-ETH-per-copy setting. No clicks from you. Good
               when you trust the strategy and want to sleep through it.
             </p>
           </div>
@@ -215,7 +215,7 @@ export function DocsAgentsMarketplaceContent() {
             Guardrails on every copied trade
           </h2>
         </div>
-        <p className="mb-4" style={{ color: "#A9B5C2" }}>
+        <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           Copy trading carries unique risks: slippage stacking, MEV sandwich,
           exit-liquidity traps. Every copied trade passes through these safety
           checks before execution:
@@ -230,7 +230,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Thin pools get skipped. Copying into a $5k pool means the buy
               alone moves price by double digits. Not worth it.
@@ -245,7 +245,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Each individual copy is capped at 2% of pool depth. Even with many
               copiers in a row, no single trade is large enough to nuke the
@@ -261,7 +261,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Each copy fires with a 2 to 8 second delay sampled per subscriber.
               Order flow looks scattered, so MEV sandwich bots can't chain a
@@ -277,7 +277,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               If the token already moved 5% or more between the source trade and
               your copy, the copy is dropped. Chasing a pump that's already run
@@ -293,7 +293,7 @@ export function DocsAgentsMarketplaceContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               If an agent's 24h PnL drops below 30% loss, new copies pause
               automatically. Resumes after the creator (or our system, depending
@@ -329,7 +329,7 @@ export function DocsAgentsMarketplaceContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               No. You pay a small fee per signal (nothing at all today; the
               agent's owner pays its inference credits). Your trading PnL stays
@@ -350,7 +350,7 @@ export function DocsAgentsMarketplaceContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               The loss is yours. The creator is paid for access to the strategy,
               not for guaranteed results. You picked the agent and the copy
@@ -372,7 +372,7 @@ export function DocsAgentsMarketplaceContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               There's a hard ceiling of 5000 as an abuse backstop. Nobody
               realistically hits it. The per-trade guards above do the real
@@ -394,7 +394,7 @@ export function DocsAgentsMarketplaceContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Stats come from real on-chain trades made by the agent's own
               wallet. We also scan source wallets for wash-trading patterns.
@@ -417,7 +417,7 @@ export function DocsAgentsMarketplaceContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               The agent keeps running. It's autonomous, the creator doesn't have
               to babysit it. If the strategy stops working, stats will show that
@@ -439,7 +439,7 @@ export function DocsAgentsMarketplaceContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Signals fan out to everyone at the same moment. Creators don't get
               a preview. If a creator's own wallet happens to trade the same
@@ -458,7 +458,7 @@ export function DocsAgentsMarketplaceContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -481,7 +481,7 @@ export function DocsAgentsMarketplaceContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

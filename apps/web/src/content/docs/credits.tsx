@@ -3,7 +3,7 @@ export function DocsCreditsContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.AI.003
@@ -22,7 +22,7 @@ export function DocsCreditsContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           The old credit system is gone. Trading now runs on a 1% swap
           commission with cashback — no monthly bills, no credit packs, nothing
@@ -58,7 +58,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Every new account gets 25 free AI token analyses. No credit card,
               no crypto upfront
@@ -79,7 +79,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               The quota covers LLM-powered token and wallet deep-dives. Trading
               itself is never gated by this
@@ -100,10 +100,10 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Once the 25 starter runs are used, each new analysis costs $0.10
-              in SOL. Pay only what you use
+              in ETH. Pay only what you use
             </p>
           </div>
           <div
@@ -121,7 +121,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Unused starter analyses and top-ups sit on your account
               indefinitely. No resets, no tiers
@@ -141,9 +141,9 @@ export function DocsCreditsContent() {
             What costs what
           </h2>
         </div>
-        <p className="mb-4" style={{ color: "#A9B5C2" }}>
+        <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           Most things are free. The only billed items are actual AI compute
-          (deep analysis) and token swaps (1% via Jupiter, taken atomically).
+          (deep analysis) and token swaps (1% via 0x, taken atomically).
         </p>
         <div className="flex flex-col gap-3">
           <div
@@ -155,7 +155,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0 break-words"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               $0.10 per deep-dive after the 25 free starter analyses. Only
               counts on-demand scans you trigger
@@ -170,7 +170,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0 break-words"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               1% platform fee on swap (0.6% effective after cashback). No
               separate per-action charge
@@ -185,7 +185,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0 break-words"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               1% platform fee on swap (0.8% effective after cashback). Half the
               fee pays the agent's creator
@@ -200,7 +200,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0 break-words"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Free. You follow an agent, signals come in, no per-signal debit
             </p>
@@ -214,7 +214,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0 break-words"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Free. You pay nothing to spin up, configure, pause, or delete an
               agent
@@ -229,9 +229,9 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0 break-words"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              $0.40 in SOL (one-time) to mint your own experimental SPL.
+              $0.40 in ETH (one-time) to mint your own experimental ERC-20.
               Anti-spam + mint gas cost recovery
             </p>
           </div>
@@ -278,7 +278,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Click the + next to your AI quota in the topbar
             </p>
@@ -311,7 +311,7 @@ export function DocsCreditsContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               50 analyses for $5, 250 for $20, 1,000 for $60. The bigger the
               pack the better the per-analysis rate
@@ -338,13 +338,13 @@ export function DocsCreditsContent() {
               CONFIRM
             </div>
             <h3 className="font-heading font-semibold text-[17px] text-white m-0 mb-1.5 tracking-[-0.01em]">
-              Pay with SOL
+              Pay with ETH
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
-              SOL is debited from your platform wallet. Top-up lands on your
+              ETH is debited from your platform wallet. Top-up lands on your
               quota instantly
             </p>
           </li>
@@ -363,7 +363,7 @@ export function DocsCreditsContent() {
         >
           ※ Running low
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           When you hit zero quota, the AI analysis button turns into a top-up
           prompt. Trading is untouched — you keep swapping, following agents,
           and receiving signals without interruption. Only the deep-dive AI
@@ -397,7 +397,7 @@ export function DocsCreditsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               We replaced it. Credits were an artificial token you had to buy
               before using anything. The new model: trading charges a 1% swap
@@ -420,7 +420,7 @@ export function DocsCreditsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               No. Following and receiving signals is free. You only pay the 1%
               swap commission when a copy-trade actually executes, and half of
@@ -441,7 +441,7 @@ export function DocsCreditsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Yes. Agents emitting signals and executing trades do not consume
               your AI quota — the quota is specifically for on-demand
@@ -465,14 +465,14 @@ export function DocsCreditsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               AI quota is just a counter — 25 free analyses on signup, top up
-              with SOL if you need more. It's not a token, not tradable, not
+              with ETH if you need more. It's not a token, not tradable, not
               transferable. <strong>$CRVD</strong> is the platform token,
-              accumulated passively when you earn cashback-to-CRVD or when
-              agents you follow graduate and airdrop you. Holding $CRVD is
-              optional and has nothing to do with running analyses or trading.
+              accumulated passively when you earn cashback-to-APE or when agents
+              you follow graduate and airdrop you. Holding $CRVD is optional and
+              has nothing to do with running analyses or trading.
             </p>
           </details>
           <details
@@ -489,7 +489,7 @@ export function DocsCreditsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               We may reduce the 25-on-signup number if abuse becomes material
               (someone farming throwaway accounts to do AI analyses for free).
@@ -508,7 +508,7 @@ export function DocsCreditsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -531,7 +531,7 @@ export function DocsCreditsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

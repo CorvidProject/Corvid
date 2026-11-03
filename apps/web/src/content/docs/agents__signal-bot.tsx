@@ -3,7 +3,7 @@ export function DocsAgentsSignalBotContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsAgentsSignalBotContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Set a trigger on a single token. The bot fires a signal whenever the
           trigger hits.
@@ -57,9 +57,9 @@ export function DocsAgentsSignalBotContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Paste any Solana mint address. The bot watches this token only
+              Paste any Ethereum mint address. The bot watches this token only
             </p>
           </div>
           <div
@@ -77,7 +77,7 @@ export function DocsAgentsSignalBotContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Price above/below a level, percent move over N minutes, or volume
               spike multiple of recent average
@@ -98,7 +98,7 @@ export function DocsAgentsSignalBotContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Rolling window the rule evaluates against: 5 min, 1 h, 24 h
             </p>
@@ -118,7 +118,7 @@ export function DocsAgentsSignalBotContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               You pay 0.1 credits per fired signal; subscribers pay nothing
             </p>
@@ -147,7 +147,7 @@ export function DocsAgentsSignalBotContent() {
             </div>
             <div
               className="font-mono text-[11px] tracking-[0.06em] uppercase"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.50)" }}
             >
               Cooldown between signals
             </div>
@@ -161,7 +161,7 @@ export function DocsAgentsSignalBotContent() {
             </div>
             <div
               className="font-mono text-[11px] tracking-[0.06em] uppercase"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.50)" }}
             >
               Hard cap per agent
             </div>
@@ -181,7 +181,7 @@ export function DocsAgentsSignalBotContent() {
         >
           ※ Tip
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Good signal bots fire once or twice a day on meaningful moves. Bots
           that spam get unfollowed. The economy rewards quality over quantity.
         </p>
@@ -195,7 +195,7 @@ export function DocsAgentsSignalBotContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -218,7 +218,7 @@ export function DocsAgentsSignalBotContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

@@ -59,7 +59,7 @@ export function PrivacyContent() {
               configured
             </li>
             <li>
-              Connected external wallets (Phantom, Rabby): public key only,
+              Connected external wallets (MetaMask, Rabby): public key only,
               never the private key
             </li>
           </ul>
@@ -158,7 +158,7 @@ export function PrivacyContent() {
             >
               ※ Notice
             </div>
-            <div style={{ color: "#A9B5C2" }}>
+            <div style={{ color: "rgba(255,255,255,0.85)" }}>
               AI-generated analysis is not financial advice. Outputs are
               informational only.
             </div>
@@ -217,18 +217,18 @@ export function PrivacyContent() {
               <strong>Supabase</strong>: database and session auth
             </li>
             <li>
-              <strong>Helius</strong>: Solana RPC and wallet data
+              <strong>Alchemy</strong>: Ethereum RPC and webhook infrastructure
             </li>
             <li>
               <strong>GeckoTerminal, DexScreener, GoPlus</strong>: token price,
               holder, trade history, and contract risk lookups
             </li>
             <li>
-              <strong>Jupiter</strong>: DEX routing and swap quotes
+              <strong>0x</strong>: DEX routing and swap quotes
             </li>
             <li>
-              <strong>Jito</strong>: transaction bundle submission for priority
-              execution
+              <strong>Flashbots</strong>: transaction bundle submission for
+              priority execution
             </li>
             <li>
               <strong>OpenAI</strong>: receives token on-chain metrics for

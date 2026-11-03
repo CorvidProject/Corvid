@@ -3,7 +3,7 @@ export function DocsTerminalContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.TERM.050
@@ -22,9 +22,9 @@ export function DocsTerminalContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
-          Paste any Solana token address. Price, holders, risk score, and live
+          Paste any Ethereum token address. Price, holders, risk score, and live
           trades load on one screen. Trade right from here.
         </p>
       </div>
@@ -56,7 +56,7 @@ export function DocsTerminalContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Live price from the deepest pool, TradingView-style chart, 24h
               change, market cap, FDV
@@ -77,7 +77,7 @@ export function DocsTerminalContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Top wallets, concentration, fresh holders, exits. Updated on every
               block
@@ -98,7 +98,7 @@ export function DocsTerminalContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               0 to 100 number with a full breakdown. One click to see which
               checks passed and which failed
@@ -119,7 +119,7 @@ export function DocsTerminalContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Streaming buys and sells, sortable by size. Spot accumulation vs
               distribution in real time
@@ -140,7 +140,7 @@ export function DocsTerminalContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Supply, LP depth, contract permission flags, holder count, pool
               age
@@ -161,10 +161,9 @@ export function DocsTerminalContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Buy or sell directly from the terminal. Jupiter routing, no credit
-              cost
+              Buy or sell directly from the terminal. 0x routing, no credit cost
             </p>
           </div>
         </div>
@@ -181,7 +180,7 @@ export function DocsTerminalContent() {
             Smart search
           </h2>
         </div>
-        <p className="mb-4" style={{ color: "#A9B5C2" }}>
+        <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           The search bar accepts token addresses, token symbols, and wallet
           addresses. Paste a wallet and you land on its profile with PnL, tokens
           held, and trade history.
@@ -200,7 +199,7 @@ export function DocsTerminalContent() {
         >
           ※ Free to use
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           The terminal and all manual trading are free. No credits required.
           Credits only apply to AI analysis and automated pipeline actions
         </p>
@@ -214,7 +213,7 @@ export function DocsTerminalContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -237,7 +236,7 @@ export function DocsTerminalContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

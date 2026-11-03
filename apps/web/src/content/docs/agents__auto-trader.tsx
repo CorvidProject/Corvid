@@ -3,7 +3,7 @@ export function DocsAgentsAutoTraderContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsAgentsAutoTraderContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Attach an Auto Trader to any signal source, your own agent or one you
           follow. It converts signals into real swaps inside spending limits you
@@ -58,9 +58,9 @@ export function DocsAgentsAutoTraderContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Every buy or sell is simulated with live prices. No real SOL
+              Every buy or sell is simulated with live prices. No real ETH
               moves. Use it to sanity-check a strategy before you risk capital
             </p>
           </div>
@@ -79,7 +79,7 @@ export function DocsAgentsAutoTraderContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Real swaps execute immediately within the per-trade, rolling
               24-hour, and optional token limits configured on the agent
@@ -120,7 +120,10 @@ export function DocsAgentsAutoTraderContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Source agent fires a signal
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               The signal lands in your inbox like any other
             </p>
           </li>
@@ -144,7 +147,10 @@ export function DocsAgentsAutoTraderContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Limits are reserved atomically
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               The agent checks its per-trade, rolling 24-hour, and optional
               token limits
             </p>
@@ -169,7 +175,10 @@ export function DocsAgentsAutoTraderContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               The current quote executes
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               An allowed trade is signed immediately; an over-limit trade is
               denied with a reason
             </p>
@@ -191,7 +200,10 @@ export function DocsAgentsAutoTraderContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Telegram reports the result
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               After execution, the notification includes the side, size, and
               transaction link
             </p>
@@ -211,7 +223,7 @@ export function DocsAgentsAutoTraderContent() {
         >
           ※ Note
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Live trading is automatic only inside the limits configured on the
           agent. Telegram is a post-trade notification, not an execution gate.
         </p>
@@ -225,7 +237,7 @@ export function DocsAgentsAutoTraderContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -248,7 +260,7 @@ export function DocsAgentsAutoTraderContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

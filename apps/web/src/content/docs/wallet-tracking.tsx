@@ -3,7 +3,7 @@ export function DocsWalletTrackingContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsWalletTrackingContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Find wallets with a track record, inspect their history, add them to
           your watchlist, and automate alerts when they move.
@@ -58,7 +58,7 @@ export function DocsWalletTrackingContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Leaderboard of profitable wallets sorted by realized PnL, hit rate,
             or recent volume. Seeded from on-chain data, not self-reported
@@ -92,7 +92,7 @@ export function DocsWalletTrackingContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Click any wallet for its full profile: tokens traded, entries,
             exits, PnL per token, net flow
@@ -126,7 +126,7 @@ export function DocsWalletTrackingContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Add wallets to your personal watchlist. Their trades show up in the
             tracking feed
@@ -157,7 +157,7 @@ export function DocsWalletTrackingContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Use the wallet as input for a Follow Wallet pipeline. From passive
             watching to active copy-trading in one click
@@ -177,7 +177,7 @@ export function DocsWalletTrackingContent() {
         >
           ※ Tip
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           The cleanest signal comes from several uncorrelated wallets all
           entering the same token at the same time. One whale moving alone is
           often just a rotation
@@ -192,7 +192,7 @@ export function DocsWalletTrackingContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -215,7 +215,7 @@ export function DocsWalletTrackingContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

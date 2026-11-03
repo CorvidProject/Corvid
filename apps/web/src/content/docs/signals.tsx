@@ -3,7 +3,7 @@ export function DocsSignalsContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsSignalsContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Every pipeline funnels output into one place. Filter by agent, token,
           type, or read status. Connect Telegram for push notifications.
@@ -57,7 +57,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Fired by Follow Wallet pipelines. Shows the wallet, token,
               direction, and trade size
@@ -78,10 +78,10 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Fired by New Tokens pipelines. Shows the token, market
-              (Raydium/Orca), LP depth, and safety status
+              (Uniswap/Uniswap), LP depth, and safety status
             </p>
           </div>
           <div
@@ -99,7 +99,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Fired by Token Trading pipelines. Shows which trigger (price drop,
               volume spike, etc.) and the current value
@@ -120,10 +120,10 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Confirmation that a trading-mode pipeline bought or sold. Includes
-              SOL amount and transaction link
+              ETH amount and transaction link
             </p>
           </div>
           <div
@@ -141,7 +141,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               TP or SL hit. Shows entry price, exit price, PnL percentage, and
               transaction link
@@ -162,7 +162,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Low credits, execution errors, pipeline paused. Things you need to
               act on
@@ -198,7 +198,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Every signal from every agent you follow and own, newest first
             </p>
@@ -218,7 +218,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Supabase Realtime pushes new signals straight into the page. No
               refresh, no polling
@@ -239,7 +239,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               By agent, by signal type, by token, by read/unread. Search cuts
               through noisy days
@@ -260,7 +260,7 @@ export function DocsSignalsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Mark individually or clear the inbox in one click
             </p>
@@ -280,7 +280,7 @@ export function DocsSignalsContent() {
         >
           ※ Rate limits
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Every agent has a 5-minute cooldown between signals and a hard cap of
           50 signals per 24 hours. You can't spam yourself or your subscribers
           into bankruptcy
@@ -295,7 +295,7 @@ export function DocsSignalsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -318,7 +318,7 @@ export function DocsSignalsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

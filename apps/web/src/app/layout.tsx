@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import "./reveal.css";
 import { BootLoader } from "@/components/site/boot-loader";
 import { CookieBanner } from "@/components/site/cookie-banner";
 

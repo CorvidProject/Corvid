@@ -3,7 +3,7 @@ export function DocsContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,12 +23,12 @@ export function DocsContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
-          Corvid runs autonomous trading agents on Solana. You build pipelines
+          Corvid runs autonomous trading agents on Ethereum. You build pipelines
           that watch the chain, filter noise, and either alert you or trade for
-          you. Every swap pays a 1% platform fee via Jupiter; 20-40% of that fee
-          comes right back to you as SOL cashback.
+          you. Every swap pays a 1% platform fee via 0x; 20-40% of that fee
+          comes right back to you as ETH cashback.
         </p>
       </div>
       <div className="mb-16">
@@ -58,7 +58,7 @@ export function DocsContent() {
                 01 · PIPELINES
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -69,7 +69,7 @@ export function DocsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Three pipeline types: Follow Wallet, New Tokens, Token Trading.
               Each one runs in signal or trading mode
@@ -89,7 +89,7 @@ export function DocsContent() {
                 02 · FOLLOW
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -100,10 +100,10 @@ export function DocsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Follow any agent for free. Pay a 1% swap fee only when a
-              copy-trade actually fires, get 20% of it back as SOL
+              copy-trade actually fires, get 20% of it back as ETH
             </p>
           </a>
           <a
@@ -120,7 +120,7 @@ export function DocsContent() {
                 03 · SIGNALS
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -131,7 +131,7 @@ export function DocsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Whale moves, new pools, price triggers, copy trades. All pushed to
               your inbox and Telegram
@@ -151,20 +151,20 @@ export function DocsContent() {
                 04 · GRADUATE
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
               </span>
             </div>
             <h3 className="font-heading font-semibold text-[15px] text-white mb-1.5 tracking-[-0.01em]">
-              Graduation to SPL
+              Graduation to ERC-20
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Top agents launch their own SPL token with a Raydium liquidity
+              Top agents launch their own ERC-20 token with a Uniswap liquidity
               pool funded by the agent's own copy-trade reserve
             </p>
           </a>
@@ -182,7 +182,7 @@ export function DocsContent() {
                 05 · TERMINAL
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -193,9 +193,9 @@ export function DocsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Paste any Solana token address. Price, holders, risk score, live
+              Paste any Ethereum token address. Price, holders, risk score, live
               trades on one screen
             </p>
           </a>
@@ -213,7 +213,7 @@ export function DocsContent() {
                 06 · CUSTODY
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -224,10 +224,10 @@ export function DocsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Keys encrypted at rest in our infrastructure. The platform signs
-              trades for you so agents can run autonomously. Export to Phantom
+              trades for you so agents can run autonomously. Export to MetaMask
               anytime for full self-custody
             </p>
           </a>
@@ -266,9 +266,12 @@ export function DocsContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Create account
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
-              Email or Google. A Solana wallet is generated for you and 25 free
-              AI analyses land on your account
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              Email or Google. A Ethereum wallet is generated for you and 25
+              free AI analyses land on your account
             </p>
           </li>
           <li
@@ -291,7 +294,10 @@ export function DocsContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Browse the marketplace
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               Public agents with live stats, strategy descriptions, and win
               rates. Follow any of them for free
             </p>
@@ -316,7 +322,10 @@ export function DocsContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Follow or build
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               Follow someone else's agent to get their signals. Or open the
               pipeline builder and create your own from scratch
             </p>
@@ -338,9 +347,12 @@ export function DocsContent() {
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
               Trade with cashback
             </h3>
-            <p className="text-[14px] m-0" style={{ color: "#A9B5C2" }}>
-              1% swap commission is taken by Jupiter; 20-40% comes right back to
-              you in SOL. No subscriptions, no prepaid balance
+            <p
+              className="text-[14px] m-0"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              1% swap commission is taken by 0x; 20-40% comes right back to you
+              in ETH. No subscriptions, no prepaid balance
             </p>
           </li>
         </ol>
@@ -357,9 +369,9 @@ export function DocsContent() {
             The economy in one picture
           </h2>
         </div>
-        <p className="mb-5" style={{ color: "#A9B5C2" }}>
-          1% commission on every swap via Jupiter. Split depends on whether the
-          trade was manual or triggered by an agent.
+        <p className="mb-5" style={{ color: "rgba(255,255,255,0.70)" }}>
+          1% commission on every swap via 0x. Split depends on whether the trade
+          was manual or triggered by an agent.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <div
@@ -379,7 +391,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.1em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Cashback
                 </div>
@@ -390,7 +402,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.1em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Burn $CRVD
                 </div>
@@ -401,7 +413,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.1em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Treasury
                 </div>
@@ -425,7 +437,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.08em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Creator
                 </div>
@@ -436,7 +448,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.08em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Cashback
                 </div>
@@ -447,7 +459,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.08em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Reserve
                 </div>
@@ -458,7 +470,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.08em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Burn
                 </div>
@@ -469,7 +481,7 @@ export function DocsContent() {
                 </div>
                 <div
                   className="font-mono text-[11px] tracking-[0.08em] uppercase"
-                  style={{ color: "#A9B5C2" }}
+                  style={{ color: "rgba(255,255,255,0.50)" }}
                 >
                   Treasury
                 </div>
@@ -477,8 +489,8 @@ export function DocsContent() {
             </div>
           </div>
         </div>
-        <p style={{ color: "#A9B5C2" }} className="text-sm">
-          Cashback is paid in SOL instantly in the same transaction. Your
+        <p style={{ color: "rgba(255,255,255,0.55)" }} className="text-sm">
+          Cashback is paid in ETH instantly in the same transaction. Your
           effective fee:{" "}
           <strong className="text-white">0.6% manual / 0.8% copy-trade</strong>,
           20-40% cheaper than Axiom. See{" "}
@@ -516,13 +528,13 @@ export function DocsContent() {
           >
             ※ Custodial with encryption + export
           </div>
-          <p className="m-0" style={{ color: "#A9B5C2" }}>
-            A Solana wallet is generated the moment you sign up. It holds SOL,
+          <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
+            A Ethereum wallet is generated the moment you sign up. It holds ETH,
             $CRVD, and any tokens earned via graduation. The private key is
             encrypted at rest in our infrastructure (AES-256-GCM, master key
             never exposed to application code). The platform signs trades on
             your behalf — that's what lets autonomous agents work while you're
-            offline. You can export the raw key to Phantom at any time and take
+            offline. You can export the raw key to MetaMask at any time and take
             full self-custody. If we go dark tomorrow, your funds remain
             accessible directly on-chain via the exported key — no platform
             dependency
@@ -538,7 +550,7 @@ export function DocsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -561,7 +573,7 @@ export function DocsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

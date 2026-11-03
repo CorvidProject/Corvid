@@ -3,7 +3,7 @@ export function DocsAgentsWalletMonitorContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsAgentsWalletMonitorContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Add a wallet list. When any tracked wallet buys or sells above your
           threshold, you get a signal with the token, direction, and size.
@@ -57,7 +57,7 @@ export function DocsAgentsWalletMonitorContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Paste up to several addresses. Usually whales, smart money,
               insiders, or known alpha callers
@@ -78,9 +78,9 @@ export function DocsAgentsWalletMonitorContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Minimum SOL or USD value of a swap to count. Filters out dust and
+              Minimum ETH or USD value of a swap to count. Filters out dust and
               rebalancing noise
             </p>
           </div>
@@ -99,7 +99,7 @@ export function DocsAgentsWalletMonitorContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Buy only, sell only, or both sides
             </p>
@@ -119,7 +119,7 @@ export function DocsAgentsWalletMonitorContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               0.1 credits per fired signal, paid by the agent owner
             </p>
@@ -138,10 +138,10 @@ export function DocsAgentsWalletMonitorContent() {
             What a signal looks like
           </h2>
         </div>
-        <p className="mb-4" style={{ color: "#A9B5C2" }}>
+        <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           Each signal includes the triggering wallet label, the token address,
           the swap direction, the USD size, and a one-click link to the
-          transaction on Solscan. Same five-minute cooldown and 50-per-day cap
+          transaction on Etherscan. Same five-minute cooldown and 50-per-day cap
           as every other agent.
         </p>
       </div>
@@ -158,7 +158,7 @@ export function DocsAgentsWalletMonitorContent() {
         >
           ※ Tip
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Don't track one wallet. Track a basket of ten, and only fire when two
           or more hit the same token in the same hour. Lone whale moves are
           often just rotations.
@@ -173,7 +173,7 @@ export function DocsAgentsWalletMonitorContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -196,7 +196,7 @@ export function DocsAgentsWalletMonitorContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

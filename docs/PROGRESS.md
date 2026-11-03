@@ -39,3 +39,8 @@
 ## 2026-11-04 — TypeScript bertahap
 - Selesai (TypeScript, perilaku diverifikasi vs referensi: loader, cookie, dropdown, indeks aktif, progres, TOC, tinggi halaman): /about, /privacy, /terms, /docs + 16 subhalaman.
 - Belum: landing (/), /social, 22 layar aplikasi, /auth/signin (masih bundel asli), "More" + chain selector di header aplikasi, footer varian lain.
+
+## 2026-11-04 — semua 44 rute TypeScript
+- Landing, /social, /auth/signin, 20 layar aplikasi + redirect /application: TypeScript. 0 error hydration; tinggi halaman cocok (selisih <30px pada / dan /terms karena panjang kata brand).
+- Interaktif & diverifikasi: dropdown navbar, cookie, loader, FAQ/roadmap/token akordeon (tinggi buka/tutup sama persis), typewriter hero, input hero, glow WebGL, form masuk/daftar.
+- Belum interaktif: isi layar aplikasi (lihat DECISIONS), tab Analyze/Build/Automate dan panel template di landing, carousel "next ›", panel LiveDemo masih data statis.

@@ -3,7 +3,7 @@ export function DocsTokenAnalysisContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.SCAN.010
@@ -22,7 +22,7 @@ export function DocsTokenAnalysisContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Paste a token address. Six on-chain checks run automatically. You get
           a 0 to 100 risk score and a line-by-line breakdown of what passed and
@@ -57,9 +57,9 @@ export function DocsTokenAnalysisContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              How much real SOL or stablecoin is paired against the token. Thin
+              How much real ETH or stablecoin is paired against the token. Thin
               liquidity means one seller can crash the chart
             </p>
           </div>
@@ -78,7 +78,7 @@ export function DocsTokenAnalysisContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Top-10 wallet share. If ten wallets hold 80%, price is at their
               mercy
@@ -99,7 +99,7 @@ export function DocsTokenAnalysisContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Share of the pool tokens sent to a burn address or a known locker.
               Unlocked LP can be pulled at any time
@@ -120,7 +120,7 @@ export function DocsTokenAnalysisContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               GoPlus flags: can the owner mint supply, pause transfers,
               blacklist wallets, change balances, or reclaim ownership
@@ -141,7 +141,7 @@ export function DocsTokenAnalysisContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Brand-new tokens with no trade history score lower. Survival is a
               signal
@@ -162,7 +162,7 @@ export function DocsTokenAnalysisContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Tax taken by the contract on each side. 10% or more is flagged; a
               sell tax that high is a warning sign
@@ -192,7 +192,7 @@ export function DocsTokenAnalysisContent() {
             </div>
             <div
               className="font-mono text-[11px] tracking-[0.06em] uppercase"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.50)" }}
             >
               Low risk
             </div>
@@ -206,7 +206,7 @@ export function DocsTokenAnalysisContent() {
             </div>
             <div
               className="font-mono text-[11px] tracking-[0.06em] uppercase"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.50)" }}
             >
               Watch closely
             </div>
@@ -220,7 +220,7 @@ export function DocsTokenAnalysisContent() {
             </div>
             <div
               className="font-mono text-[11px] tracking-[0.06em] uppercase"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.50)" }}
             >
               Danger zone
             </div>
@@ -240,7 +240,7 @@ export function DocsTokenAnalysisContent() {
         >
           ※ Not a buy signal
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           A low risk score means common rug traps are absent. Price action,
           narrative, and timing are still your job
         </p>
@@ -254,7 +254,7 @@ export function DocsTokenAnalysisContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -277,7 +277,7 @@ export function DocsTokenAnalysisContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

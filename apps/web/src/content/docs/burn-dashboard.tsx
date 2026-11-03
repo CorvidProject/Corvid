@@ -3,7 +3,7 @@ export function DocsBurnDashboardContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.BURN.081
@@ -22,7 +22,7 @@ export function DocsBurnDashboardContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Every burn is logged on-chain and mirrored here. Audit the supply
           trajectory block by block.
@@ -56,9 +56,9 @@ export function DocsBurnDashboardContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Running total of CRVD removed from supply since day one. Updates
+              Running total of APE removed from supply since day one. Updates
               block by block
             </p>
           </div>
@@ -77,7 +77,7 @@ export function DocsBurnDashboardContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               For every graduated agent, how many of its own tokens have been
               burned via weekly buybacks
@@ -98,10 +98,10 @@ export function DocsBurnDashboardContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Each row: agent, date, revenue percent swapped, CRVD spent, tokens
-              burned, Solscan tx link
+              Each row: agent, date, revenue percent swapped, APE spent, tokens
+              burned, Etherscan tx link
             </p>
           </div>
           <div
@@ -119,7 +119,7 @@ export function DocsBurnDashboardContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Biggest burners this week, this month, all time. Creators with
               deflationary output get visibility
@@ -140,10 +140,10 @@ export function DocsBurnDashboardContent() {
         >
           ※ Three burn streams
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Swap-fee burn (5% copy-trade / 30% manual of the 1% commission,
           $CRVD), signal-fee burn (15% of signal fee, $CRVD), and opt-in weekly
-          buybacks from graduated agents (token-level via Jupiter with 2% max
+          buybacks from graduated agents (token-level via 0x with 2% max
           slippage)
         </p>
       </div>
@@ -156,7 +156,7 @@ export function DocsBurnDashboardContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -179,7 +179,7 @@ export function DocsBurnDashboardContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

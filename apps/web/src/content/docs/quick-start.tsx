@@ -3,7 +3,7 @@ export function DocsQuickStartContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -23,7 +23,7 @@ export function DocsQuickStartContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           From zero account to first signal, without installing anything. Wallet
           included in the browser.
@@ -58,12 +58,12 @@ export function DocsQuickStartContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
-            Use Google or email. A Solana wallet is generated for you, encrypted
-            at rest in our infrastructure, and 25 free AI analyses land on your
-            account. Export the key to Phantom anytime if you want full
-            self-custody
+            Use Google or email. A Ethereum wallet is generated for you,
+            encrypted at rest in our infrastructure, and 25 free AI analyses
+            land on your account. Export the key to MetaMask anytime if you want
+            full self-custody
           </p>
         </li>
         <li
@@ -94,7 +94,7 @@ export function DocsQuickStartContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Head to Agents. Each card shows the agent's pipeline type, creator,
             strategy, win rate, and subscriber count
@@ -128,7 +128,7 @@ export function DocsQuickStartContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Hit Follow. Signals are completely free to receive. You pay only
             when the agent fires a signal, and 25% of that fee lands back on
@@ -163,7 +163,7 @@ export function DocsQuickStartContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Signals land in your inbox in realtime. Optional: connect Telegram
             in Settings for push notifications on your phone
@@ -197,10 +197,10 @@ export function DocsQuickStartContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Trading is free (no credit cost). Fund your platform wallet with
-            SOL, pick a token, and swap. Credits are only for AI and automation
+            ETH, pick a token, and swap. Credits are only for AI and automation
             features
           </p>
         </li>
@@ -229,7 +229,7 @@ export function DocsQuickStartContent() {
           </h3>
           <p
             className="text-[14px] leading-relaxed m-0"
-            style={{ color: "#A9B5C2" }}
+            style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Open the pipeline builder. Pick a type: Follow Wallet, New Tokens,
             or Token Trading. Configure the steps, choose signal or trading
@@ -250,10 +250,10 @@ export function DocsQuickStartContent() {
         >
           ※ Tip
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           You don't need to own $CRVD to start. Credits are the in-app unit (1
-          credit ≈ $0.01). Buy credits with SOL. Your Solana wallet only matters
-          when an agent you hold graduates and pays you SPL tokens
+          credit ≈ $0.01). Buy credits with ETH. Your Ethereum wallet only
+          matters when an agent you hold graduates and pays you ERC-20 tokens
         </p>
       </div>
       <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -265,7 +265,7 @@ export function DocsQuickStartContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -288,7 +288,7 @@ export function DocsQuickStartContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

@@ -3,7 +3,7 @@ export function DocsTokenContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
@@ -26,7 +26,7 @@ export function DocsTokenContent() {
           style={{
             background: "rgba(var(--v2-accent-rgb),0.08)",
             border: "1px solid rgba(var(--v2-accent-rgb),0.35)",
-            color: "#A9B5C2",
+            color: "rgba(255,255,255,0.75)",
           }}
         >
           <span
@@ -38,12 +38,12 @@ export function DocsTokenContent() {
           <span>
             Until the token exists, these balances are tracked in the platform
             ledger and settle on-chain after TGE. Swap commissions and cashback
-            already move in SOL.
+            already move in ETH.
           </span>
         </div>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           $CRVD settles every action on Corvid — swaps, signals, graduations,
           agent backing. Every fee routes through the same splits (cashback,
@@ -78,10 +78,10 @@ export function DocsTokenContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Subscriptions and per-action AI credits are paid in $CRVD. Every
-              analysis, signal, or pipeline run settles in CRVD under the hood
+              analysis, signal, or pipeline run settles in APE under the hood
             </p>
           </div>
           <div
@@ -99,7 +99,7 @@ export function DocsTokenContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Every swap fee burns a slice of $CRVD (5% on copy-trade, 30% on
               manual). Every signal fee burns 15%. Graduated agents can opt into
@@ -121,11 +121,12 @@ export function DocsTokenContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Add $CRVD to a published agent's LP reserve before graduation.
-              When the agent graduates into its own SPL token, your share mints
-              pro-rata. Like dev-buy on Raydium, but for working strategies
+              When the agent graduates into its own ERC-20 token, your share
+              mints pro-rata. Like dev-buy on Uniswap, but for working
+              strategies
             </p>
           </div>
           <div
@@ -143,11 +144,11 @@ export function DocsTokenContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               When an agent graduates, the $CRVD accumulated in its reserve
-              seeds a Raydium v3 pool paired with the freshly minted SPL token.
-              Pool LP fees flow back to the agent's wallet
+              seeds a Uniswap v3 pool paired with the freshly minted ERC-20
+              token. Pool LP fees flow back to the agent's wallet
             </p>
           </div>
         </div>
@@ -165,7 +166,7 @@ export function DocsTokenContent() {
         >
           ※ Transparent splits
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           The 1% swap fee and per-signal fee both split into named buckets:
           cashback to you, burn, reserve, creator share, treasury. Nothing is
           taken silently — see{" "}
@@ -188,7 +189,7 @@ export function DocsTokenContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -211,7 +212,7 @@ export function DocsTokenContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

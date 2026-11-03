@@ -3,7 +3,7 @@ export function DocsPortfolioContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.PORT.060
@@ -22,7 +22,7 @@ export function DocsPortfolioContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Your Trading Wallet, open positions, agent activity, cashback, tokens,
           and running PnL in one dashboard. Keys are encrypted at rest and
@@ -57,7 +57,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Active trades from your trading-mode pipelines. Entry price,
               current price, PnL, TP and SL status
@@ -78,7 +78,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Open trades, PnL, execution history, configured limits, and pause
               state for each agent
@@ -99,7 +99,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               The 25% that comes back per signal, shown as a running total with
               per-agent breakdown and anti-farm gate status
@@ -116,13 +116,13 @@ export function DocsPortfolioContent() {
               04 · TOKENS
             </div>
             <h3 className="font-heading font-semibold text-[15px] text-white mb-1.5 tracking-[-0.01em]">
-              SPL tokens
+              ERC-20 tokens
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Real Solana tokens you received when agents graduated. These sit
+              Real Ethereum tokens you received when agents graduated. These sit
               in your main platform wallet
             </p>
           </div>
@@ -141,7 +141,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Net credits spent on signals, plus trade PnL, plus token market
               value. Updated on every block
@@ -162,10 +162,10 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Hit Export in Settings to pull the 32-byte private key (hex).
-              Import it into Phantom or Rabby and you own the wallet outright
+              Import it into MetaMask or Rabby and you own the wallet outright
             </p>
           </div>
         </div>
@@ -182,13 +182,13 @@ export function DocsPortfolioContent() {
             Custody, explained honestly
           </h2>
         </div>
-        <p className="mb-5" style={{ color: "#A9B5C2" }}>
-          The platform is custodial: when you sign up we generate A Solana
+        <p className="mb-5" style={{ color: "rgba(255,255,255,0.70)" }}>
+          The platform is custodial: when you sign up we generate a Ethereum
           wallet for you and store the private key encrypted at rest in our
           infrastructure. That's what lets autonomous agents and copy-trade fire
           while you're offline — without it the whole product premise doesn't
           work. We're upfront about the trade-off: you can export the raw key to
-          Phantom at any moment and take full self-custody if that matters more
+          MetaMask at any moment and take full self-custody if that matters more
           than automation.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -207,7 +207,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               The private key is created on our backend and immediately
               encrypted with AES-256-GCM. The master encryption key lives in
@@ -229,7 +229,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               For every trade we decrypt your key in memory just long enough to
               sign the transaction, then zero the buffer. This is what lets a
@@ -252,10 +252,10 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Settings → Export Private Key returns the 32-byte key as hex.
-              Import it into Phantom or Rabby. Your wallet now exists outside
+              Import it into MetaMask or Rabby. Your wallet now exists outside
               the platform, fully self-custodial
             </p>
           </div>
@@ -274,7 +274,7 @@ export function DocsPortfolioContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Export your key while the platform is up. Once you have the raw
               bytes, your wallet exists on-chain forever — independent of our
@@ -308,13 +308,13 @@ export function DocsPortfolioContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               We're a custodial platform — technically yes, the keys we encrypt
               could be decrypted by us. The defenses are operational, not
               cryptographic: master encryption key kept in SOPS-managed secrets,
               withdrawals require your in-app authorization, and most
-              importantly, you can export the key to Phantom at any moment to
+              importantly, you can export the key to MetaMask at any moment to
               get out of the trust relationship entirely. If you're holding
               meaningful size, export and self-custody is the right move.
             </p>
@@ -333,13 +333,13 @@ export function DocsPortfolioContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Export your private key while we're up — Settings → Export Private
-              Key. Once you have the raw 64-byte key in Phantom, your wallet is
-              independent of our infrastructure. The SOL, the $CRVD, and any SPL
-              tokens earned through graduation all live on-chain forever. No
-              migration sprint needed if you've already exported.
+              Key. Once you have the raw 64-byte key in MetaMask, your wallet is
+              independent of our infrastructure. The ETH, the $CRVD, and any
+              ERC-20 tokens earned through graduation all live on-chain forever.
+              No migration sprint needed if you've already exported.
             </p>
           </details>
           <details
@@ -348,7 +348,7 @@ export function DocsPortfolioContent() {
           >
             <summary className="cursor-pointer font-heading font-semibold text-[14px] text-white list-none flex items-start justify-between gap-3">
               <span className="break-words">
-                Why not just use Phantom directly?
+                Why not just use MetaMask directly?
               </span>
               <span className="font-mono text-[var(--v2-accent)] group-open:rotate-45 transition-transform shrink-0">
                 +
@@ -356,15 +356,15 @@ export function DocsPortfolioContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Because autonomous agents need to sign transactions while you
-              sleep. Phantom requires a manual click each time. A custodial
+              sleep. MetaMask requires a manual click each time. A custodial
               wallet lets the platform sign on your behalf so a Copy Trader can
               react to a whale move in 200ms without you being at the keyboard.
-              If you prefer manual, connect Phantom for the main trading UI — we
-              support both, and you can run agents on the platform wallet while
-              doing manual swaps from Phantom.
+              If you prefer manual, connect MetaMask for the main trading UI —
+              we support both, and you can run agents on the platform wallet
+              while doing manual swaps from MetaMask.
             </p>
           </details>
           <details
@@ -381,7 +381,7 @@ export function DocsPortfolioContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               No. Agents execute from your shared Trading Wallet on their
               selected network. Each trading agent stays locked until you set
@@ -401,7 +401,7 @@ export function DocsPortfolioContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Enable a passkey or 2FA on the email itself — that's the
               meaningful upgrade. If your inbox is compromised, an attacker can
@@ -422,7 +422,7 @@ export function DocsPortfolioContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -445,7 +445,7 @@ export function DocsPortfolioContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

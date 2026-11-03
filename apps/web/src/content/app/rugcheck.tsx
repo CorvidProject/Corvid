@@ -1,0 +1,181 @@
+export function ApplicationRugcheckContent() {
+  return (
+    <>
+      <section className="relative overflow-hidden min-h-[88vh] flex items-center justify-center px-4 pt-20 pb-16">
+        <canvas
+          className="absolute inset-0 w-full h-full"
+          aria-hidden="true"
+          width="1365"
+          height="704"
+        ></canvas>
+        <div
+          className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+          style={{
+            background: "linear-gradient(rgb(20, 25, 29), transparent)",
+          }}
+        ></div>
+        <div
+          className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+          style={{
+            background: "linear-gradient(0deg, rgb(20, 25, 29), transparent)",
+          }}
+        ></div>
+        <div className="relative z-10 w-full max-w-[680px] text-center">
+          <h1
+            className="font-heading font-extrabold tracking-[-0.045em] leading-none"
+            style={{
+              color: "rgb(244, 244, 250)",
+              fontSize: "clamp(3rem, 8vw, 6.5rem)",
+            }}
+          >
+            Rugcheck
+          </h1>
+          <p
+            className="mt-6 text-[18px] sm:text-[20px] leading-snug"
+            style={{
+              color: "rgba(255, 255, 255, 0.75)",
+              textShadow: "rgb(20, 25, 29) 0px 0px 14px",
+            }}
+          >
+            Contract, holder and liquidity checks on any token, on six chains. A
+            score before you trade.
+          </p>
+          <form className="relative mt-10">
+            <div
+              className="flex items-center gap-2 h-16 pl-6 pr-2 rounded-full"
+              style={{
+                background: "rgb(26, 32, 37)",
+                boxShadow:
+                  "rgba(255, 255, 255, 0.12) 0px 0px 0px 1px inset, rgba(12, 14, 17, 0.9) 0px 20px 50px -20px",
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                style={{ color: "var(--v2-t-4)" }}
+              >
+                <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+              </svg>
+              <input
+                placeholder="Token name, ticker or address"
+                className="flex-1 min-w-0 bg-transparent outline-none text-[16px]"
+                value=""
+                style={{ color: "var(--v2-t-1)" }}
+              />
+              <button
+                type="submit"
+                className="crv-swap-cta h-12 px-7 rounded-full text-[15px] font-semibold"
+              >
+                Analyze
+              </button>
+            </div>
+          </form>
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 mt-8 text-[14px]"
+            style={{ color: "rgba(255, 255, 255, 0.65)" }}
+          >
+            <span className="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                style={{ color: "var(--v2-pos)" }}
+              >
+                <path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"></path>
+              </svg>
+              Six chains, one search
+            </span>
+            <span className="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                style={{ color: "var(--v2-pos)" }}
+              >
+                <path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"></path>
+              </svg>
+              Honeypot and mint checks
+            </span>
+            <span className="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                style={{ color: "var(--v2-pos)" }}
+              >
+                <path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"></path>
+              </svg>
+              Holder and liquidity spread
+            </span>
+          </div>
+          <div className="mt-8">
+            <div
+              className="text-[12px] uppercase tracking-[0.12em] mb-3"
+              style={{ color: "rgba(255, 255, 255, 0.4)" }}
+            >
+              Try one
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <button
+                className="flex items-center gap-2 h-9 pl-1.5 pr-3.5 rounded-full text-[13px] transition-colors hover:bg-[#1A1A20]"
+                style={{
+                  background: "rgb(26, 32, 37)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "var(--v2-t-2)",
+                }}
+              >
+                <img
+                  alt=""
+                  width="22"
+                  height="22"
+                  className="w-[22px] h-[22px] rounded-full"
+                  src="/chains/solana.png"
+                />
+                <span
+                  className="font-semibold"
+                  style={{ color: "var(--v2-t-1)" }}
+                >
+                  BONK
+                </span>
+                <span style={{ color: "var(--v2-t-4)" }}>Solana</span>
+              </button>
+              <button
+                className="flex items-center gap-2 h-9 pl-1.5 pr-3.5 rounded-full text-[13px] transition-colors hover:bg-[#1A1A20]"
+                style={{
+                  background: "rgb(26, 32, 37)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "var(--v2-t-2)",
+                }}
+              >
+                <img
+                  alt=""
+                  width="22"
+                  height="22"
+                  className="w-[22px] h-[22px] rounded-full"
+                  src="/chains/solana.png"
+                />
+                <span
+                  className="font-semibold"
+                  style={{ color: "var(--v2-t-1)" }}
+                >
+                  WIF
+                </span>
+                <span style={{ color: "var(--v2-t-4)" }}>Solana</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div className="max-w-[760px] mx-auto px-4 pb-20 scroll-mt-20"></div>
+    </>
+  );
+}

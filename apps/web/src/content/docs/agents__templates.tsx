@@ -3,7 +3,7 @@ export function DocsAgentsTemplatesContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.PIPE.025
@@ -22,7 +22,7 @@ export function DocsAgentsTemplatesContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Templates are preconfigured pipelines. Pick one, adjust a few fields,
           hit Deploy. Every template comes in three risk levels.
@@ -56,7 +56,7 @@ export function DocsAgentsTemplatesContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Low risk across all three pipeline types. Small trade sizes,
               strict safety filters, tight stop losses
@@ -77,7 +77,7 @@ export function DocsAgentsTemplatesContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Middle ground. Moderate filters, standard trade sizes. Good
               starting point if you're unsure
@@ -98,7 +98,7 @@ export function DocsAgentsTemplatesContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Looser filters, larger positions, wider slippage. For experienced
               traders who know the risks
@@ -118,7 +118,7 @@ export function DocsAgentsTemplatesContent() {
             What each preset sets
           </h2>
         </div>
-        <p className="mb-4" style={{ color: "#A9B5C2" }}>
+        <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           Presets fill in all the pipeline fields for you. Here's what changes
           between levels:
         </p>
@@ -130,14 +130,23 @@ export function DocsAgentsTemplatesContent() {
             <span className="text-[13px] font-medium text-white">
               Trade size
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
-              0.01 SOL
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              0.01 ETH
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
-              0.05 SOL
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              0.05 ETH
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
-              0.15 SOL
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              0.15 ETH
             </span>
           </div>
           <div
@@ -145,13 +154,22 @@ export function DocsAgentsTemplatesContent() {
             style={{ background: "rgba(255,255,255,0.02)" }}
           >
             <span className="text-[13px] font-medium text-white">Slippage</span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               1%
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               2%
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               5%
             </span>
           </div>
@@ -162,13 +180,22 @@ export function DocsAgentsTemplatesContent() {
             <span className="text-[13px] font-medium text-white">
               Min LP (USD)
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               $50,000
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               $10,000
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               $1,000
             </span>
           </div>
@@ -179,13 +206,22 @@ export function DocsAgentsTemplatesContent() {
             <span className="text-[13px] font-medium text-white">
               Stop loss
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               5%
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               15%
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               30%
             </span>
           </div>
@@ -196,13 +232,22 @@ export function DocsAgentsTemplatesContent() {
             <span className="text-[13px] font-medium text-white">
               Take profit
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               10%
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               30%
             </span>
-            <span className="text-[13px]" style={{ color: "#A9B5C2" }}>
+            <span
+              className="text-[13px]"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
               100%
             </span>
           </div>
@@ -221,7 +266,7 @@ export function DocsAgentsTemplatesContent() {
         >
           ※ Tip
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Templates you deploy start private. Flip the Public switch in Settings
           once you trust the output. Subscribers follow for free while the
           signal fee is switched off
@@ -236,7 +281,7 @@ export function DocsAgentsTemplatesContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -259,7 +304,7 @@ export function DocsAgentsTemplatesContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>

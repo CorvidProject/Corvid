@@ -3,7 +3,7 @@ export function DocsAgentsContent() {
     <article>
       <div
         className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "#A9B5C2" }}
+        style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> DOC.PIPE.020
@@ -22,7 +22,7 @@ export function DocsAgentsContent() {
         </h1>
         <p
           className="text-base sm:text-lg leading-relaxed max-w-xl"
-          style={{ color: "#A9B5C2" }}
+          style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Every agent is a pipeline: a chain of steps that watches the chain,
           filters noise, and either alerts you or trades for you. You build them
@@ -30,7 +30,10 @@ export function DocsAgentsContent() {
         </p>
         <p
           className="mt-5 text-sm leading-relaxed max-w-xl px-3.5 py-2.5 border border-white/[0.10]"
-          style={{ color: "#A9B5C2", background: "rgba(255,255,255,0.03)" }}
+          style={{
+            color: "rgba(255,255,255,0.65)",
+            background: "rgba(255,255,255,0.03)",
+          }}
         >
           <span
             className="font-mono text-[11px] uppercase tracking-[0.08em] mr-2"
@@ -70,7 +73,7 @@ export function DocsAgentsContent() {
                 01 · WALLET
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -81,7 +84,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Watch a wallet. When it buys or sells, your agent copies the trade
               or sends you a signal
@@ -101,7 +104,7 @@ export function DocsAgentsContent() {
                 02 · TOKENS
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -112,9 +115,9 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Scan every new Raydium and Orca pool. Filter by safety checks,
+              Scan every new Uniswap and Uniswap pool. Filter by safety checks,
               snipe the ones that pass
             </p>
           </a>
@@ -132,7 +135,7 @@ export function DocsAgentsContent() {
                 03 · TRADING
               </span>
               <span
-                style={{ color: "#A9B5C2" }}
+                style={{ color: "rgba(255,255,255, 0.65)" }}
                 className="group-hover:text-white transition-colors"
               >
                 ↗
@@ -143,7 +146,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Watch a specific token. Set triggers for price drops, volume
               spikes, or market cap thresholds. Trade or alert
@@ -179,9 +182,9 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Alerts only. No SOL moves. You get notified when conditions match
+              Alerts only. No ETH moves. You get notified when conditions match
               and decide what to do yourself
             </p>
           </div>
@@ -200,14 +203,14 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Real execution. Approved swaps happen automatically on the agent's
               selected network using funds from your Trading Wallet
             </p>
           </div>
         </div>
-        <p className="text-[13px]" style={{ color: "#A9B5C2" }}>
+        <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.50)" }}>
           You can switch modes at any time from the agent page. Trading mode
           requires a funded platform wallet.
         </p>
@@ -224,7 +227,7 @@ export function DocsAgentsContent() {
             The four steps
           </h2>
         </div>
-        <p className="mb-5" style={{ color: "#A9B5C2" }}>
+        <p className="mb-5" style={{ color: "rgba(255,255,255,0.70)" }}>
           Every pipeline is four connected nodes. You configure each one in the
           builder:
         </p>
@@ -257,7 +260,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Where the data comes from. A wallet address, a pool scanner, or a
               token address
@@ -291,7 +294,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Rules that decide what gets through. Trade size, LP depth,
               contract flags, win rate, and more
@@ -325,11 +328,11 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               In signal mode, the alert goes straight to notify. In trading
-              mode, the shared executor routes the swap through Jupiter on
-              Solana
+              mode, the shared executor routes the swap through 0x on EVM or
+              Jupiter on Solana
             </p>
           </li>
           <li
@@ -357,7 +360,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Signal lands in your inbox. If Telegram is connected, it pushes to
               your phone too
@@ -378,7 +381,7 @@ export function DocsAgentsContent() {
         >
           ※ Safety
         </div>
-        <p className="m-0" style={{ color: "#A9B5C2" }}>
+        <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Every trade goes through an 11-rule safety gate before execution:
           daily caps, duplicate checks, slippage limits, liquidity depth, and
           more. If any rule fails, the trade is blocked and you get a
@@ -397,7 +400,7 @@ export function DocsAgentsContent() {
             Trading Wallet and limits
           </h2>
         </div>
-        <p className="mb-5" style={{ color: "#A9B5C2" }}>
+        <p className="mb-5" style={{ color: "rgba(255,255,255,0.70)" }}>
           Trading agents use your shared Trading Wallet on their selected
           network. They cannot trade until you explicitly set both a per-trade
           limit and a rolling 24-hour limit for that agent.
@@ -412,11 +415,11 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
-              Agents run on Solana of your Trading Wallet. Solana agents use its
-              Solana side. You fund and withdraw from the same Portfolio
-              surface.
+              Base, Ethereum, Arbitrum, BNB Chain, and Robinhood agents use the
+              EVM side of your Trading Wallet. Solana agents use its Solana
+              side. You fund and withdraw from the same Portfolio surface.
             </p>
           </div>
           <div
@@ -428,7 +431,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               The per-trade and rolling 24-hour limits start empty. Until you
               set both, execution is locked. An optional token allowlist can
@@ -444,7 +447,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               Limit checks and spend reservations happen together before the
               signer is loaded. Two simultaneous trades cannot both claim the
@@ -460,7 +463,7 @@ export function DocsAgentsContent() {
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.60)" }}
             >
               The agent page records executions and denials with the network,
               stage, reason, and transaction signature when one exists. A
@@ -494,7 +497,7 @@ export function DocsAgentsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Trading agents share your custodial Trading Wallet, so a separate
               sub-wallet does not isolate the balance. The protection is
@@ -518,10 +521,10 @@ export function DocsAgentsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Only the ones you configure that way. Filter nodes are
-              deterministic code: if a wallet buys more than 0.5 SOL of a pool
+              deterministic code: if a wallet buys more than 0.5 ETH of a pool
               with $10k+ liquidity and no mint authority, the trade fires. No AI
               in that path. Separately, a Token Analyst node can ask an LLM for
               a qualitative take on a mint before the trade fires. That is the
@@ -543,7 +546,7 @@ export function DocsAgentsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Every agent has a Decisions log on its page. Every signal it
               emitted, every trade it fired, every rule that blocked a trade,
@@ -566,7 +569,7 @@ export function DocsAgentsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               You set a per-trade limit and a rolling 24-hour spend limit in the
               network's native coin. The server reserves that allowance
@@ -589,7 +592,7 @@ export function DocsAgentsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Following is free: subscribers receive every signal at no credit
               cost. The agent's owner pays the inference credits it burns (0.1
@@ -612,7 +615,7 @@ export function DocsAgentsContent() {
             </summary>
             <p
               className="mt-3 text-[13px] leading-relaxed m-0"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Scheduler stops opening new trades for that agent immediately.
               Open positions stay in your Trading Wallet, and take-profit or
@@ -631,7 +634,7 @@ export function DocsAgentsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               NEXT →
             </div>
@@ -654,7 +657,7 @@ export function DocsAgentsContent() {
           <div>
             <div
               className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1"
-              style={{ color: "#A9B5C2" }}
+              style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               DEEP DIVE →
             </div>
