@@ -26,7 +26,48 @@ COLORS = [(r'#ff6b00', 'var(--v2-accent)'), (r'255,\s?107,\s?0', 'var(--v2-accen
 SVGTAGS = {t.lower(): t for t in 'feTurbulence feColorMatrix feGaussianBlur feBlend feComposite feOffset feMerge feMergeNode feFlood feDisplacementMap feMorphology feSpecularLighting feDiffuseLighting linearGradient radialGradient clipPath textPath foreignObject animateTransform animateMotion feDropShadow feComponentTransfer feFuncR feFuncG feFuncB feFuncA'.split()}
 SVGATTR = {a.lower(): a for a in 'baseFrequency numOctaves stitchTiles stdDeviation gradientUnits gradientTransform patternUnits patternContentUnits clipPathUnits maskUnits maskContentUnits filterUnits primitiveUnits spreadMethod markerWidth markerHeight refX refY tableValues kernelMatrix preserveAspectRatio startOffset attributeName repeatCount keyTimes keySplines calcMode viewBox pathLength xChannelSelector yChannelSelector surfaceScale diffuseConstant specularConstant specularExponent targetX targetY'.split()}
 
+PHRASES = [
+ (r'Autonomous trading agents across EVM and Solana\. Analyze tokens with AI, deploy autonomous trading agents, and execute on-chain swaps\. Six networks[^.]*\.', 'Agents that watch smart money, read the risk, then trade from your wallet. Analyze tokens with AI, deploy autonomous trading agents, and execute on-chain swaps on Solana.'),
+ (r'Autonomous trading agents across EVM and Solana', 'Agents that watch smart money, read the risk, then trade from your wallet'),
+ (r'Token risk reports, smart-money tracking and agents that trade from your own wallet across [^.]*\.', 'Token risk reports, smart-money tracking and agents that trade from your own wallet on Solana.'),
+ (r'Autonomous on-chain trading agents and analysis tools for Ethereum, Base, Arbitrum, BNB Chain and Solana', 'Autonomous on-chain trading agents and analysis tools for Solana'),
+ (r'is a multichain trading terminal with autonomous agents, on Solana, Ethereum and Base', 'is a Solana trading terminal with autonomous agents'),
+ (r'SOLANA . ETHEREUM . BASE . JUPITER . 0x', 'SOLANA · JUPITER · HELIUS · JITO'),
+ (r'Jupiter on Solana, 0x with Flashbots on EVM', 'Jupiter on Solana, broadcast through Jito bundles'),
+ (r'Jupiter on Solana or 0x on EVM', 'Jupiter on Solana'),
+ (r'Jupiter on Solana, 0x on EVM', 'Jupiter on Solana'),
+ (r'through 0x on EVM or Jupiter on Solana', 'through Jupiter on Solana'),
+ (r'Base, Ethereum, Arbitrum, BNB Chain, and Robinhood agents use the EVM side', 'Agents run on Solana'),
+ (r'Trades route through Jupiter and 0x', 'Trades route through Jupiter'),
+ (r'across Solana and EVM', 'on Solana'),
+ (r'Corvid runs autonomous trading agents on Ethereum', 'Corvid runs autonomous trading agents on Solana'),
+ (r'Ethereum-native', 'Solana-native'),
+ (r'\b[Aa] Ethereum wallet', 'A Solana wallet'),
+ (r'Ethereum (token|mint|wallet)', r'Solana \1'),
+ (r'Real Ethereum tokens', 'Real Solana tokens'),
+ (r'Alchemy</strong>: Ethereum RPC and webhook infrastructure', 'Helius</strong>: Solana RPC and wallet data'),
+ (r'0x</strong>: DEX routing and swap quotes', 'Jupiter</strong>: DEX routing and swap quotes'),
+ (r'Flashbots</strong>[^<]*', 'Jito</strong>: transaction bundle broadcast'),
+ (r'\b0x routing', 'Jupiter routing'),
+ (r'\bvia 0x\b', 'via Jupiter'),
+ (r'taken by 0x', 'taken by Jupiter'),
+ (r'\bERC-?20\b', 'SPL'),
+ (r'\$APE\b', '$CRVD'),
+ (r'\bETH\b', 'SOL'),
+ (r'\bAPE\b', 'CRVD'),
+ (r'Etherscan', 'Solscan'),
+ (r'on Ethereum\b', 'on Solana'),
+ (r'^Alchemy$', 'Helius'),
+ (r'^Flashbots$', 'Jito'),
+ (r'^0x$', 'Jupiter'),
+ (r'MetaMask', 'Phantom'),
+ (r'Ethereum RPC and webhook infrastructure', 'Solana RPC and wallet data'),
+ (r'Live on mainnet\.', 'Live on Solana.'),
+]
+
 def brand(t):
+    for a, b in PHRASES:
+        t = re.sub(a, b, t)
     t = re.sub(r'https?://(www\.)?apevisor\.tech', 'https://corvid.example', t, flags=re.I)
     t = t.replace('APEVISOR', 'CORVID').replace('Apevisor', 'Corvid').replace('apevisor', 'corvid')
     return t.replace('ape-pixel', 'crv-pixel')
@@ -115,7 +156,7 @@ def ser(n):
     if t in ('script', 'template', 'noscript'):
         return ''
     if t == 'img' and 'logo-v2' in (n.get('src', '') + n.get('srcset', '')):
-        return '<span className="font-heading font-extrabold tracking-tight" data-placeholder="logo">Corvid</span>'
+        return ''  # logo belum diberikan; teks wordmark di sebelahnya sudah ada (placeholder)
     t = SVGTAGS.get(t, t)
     attrs = ''.join(attr(k, v) for k, v in n.attrs.items())
     if t == 'style':
@@ -135,6 +176,11 @@ def page_for(rel):
     md = soup.find('meta', attrs={'name': 'description'})
     desc = brand(md['content']) if md else ''
     body = soup.body
+    EVM = re.compile(r'^(Alchemy|Ethereum|Base|Flashbots|0x|Arbitrum|BNB|Robinhood)\b', re.I)
+    EVMURL = re.compile(r'(0x\.org|flashbots\.net|base\.org|alchemy\.com|ethereum\.org|arbitrum|bnbchain|robinhood)', re.I)
+    for a in list(body.find_all('a')):
+        if EVM.match(a.get('aria-label', '')) or EVMURL.search(a.get('href', '')):
+            a.decompose()
     for d in list(body.find_all('div', class_=re.compile(r'z-\[9999\]'))):
         d.decompose()
     for d in list(body.find_all('div', class_=re.compile(r'z-\[100\]'))):
