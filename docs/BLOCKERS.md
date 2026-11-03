@@ -9,4 +9,3 @@
 4. **Email kontak, logo (PNG ≥512×512 transparan + favicon), domain:** belum diberikan. Pakai env `CONTACT_EMAIL` dan wordmark placeholder.
 5. **Merek "Corvid" / ticker $CRVD:** cek merek, domain, dan ticker sebelum publik.
 6. **terms/privacy:** perlu dibaca pihak hukum setelah nama entitas diganti.
-7. **Akses push ke CorvidProject/Corvid:** belum diverifikasi.
