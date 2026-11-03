@@ -15,8 +15,8 @@ void main(){
   vec2 uv = gl_FragCoord.xy / resolution.xy;
   float aspect = resolution.x / resolution.y;
   float t = time * 0.2;
-  vec3 amber  = vec3(0.788, 0.827, 0.851);
-  vec3 orange = vec3(0.667, 0.733, 0.773);
+  vec3 amber  = vec3(0.90, 0.90, 0.90);
+  vec3 orange = vec3(1.0, 1.0, 1.0);
   vec3 ember  = vec3(0.404, 0.420, 0.424);
   float a = band(uv, 0.11, 0.07, 2.4, t, 0.0045);
   float b = band(uv, 0.03, 0.06, 1.9, t * 0.8 + 2.1, 0.0075);
@@ -36,8 +36,8 @@ void main(){
   float shimmer = 0.7 + 0.3 * sin((uv.x * aspect - uv.y) * 26.0 - time * 1.4);
   float dots = dotShape * level * shimmer;
   float alpha = clamp(light * 1.5 * dots, 0.0, 1.0);
-  vec3 base = vec3(0.106, 0.106, 0.106);
-  vec3 lit = col / max(light, 0.001);
+  vec3 base = vec3(0.149, 0.149, 0.149);
+  vec3 lit = 0.78 * col / max(light, 0.001);
   gl_FragColor = vec4(mix(base, lit, alpha) + vec3(0.012) * dotShape, 1.0);
 }`;
 

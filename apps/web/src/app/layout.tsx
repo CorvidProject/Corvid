@@ -25,7 +25,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-brand="corvid" className="h-full antialiased">
+    <html lang="en" data-brand="corvid" className="__variable_245d8d __variable_5f34dc __variable_1ae0f2 __variable_ae301a __variable_e8acdf __variable_de2cf6 __variable_353f1a __variable_b55a8d __variable_014e29 __variable_4e7f7d __variable_5875f5 __variable_1047a0 h-full antialiased">
       <body className="min-h-full flex flex-col font-sans" style={{ background: "var(--v2-bg-0)" }}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         {children}

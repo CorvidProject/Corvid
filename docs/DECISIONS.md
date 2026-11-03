@@ -11,3 +11,5 @@
 - **Layar `/application/*` dan `/auth/signin`:** HTML crawl hanya berisi skeleton loading (UI aslinya di chunk JS), jadi layar ditulis ulang sebagai komponen React memakai kelas CSS yang sama dan data fixture. Fidelity visual terhadap aplikasi lama belum 1:1.
 - **Fixture** dihasilkan `packages/api-client/scripts/make-fixtures.mjs` dari seed lama, hanya entri Solana (alamat `0x…` dibuang). Daftar smart wallet diisi alamat dari sampel trade dengan statistik sintetis (ditandai `fixture: true`).
 - Logo belum ada: gambar logo lama dihapus dari halaman statis; teks wordmark "Corvid" jadi placeholder (`data-placeholder="logo"`). OG image `/og-image.png` adalah placeholder teks.
+
+- 2026-11-04 Palet diperbarui atas permintaan pemilik: background halaman `#262626`; permukaan hitam (header, panel, input, cookie) `#000000`; teks putih sekunder `#686B6C`; aksen (ex-oranye) `#FFFFFF` ("Casper FFFFF" dibaca sebagai `#FFFFFF`, ubah di `PAL` build-css.py bila yang dimaksud `#AABBC5`). Kontras `#686B6C` di atas `#262626` sekitar 2.8:1 (di bawah AA), di atas `#000000` sekitar 3.7:1. Keputusan pemilik; tinjau ulang bila perlu AA.

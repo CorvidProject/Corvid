@@ -17,3 +17,8 @@
 [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .65s cubic-bezier(.16,1,.3,1)}
 [data-reveal].is-in{opacity:1!important;transform:none!important}
 @media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
+
+/* bracket sudut link footer/menu: hanya tampil saat hover (seperti referensi) */
+a.group>svg[data-reveal],li>a.group>svg.absolute{opacity:0!important;transform:none!important;transition:opacity .18s ease}
+a.group:hover>svg[data-reveal],a.group:hover>svg.absolute{opacity:1!important}
+body{background:var(--v2-bg-0)}

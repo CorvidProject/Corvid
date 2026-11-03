@@ -92,30 +92,30 @@ function CookieBanner() {
       role="dialog"
       aria-label="Cookies"
       className="fixed bottom-6 left-6 z-[60] w-[320px] max-w-[calc(100vw-48px)]"
-      style={{ background: "var(--v2-bg-0)", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 20px 50px -12px rgba(0,0,0,0.8)" }}
+      style={{ background: "#000000", border: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 20px 50px -12px rgba(0,0,0,0.8)" }}
     >
       <Corner pos="tl" />
       <Corner pos="tr" />
       <Corner pos="bl" />
       <Corner pos="br" />
       <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-        <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>
+        <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: "#686B6C" }}>
           [ COOKIES ]
         </span>
-        <button className="flex h-6 w-6 items-center justify-center hover:bg-white/5" aria-label="Close" style={{ color: "rgba(255,255,255,0.3)" }} onClick={() => close("dismissed")}>
+        <button className="flex h-6 w-6 items-center justify-center hover:bg-white/5" aria-label="Close" style={{ color: "#686B6C" }} onClick={() => close("dismissed")}>
           <svg width="12" height="12" fill="currentColor" viewBox="0 0 256 256">
             <path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z" />
           </svg>
         </button>
       </div>
-      <p className="px-4 py-3 font-mono text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+      <p className="px-4 py-3 font-mono text-[11px] leading-relaxed" style={{ color: "#686B6C" }}>
         We use cookies to improve your experience and analyze site usage.{" "}
         <a href="/privacy" style={{ color: "var(--v2-accent)" }}>
           Privacy Policy →
         </a>
       </p>
       <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-        <button className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255,0.4)" }} onClick={() => close("declined")}>
+        <button className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: "#686B6C" }} onClick={() => close("declined")}>
           Decline
         </button>
         <button className="font-mono text-[10px] tracking-[0.18em] uppercase px-4 py-2 font-semibold" style={{ background: "var(--v2-accent)", color: "var(--v2-btn-text)" }} onClick={() => close("accepted")}>
