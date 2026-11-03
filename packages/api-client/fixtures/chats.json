@@ -1,0 +1,19 @@
+{
+  "chats": [
+    {
+      "id": 1,
+      "title": "Risk check",
+      "updatedAt": 1793598800,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Is this token safe?"
+        },
+        {
+          "role": "assistant",
+          "content": "Fixture reply: mint and freeze authority are revoked; top-10 holders hold a high share."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "fixture": true,
+  "wallets": [
+    {
+      "address": "9XeBxpUMTnpaJC5csiS4dkBTvXsChbaZ5ysTSp2ZeiuQ",
+      "category": "whale",
+      "curated_tier": "S",
+      "curated_label": "Fixture wallet 1",
+      "win_rate_30d": 38,
+      "pnl_sol": 12.4,
+      "tx_count_30d": 120,
+      "tokens_traded": 9,
+      "avg_hold_hours": 6,
+      "last_active": "2026-11-02T06:13:20.000Z"
+    },
+    {
+      "address": "9su3UPQW3txjtKDZAkf2Kdimp5tEb9TM6hnJrGC1U7pY",
+      "category": "sniper",
+      "curated_tier": "A",
+      "curated_label": "Fixture wallet 2",
+      "win_rate_30d": 42.5,
+      "pnl_sol": 11.1,
+      "tx_count_30d": 137,
+      "tokens_traded": 10,
+      "avg_hold_hours": 9,
+      "last_active": "2026-11-02T05:13:20.000Z"
+    },
+    {
+      "address": "ViTjB3dRqXLkSEyHPnwjVS82Kr5bRkpDbxw7525QRyd",
+      "category": "kol",
+      "curated_tier": "A",
+      "curated_label": "Fixture wallet 3",
+      "win_rate_30d": 47,
+      "pnl_sol": 9.8,
+      "tx_count_30d": 154,
+      "tokens_traded": 11,
+      "avg_hold_hours": 12,
+      "last_active": "2026-11-02T04:13:20.000Z"
+    }
+  ]
+}

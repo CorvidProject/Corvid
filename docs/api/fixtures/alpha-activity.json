@@ -1,0 +1,28 @@
+{
+  "activity": [
+    {
+      "wallet": "9XeBxpUMTnpaJC5csiS4dkBTvXsChbaZ5ysTSp2ZeiuQ",
+      "side": "buy",
+      "symbol": "BIRB",
+      "mint": "G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG",
+      "sol": 1.2,
+      "at": 1793600000
+    },
+    {
+      "wallet": "9su3UPQW3txjtKDZAkf2Kdimp5tEb9TM6hnJrGC1U7pY",
+      "side": "sell",
+      "symbol": "WASTED",
+      "mint": "GexThZHgaswpAQ7Fi8QrHFubjPimUNSYhJiAA7XZpump",
+      "sol": 2,
+      "at": 1793599580
+    },
+    {
+      "wallet": "ViTjB3dRqXLkSEyHPnwjVS82Kr5bRkpDbxw7525QRyd",
+      "side": "buy",
+      "symbol": "ANTFUN",
+      "mint": "CWZ6BsdnjkDVTGkmL6bGbJXXig6ceef12KvyGQW14cMt",
+      "sol": 2.8,
+      "at": 1793599160
+    }
+  ]
+}

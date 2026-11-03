@@ -9,3 +9,7 @@
 4. **Email kontak, logo (PNG ≥512×512 transparan + favicon), domain:** belum diberikan. Pakai env `CONTACT_EMAIL` dan wordmark placeholder.
 5. **Merek "Corvid" / ticker $CRVD:** cek merek, domain, dan ticker sebelum publik.
 6. **terms/privacy:** perlu dibaca pihak hukum setelah nama entitas diganti.
+7. **Placeholder yang perlu diganti** setelah data diberikan: `contact@corvid.example` (74 tempat di halaman docs/legal), `https://x.com/PLACEHOLDER`, `https://t.me/PLACEHOLDER`, nama entitas di terms/privacy, logo (`data-placeholder="logo"`), favicon, OG image. Pencarian: `grep -r "corvid.example\|PLACEHOLDER" apps/web/src`.
+8. **Copy produk hasil crawl** masih menyebut konsep EVM yang tidak punya padanan Solana yang jelas (mis. "Uniswap v3 pool", "graduation ke ERC-20 / mint token agent"). Perlu keputusan produk sebelum copy final.
+9. **Aset how-analyze/how-automate** (`apps/web/public/media`) berasal dari crawl lama dan mungkin menampilkan brand lama; ganti dengan aset Corvid.
+10. **Fitur yang UI-nya belum dibuat:** `/application/token/[mint]` (detail token) dan `/application/admin`. `NEXT_PUBLIC_API_URL` belum terhubung (Tahap 2).

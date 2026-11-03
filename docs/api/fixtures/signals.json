@@ -1,0 +1,52 @@
+{
+  "signals": [
+    {
+      "id": 1,
+      "type": "wallet_buy",
+      "symbol": "BIRB",
+      "mint": "G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG",
+      "score": 15,
+      "at": 1793600000
+    },
+    {
+      "id": 2,
+      "type": "new_token",
+      "symbol": "WASTED",
+      "mint": "GexThZHgaswpAQ7Fi8QrHFubjPimUNSYhJiAA7XZpump",
+      "score": 0,
+      "at": 1793599100
+    },
+    {
+      "id": 3,
+      "type": "risk_flag",
+      "symbol": "ANTFUN",
+      "mint": "CWZ6BsdnjkDVTGkmL6bGbJXXig6ceef12KvyGQW14cMt",
+      "score": 15,
+      "at": 1793598200
+    },
+    {
+      "id": 4,
+      "type": "wallet_buy",
+      "symbol": "GATO",
+      "mint": "HsprHxBRgiVaQdRf3TnKNuZZtaX9JUSPgMFdAkk6pump",
+      "score": 0,
+      "at": 1793597300
+    },
+    {
+      "id": 5,
+      "type": "new_token",
+      "symbol": "Leverhedge",
+      "mint": "FWatMYieKhRuJ1yuTcmVG1njRhZWwqHwjR11pBympump",
+      "score": 0,
+      "at": 1793596400
+    },
+    {
+      "id": 6,
+      "type": "risk_flag",
+      "symbol": "Anakin",
+      "mint": "ExxzYBTt3jwU5MUxuw2F4toYbTLdFwThSjyaCn6Xpump",
+      "score": 0,
+      "at": 1793595500
+    }
+  ]
+}

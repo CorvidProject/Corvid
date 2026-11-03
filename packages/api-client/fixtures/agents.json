@@ -1,0 +1,26 @@
+{
+  "agents": [
+    {
+      "id": 59,
+      "name": "Token Trading - Balanced",
+      "type": "auto_trader",
+      "chain": "solana",
+      "running": false,
+      "tokenSymbol": "Agency",
+      "winRate": 54.2,
+      "runs": 1541,
+      "createdAt": "2026-10-01T00:00:00Z"
+    },
+    {
+      "id": 60,
+      "name": "Wallet Monitor - Whales",
+      "type": "wallet_monitor",
+      "chain": "solana",
+      "running": true,
+      "tokenSymbol": null,
+      "winRate": null,
+      "runs": 312,
+      "createdAt": "2026-10-05T00:00:00Z"
+    }
+  ]
+}

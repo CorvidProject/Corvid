@@ -1,0 +1,14 @@
+/* Utilitas tambahan untuk layar app yang tidak ada di CSS hasil crawl (Tailwind terkompilasi hanya memuat kelas yang dipakai halaman lama). */
+.h-\[64px\]{height:64px}
+.pt-\[88px\]{padding-top:88px}
+.max-w-\[380px\]{max-width:380px}
+.min-h-\[360px\]{min-height:360px}
+.self-end{align-self:flex-end}
+.self-start{align-self:flex-start}
+.grid-cols-\[120px_1fr\]{grid-template-columns:120px 1fr}
+.pb-\[calc\(env\(safe-area-inset-bottom\,0px\)\+64px\)\]{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 64px)}
+@media (min-width:1024px){
+  .lg\:grid-cols-\[1fr_320px\]{grid-template-columns:1fr 320px}
+  .lg\:grid-cols-\[1fr_340px\]{grid-template-columns:1fr 340px}
+  .lg\:pb-\[30px\]{padding-bottom:30px}
+}
