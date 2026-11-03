@@ -27,3 +27,6 @@ body{background:var(--v2-bg-0)}
 [data-reveal][style*="clip-path"]{transition:clip-path 1s cubic-bezier(.16,1,.3,1),opacity .6s ease,transform .65s cubic-bezier(.16,1,.3,1)}
 [data-reveal][style*="clip-path"].is-in{clip-path:inset(0 0 0 0)!important}
 @media (prefers-reduced-motion:reduce){[data-reveal][style*="clip-path"]{clip-path:inset(0 0 0 0)!important}}
+
+.demo-agent-grid{display:grid;grid-template-columns:1fr}
+@media (min-width:640px){.demo-agent-grid{grid-template-columns:190px minmax(0,1fr) 190px}}

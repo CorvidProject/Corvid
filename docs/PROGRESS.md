@@ -21,3 +21,7 @@
 ## Tahap 1 — efek hero/landing (menyusul)
 - [x] Glow dot-screen WebGL (port shader lama, warna Casper), typewriter placeholder, banner cookie, tombol TOP, reveal saat scroll, dropdown navbar (Trading/Agents/Tools/Developers)
 - [ ] Belum: widget data live di landing ("Loading smart wallets…"), tab Analyze/Build/Automate dan FAQ accordion interaktif, ring glow tombol "Launch App", efek di halaman docs/social lain yang digerakkan JS
+
+## 2026-11-04 — samakan efek landing (lanjutan)
+- Selesai: palet hitam/putih-abu, font heading, bracket footer hover-only, cincin tombol Launch App, section terang `#686B6C`, reveal clip-path (roadmap, token), panel demo live (agent + torus canvas, rugcheck, memescope) dari fixture.
+- Belum: panel template (Copy trader dll.) masih placeholder "loading", tab Analyze/Build/Automate, FAQ accordion interaktif, efek JS halaman docs/social.
