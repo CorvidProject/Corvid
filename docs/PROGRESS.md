@@ -30,3 +30,8 @@
 - Palet baru (Cloud Mist/Signal Blue/Pure White/Deep Charcoal) diterapkan di CSS, generator halaman, glow WebGL, dan komponen.
 - 21 layar aplikasi + signin dari snapshot referensi (statis, identik; tinggi halaman dan jumlah gambar cocok). Dropdown navbar jalan di app.
 - Belum: interaktivitas layar aplikasi (filter, tab, klik baris, chat, builder), panel template landing, tab Analyze/Build/Automate, FAQ accordion, carousel "next ›", /application/token/[mint], /application/admin.
+
+## 2026-11-04 — pindah ke bundel asli + rebrand
+- Semua 44 rute dari referensi disajikan dari kode klien asli (efek identik), palet baru ditanam, 0 error hydration di semua rute.
+- API contoh: `/api/*` dari `src/server` (rute belum ada -> 401/404 bersih; tidak ada proxy ke situs lama).
+- Belum: aset raster/video how-* masih berwarna lama; copy EVM; halaman detail token `/application/tokens/[mint]` (404 seperti referensi offline); ganti API contoh dengan backend nyata (Tahap 2).
