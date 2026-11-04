@@ -86,3 +86,7 @@
 ## 2026-11-05 — Worker ingest
 - `apps/worker`: papan trending/new, candle, trades, retensi dari GeckoTerminal + DexScreener (tanpa key). 16 tes lulus (parser pada sampel asli, retry HTTP, siklus penuh ke Postgres). Diuji sekali terhadap API publik sungguhan: AMD/RAM/ANSEM tampil lewat /api dengan harga, market cap, likuiditas, 91 candle 15m; satu panggilan trades kena 429 (batas laju dilonggarkan).
 - Belum: Helius (risk/holders/authority/wallet), memescope, deploy worker ke Railway, auth/alpha/agent/wallet.
+
+## 2026-11-05 — Memescope
+- Worker mengisi memescope (new/stretch/migrated) dari GeckoTerminal + DexScreener tiap 3 menit; progress estimasi dari kurva bonding. Diuji pada data nyata (35-42 koin per siklus). 25 tes worker + 13 tes API lulus.
+- Belum: verifikasi progress on-chain (Helius), replies/creator, Helius untuk data keamanan, auth/alpha/agent/wallet.

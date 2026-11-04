@@ -165,7 +165,12 @@ export const marketRoutes =
           .select()
           .from(memescopeCoins)
           .where(and(eq(memescopeCoins.stage, req.query.stage)))
-          .orderBy(desc(memescopeCoins.lastTradeAt))
+          // Final Stretch: paling dekat lulus dulu; lainnya: terbaru dulu (NULL di akhir).
+          .orderBy(
+            req.query.stage === "stretch"
+              ? sql`${memescopeCoins.progressPct} desc`
+              : sql`${memescopeCoins.createdAtChain} desc nulls last`,
+          )
           .limit(100);
         return {
           coins: rows.map((c) => ({

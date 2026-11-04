@@ -14,6 +14,7 @@ const poolSchema = z.object({
     name: z.string().nullable().optional(),
     pool_created_at: z.string().nullable().optional(),
     base_token_price_usd: strNum,
+    base_token_price_native_currency: strNum,
     fdv_usd: strNum,
     market_cap_usd: strNum,
     reserve_in_usd: strNum,
@@ -61,7 +62,11 @@ export interface Pool {
   name: string | null;
   createdAt: Date | null;
   priceUsd: string | null;
+  /** Harga dalam mata uang native chain (SOL). */
+  priceNative: string | null;
   marketCapUsd: string | null;
+  /** FDV = harga x total supply. Untuk token pump.fun (supply tetap 1 miliar) lebih andal daripada market_cap_usd. */
+  fdvUsd: string | null;
   liquidityUsd: string | null;
   volume24hUsd: string | null;
   volume1hUsd: string | null;
@@ -108,7 +113,9 @@ export function parsePools(json: unknown): Pool[] {
       name: a.name ?? null,
       createdAt: a.pool_created_at ? new Date(a.pool_created_at) : null,
       priceUsd: s(a.base_token_price_usd),
+      priceNative: s(a.base_token_price_native_currency),
       marketCapUsd: s(a.market_cap_usd) ?? s(a.fdv_usd),
+      fdvUsd: s(a.fdv_usd),
       liquidityUsd: s(a.reserve_in_usd),
       volume24hUsd: s(a.volume_usd?.h24),
       volume1hUsd: s(a.volume_usd?.h1),
@@ -182,8 +189,12 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     async trendingPools(): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/trending_pools?page=1`));
     },
-    async newPools(): Promise<Pool[]> {
-      return parsePools(await http.getJson(`${BASE}/new_pools?page=1`));
+    async newPools(page = 1): Promise<Pool[]> {
+      return parsePools(await http.getJson(`${BASE}/new_pools?page=${page}`));
+    },
+    /** Pool per DEX (mis. "pump-fun", "pumpswap"), diurutkan menurut volume 24 jam. */
+    async dexPools(dex: string): Promise<Pool[]> {
+      return parsePools(await http.getJson(`${BASE}/dexes/${dex}/pools?page=1&sort=h24_volume_usd_desc`));
     },
     async ohlcv(pool: string, interval: ChartInterval, limit = 200): Promise<Candle[]> {
       const [tf, agg] = TF[interval];

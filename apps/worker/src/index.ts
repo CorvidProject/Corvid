@@ -1,6 +1,7 @@
 import { createDb } from "@corvid/db";
 import { z } from "zod";
 import { refreshBoard, refreshCandles, refreshTrades, runRetention, type Deps } from "./ingest";
+import { refreshMemescope } from "./memescope";
 import { createDexScreener } from "./sources/dexscreener";
 import { createGeckoTerminal } from "./sources/geckoterminal";
 
@@ -10,6 +11,7 @@ const env = z
     WORKER_BOARD_MS: z.coerce.number().int().min(10_000).default(120_000),
     WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
+    WORKER_MEMESCOPE_MS: z.coerce.number().int().min(60_000).default(180_000),
     WORKER_RETENTION_MS: z.coerce.number().int().min(60_000).default(3_600_000),
     /** Jeda antar request GeckoTerminal; batas publik ketat (observasi: 429 pada ~2,2 dtk). */
     WORKER_GT_INTERVAL_MS: z.coerce.number().int().min(1000).default(6500),
@@ -44,6 +46,7 @@ const timers = [
   every("board:new", env.WORKER_BOARD_MS, () => refreshBoard(deps, "new")),
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
+  every("memescope", env.WORKER_MEMESCOPE_MS, () => refreshMemescope(deps)),
   every("retention", env.WORKER_RETENTION_MS, () => runRetention(db)),
 ];
 
