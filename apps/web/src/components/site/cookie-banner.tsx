@@ -47,7 +47,7 @@ export function CookieBanner() {
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className="fixed bottom-6 left-6 z-50 max-w-xs w-[calc(100vw-3rem)]"
         >
-          <div className="relative" style={{ background: "#111113", border: "1px solid rgba(255,255,255,0.09)" }}>
+          <div className="relative" style={{ background: "#0A0A0F", border: "1px solid rgba(255,255,255,0.09)" }}>
             {CORNERS.map(({ pos, d, cls }) => (
               <motion.svg
                 key={pos}

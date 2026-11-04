@@ -65,7 +65,7 @@ export function Navbar() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
         style={{
-          background: "rgba(17,17,19,0.92)",
+          background: "rgba(10,10,15,0.92)",
           backdropFilter: "blur(16px)",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
         }}
@@ -142,7 +142,7 @@ export function Navbar() {
             <div
               className="absolute inset-0"
               style={{
-                background: "#111113",
+                background: "#0A0A0F",
                 backgroundImage: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(var(--v2-accent-rgb),0.12) 0%, transparent 70%)",
               }}
               onClick={() => setMobileOpen(false)}

@@ -20,7 +20,7 @@ interface LegalLayoutProps {
 }
 
 // Tema Corvid untuk halaman legal (padanan `p(slug)` di build asli).
-const THEME = { accent: "var(--v2-accent-text)", rgb: "0,48,207", bg: "#111113" };
+const THEME = { accent: "var(--v2-accent-text)", rgb: "0,48,207", bg: "#0A0A0F" };
 const MONO = "var(--font-jetbrains-mono,ui-monospace,monospace)";
 
 // Layout halaman legal/about (port dari komponen asli): indeks kiri aktif sesuai scroll + bilah progres 2px.

@@ -35,7 +35,7 @@ function Panel({
     <section
       className={`relative min-w-0 flex flex-col ${className}`}
       style={{
-        background: "#111113",
+        background: "#0A0A0F",
         border: "1px solid rgba(255,255,255,0.08)",
       }}
     >

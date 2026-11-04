@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 
 // Latar WebGL "dot screen" (cincin menjalar dari tengah / sapuan / aliran), port dari build referensi.
-// Warna: Signal Blue (#0030CF, --v2-accent) sebagai cahaya, dasar Deep Charcoal #111113 (lihat DECISIONS.md).
+// Warna: Signal Blue (#0030CF, --v2-accent) sebagai cahaya, dasar Deep Charcoal #0A0A0F (lihat DECISIONS.md).
 const VERT = `
 attribute vec2 position;
 void main() { gl_Position = vec4(position, 0.0, 1.0); }
@@ -69,7 +69,7 @@ void main() {
   float shimmer = 0.7 + 0.3 * sin((uv.x * aspect - uv.y) * 26.0 - time * 1.4);
   float dots = dotShape * level * shimmer;
   float alpha = clamp(light * 1.5 * dots, 0.0, 1.0);
-  vec3 base = vec3(0.067, 0.067, 0.075);  // #111113
+  vec3 base = vec3(0.039, 0.039, 0.059);  // #0A0A0F
   vec3 lit = col / max(light, 0.001);
   vec3 outc = mix(base, lit, alpha) + vec3(0.012) * dotShape;
   gl_FragColor = vec4(outc, 1.0);
