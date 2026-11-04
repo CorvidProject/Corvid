@@ -6,3 +6,5 @@ node_modules/
 .turbo/
 dist/
 *.log
+*.tsbuildinfo
+.vercel

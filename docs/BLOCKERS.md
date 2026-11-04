@@ -15,3 +15,6 @@
 10. **Fitur yang UI-nya belum dibuat:** `/application/token/[mint]` (detail token) dan `/application/admin`. `NEXT_PUBLIC_API_URL` belum terhubung (Tahap 2).
 
 - Avatar wallet (`/avatars/wallets/*.webp`) tidak ikut ter-crawl; dipakai placeholder SVG netral `public/avatars/wallets/placeholder.svg`. Kirim aset asli bila ada.
+
+11. **Vercel ↔ GitHub belum tersambung** (project `corvid` dideploy manual dari lokal). Agar push otomatis memicu deploy, pemilik org `CorvidProject` perlu memberi akses Vercel GitHub App ke repo `Corvid`, lalu jalankan `vercel git connect` di ROOT. Setelah tersambung: Production Branch = `mainnet`, `testnet` = preview.
+12. **Vercel Hobby:** project `corvid` ada di akun pribadi (`fauzanbayu123-1072s-projects`, sama dengan `nexa-ai-web`). Hobby melarang penggunaan komersial; pindahkan ke akun/tim Pro terpisah sebelum produksi berpenghasilan.
