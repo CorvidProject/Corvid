@@ -28,3 +28,4 @@
 - 2026-11-04 Latar animasi WebGL (DotBackdrop, varian rings) memakai Signal Blue #0030CF di atas Deep Charcoal #13171B; dipasang di /application/swap, /refund, /chat.
 - 2026-11-04 Perbedaan konsep EVM vs Solana dan daftar sisa konteks EVM dicatat di `docs/EVM-vs-SOLANA.md` (penyesuaian dikerjakan pemilik; belum diubah di kode, kecuali halaman swap).
 - 2026-11-04 [KEPUTUSAN PEMILIK] Corvid hanya Solana: teks UI/docs/metadata dibersihkan dari EVM dengan pemetaan kata (lihat docs/EVM-vs-SOLANA.md bagian 5). terms/privacy tidak diubah (hukum). Data contoh layar aplikasi masih snapshot EVM.
+- 2026-11-04 [KEPUTUSAN PEMILIK] Vercel hanya men-deploy branch `main`. Branch `testnet` dan `mainnet` tidak di-deploy sampai tahap backend; diatur lewat Ignored Build Step project (`test "$VERCEL_GIT_COMMIT_REF" != "main"`), berlaku untuk semua branch tanpa bergantung isi commit. Untuk mengaktifkan kembali: Vercel > project corvid > Settings > Git > Ignored Build Step.
