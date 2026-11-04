@@ -1,12 +1,12 @@
+"use client";
+import { useState } from "react";
+import { DotBackdrop } from "@/components/app/dot-backdrop";
+
 export function ApplicationRefundContent() {
+  const [addr, setAddr] = useState("");
   return (
     <>
-      <canvas
-        className="absolute inset-0 w-full h-full"
-        aria-hidden="true"
-        width="1365"
-        height="770"
-      ></canvas>
+      <DotBackdrop variant="rings" />
       <div className="relative z-10 mx-auto w-full max-w-[520px]">
         <h1
           className="font-heading font-extrabold tracking-[-0.04em] leading-none text-center"
@@ -52,7 +52,7 @@ export function ApplicationRefundContent() {
           <div className="text-[13px] mt-1" style={{ color: "var(--v2-t-4)" }}>
             Sign in to check your wallet, or check any address below.
           </div>
-          <button className="crv-swap-cta w-full h-12 rounded-xl mt-4 text-[15px] font-semibold">
+          <button data-auth-open="signin" className="crv-swap-cta w-full h-12 rounded-xl mt-4 text-[15px] font-semibold">
             Sign in to refund
           </button>
         </div>
@@ -77,7 +77,8 @@ export function ApplicationRefundContent() {
                 border: "1px solid var(--v2-line-1)",
                 color: "var(--v2-t-1)",
               }}
-              value=""
+              value={addr}
+              onChange={(e) => setAddr(e.target.value)}
             />
           </div>
           <button

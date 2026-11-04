@@ -1,13 +1,13 @@
+"use client";
+import { useState } from "react";
+import { DotBackdrop } from "@/components/app/dot-backdrop";
+
 export function ApplicationRugcheckContent() {
+  const [q, setQ] = useState("");
   return (
     <>
       <section className="relative overflow-hidden min-h-[88vh] flex items-center justify-center px-4 pt-20 pb-16">
-        <canvas
-          className="absolute inset-0 w-full h-full"
-          aria-hidden="true"
-          width="1365"
-          height="704"
-        ></canvas>
+        <DotBackdrop variant="scan" />
         <div
           className="absolute inset-x-0 top-0 h-24 pointer-events-none"
           style={{
@@ -37,8 +37,7 @@ export function ApplicationRugcheckContent() {
               textShadow: "rgb(20, 25, 29) 0px 0px 14px",
             }}
           >
-            Contract, holder and liquidity checks on any token, on six chains. A
-            score before you trade.
+            Contract, holder and liquidity checks on any Solana token. A score before you trade.
           </p>
           <form className="relative mt-10">
             <div
@@ -62,7 +61,8 @@ export function ApplicationRugcheckContent() {
               <input
                 placeholder="Token name, ticker or address"
                 className="flex-1 min-w-0 bg-transparent outline-none text-[16px]"
-                value=""
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
                 style={{ color: "var(--v2-t-1)" }}
               />
               <button
@@ -88,7 +88,7 @@ export function ApplicationRugcheckContent() {
               >
                 <path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"></path>
               </svg>
-              Six chains, one search
+              Any Solana token, one search
             </span>
             <span className="flex items-center gap-2">
               <svg
@@ -101,7 +101,7 @@ export function ApplicationRugcheckContent() {
               >
                 <path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"></path>
               </svg>
-              Honeypot and mint checks
+              Mint and freeze authority checks
             </span>
             <span className="flex items-center gap-2">
               <svg

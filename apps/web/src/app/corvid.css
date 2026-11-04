@@ -1,0 +1,76 @@
+/* Utilitas yang tidak ada di CSS hasil kompilasi referensi (proyek ini tidak punya build Tailwind),
+   ditulis eksplisit supaya navbar search dan panel demo landing tampil sama seperti referensi. */
+
+/* Navbar: kolom pencarian, tampil mulai 1280px */
+.cv-search {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  width: 260px;
+  padding: 0 8px 0 16px;
+  border-radius: 9999px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 0.15s;
+}
+.cv-search:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+@media (min-width: 1280px) {
+  .cv-search {
+    display: inline-flex;
+  }
+}
+
+/* Demo landing */
+.cv-demo-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1024px) {
+  .cv-demo-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    height: 640px;
+  }
+}
+.cv-agent-panel {
+  min-height: 560px;
+}
+.cv-agent-body {
+  min-height: 520px;
+}
+.cv-agent-left {
+  width: 196px;
+}
+.cv-agent-right {
+  width: 214px;
+}
+.cv-agent-hint {
+  left: 204px;
+  width: 260px;
+}
+.cv-agent-foot-hint {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .cv-agent-foot-hint {
+    display: inline;
+  }
+}
+.cv-meme-panel {
+  min-height: 260px;
+}
+.cv-rug-grid {
+  min-height: 150px;
+}
+.cv-bar {
+  width: 7px;
+}
+.cv-sub {
+  max-width: 70px;
+}
+.cv-bars {
+  gap: 3px;
+}

@@ -11,7 +11,8 @@ function SearchLink() {
   return (
     <Link
       href="/application/tokens"
-      className="hidden xl:inline-flex items-center gap-2.5 h-11 w-[260px] pl-4 pr-2 rounded-full text-[14px] text-white/45 hover:text-white/70 transition-colors"
+      data-palette-open
+      className="cv-search"
       style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)" }}
     >
       <MagnifyingGlass size={16} weight="bold" />
@@ -162,7 +163,7 @@ export function Navbar() {
                   ※ Trading OS
                 </span>
                 <span className="font-mono text-[11px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255, 0.65)" }}>
-                  six networks · agent-native
+                  Solana · agent-native
                 </span>
               </div>
               {MOBILE_LINKS.map((item, i) => (
