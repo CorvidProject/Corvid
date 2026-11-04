@@ -518,7 +518,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Phantom and Solflare for non-custodial users
+            Phantom, Solflare, Backpack and other Solana wallets for non-custodial users
           </span>
         </li>
         <li
