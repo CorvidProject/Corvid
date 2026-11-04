@@ -17,6 +17,8 @@ import {
 import { NAV_SECTIONS, type NavSection } from "@/lib/nav-data";
 import { site } from "@/lib/site";
 import { NavDropdown } from "@/components/site/nav-dropdown";
+import { useSigned } from "@/components/auth/signed";
+import { loadSession, signOut } from "@/lib/auth";
 import { MobileDrawer } from "./mobile-drawer";
 
 // Bagian "More" di navbar aplikasi (ikon dicocokkan dengan bentuk SVG di build referensi).
@@ -188,6 +190,87 @@ function ConnectButton() {
   );
 }
 
+// Setelah login tombol Connect diganti menu akun (email, Settings, Sign out).
+function AccountMenu() {
+  const signed = useSigned();
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setEmail(loadSession()?.user?.email ?? null);
+    if (!signed) setOpen(false);
+  }, [signed]);
+
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const key = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", down);
+    document.addEventListener("keydown", key);
+    return () => {
+      document.removeEventListener("mousedown", down);
+      document.removeEventListener("keydown", key);
+    };
+  }, [open]);
+
+  if (!signed) return <ConnectButton />;
+  const initial = (email ?? "?").trim().charAt(0).toUpperCase() || "?";
+  const item = "flex items-center w-full h-9 px-3 text-[13px] text-left transition-colors hover:bg-[var(--v2-bg-2)]";
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="Account menu"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2 h-8 rounded-full pr-2.5 text-[13px]"
+        style={{ paddingLeft: 4, background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)", color: "var(--v2-t-1)" }}
+      >
+        <span
+          className="flex items-center justify-center rounded-full text-[12px] font-semibold"
+          style={{ width: 24, height: 24, background: "var(--v2-accent)", color: "#fff" }}
+        >
+          {initial}
+        </span>
+        <span className="hidden xl:block truncate" style={{ maxWidth: 140 }}>
+          {email}
+        </span>
+        <CaretDown size={12} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 rounded-xl overflow-hidden z-50"
+          style={{ top: "calc(100% + 8px)", width: 224, background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 12px 40px rgba(0,0,0,0.55)" }}
+        >
+          <div className="px-3 py-2.5 text-[12px] truncate" style={{ color: "var(--v2-t-3)", borderBottom: "1px solid var(--v2-line-1)" }}>
+            {email}
+          </div>
+          <Link role="menuitem" href="/application/settings" onClick={() => setOpen(false)} className={item} style={{ color: "var(--v2-t-1)" }}>
+            Settings
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            className={item}
+            style={{ color: "var(--v2-neg)", borderTop: "1px solid var(--v2-line-1)" }}
+            onClick={() => {
+              setOpen(false);
+              void signOut();
+            }}
+          >
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Header aplikasi (port dari komponen asli): navbar dropdown, pencarian, sosial, token, rantai, Connect.
 export function AppHeader() {
   const [menu, setMenu] = useState(false);
@@ -221,7 +304,7 @@ export function AppHeader() {
           <div className="flex items-center gap-2 shrink-0">
             <ChainSelector compact />
             <TokenLink />
-            <ConnectButton />
+            <AccountMenu />
           </div>
         </div>
 
@@ -305,7 +388,7 @@ export function AppHeader() {
               className="mx-1.5 h-5 w-px shrink-0"
               style={{ background: "var(--v2-line-1)" }}
             />
-            <ConnectButton />
+            <AccountMenu />
           </div>
         </div>
       </header>

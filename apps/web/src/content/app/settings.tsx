@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import profile from "@/data/profile.json";
 import prefsFx from "@/data/trading-prefs.json";
 import { useSigned } from "@/components/auth/signed";
-import { loadSession, saveSession } from "@/lib/auth";
+import { loadSession, signOut } from "@/lib/auth";
 import { apiGet, apiSend, ApiError, USE_API } from "@/lib/api";
 
 // Settings: profil dan preferensi trading. Mode fixture: localStorage. Mode API: GET/PUT /api/profile dan
@@ -154,7 +154,7 @@ export function ApplicationSettingsContent() {
 
       <section className="rounded-2xl p-5" style={card}>
         <div className="eyebrow mb-3">Session</div>
-        <button className="btn-v2 btn-v2-ghost" onClick={() => saveSession(null)}>
+        <button className="btn-v2 btn-v2-ghost" onClick={() => void signOut()}>
           Sign out
         </button>
       </section>

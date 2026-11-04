@@ -60,6 +60,18 @@ export function loadSession(): AuthSession | null {
   }
 }
 
+/** Keluar: sesi lokal dihapus lebih dulu, lalu sesi ini dicabut di Supabase (scope=local; perangkat lain tidak ikut). */
+export async function signOut(): Promise<void> {
+  const token = loadSession()?.access_token;
+  saveSession(null);
+  if (!token || !authConfigured()) return;
+  try {
+    await fetch(`${url()}/auth/v1/logout?scope=local`, { method: "POST", headers: { apikey: anon(), Authorization: `Bearer ${token}` } });
+  } catch {
+    /* gagal jaringan: sesi lokal sudah terhapus, token kedaluwarsa sendiri */
+  }
+}
+
 function jwtExp(t: string): number {
   try {
     return (JSON.parse(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))) as { exp?: number }).exp ?? 0;

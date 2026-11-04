@@ -27,7 +27,7 @@ import memescope from "@/data/memescope.json";
 import market from "@/data/marketplace-feed.json";
 import { useAuthModal } from "@/components/auth/auth-modal";
 import { isSolanaAddress } from "@/lib/builder-defs";
-import { loadSession, saveSession } from "@/lib/auth";
+import { loadSession, signOut } from "@/lib/auth";
 import { apiGet, USE_API } from "@/lib/api";
 
 // Command palette (⌘K / Ctrl+K), port dari referensi: perintah navigasi + pencarian token, wallet,
@@ -318,7 +318,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   const select = async (r: Row) => {
     if (r.kind === "command") {
       onClose();
-      await r.run({ push: router.push, signOut: () => { saveSession(null); setSigned(false); } });
+      await r.run({ push: router.push, signOut: () => { void signOut(); setSigned(false); } });
       return;
     }
     if (r.kind === "token") {
