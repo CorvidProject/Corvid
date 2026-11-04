@@ -12,6 +12,7 @@ import type { schema } from "@corvid/db";
 import { marketRoutes } from "./routes/market";
 import { discoveryRoutes } from "./routes/discovery";
 import { userRoutes } from "./routes/user";
+import { agentRoutes } from "./routes/agents";
 import type { Verifier } from "./auth";
 import { coingeckoSolPrice, priceRoutes, type SolPriceSource } from "./routes/prices";
 
@@ -45,7 +46,9 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   await app.register(marketRoutes(db), { prefix: "/api" });
   await app.register(discoveryRoutes(db), { prefix: "/api" });
   await app.register(priceRoutes(solPrice), { prefix: "/api" });
-  await app.register(userRoutes({ db, verifier, tradeMode }), { prefix: "/api" });
+  let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
+  await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
+  await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode }), { prefix: "/api" });
 
   // Rute yang belum ada: 404 bersih (tanpa proxy ke situs lain).
   app.setNotFoundHandler((_req, reply) => reply.code(404).send({ error: "not_found" }));

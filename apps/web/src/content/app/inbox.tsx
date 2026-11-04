@@ -1,11 +1,13 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bell, Coins, Wallet, Robot, ArrowsClockwise, CheckCircle } from "@phosphor-icons/react";
 import inbox from "@/data/inbox.json";
 import signals from "@/data/signals.json";
 import { SignInGate, useSigned } from "@/components/auth/signed";
+import { apiGet, apiSend, USE_API } from "@/lib/api";
 
-// Inbox: tab Signals/Tokens/Wallets + filter. Data fixture saat masuk; diganti /signals di Tahap 3.
+// Inbox: tab Signals/Tokens/Wallets + filter. Mode fixture: data contoh. Mode API: GET /api/signals (publik)
+// dan GET /api/inbox + POST /api/inbox/read-all (butuh login).
 type Item = { id: string; tab: "Signals" | "Tokens" | "Wallets"; cat: string; title: string; body: string; at: number; mint?: string; read: boolean };
 
 const TABS = [
@@ -21,17 +23,22 @@ const TYPE: Record<string, { tab: Item["tab"]; cat: string; label: string }> = {
   risk_flag: { tab: "Tokens", cat: "Alerts", label: "Risk flag on" },
 };
 
-function build(): Item[] {
-  const a: Item[] = signals.signals.map((s) => {
+type Sig = { id: number; type: string; symbol: string | null; mint: string; score: number; at: number };
+type Inb = { id: number; kind: string; title: string; body: string | null; at: number; read: boolean };
+const sigBody = (s: Sig, api: boolean) =>
+  !api ? `Risk score ${s.score}. Fixture signal.` : s.type === "new_token" ? "First seen on-chain. Run a rugcheck before buying." : `Risk score ${s.score}.`;
+
+function build(sigs: Sig[] = signals.signals as Sig[], inb: Inb[] = inbox.items as Inb[], api = false): Item[] {
+  const a: Item[] = sigs.map((s) => {
     const t = TYPE[s.type] ?? { tab: "Signals" as const, cat: "AI", label: s.type };
-    return { id: "sig" + s.id, tab: t.tab, cat: t.cat, title: `${t.label} ${s.symbol}`, body: `Risk score ${s.score}. Fixture signal.`, at: s.at, mint: s.mint, read: false };
+    return { id: "sig" + s.id, tab: t.tab, cat: t.cat, title: `${t.label} ${s.symbol ?? s.mint.slice(0, 4)}`, body: sigBody(s, api), at: s.at, mint: s.mint, read: false };
   });
-  const b: Item[] = inbox.items.map((i) => ({
+  const b: Item[] = inb.map((i) => ({
     id: "inb" + i.id,
     tab: "Signals",
     cat: i.kind === "system" ? "System" : "AI",
     title: i.title,
-    body: i.body,
+    body: i.body ?? "",
     at: i.at,
     read: i.read,
   }));
@@ -49,7 +56,21 @@ export function ApplicationInboxContent() {
   const signed = useSigned();
   const [tab, setTab] = useState<Item["tab"]>("Signals");
   const [chip, setChip] = useState<(typeof CHIPS)[number]>("All");
-  const [items, setItems] = useState<Item[]>(build);
+  const [items, setItems] = useState<Item[]>(() => (USE_API ? [] : build()));
+  const [loadErr, setLoadErr] = useState(false);
+  const loadApi = () => {
+    if (!USE_API) return Promise.resolve();
+    return Promise.all([apiGet<{ signals: Sig[] }>("/api/signals"), signed ? apiGet<{ items: Inb[] }>("/api/inbox") : Promise.resolve({ items: [] as Inb[] })])
+      .then(([s, i]) => {
+        setItems(build(s.signals, i.items, true));
+        setLoadErr(false);
+      })
+      .catch(() => setLoadErr(true));
+  };
+  useEffect(() => {
+    void loadApi();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signed]);
   const [spin, setSpin] = useState(false);
 
   const list = useMemo(
@@ -59,11 +80,16 @@ export function ApplicationInboxContent() {
 
   const refresh = () => {
     setSpin(true);
-    setTimeout(() => setSpin(false), 600);
+    void loadApi().finally(() => setTimeout(() => setSpin(false), 600));
   };
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-5">
+      {loadErr && (
+        <p className="text-[12px] pt-3" style={{ color: "var(--v2-neg)" }} role="status">
+          Could not load your inbox. Use refresh to try again.
+        </p>
+      )}
       <div className="flex items-end justify-between gap-3 flex-wrap mt-4">
         <div className="flex gap-5 shrink-0" role="tablist">
           {TABS.map(({ k, icon: I }) => {
@@ -121,7 +147,10 @@ export function ApplicationInboxContent() {
             {signed && (
               <button
                 className="btn-v2 btn-v2-ghost btn-v2-sm"
-                onClick={() => setItems((p) => p.map((i) => ({ ...i, read: true })))}
+                onClick={() => {
+                  setItems((p) => p.map((i) => ({ ...i, read: true })));
+                  if (USE_API) void apiSend("POST", "/api/inbox/read-all").catch(() => void loadApi());
+                }}
                 title="Mark all as read"
                 aria-label="Mark all as read"
               >

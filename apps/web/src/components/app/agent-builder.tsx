@@ -37,6 +37,7 @@ import {
   type Step,
 } from "@/lib/builder-defs";
 import { loadSession } from "@/lib/auth";
+import { apiSend, ApiError, USE_API } from "@/lib/api";
 
 // Builder pipeline agent (sidebar quick start, kanvas node, panel konfigurasi, mode Signal/Trading,
 // ringkasan Saved/Draft). Deploy butuh akun dan backend agent (Tahap 3).
@@ -279,7 +280,16 @@ export function AgentBuilder() {
       setLimitsOpen(true);
       return say("Set a per-trade limit before trading");
     }
-    say("Agent service is not connected yet. Your pipeline is ready to deploy once it is live.");
+    if (!USE_API) return say("Agent service is not connected yet. Your pipeline is ready to deploy once it is live.");
+    const body = { name: name.trim() || pipeline.name, pipeline: pipe, mode, config: cfg, limits: { ...limits } };
+    apiSend<{ id: number }>("POST", "/api/agents", body)
+      .then(() => {
+        say("Agent created. Open My agents to manage it.");
+        window.location.href = "/application/agents";
+      })
+      .catch((e: unknown) =>
+        say(e instanceof ApiError ? (e.status === 409 ? "You reached the limit of 20 agents. Delete one first." : e.status === 400 ? "Some settings are not valid. Check the required fields and limits." : "Could not create the agent. Try again.") : "Could not create the agent. Try again."),
+      );
   };
   const share = () => {
     const t = `I'm building a ${pipeline.name} agent on Corvid: ${summary.title}. ${mode === "signal" ? "Signal mode" : "Live trading"} on Solana.`;

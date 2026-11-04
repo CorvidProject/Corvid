@@ -60,6 +60,8 @@ export async function ensureProfile(db: Db, user: AuthUser): Promise<void> {
 }
 
 export interface UserRouteOptions {
+  /** Dipanggil dengan preHandler ber-auth supaya rute lain memakai verifier dan cache profil yang sama. */
+  onAuth?: (requireAuth: (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>) => void;
   db: Db;
   verifier: Verifier | null;
   /** TRADE_MODE server: `live` hanya bisa dipilih pengguna bila server memang `live`. */
@@ -68,7 +70,7 @@ export interface UserRouteOptions {
 }
 
 export const userRoutes =
-  ({ db, verifier, tradeMode, ipSalt = "corvid" }: UserRouteOptions): FastifyPluginAsync =>
+  ({ db, verifier, tradeMode, ipSalt = "corvid", onAuth }: UserRouteOptions): FastifyPluginAsync =>
   async (instance) => {
     const app = instance.withTypeProvider<ZodTypeProvider>();
     app.decorateRequest("user", null);
@@ -91,6 +93,7 @@ export const userRoutes =
         known.add(req.user.id);
       }
     };
+    onAuth?.(requireAuth);
     const me = (req: FastifyRequest) => req.user!.id;
 
     async function loadProfile(id: string) {

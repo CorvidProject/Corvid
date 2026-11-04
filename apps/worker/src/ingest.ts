@@ -1,6 +1,6 @@
 import { and, gt as gtOp, isNotNull, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { tokenCandles, tokenTrades, tokenTrending, tokens, type schema } from "@corvid/db";
+import { signals, tokenCandles, tokenTrades, tokenTrending, tokens, type schema } from "@corvid/db";
 import type { DexScreener, DsToken } from "./sources/dexscreener";
 import type { ChartInterval, GeckoTerminal, Pool } from "./sources/geckoterminal";
 
@@ -50,15 +50,15 @@ export function mergeToken(pool: Pool, ds: DsToken | undefined): TokenValues {
 }
 
 /** Upsert tanpa menimpa kolom yang sudah terisi dengan null. Kolom keamanan (risk, holders, dll.) tidak disentuh. */
-export async function upsertToken(db: Db, v: TokenValues, now: Date): Promise<number> {
+export async function upsertToken(db: Db, v: TokenValues, now: Date): Promise<{ id: number; inserted: boolean }> {
   const set: Record<string, unknown> = { updatedAt: now, lastSeenAt: now };
   for (const [k, val] of Object.entries(v)) if (k !== "mint" && val !== null && val !== undefined) set[k] = val;
-  const [row] = await db.insert(tokens).values({ ...v, lastSeenAt: now, updatedAt: now }).onConflictDoUpdate({ target: tokens.mint, set }).returning({ id: tokens.id });
-  return row.id;
+  const [row] = await db.insert(tokens).values({ ...v, lastSeenAt: now, updatedAt: now }).onConflictDoUpdate({ target: tokens.mint, set }).returning({ id: tokens.id, inserted: sql<boolean>`(xmax = 0)` });
+  return { id: row.id, inserted: row.inserted };
 }
 
 /** Perbarui papan token (tab trending/new) dan simpan snapshot peringkat. */
-export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 30): Promise<{ tokens: number; withDexScreener: number }> {
+export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 30): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {
   const now = (deps.now ?? (() => new Date()))();
   const pools = tab === "trending" ? await deps.gt.trendingPools() : await deps.gt.newPools();
   const seen = new Set<string>();
@@ -73,11 +73,18 @@ export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 
   const byMint = new Map(ds.map((t) => [t.mint, t]));
 
   let rank = 1;
+  let newSignals = 0;
   for (const pool of unique) {
-    const id = await upsertToken(deps.db, mergeToken(pool, byMint.get(pool.baseMint)), now);
+    const values = mergeToken(pool, byMint.get(pool.baseMint));
+    const { id, inserted } = await upsertToken(deps.db, values, now);
     await deps.db.insert(tokenTrending).values({ tab, rank: rank++, tokenId: id, snapshotAt: now });
+    // Token yang baru pertama kali kita lihat di papan "new" = sinyal new_token (peristiwa nyata; skor risiko belum ada = 0).
+    if (tab === "new" && inserted) {
+      await deps.db.insert(signals).values({ type: "new_token", mint: pool.baseMint, symbol: values.symbol ?? null, score: 0, at: now });
+      newSignals++;
+    }
   }
-  return { tokens: unique.length, withDexScreener: ds.length };
+  return { tokens: unique.length, withDexScreener: ds.length, newSignals };
 }
 
 async function activeTokens(deps: Deps, topN: number) {
@@ -144,6 +151,7 @@ export async function runRetention(db: Db, now = new Date()): Promise<Record<str
   const D = 24 * H;
   const del = async (q: ReturnType<typeof sql>) => (await db.execute(q)).rowCount ?? 0;
   return {
+    signals: await del(sql`delete from signals where at < ${ago(7 * D)}`),
     trades: await del(sql`delete from token_trades where traded_at < ${ago(48 * H)}`),
     candles1m: await del(sql`delete from token_candles where interval = '1m' and bucket_start < ${ago(D)}`),
     candles5m15m: await del(sql`delete from token_candles where interval in ('5m','15m') and bucket_start < ${ago(7 * D)}`),

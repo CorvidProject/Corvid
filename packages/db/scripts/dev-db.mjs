@@ -36,12 +36,17 @@ console.log("DATABASE_URL=" + url);
 async function applyMigrations() {
   const client = new pg.Client({ connectionString: url });
   await client.connect();
+  // Idempoten: file yang sudah diterapkan dicatat di _dev_migrations (sama dengan applyMigrations di src/migrate.ts).
+  await client.query("create table if not exists _dev_migrations (name text primary key, applied_at timestamptz not null default now())");
+  const done = new Set((await client.query("select name from _dev_migrations")).rows.map((r) => r.name));
   const files = fs.readdirSync(migrationsDir).filter((f) => f.endsWith(".sql")).sort();
   for (const f of files) {
+    if (done.has(f)) continue;
     const sql = fs.readFileSync(path.join(migrationsDir, f), "utf8");
     for (const stmt of sql.split("--> statement-breakpoint")) {
       if (stmt.trim()) await client.query(stmt);
     }
+    await client.query("insert into _dev_migrations (name) values ($1)", [f]);
     console.log("applied", f);
   }
   const { rows } = await client.query(

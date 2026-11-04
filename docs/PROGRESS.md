@@ -95,3 +95,7 @@
 - API: verifikasi JWT Supabase, profil otomatis (25 kredit), /api/profile (GET/PUT), /api/profile/activity, /api/auth/log-login, /api/user/trading-prefs (GET/PUT, live terkunci). 9 tes baru (22 total di API). Settings terhubung ke API; e2e Playwright lulus dengan JWT lokal.
 - Menunggu pemilik: migrasi ke Supabase dan env (BLOCKERS no. 13), lalu uji login nyata.
 - Belum: portfolio/inbox/agents via API, wallet kustodian + trade dry, Helius.
+
+## 2026-11-05 — Agents, Inbox, Signals
+- API + frontend: daftar/buat (dari builder)/jeda/hapus agent, inbox (welcome + read-all), sinyal new_token nyata dari worker. 33 tes API + 25 tes worker lulus; e2e Playwright: daftar, jalan/jeda persisten, deploy dari builder, inbox 17 sinyal nyata.
+- Belum: runner agent (siklus dengan mock), portfolio + wallet kustodian + trade dry, chat, marketplace, Helius.

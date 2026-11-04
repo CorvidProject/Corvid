@@ -275,3 +275,82 @@ export const chartResponseSchema = z.object({
     }),
   ),
 });
+
+/* ---- agents, inbox, signals ---- */
+
+export const agentTypeSchema = z.enum(["auto_trader", "signal_bot", "wallet_monitor", "token_analyst", "copy_trader"]);
+export const pipelineSchema = z.enum(["follow_wallet", "new_tokens", "token_trading"]);
+export const agentModeSchema = z.enum(["signal", "trading"]);
+
+export const agentSummarySchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  type: agentTypeSchema,
+  chain: z.literal("solana"),
+  running: z.boolean(),
+  tokenSymbol: z.string().nullable(),
+  /** Belum ada data trade agent: selalu null sampai siklus agent berjalan (tidak dikarang). */
+  winRate: z.number().nullable(),
+  runs: z.number().int(),
+  createdAt: z.string(),
+});
+export const agentDetailSchema = agentSummarySchema.extend({
+  pipeline: pipelineSchema.nullable(),
+  mode: agentModeSchema,
+  config: z.record(z.string(), z.string()),
+  limits: z.record(z.string(), z.string()),
+  /** `dry` selama TRADE_MODE=dry: mode trading hanya simulasi. */
+  execution: z.enum(["dry", "live"]),
+});
+
+/** Nilai config dari builder: string pendek; alamat wallet divalidasi Solana. */
+export const agentCreateSchema = z
+  .object({
+    name: z.string().trim().min(1).max(80),
+    pipeline: pipelineSchema,
+    mode: agentModeSchema.default("signal"),
+    config: z.record(z.string().max(60), z.string().max(300)).refine((c) => Object.keys(c).length <= 40, "terlalu banyak field"),
+    limits: z.record(z.string().max(30), z.string().max(300)).default({}),
+  })
+  .superRefine((v, ctx) => {
+    const w = v.config.wallet_address;
+    if (v.pipeline === "follow_wallet" && !(typeof w === "string" && solanaAddress.safeParse(w.trim()).success))
+      ctx.addIssue({ code: "custom", path: ["config", "wallet_address"], message: "alamat wallet Solana wajib" });
+    if (v.pipeline === "token_trading") {
+      const m = v.config.token_mint;
+      if (!(typeof m === "string" && solanaAddress.safeParse(m.trim()).success))
+        ctx.addIssue({ code: "custom", path: ["config", "token_mint"], message: "mint token Solana wajib" });
+    }
+    if (v.mode === "trading") {
+      const per = Number(v.limits.perTrade);
+      if (!isFinite(per) || per <= 0) ctx.addIssue({ code: "custom", path: ["limits", "perTrade"], message: "batas per trade wajib untuk mode trading" });
+    }
+  });
+export const agentUpdateSchema = z.object({ name: z.string().trim().min(1).max(80).optional(), running: z.boolean().optional() });
+export const agentIdParamSchema = z.object({ id: z.coerce.number().int().positive() });
+
+export const inboxResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      id: z.number().int(),
+      kind: z.string(),
+      title: z.string(),
+      body: z.string().nullable(),
+      /** Detik (epoch). */
+      at: z.number(),
+      read: z.boolean(),
+    }),
+  ),
+});
+export const signalsResponseSchema = z.object({
+  signals: z.array(
+    z.object({
+      id: z.number().int(),
+      type: z.string(),
+      symbol: z.string().nullable(),
+      mint: solanaAddress,
+      score: z.number().int(),
+      at: z.number(),
+    }),
+  ),
+});

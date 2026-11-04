@@ -30,3 +30,5 @@
        Migrasi `0001_rls` otomatis memasang RLS dan FK ke `auth.users` karena schema `auth` ada di Supabase.
     3. Isi `ROOT/.env`: `DATABASE_URL`, `SUPABASE_URL=https://qdlioftfvcoxxkqlkgqx.supabase.co`. Isi `apps/web/.env.local`: `NEXT_PUBLIC_SUPABASE_URL` (sama), `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Project Settings > API Keys: kunci anon/publishable, **bukan** service role), `NEXT_PUBLIC_USE_FIXTURES=false`, `NEXT_PUBLIC_API_URL=http://localhost:8787`.
     4. Dashboard > Authentication: aktifkan Email; untuk uji lokal boleh matikan "Confirm email". Tambahkan `http://localhost:3000` dan `http://localhost:3217` ke URL Configuration > Redirect URLs.
+
+14. **Migrasi baru untuk Supabase (pemilik):** setiap ada file baru di `packages/db/migrations`, jalankan lagi `pnpm --filter @corvid/db migrate` (di ROOT, `DATABASE_URL` di `ROOT/.env`). Saat ini ada migrasi `0002_agent_builder` yang belum diterapkan ke Supabase (dibutuhkan untuk membuat agent).

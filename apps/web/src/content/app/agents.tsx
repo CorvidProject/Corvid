@@ -3,34 +3,67 @@ import { useEffect, useState } from "react";
 import { Plus, Robot, Play, Pause, Trash } from "@phosphor-icons/react";
 import fixture from "@/data/agents.json";
 import { useSigned } from "@/components/auth/signed";
+import { apiGet, apiSend, USE_API } from "@/lib/api";
 
-// My agents: daftar fixture saat masuk (status jalan/jeda dan hapus disimpan di localStorage).
-// Diganti /agents di Tahap 3.
+// My agents. Mode fixture: daftar contoh (status dan hapus di localStorage). Mode API: GET /api/agents,
+// PUT /api/agents/:id (jeda/lanjut), DELETE /api/agents/:id. Catatan: runner agent belum ada, jadi "Running"
+// hanya status tersimpan sampai siklus agent dibangun.
 type A = { id: number; name: string; type: string; chain: string; running: boolean; tokenSymbol: string | null; winRate: number | null; runs: number; createdAt: string };
 const KEY = "corvid.agents.v1";
 const TYPE: Record<string, string> = { auto_trader: "Auto trader", wallet_monitor: "Wallet monitor", signal_bot: "Signal bot", token_analyst: "Token analyst" };
 
 export function ApplicationAgentsContent() {
   const signed = useSigned();
-  const [list, setList] = useState<A[]>(fixture.agents as A[]);
+  const [list, setList] = useState<A[]>(USE_API ? [] : (fixture.agents as A[]));
   const [ready, setReady] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   useEffect(() => {
+    if (USE_API) {
+      setReady(true);
+      if (signed) {
+        apiGet<{ agents: A[] }>("/api/agents")
+          .then((d) => {
+            setList(d.agents);
+            setErr(null);
+          })
+          .catch(() => setErr("Could not load your agents."));
+      } else setList([]);
+      return;
+    }
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) setList(JSON.parse(raw) as A[]);
     } catch {}
     setReady(true);
-  }, []);
+  }, [signed]);
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || USE_API) return;
     try {
       localStorage.setItem(KEY, JSON.stringify(list));
     } catch {}
   }, [list, ready]);
 
   const shown = signed ? list : [];
-  const toggle = (id: number) => setList((p) => p.map((a) => (a.id === id ? { ...a, running: !a.running } : a)));
-  const remove = (id: number) => setList((p) => p.filter((a) => a.id !== id));
+  const toggle = (id: number) => {
+    const cur = list.find((a) => a.id === id);
+    if (!cur) return;
+    const next = !cur.running;
+    setList((p) => p.map((a) => (a.id === id ? { ...a, running: next } : a)));
+    if (USE_API)
+      apiSend("PUT", `/api/agents/${id}`, { running: next }).catch(() => {
+        setList((p) => p.map((a) => (a.id === id ? { ...a, running: cur.running } : a))); // kembalikan bila gagal
+        setErr("Could not update the agent.");
+      });
+  };
+  const remove = (id: number) => {
+    const before = list;
+    setList((p) => p.filter((a) => a.id !== id));
+    if (USE_API)
+      apiSend("DELETE", `/api/agents/${id}`).catch(() => {
+        setList(before);
+        setErr("Could not delete the agent.");
+      });
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -62,6 +95,11 @@ export function ApplicationAgentsContent() {
           </a>
         </div>
 
+        {err && (
+          <p className="text-[12px]" style={{ color: "var(--v2-neg)" }} role="status">
+            {err}
+          </p>
+        )}
         {shown.length > 0 ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {shown.map((a) => (

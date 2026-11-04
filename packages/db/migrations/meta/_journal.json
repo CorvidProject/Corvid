@@ -15,6 +15,13 @@
       "when": 1793816797352,
       "tag": "0001_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793826634271,
+      "tag": "0002_agent_builder",
+      "breakpoints": true
     }
   ]
 }

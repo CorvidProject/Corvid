@@ -253,6 +253,14 @@ export const agents = pgTable(
     tokenSymbol: text("token_symbol"),
     tokenMint: text("token_mint"),
     persona: text("persona"),
+    /** Pipeline builder: follow_wallet | new_tokens | token_trading. */
+    pipeline: text("pipeline"),
+    /** signal = hanya notifikasi; trading = eksekusi (selama TRADE_MODE=dry hanya simulasi). */
+    mode: text("mode").notNull().default("signal"),
+    /** Konfigurasi field builder (semua nilai string). */
+    config: jsonb("config").notNull().default({}),
+    /** Batas trading dari builder (perTrade, daily, allowed). */
+    limits: jsonb("limits").notNull().default({}),
     floor: smallint("floor"),
     conviction: smallint("conviction"),
     running: boolean("running").notNull().default(false),
@@ -260,7 +268,12 @@ export const agents = pgTable(
     publicClones: integer("public_clones").notNull().default(0),
     createdAt: ts("created_at").notNull().defaultNow(),
   },
-  (t) => [index("agents_owner_idx").on(t.ownerId), index("agents_published_idx").on(t.published)],
+  (t) => [
+    index("agents_owner_idx").on(t.ownerId),
+    index("agents_published_idx").on(t.published),
+    check("agents_mode_chk", sql`${t.mode} in ('signal','trading')`),
+    check("agents_pipeline_chk", sql`${t.pipeline} is null or ${t.pipeline} in ('follow_wallet','new_tokens','token_trading')`),
+  ],
 );
 
 export const agentRuns = pgTable(

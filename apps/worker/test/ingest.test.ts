@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
-import { applyMigrations, createDb, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
+import { applyMigrations, createDb, signals, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
 import { refreshBoard, refreshCandles, refreshTrades, runRetention } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
@@ -57,7 +57,7 @@ afterAll(async () => {
 describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
   it("refreshBoard(trending): upsert token, gabung DexScreener, simpan peringkat", async () => {
     const r = await refreshBoard(deps(), "trending");
-    expect(r).toEqual({ tokens: 3, withDexScreener: 1 });
+    expect(r).toEqual({ tokens: 3, withDexScreener: 1, newSignals: 0 }); // tab trending tidak membuat sinyal
     const [amd] = await created.db.select().from(tokens).where(eq(tokens.mint, AMD));
     expect(amd.imageUrl).toMatch(/dexscreener/);
     expect(amd.poolId).toBe("7RD5YALHcMLUFKJ8FRePGd6ei11F15uXZF1rc7mPKeCv");
@@ -81,10 +81,18 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     expect(amd.imageUrl).toMatch(/dexscreener/);
   });
 
-  it("refreshBoard(new) mengisi tab new", async () => {
-    await refreshBoard(deps(), "new");
+  it("refreshBoard(new) mengisi tab new dan membuat sinyal new_token sekali per token", async () => {
+    const r1 = await refreshBoard(deps(), "new");
+    expect(r1.newSignals).toBe(3);
     const rows = await created.db.select().from(tokenTrending).where(eq(tokenTrending.tab, "new"));
     expect(rows).toHaveLength(3);
+    const sig = await created.db.select().from(signals);
+    expect(sig).toHaveLength(3);
+    expect(sig.every((x) => x.type === "new_token" && x.score === 0 && !!x.symbol)).toBe(true);
+    // siklus berikutnya: token sudah dikenal, tidak ada sinyal ganda
+    const r2 = await refreshBoard(deps(), "new");
+    expect(r2.newSignals).toBe(0);
+    expect(await created.db.select().from(signals)).toHaveLength(3);
   });
 
   it("refreshCandles: candle 15m tersimpan, ulang tidak menggandakan", async () => {
@@ -110,6 +118,7 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     const r = await runRetention(created.db, future);
     expect(r.trades).toBeGreaterThan(0);
     expect(r.candles5m15m).toBeGreaterThan(0);
+    expect(r.signals).toBe(3); // sinyal > 7 hari dibuang
     expect(await created.db.select().from(tokenTrades)).toHaveLength(0);
     const candles = await created.db.select().from(tokenCandles);
     expect(candles.filter((c) => c.interval === "15m")).toHaveLength(0);
