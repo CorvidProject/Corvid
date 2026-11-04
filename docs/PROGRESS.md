@@ -74,3 +74,7 @@
 - Latest, Gainers, Volume, Memescope, dan harga SOL membaca dari Fastify (mode `NEXT_PUBLIC_USE_FIXTURES=false`). E2E Playwright terhadap Postgres embedded + API + `next dev`: 25/25/45 baris, tanpa error konsol. 10 tes API lulus.
 - Tambah endpoint /api/prices/sol.
 - Belum: /search, /tokens/chart, /tokens/live-batch, halaman detail token, alpha/auth/wallet/agent, worker ingest, packages/api-client.
+
+## 2026-11-05 — Detail token
+- `/application/tokens/[mint]`: header harga, 8 statistik, chart candle (SVG), rugcheck, trades terbaru. Diuji Playwright terhadap API + Postgres (80 candle lokal, rugcheck 8/11, trades, token tidak dikenal, 0x = 404). Endpoint search/live-batch/chart selesai (13 tes API lulus).
+- Belum: tampilan search di command palette/navbar memakai /api/search, worker ingest (candle/trades nyata), /application/admin, alpha/auth/wallet/agent.
