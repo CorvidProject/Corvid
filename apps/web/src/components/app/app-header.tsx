@@ -17,6 +17,7 @@ import {
 import { NAV_SECTIONS, type NavSection } from "@/lib/nav-data";
 import { site } from "@/lib/site";
 import { NavDropdown } from "@/components/site/nav-dropdown";
+import { MobileDrawer } from "./mobile-drawer";
 
 // Bagian "More" di navbar aplikasi (ikon dicocokkan dengan bentuk SVG di build referensi).
 const MORE_SECTION: NavSection = {
@@ -189,118 +190,126 @@ function ConnectButton() {
 
 // Header aplikasi (port dari komponen asli): navbar dropdown, pencarian, sosial, token, rantai, Connect.
 export function AppHeader() {
+  const [menu, setMenu] = useState(false);
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-30 h-14 flex items-center"
-      style={{
-        background: "var(--v2-bg-0)",
-        borderBottom: "1px solid var(--v2-line-1)",
-      }}
-    >
-      <div className="flex lg:hidden items-center w-full px-3">
-        <button aria-label="Open menu" className={ICON_BTN}>
-          <List size={16} weight="bold" />
-        </button>
-        <div className="flex-1 flex justify-center">
+    <>
+      <header
+        className="fixed top-0 left-0 right-0 z-30 h-14 flex items-center"
+        style={{
+          background: "var(--v2-bg-0)",
+          borderBottom: "1px solid var(--v2-line-1)",
+        }}
+      >
+        <div className="flex lg:hidden items-center w-full px-3">
+          <button
+            aria-label="Open menu"
+            className={ICON_BTN}
+            onClick={() => setMenu(true)}
+          >
+            <List size={16} weight="bold" />
+          </button>
+          <div className="flex-1 flex justify-center">
+            <Link
+              href="/"
+              data-placeholder="logo"
+              className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
+              style={{ color: "var(--v2-t-1)" }}
+            >
+              {site.name.toUpperCase()}
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <ChainSelector compact />
+            <TokenLink />
+            <ConnectButton />
+          </div>
+        </div>
+
+        <div className="hidden lg:flex items-center w-full px-4 gap-1">
           <Link
             href="/"
+            className="flex items-center gap-2 shrink-0 mr-4"
             data-placeholder="logo"
-            className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
-            style={{ color: "var(--v2-t-1)" }}
           >
-            {site.name.toUpperCase()}
-          </Link>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <ChainSelector compact />
-          <TokenLink />
-          <ConnectButton />
-        </div>
-      </div>
-
-      <div className="hidden lg:flex items-center w-full px-4 gap-1">
-        <Link
-          href="/"
-          className="flex items-center gap-2 shrink-0 mr-4"
-          data-placeholder="logo"
-        >
-          <span
-            className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
-            style={{ color: "var(--v2-t-1)" }}
-          >
-            {site.name.toUpperCase()}
-          </span>
-        </Link>
-        <nav className="flex items-center gap-0.5">
-          {[...NAV_SECTIONS, MORE_SECTION].map((s) => (
-            <NavDropdown key={s.label} section={s} size="sm" />
-          ))}
-        </nav>
-        <div className="flex-1" />
-        <div className="flex items-center gap-1">
-          <button
-            data-palette-open
-            className="group flex items-center gap-2.5 h-9 w-[210px] 2xl:w-[280px] pl-3.5 pr-1.5 rounded-full transition-colors cursor-pointer mr-1"
-            style={{
-              background: "var(--v2-bg-1)",
-              border: "1px solid var(--v2-line-1)",
-            }}
-          >
-            <MagnifyingGlass
-              size={14}
-              weight="bold"
-              style={{ color: "var(--v2-t-4)" }}
-            />
             <span
-              className="text-[13px] truncate"
-              style={{ color: "var(--v2-t-4)" }}
+              className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
+              style={{ color: "var(--v2-t-1)" }}
             >
-              Search tokens, wallets…
+              {site.name.toUpperCase()}
             </span>
-            <kbd
-              className="num text-[11px] font-medium px-1.5 py-0.5 rounded-full shrink-0 ml-auto"
-              style={{ color: "var(--v2-t-4)", background: "var(--v2-bg-2)" }}
+          </Link>
+          <nav className="flex items-center gap-0.5">
+            {[...NAV_SECTIONS, MORE_SECTION].map((s) => (
+              <NavDropdown key={s.label} section={s} size="sm" />
+            ))}
+          </nav>
+          <div className="flex-1" />
+          <div className="flex items-center gap-1">
+            <button
+              data-palette-open
+              className="group flex items-center gap-2.5 h-9 w-[210px] 2xl:w-[280px] pl-3.5 pr-1.5 rounded-full transition-colors cursor-pointer mr-1"
+              style={{
+                background: "var(--v2-bg-1)",
+                border: "1px solid var(--v2-line-1)",
+              }}
             >
-              ⌘K
-            </kbd>
-          </button>
-          <a
-            aria-label="X"
-            className={ICON_BTN}
-            href={site.socialLinks.twitter}
-            rel="noopener noreferrer"
-            target="_blank"
-            title="X"
-          >
-            <XLogo size={14} weight="bold" />
-          </a>
-          <a
-            aria-label="Telegram"
-            className={`${ICON_BTN} ml-1`}
-            href={site.socialLinks.telegram}
-            rel="noopener noreferrer"
-            target="_blank"
-            title="Telegram"
-          >
-            <TelegramLogo size={14} weight="fill" />
-          </a>
-          <div
-            className="mx-1.5 h-5 w-px shrink-0"
-            style={{ background: "var(--v2-line-1)" }}
-          />
-          <TokenLink />
-          <div
-            className="mx-1.5 h-5 w-px shrink-0"
-            style={{ background: "var(--v2-line-1)" }}
-          />
-          <ChainSelector />
-          <div
-            className="mx-1.5 h-5 w-px shrink-0"
-            style={{ background: "var(--v2-line-1)" }}
-          />
-          <ConnectButton />
+              <MagnifyingGlass
+                size={14}
+                weight="bold"
+                style={{ color: "var(--v2-t-4)" }}
+              />
+              <span
+                className="text-[13px] truncate"
+                style={{ color: "var(--v2-t-4)" }}
+              >
+                Search tokens, wallets…
+              </span>
+              <kbd
+                className="num text-[11px] font-medium px-1.5 py-0.5 rounded-full shrink-0 ml-auto"
+                style={{ color: "var(--v2-t-4)", background: "var(--v2-bg-2)" }}
+              >
+                ⌘K
+              </kbd>
+            </button>
+            <a
+              aria-label="X"
+              className={ICON_BTN}
+              href={site.socialLinks.twitter}
+              rel="noopener noreferrer"
+              target="_blank"
+              title="X"
+            >
+              <XLogo size={14} weight="bold" />
+            </a>
+            <a
+              aria-label="Telegram"
+              className={`${ICON_BTN} ml-1`}
+              href={site.socialLinks.telegram}
+              rel="noopener noreferrer"
+              target="_blank"
+              title="Telegram"
+            >
+              <TelegramLogo size={14} weight="fill" />
+            </a>
+            <div
+              className="mx-1.5 h-5 w-px shrink-0"
+              style={{ background: "var(--v2-line-1)" }}
+            />
+            <TokenLink />
+            <div
+              className="mx-1.5 h-5 w-px shrink-0"
+              style={{ background: "var(--v2-line-1)" }}
+            />
+            <ChainSelector />
+            <div
+              className="mx-1.5 h-5 w-px shrink-0"
+              style={{ background: "var(--v2-line-1)" }}
+            />
+            <ConnectButton />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      <MobileDrawer open={menu} onClose={() => setMenu(false)} />
+    </>
   );
 }

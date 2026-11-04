@@ -162,3 +162,15 @@
 .cv-agent-card:hover .cv-agent-bar {
   width: 100%;
 }
+
+/* Drawer menu mobile: geser masuk dari kiri */
+@keyframes cv-drawer-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.cv-drawer-in { animation: cv-drawer-in 200ms ease-out; }
+
+/* Smart Wallets: tampilan compact (ikon daftar) */
+.cv-compact .canvas-td { padding-top: 6px; padding-bottom: 6px; }
+.cv-compact img { display: none; }
+.cv-compact td span.truncate.text-\[12px\] { display: none; }
