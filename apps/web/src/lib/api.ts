@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 // Mode fixture (default): panggilan ke /api/* dilayani rute Next lokal (src/app/api, data contoh).
 // NEXT_PUBLIC_USE_FIXTURES=false: panggilan diarahkan ke backend Fastify di NEXT_PUBLIC_API_URL.
-const USE_API = process.env.NEXT_PUBLIC_USE_FIXTURES === "false";
+export const USE_API = process.env.NEXT_PUBLIC_USE_FIXTURES === "false";
 const BASE = USE_API ? (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "") : "";
 
 export class ApiError extends Error {

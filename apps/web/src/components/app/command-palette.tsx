@@ -28,15 +28,25 @@ import market from "@/data/marketplace-feed.json";
 import { useAuthModal } from "@/components/auth/auth-modal";
 import { isSolanaAddress } from "@/lib/builder-defs";
 import { loadSession, saveSession } from "@/lib/auth";
+import { apiGet, USE_API } from "@/lib/api";
 
 // Command palette (⌘K / Ctrl+K), port dari referensi: perintah navigasi + pencarian token, wallet,
-// agent. Pintasan "g" lalu huruf (g i, g c, ...). Data token dari fixture; /search menyusul di Tahap 2.
+// agent. Pintasan "g" lalu huruf (g i, g c, ...). Mode fixture: indeks lokal. Mode API (NEXT_PUBLIC_USE_FIXTURES=false): GET /api/search.
 type Cmd = { kind: "command"; id: string; label: string; icon: Icon; hotkey?: string; hint?: string; keywords: string[]; authRequired?: boolean; run: (c: Ctx) => void | Promise<void> };
 type TokenRow = { kind: "token"; mint: string; symbol: string; name: string; image: string | null; price: number; marketCap: number; volume: number; change24h: number };
 type AgentRow = { kind: "agent"; id: string | number; name: string; status: string; type: string; signals_count: number };
 type WalletRow = { kind: "wallet"; address: string };
 type Row = Cmd | TokenRow | AgentRow | WalletRow;
 type Ctx = { push: (href: string) => void; signOut: () => void };
+
+type SearchResponse = {
+  tokens: { mint: string; symbol: string | null; name: string | null; image: string | null; price: number | null; marketCap: number | null; volume: number | null; change24h: number | null }[];
+  agents: { id: number; name: string; type: string }[];
+  wallets: { address: string }[];
+  notice?: string;
+};
+type Remote = { tokens: TokenRow[]; agents: AgentRow[]; wallets: WalletRow[]; notice: string | null; loading: boolean; failed: boolean };
+const NO_REMOTE: Remote = { tokens: [], agents: [], wallets: [], notice: null, loading: false, failed: false };
 
 type PaletteCtx = { open: boolean; openPalette: () => void; closePalette: () => void };
 const PCtx = createContext<PaletteCtx>({ open: false, openPalette: () => {}, closePalette: () => {} });
@@ -240,6 +250,35 @@ function Palette({ onClose }: { onClose: () => void }) {
 
   const term = q.trim();
   const isAddr = isSolanaAddress(term);
+  const [remote, setRemote] = useState<Remote>(NO_REMOTE);
+  useEffect(() => {
+    if (!USE_API || !term) {
+      setRemote(NO_REMOTE);
+      return;
+    }
+    const ctl = new AbortController();
+    setRemote((r) => ({ ...r, loading: true, failed: false }));
+    const timer = setTimeout(() => {
+      apiGet<SearchResponse>(`/api/search?q=${encodeURIComponent(term.slice(0, 100))}`, ctl.signal)
+        .then((d) =>
+          setRemote({
+            tokens: d.tokens.map((t) => ({ kind: "token", mint: t.mint, symbol: (t.symbol ?? "").trim() || shortAddr(t.mint, 4), name: (t.name ?? "").trim(), image: t.image, price: t.price ?? 0, marketCap: t.marketCap ?? 0, volume: t.volume ?? 0, change24h: t.change24h ?? 0 })),
+            agents: d.agents.map((a) => ({ kind: "agent", id: a.id, name: a.name, status: "active", type: a.type, signals_count: 0 })),
+            wallets: d.wallets.map((w) => ({ kind: "wallet", address: w.address })),
+            notice: d.notice ?? null,
+            loading: false,
+            failed: false,
+          }),
+        )
+        .catch(() => {
+          if (!ctl.signal.aborted) setRemote({ ...NO_REMOTE, failed: true });
+        });
+    }, 220);
+    return () => {
+      clearTimeout(timer);
+      ctl.abort();
+    };
+  }, [term]);
   const cmds = useMemo(
     () =>
       COMMANDS.filter((c) => (!c.authRequired || signed) && (!term || c.label.toLowerCase().includes(term.toLowerCase()) || c.keywords.some((k) => k.includes(term.toLowerCase()))))
@@ -249,12 +288,17 @@ function Palette({ onClose }: { onClose: () => void }) {
   );
   const tokens = useMemo(() => {
     if (!term) return [] as TokenRow[];
-    const found = searchTokens(term);
+    const found = USE_API ? [...remote.tokens] : searchTokens(term);
+    if (isAddr && USE_API && remote.loading) return found;
     if (isAddr && !found.some((t) => t.mint === term)) found.unshift({ kind: "token", mint: term, symbol: shortAddr(term, 4), name: "Open token by address", image: null, price: 0, marketCap: 0, volume: 0, change24h: 0 });
     return found;
-  }, [term, isAddr]);
-  const agents = useMemo(() => (term ? searchAgents(term) : []), [term]);
-  const wallets: WalletRow[] = useMemo(() => (isAddr ? [{ kind: "wallet", address: term }] : []), [isAddr, term]);
+  }, [term, isAddr, remote.tokens, remote.loading]);
+  const agents = useMemo(() => (term ? (USE_API ? remote.agents : searchAgents(term)) : []), [term, remote.agents]);
+  const wallets: WalletRow[] = useMemo(() => {
+    const out: WalletRow[] = isAddr ? [{ kind: "wallet", address: term }] : [];
+    for (const w of remote.wallets) if (!out.some((x) => x.address === w.address)) out.push(w);
+    return out;
+  }, [isAddr, term, remote.wallets]);
 
   const rows: Row[] = useMemo(() => (isAddr ? [...tokens, ...wallets, ...cmds, ...agents] : [...cmds, ...agents, ...tokens, ...wallets]), [isAddr, tokens, wallets, cmds, agents]);
   useEffect(() => setActive((a) => Math.min(a, Math.max(0, rows.length - 1))), [rows.length]);
@@ -340,6 +384,11 @@ function Palette({ onClose }: { onClose: () => void }) {
           </button>
         </div>
         <div ref={listRef} className="flex-1 overflow-y-auto">
+          {USE_API && term && !remote.loading && remote.notice && rows.length > 0 && (
+            <p className="px-4 py-2 text-[12px]" style={{ color: "var(--v2-t-3)", borderBottom: "1px solid var(--v2-line-1)" }}>
+              {remote.notice}
+            </p>
+          )}
           {groups.map((g) => (
             <div key={g.label} className="py-2" style={{ borderTop: "1px solid var(--v2-line-1)" }}>
               <p className="eyebrow px-4 pt-1 pb-1.5" style={{ color: "var(--v2-t-4)", fontSize: 11, letterSpacing: "0.1em" }}>{g.label}</p>
@@ -427,7 +476,12 @@ function Palette({ onClose }: { onClose: () => void }) {
           )}
           {term && rows.length === 0 && (
             <div className="px-6 py-10">
-              <p className="text-[13px] mb-3" style={{ color: "var(--v2-t-2)" }}>No results for &quot;{q}&quot;</p>
+              <p className="text-[13px] mb-3" style={{ color: "var(--v2-t-2)" }}>
+                {USE_API && remote.loading ? "Searching…" : USE_API && remote.failed ? "Search is unavailable right now. Try again shortly." : <>No results for &quot;{q}&quot;</>}
+              </p>
+              {USE_API && remote.notice && (
+                <p className="text-[12px] mb-3" style={{ color: "var(--v2-t-3)" }}>{remote.notice}</p>
+              )}
               <p className="eyebrow mb-2" style={{ color: "var(--v2-t-4)", fontSize: 11 }}>Try</p>
               <ul className="text-[12px] space-y-1" style={{ color: "var(--v2-t-3)" }}>
                 <li>· token symbol or name</li>

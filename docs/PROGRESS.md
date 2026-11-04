@@ -78,3 +78,7 @@
 ## 2026-11-05 — Detail token
 - `/application/tokens/[mint]`: header harga, 8 statistik, chart candle (SVG), rugcheck, trades terbaru. Diuji Playwright terhadap API + Postgres (80 candle lokal, rugcheck 8/11, trades, token tidak dikenal, 0x = 404). Endpoint search/live-batch/chart selesai (13 tes API lulus).
 - Belum: tampilan search di command palette/navbar memakai /api/search, worker ingest (candle/trades nyata), /application/admin, alpha/auth/wallet/agent.
+
+## 2026-11-05 — Search
+- Command palette (Ctrl+K, kolom search navbar) memakai /api/search di mode API. Diuji Playwright: cari simbol, notice mint tak dikenal, hasil kosong, Enter membuka detail token; tanpa error konsol.
+- Belum: worker ingest (data nyata), /application/admin, alpha/auth/wallet/agent via API.
