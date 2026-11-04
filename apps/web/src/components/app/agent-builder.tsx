@@ -139,6 +139,14 @@ export function AgentBuilder() {
   const [selected, setSelected] = useState<string | null>(null);
   const [adv, setAdv] = useState(false);
   const [sidebar, setSidebar] = useState(true);
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const f = () => setMobile(window.innerWidth < 768);
+    f();
+    if (window.innerWidth < 768) setSidebar(false);
+    window.addEventListener("resize", f);
+    return () => window.removeEventListener("resize", f);
+  }, []);
   const [dirty, setDirty] = useState(false);
   const [limitsOpen, setLimitsOpen] = useState(false);
   const [limits, setLimits] = useState({ perTrade: "", daily: "", allowed: "" });
@@ -409,7 +417,7 @@ export function AgentBuilder() {
             >
               <Lightning size={13} weight="fill" /> {signed ? "Deploy Pipeline" : "Sign In to Deploy"}
             </button>
-            <button onClick={share} className="flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-medium transition-colors hover:bg-[var(--v2-bg-2)]" style={{ color: "var(--v2-t-2)", border: "1px solid var(--v2-line-1)" }}>
+            <button onClick={share} className="hidden md:flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-medium transition-colors hover:bg-[var(--v2-bg-2)]" style={{ color: "var(--v2-t-2)", border: "1px solid var(--v2-line-1)" }}>
               <XLogo size={13} weight="bold" /> Share
             </button>
           </div>
@@ -417,7 +425,49 @@ export function AgentBuilder() {
 
         <div className="flex-1 min-h-0 relative flex flex-col" data-tour="canvas">
           <div className="flex flex-1 min-h-0 h-full">
-            <div ref={wrapRef} className="flex-1 relative h-full overflow-hidden" style={{ minHeight: 320, background: "var(--v2-bg-0)" }} onClick={() => setSelected(null)}>
+            {mobile && (
+              <div className="flex-1 relative h-full overflow-y-auto px-4 py-4" style={{ background: "var(--v2-bg-0)" }}>
+                <p className="text-[11px] font-semibold uppercase tracking-wider mb-2 px-1" style={{ color: "var(--v2-t-4)" }}>Configuration</p>
+                {nodes
+                  .filter((n) => n.kind !== "network")
+                  .map((n, i, arr) => {
+                    const Icon = stepIcon(n.id);
+                    const dim = n.id === "execute" && mode === "signal";
+                    const tint = n.kind === "trigger" ? "rgba(var(--v2-accent-rgb),0.07)" : n.id === "execute" ? "rgba(61,214,140,0.06)" : "var(--v2-bg-1)";
+                    const sub = [n.sub, n.sub2].filter(Boolean).join(" · ");
+                    const divider = n.kind === "trigger";
+                    return (
+                      <div key={n.id}>
+                        {divider && (
+                          <div className="flex items-center gap-2 my-3 px-1">
+                            <div className="flex-1 h-px" style={{ background: "var(--v2-line-1)" }} />
+                            <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--v2-t-4)" }}>Pipeline</p>
+                            <div className="flex-1 h-px" style={{ background: "var(--v2-line-1)" }} />
+                          </div>
+                        )}
+                        <button
+                          onClick={() => { setSelected(n.id); setAdv(false); }}
+                          aria-label={`${n.label} settings`}
+                          className="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left"
+                          style={{ background: tint, border: `1px solid ${selected === n.id ? "rgba(var(--v2-accent-rgb),0.6)" : "var(--v2-line-1)"}`, opacity: dim ? 0.85 : 1 }}
+                        >
+                          <span className="h-10 w-10 shrink-0 rounded-lg flex items-center justify-center" style={{ background: "var(--v2-bg-2)", border: "1px solid var(--v2-line-1)" }}>
+                            <Icon size={20} weight="duotone" style={{ color: n.kind === "trigger" ? "var(--v2-accent-text)" : "var(--v2-t-3)" }} />
+                          </span>
+                          <span className="flex-1 min-w-0">
+                            <span className="block text-[15px] font-semibold" style={{ color: "var(--v2-t-1)" }}>{n.label}</span>
+                            <span className="block text-[13px] truncate" style={{ color: "var(--v2-t-3)" }}>{sub}</span>
+                          </span>
+                          <CaretDown size={14} style={{ transform: "rotate(-90deg)", color: "var(--v2-t-4)" }} />
+                        </button>
+                        {i < arr.length - 1 && arr[i + 1].kind !== "trigger" && <div className="mx-auto w-px h-3" style={{ background: "var(--v2-line-2)" }} />}
+                      </div>
+                    );
+                  })}
+                <div className="h-40" />
+              </div>
+            )}
+            <div ref={wrapRef} className={mobile ? "hidden" : "flex-1 relative h-full overflow-hidden"} style={{ minHeight: 320, background: "var(--v2-bg-0)" }} onClick={() => setSelected(null)}>
               <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
                 <pattern id="bld-dots" width="13.6" height="13.6" patternUnits="userSpaceOnUse"><circle cx="0.34" cy="0.34" r="0.34" fill="var(--v2-line-2)" /></pattern>
                 <rect width="100%" height="100%" fill="url(#bld-dots)" />
@@ -469,7 +519,7 @@ export function AgentBuilder() {
 
             </div>
             {selected && (
-              <div className="shrink-0 flex" style={{ width: 340, maxWidth: "45%" }}>
+              <div className={mobile ? "absolute inset-0 z-50 flex" : "shrink-0 flex"} style={mobile ? undefined : { width: 340, maxWidth: "45%" }}>
                   {step ? (
                     <Panel title={step.label} prompt={step.prompt} onClose={() => setSelected(null)}>
                       {step.alwaysOn && step.fields.length === 0 && <p className="text-[13px] py-3" style={{ color: "var(--v2-t-3)" }}>Nothing to configure. This step runs automatically.</p>}
@@ -532,7 +582,7 @@ export function AgentBuilder() {
           </div>
 
           {summaryOpen && (
-            <div className="absolute z-10 bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[520px] max-h-[45vh] flex flex-col" style={{ pointerEvents: "none", marginLeft: selected ? -170 : 0 }}>
+            <div className="absolute z-10 bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[520px] max-h-[45vh] flex flex-col" style={{ pointerEvents: "none", marginLeft: selected && !mobile ? -170 : 0 }}>
               <div className="rounded-2xl overflow-y-auto min-h-0" style={{ pointerEvents: "auto", background: "linear-gradient(145deg, rgba(28, 34, 40, 0.95), rgba(23, 28, 33, 0.98))", border: "1px solid rgba(255, 255, 255, 0.06)", boxShadow: "rgba(12, 14, 17, 0.4) 0px 8px 40px, rgba(255, 255, 255, 0.02) 0px 0px 0px 1px inset", backdropFilter: "blur(20px)" }}>
                 <div className="flex items-center justify-between px-4 py-2.5 select-none shrink-0" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.04)" }}>
                   <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255, 255, 255, 0.35)" }}>
