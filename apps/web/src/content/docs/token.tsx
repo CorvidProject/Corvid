@@ -31,7 +31,7 @@ export function DocsTokenContent() {
         >
           <span
             className="font-mono text-[11px] uppercase tracking-[0.06em] px-1.5 py-0.5 rounded-sm"
-            style={{ background: "var(--v2-accent)", color: "#14191d" }}
+            style={{ background: "var(--v2-accent)", color: "#ffffff" }}
           >
             $CRVD not launched
           </span>

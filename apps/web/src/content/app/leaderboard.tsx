@@ -149,7 +149,7 @@ export function ApplicationLeaderboardContent() {
             <span
               className="num text-[14px] font-bold w-8 h-8 rounded-full flex items-center justify-center"
               style={{
-                color: "rgb(20, 25, 29)",
+                color: "#ffffff",
                 background: "rgb(0, 52, 240)",
               }}
             >

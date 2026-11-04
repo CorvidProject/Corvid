@@ -74,3 +74,10 @@
 .cv-bars {
   gap: 3px;
 }
+
+/* Teks tombol di atas Signal Blue (#0030CF): putih, kontras sekitar 9:1 (WCAG AAA).
+   CSS hasil kompilasi referensi memakai teks gelap karena tombolnya dulu oranye. */
+.btn-v2-primary,
+.crv-swap-cta {
+  color: #ffffff !important;
+}

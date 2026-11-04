@@ -176,7 +176,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=3kRQDKPGqMWwBdGjiVPpPqVzFsnYG5PDqvrVz1D2pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -330,7 +330,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=GoDSW31bTxfkoup9yA1qcGGx9RMXdTEWgApv3xzBmoA&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -484,7 +484,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=GexThZHgaswpAQ7Fi8QrHFubjPimUNSYhJiAA7XZpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -638,7 +638,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6QUHcqYuiPRHxhnYZoygewXtNQr9kUrhc9Tmwgtbpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -792,7 +792,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=93VGqXL76voGxc43apJTDJoKkqnxTht1BKWoEmUypump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -946,7 +946,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=ExxzYBTt3jwU5MUxuw2F4toYbTLdFwThSjyaCn6Xpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1100,7 +1100,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=APLPiTjBWzwfZ5U1TBeqLF9XJ7dV7XKGe7j4BZhkDray&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1254,7 +1254,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=qhbbjGBKJxW3AZGqngWM5tHcrENR3pVoRB9MCf1pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1408,7 +1408,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1562,7 +1562,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=EJAxERvKU4kEVXn3NarjvRtgaMaJyP9ZuMeKA7JJpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1713,7 +1713,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=14LCiSb7CKDjvxcsbLfzyAA4EobVJwSBLNNzEuGUP8w8&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1867,7 +1867,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=DKYcjobF7HPtL9RyQBRdeRQ2iWvizpfbgWwPWNXdpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2021,7 +2021,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=wMHBD2B8KbDagvXUEapginhtJdrH4QSvSezBM8Tpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2175,7 +2175,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=HsprHxBRgiVaQdRf3TnKNuZZtaX9JUSPgMFdAkk6pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2329,7 +2329,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Pmfm2RprxQRKZH1XWVsBUc2KgCTyzeDTSFbT1vJmogz&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2483,7 +2483,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CTPoyCwkjMvoJwU4xvZZqoD8tiYk6yDchySiN5gGpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2637,7 +2637,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=3w2TvVmTrtq4kSkoFVrTFQgz6MX7ThzDVrx9r5c3pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2791,7 +2791,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=2gTbp2gwH46rqExzabSyrdR3294SLwCp2rSqWDS6Sim1&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2945,7 +2945,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=4kjruqGHDsSqkMdFfCjV7Vb62HPFhtXyWc2t6JpQzDnz&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3099,7 +3099,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=5yC9BM8KUsJTPbWPLfA2N8qH1s9V8DQ3Vcw1G6Jdpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3253,7 +3253,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=ApZuxdpzMrbEYTGEzeY9afh5pj9d6qPRJCTgQYiipbKg&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3407,7 +3407,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=DtcicPCKTKeAh7TDEzTym3hXeoHAoMiBdYJhMYxZpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3561,7 +3561,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=FjPKUGnF5zBpdEv18gT8FJCtxh3MKrFkoeYekgYr1win&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3715,7 +3715,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=GTBxUiw6wJdmmkCGZgRHLyYxqu1vG4KtRpeox6yDpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3869,7 +3869,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4023,7 +4023,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=5tCju6YNxHq5zrA6tGndr6F7TK42mpUFmeE31cSFpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4177,7 +4177,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Ce2gx9KGXJ6C9Mp5b5x1sn9Mg87JwEbrQby4Zqo3pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4331,7 +4331,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=HcRLc9VDgjLeK154xDawfb1dmVJ98DoSqcwTHGqiDeJR&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4485,7 +4485,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4639,7 +4639,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CWZ6BsdnjkDVTGkmL6bGbJXXig6ceef12KvyGQW14cMt&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4793,7 +4793,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4947,7 +4947,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=5UUH9RTDiSpq6HKS6bp4NdU9PNJpXRXuiw6ShBTBhgH2&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5101,7 +5101,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=2j5SaS7xy776qCBpyPQbZjyQSAtKiFgrwjfErthnW2ZM&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5252,7 +5252,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=DJTu7vi8norVzdVAffgvb39VP7wjKeTsgaMBJrzfxvoF&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5406,7 +5406,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5557,7 +5557,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=METAewgxyPbgwsseH8T16a39CQ5VyVxZi9zXiDPY18m&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5708,7 +5708,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=98sMhvDwXj1RQi5c5Mndm3vPe9cBqPrbLaufMXFNMh5g&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5859,7 +5859,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CASHx9KJUStyftLFWGvEVf59SGeG9sh5FfcnZMVPCASH&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6010,7 +6010,7 @@ export function ApplicationGainersContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=euro5sNHrZC2wu2RoLvy6xxoVMc3Qnd1vjxoWf4MftA&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}

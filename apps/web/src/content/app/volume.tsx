@@ -167,7 +167,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=jM9r9PJFyPaMEbhGZPbDeZJiysn2pfyz5TzdDs5pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -312,7 +312,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=8s4bNqEztH1JP7mkU747uMr7AckCQdiV47FDqYnDpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -457,7 +457,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=762ZqBCd5m2q3QJ5UPkFL5rqdEUeygNkfTZrpGEZpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -599,7 +599,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=98sMhvDwXj1RQi5c5Mndm3vPe9cBqPrbLaufMXFNMh5g&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -744,7 +744,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -889,7 +889,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=ExxzYBTt3jwU5MUxuw2F4toYbTLdFwThSjyaCn6Xpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1031,7 +1031,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1176,7 +1176,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=KMNo3nJsBXfcpJTVhZcXLW7RmTwTt4GVFE7suUBo9sS&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1318,7 +1318,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=4AWLQqBBZxDYNJ872F9CP4t6kWF8RZ5nNuGknV6Zpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1460,7 +1460,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=14LCiSb7CKDjvxcsbLfzyAA4EobVJwSBLNNzEuGUP8w8&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1605,7 +1605,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Dbyy9LSMVHjxw2ZnPPRrCheSLVeuHq2GMkpxUs3t5xeT&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1750,7 +1750,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CARDSccUMFKoPRZxt5vt3ksUbxEFEcnZ3H2pd3dKxYjp&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -1892,7 +1892,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=SPCXxcqXj6e5dJDVNovHN8744zkbhM2bYudU45BimGb&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2034,7 +2034,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=D4BPL1zvhhJbxUdgi2qVUtjx4jeQWyUr2PAUjKc9rN5x&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2179,7 +2179,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6pGyajBJsvKWLvgDZPNebH5uZcHXc7hVQAJ3y1uuVXNd&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2321,7 +2321,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=DJTu7vi8norVzdVAffgvb39VP7wjKeTsgaMBJrzfxvoF&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2466,7 +2466,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=npz2FhoufQ7pKqhGpaipYWacrAkidyW2yDpVWSvpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2611,7 +2611,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=FdKdpz11GsTofLaNiddrhxrsE4APZYSSfLFqQ9YKpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2753,7 +2753,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=euro5sNHrZC2wu2RoLvy6xxoVMc3Qnd1vjxoWf4MftA&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -2898,7 +2898,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=GoDSW31bTxfkoup9yA1qcGGx9RMXdTEWgApv3xzBmoA&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3043,7 +3043,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CvRJ8MrnB1AwjrgX25uyeLJiXNSugTo2ZHh8UXDTpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3185,7 +3185,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=SKHYhSjuRWHgikq8eRKbtBbpABgJSkd7ytQV14i9EQ3&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3330,7 +3330,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=93VGqXL76voGxc43apJTDJoKkqnxTht1BKWoEmUypump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3475,7 +3475,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=HsprHxBRgiVaQdRf3TnKNuZZtaX9JUSPgMFdAkk6pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3620,7 +3620,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=4kjruqGHDsSqkMdFfCjV7Vb62HPFhtXyWc2t6JpQzDnz&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3765,7 +3765,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=nxPqZ4F7ux8Vph5NFu25rEP6Kx9Gr1U6Fmj36Rjpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -3910,7 +3910,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CPoGSmcjprCvzA2MFYLJMpQkGjmgVzKg4RVwMdrzpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4052,7 +4052,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=METAewgxyPbgwsseH8T16a39CQ5VyVxZi9zXiDPY18m&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4197,7 +4197,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=CWZ6BsdnjkDVTGkmL6bGbJXXig6ceef12KvyGQW14cMt&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4342,7 +4342,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=EJAxERvKU4kEVXn3NarjvRtgaMaJyP9ZuMeKA7JJpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4487,7 +4487,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4632,7 +4632,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=3kRQDKPGqMWwBdGjiVPpPqVzFsnYG5PDqvrVz1D2pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4777,7 +4777,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=HNxyGpz8AkLqmfBBKMzmugkPE5Bahj2bGPPTNgWGpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -4922,7 +4922,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5067,7 +5067,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=8pjfN5Ayb4rucGpYE3tZWN6v3EysizjPx1v62zx1pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5212,7 +5212,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=qhbbjGBKJxW3AZGqngWM5tHcrENR3pVoRB9MCf1pump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5357,7 +5357,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=FWatMYieKhRuJ1yuTcmVG1njRhZWwqHwjR11pBympump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5502,7 +5502,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5647,7 +5647,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=APLPiTjBWzwfZ5U1TBeqLF9XJ7dV7XKGe7j4BZhkDray&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5792,7 +5792,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -5937,7 +5937,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6QUHcqYuiPRHxhnYZoygewXtNQr9kUrhc9Tmwgtbpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6082,7 +6082,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6GmAFSYs4gk3FDao5FzzySQpPZaWsa4rUJHacpMpUNgx&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6227,7 +6227,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=DKYcjobF7HPtL9RyQBRdeRQ2iWvizpfbgWwPWNXdpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6372,7 +6372,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=wMHBD2B8KbDagvXUEapginhtJdrH4QSvSezBM8Tpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6517,7 +6517,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=FjPKUGnF5zBpdEv18gT8FJCtxh3MKrFkoeYekgYr1win&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6662,7 +6662,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=6jFcYpa95qnzX3Kui4TTyPCEzQorHRCHXhoCAg5tpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6807,7 +6807,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=7ttfwuBSnbNTgf32gUAT7v9bjdDWsn6pYpp7nmGmpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -6952,7 +6952,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Bv1a7cEj5aRnJQhMw4kRQqAFesMSd5LwcDnUzq52BMmr&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -7097,7 +7097,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=GexThZHgaswpAQ7Fi8QrHFubjPimUNSYhJiAA7XZpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}
@@ -7242,7 +7242,7 @@ export function ApplicationVolumeContent() {
                 className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
                 href="/application/swap?mint=Fp4JkqEcKYKBKhb9iMu9NSDeo71HWgq2q9QtXaaKpump&chain=solana"
                 style={{
-                  color: "rgb(20, 25, 29)",
+                  color: "#ffffff",
                   background:
                     "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)",
                 }}

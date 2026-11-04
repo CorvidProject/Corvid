@@ -181,7 +181,7 @@ export function ApplicationProContent() {
           >
             <span
               className="absolute -top-2.5 left-6 font-mono text-[10px] uppercase tracking-[0.06em] px-2 py-0.5 rounded-sm"
-              style={{ background: "var(--v2-accent)", color: "#14191d" }}
+              style={{ background: "var(--v2-accent)", color: "#ffffff" }}
             >
               Default
             </span>
