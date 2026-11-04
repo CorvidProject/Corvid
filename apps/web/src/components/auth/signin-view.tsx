@@ -1,4 +1,5 @@
 "use client";
+import { signInWithEmail, signUpWithEmail } from "@/lib/auth";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Eye, EyeSlash, SpinnerGap } from "@phosphor-icons/react";
@@ -70,15 +71,13 @@ export function SigninView() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/auth/${mode === "signin" ? "signin" : "signup"}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
-        },
-      );
-      if (!res.ok) throw new Error("Authentication is not configured yet");
+      const r =
+        mode === "signin"
+          ? await signInWithEmail(email, password)
+          : await signUpWithEmail(email, password, name || email.split("@")[0] || "Trader");
+      if (r.code === "confirm_email") setError("Check your inbox: we sent a confirmation link. Click it, then log in.");
+      else if (r.error) setError(r.error);
+      else window.location.href = "/application";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

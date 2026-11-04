@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 import "./reveal.css";
+import "./corvid.css";
+import { AuthModalProvider } from "@/components/auth/auth-modal";
+import { CommandPaletteProvider } from "@/components/app/command-palette";
 import { BootLoader } from "@/components/site/boot-loader";
 import { CookieBanner } from "@/components/site/cookie-banner";
 
@@ -18,7 +21,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         ))}
       </head>
       <body className="min-h-full flex flex-col font-sans">
-        {children}
+        <AuthModalProvider>
+          <CommandPaletteProvider>{children}</CommandPaletteProvider>
+        </AuthModalProvider>
         <CookieBanner />
         <BootLoader />
       </body>

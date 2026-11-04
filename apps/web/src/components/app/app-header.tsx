@@ -177,6 +177,7 @@ function TokenLink() {
 function ConnectButton() {
   return (
     <button
+      data-auth-open="signin"
       className="flex items-center gap-1.5 h-8 text-[13px] font-medium whitespace-nowrap transition-colors rounded-full px-2.5"
       style={{ background: "var(--v2-accent)", color: "#fff" }}
     >
@@ -238,6 +239,7 @@ export function AppHeader() {
         <div className="flex-1" />
         <div className="flex items-center gap-1">
           <button
+            data-palette-open
             className="group flex items-center gap-2.5 h-9 w-[210px] 2xl:w-[280px] pl-3.5 pr-1.5 rounded-full transition-colors cursor-pointer mr-1"
             style={{
               background: "var(--v2-bg-1)",
