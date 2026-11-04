@@ -16,5 +16,10 @@
 
 - Avatar wallet (`/avatars/wallets/*.webp`) tidak ikut ter-crawl; dipakai placeholder SVG netral `public/avatars/wallets/placeholder.svg`. Kirim aset asli bila ada.
 
-11. **Vercel ↔ GitHub belum tersambung** (project `corvid` dideploy manual dari lokal). Agar push otomatis memicu deploy, pemilik org `CorvidProject` perlu memberi akses Vercel GitHub App ke repo `Corvid`, lalu jalankan `vercel git connect` di ROOT. Setelah tersambung: Production Branch = `mainnet`, `testnet` = preview.
+11. **Vercel ↔ GitHub belum tersambung** (diperiksa 2026-11-04). `vercel git connect https://github.com/CorvidProject/Corvid.git` gagal ("Failed to connect ... make sure you have access"). Akun GitHub `Bayusmd` sudah admin org `CorvidProject`, jadi yang kurang ada di sisi Vercel/GitHub App. Langkah (butuh browser):
+    1. Vercel → Account Settings → Authentication → hubungkan GitHub (login sebagai `Bayusmd`).
+    2. Buka https://github.com/apps/vercel/installations/new → pilih org `CorvidProject` → beri akses ke repo `Corvid` (cukup repo itu).
+    3. Jalankan di ROOT: `vercel git connect https://github.com/CorvidProject/Corvid.git` (atau Vercel → project `corvid` → Settings → Git → Connect).
+    4. Setelah tersambung: Production Branch sesuai tahap (testnet = branch `testnet`), env `NEXT_PUBLIC_SITE_URL` diisi. Pengaturan project saat ini sudah benar: Root Directory `apps/web`, Next.js, `pnpm build`.
+    Sampai terhubung, deploy dilakukan manual dari lokal (`vercel --prod` di ROOT).
 12. **Vercel Hobby:** project `corvid` ada di akun pribadi (`fauzanbayu123-1072s-projects`, sama dengan `nexa-ai-web`). Hobby melarang penggunaan komersial; pindahkan ke akun/tim Pro terpisah sebelum produksi berpenghasilan.
