@@ -1,10 +1,9 @@
 "use client";
 import { useMemo, useState } from "react";
-import newTokens from "@/server/data/trending-solana-new.json";
-import trendingTokens from "@/server/data/trending-solana-trending.json";
+import { useApi } from "@/lib/api";
 
-// Tabel token untuk /application/latest, /gainers, /volume. Data dari fixture (bentuk sama dengan
-// /tokens/trending); diganti API di Tahap 2. Hanya mint Solana (base58) yang ditampilkan.
+// Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
+// (fixture atau backend, lihat src/lib/api.ts). Hanya mint Solana (base58) yang ditampilkan.
 
 type T = {
   name: string;
@@ -24,7 +23,23 @@ export type BoardMode = "latest" | "gainers" | "volume";
 type SortKey = "price" | "change1h" | "change24h" | "marketCap" | "liquidity" | "volume" | "age";
 
 const SOL_MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-const clean = (a: unknown) => (a as { tokens: T[] }).tokens.filter((t) => SOL_MINT.test(t.mint));
+type Raw = { [K in keyof T]: T[K] | null };
+const clean = (list: Raw[]): T[] =>
+  list
+    .filter((t) => t.mint && SOL_MINT.test(t.mint))
+    .map((t) => ({
+      ...t,
+      name: t.name ?? "",
+      symbol: t.symbol ?? "",
+      mint: t.mint as string,
+      price: t.price ?? 0,
+      marketCap: t.marketCap ?? 0,
+      liquidity: t.liquidity ?? 0,
+      volume: t.volume ?? 0,
+      change1h: t.change1h ?? 0,
+      change24h: t.change24h ?? 0,
+      createdAt: t.createdAt ?? 0,
+    }));
 
 const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number }> = {
   latest: { title: "Latest Tokens", sub: "New pools and pump.fun launches, newest first · Solana", sort: "age", dir: -1, minLiq: 0 },
@@ -68,7 +83,10 @@ const PAGE = 25;
 
 export function TokenBoard({ mode }: { mode: BoardMode }) {
   const cfg = CFG[mode];
-  const base = useMemo(() => clean(mode === "latest" ? newTokens : trendingTokens), [mode]);
+  const { data, loading, error } = useApi<{ tokens: Raw[] }>(
+    `/api/tokens/trending?tab=${mode === "latest" ? "new" : "trending"}&limit=200`,
+  );
+  const base = useMemo(() => clean(data?.tokens ?? []), [data]);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>(cfg.sort);
   const [dir, setDir] = useState<1 | -1>(cfg.dir);
@@ -150,7 +168,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
         </div>
         {rows.length === 0 && (
           <div className="px-4 py-12 text-center text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-            No tokens match “{q}”.
+            {loading ? "Loading tokens…" : error ? "Could not load tokens. Try again shortly." : q ? `No tokens match “${q}”.` : "No tokens yet."}
           </div>
         )}
         {rows.slice(0, shown).map((t, i) => {

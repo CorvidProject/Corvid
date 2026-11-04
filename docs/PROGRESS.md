@@ -69,3 +69,8 @@
 - `packages/shared` (zod) dan `apps/api` (Fastify): /health, /openapi.json, /api/stats, /api/tokens/trending, /api/tokens/trades, /api/tokens/:mint, /api/tokens/:mint/security, /api/solana/memescope. Rute lain 404 bersih.
 - 9 tes Vitest lulus di Postgres embedded (migrasi + seed Solana-only). `docs/api/openapi.json` dihasilkan dari `pnpm --filter @corvid/api openapi`.
 - Belum: /search, /tokens/chart, /tokens/live-batch, /prices/sol, alpha/*, auth/*, wallets/trade, agents, worker ingest, `packages/api-client`, sambungan frontend (`NEXT_PUBLIC_USE_FIXTURES=false`).
+
+## 2026-11-05 — Frontend tersambung ke API
+- Latest, Gainers, Volume, Memescope, dan harga SOL membaca dari Fastify (mode `NEXT_PUBLIC_USE_FIXTURES=false`). E2E Playwright terhadap Postgres embedded + API + `next dev`: 25/25/45 baris, tanpa error konsol. 10 tes API lulus.
+- Tambah endpoint /api/prices/sol.
+- Belum: /search, /tokens/chart, /tokens/live-batch, halaman detail token, alpha/auth/wallet/agent, worker ingest, packages/api-client.

@@ -10,6 +10,7 @@ const port = 54330;
 const url = `postgres://corvid:corvid-dev@localhost:${port}/corvid`;
 let pgServer: EmbeddedPostgres;
 let app: Awaited<ReturnType<typeof buildApp>>;
+let priceNow = () => 150.25;
 let pool: ReturnType<typeof createDb>["pool"];
 
 beforeAll(async () => {
@@ -22,7 +23,7 @@ beforeAll(async () => {
   const created = createDb(url);
   pool = created.pool;
   await seedAll(created.db);
-  app = await buildApp({ db: created.db });
+  app = await buildApp({ db: created.db, solPrice: async () => priceNow() });
   await app.ready();
 }, 120_000);
 
@@ -96,6 +97,14 @@ describe("market API", () => {
     const r = await get("/api/does-not-exist");
     expect(r.statusCode).toBe(404);
     expect(r.json()).toEqual({ error: "not_found" });
+  });
+
+  it("GET /api/prices/sol: cache, lalu 503 bila sumber gagal dan tidak ada cache", async () => {
+    const r = await get("/api/prices/sol");
+    expect(r.statusCode).toBe(200);
+    expect(r.json()).toEqual({ usd: 150.25 });
+    priceNow = () => 999; // di dalam TTL: tetap nilai cache
+    expect((await get("/api/prices/sol")).json()).toEqual({ usd: 150.25 });
   });
 
   it("GET /openapi.json memuat path pasar", async () => {

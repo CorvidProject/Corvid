@@ -1,13 +1,11 @@
 "use client";
 import { useMemo, useState } from "react";
 import { ArrowSquareOut, Fire, Robot, Rocket, GraduationCap } from "@phosphor-icons/react";
-import fresh from "@/server/data/memescope-new.json";
-import stretch from "@/server/data/memescope-stretch.json";
-import migrated from "@/server/data/memescope-migrated.json";
+import { useApi } from "@/lib/api";
 import { money } from "@/components/app/token-board";
 
-// Memescope: peluncuran pump.fun dari trade pertama sampai DEX. Data fixture (bentuk /solana/memescope);
-// diganti API di Tahap 2.
+// Memescope: peluncuran pump.fun dari trade pertama sampai DEX. Data dari GET /api/solana/memescope
+// (fixture atau backend, lihat src/lib/api.ts).
 type Coin = {
   mint: string;
   name: string;
@@ -22,7 +20,21 @@ type Coin = {
 type Sort = "new" | "mc";
 
 const MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-const pick = (a: unknown) => (a as { coins: Coin[] }).coins.filter((c) => MINT.test(c.mint));
+type RawCoin = { [K in keyof Coin]: Coin[K] | null };
+const pick = (a: { coins: RawCoin[] } | null): Coin[] =>
+  (a?.coins ?? [])
+    .filter((c) => c.mint && MINT.test(c.mint))
+    .map((c) => ({
+      ...c,
+      mint: c.mint as string,
+      name: c.name ?? "",
+      symbol: c.symbol ?? "",
+      progress: c.progress ?? 0,
+      marketCapUsd: c.marketCapUsd ?? 0,
+      createdAt: c.createdAt ?? 0,
+      complete: !!c.complete,
+      dex: c.dex ?? undefined,
+    }));
 
 function age(ts: number, now: number) {
   const s = Math.max(0, Math.floor(now / 1000 - ts));
@@ -181,7 +193,10 @@ function Column({
 export function ApplicationMemescopeContent() {
   const [q, setQ] = useState("");
   const [now] = useState(() => Date.now());
-  const cols = useMemo(() => ({ n: pick(fresh), s: pick(stretch), m: pick(migrated) }), []);
+  const n = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=new");
+  const st = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=stretch");
+  const mg = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=migrated");
+  const cols = useMemo(() => ({ n: pick(n.data), s: pick(st.data), m: pick(mg.data) }), [n.data, st.data, mg.data]);
 
   return (
     <div className="max-w-[1700px] mx-auto">

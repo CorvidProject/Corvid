@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import { apiGet } from "@/lib/api";
 import {
   ChartLineUp,
   Fire,
@@ -25,8 +26,7 @@ function StatusBar() {
   useEffect(() => {
     let alive = true;
     const load = () =>
-      fetch("/api/prices/sol")
-        .then((r) => (r.ok ? r.json() : null))
+      apiGet<{ usd?: number }>("/api/prices/sol")
         .then((j) => {
           if (alive && j && typeof j.usd === "number")
             setSol(`$${j.usd.toFixed(2)}`);

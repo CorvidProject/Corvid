@@ -198,3 +198,5 @@ export const memescopeResponseSchema = z.object({
 export const mintParamSchema = z.object({ mint: solanaAddress });
 
 export const errorSchema = z.object({ error: z.string() });
+
+export const solPriceSchema = z.object({ usd: z.number() });

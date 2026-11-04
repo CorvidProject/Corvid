@@ -48,15 +48,17 @@ async function applyMigrations() {
     "select count(*)::int as n from information_schema.tables where table_schema='public'",
   );
   console.log("tabel public:", rows[0].n);
-  // cek CHECK alamat Solana menolak 0x
-  try {
-    await client.query("insert into tokens (mint) values ('0x8b65363a01510490fba03cea97b14c73b7ee8f75')");
-    console.log("GAGAL: alamat 0x diterima");
-  } catch {
-    console.log("OK: alamat 0x ditolak");
+  if (mode === "migrate-test") {
+    // cek CHECK alamat Solana menolak 0x
+    try {
+      await client.query("insert into tokens (mint) values ('0x8b65363a01510490fba03cea97b14c73b7ee8f75')");
+      console.log("GAGAL: alamat 0x diterima");
+    } catch {
+      console.log("OK: alamat 0x ditolak");
+    }
+    await client.query("insert into tokens (mint) values ('G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG')");
+    console.log("OK: mint Solana diterima");
   }
-  await client.query("insert into tokens (mint) values ('G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG')");
-  console.log("OK: mint Solana diterima");
   await client.end();
 }
 
