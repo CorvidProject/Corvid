@@ -23,6 +23,7 @@ const server = new EmbeddedPostgres({
   password: "corvid-dev",
   port,
   persistent: mode !== "migrate-test",
+  initdbFlags: ["--encoding=UTF8", "--locale=C"],
 });
 
 if (fresh) await server.initialise();

@@ -10,3 +10,4 @@ export function createDb(connectionString: string) {
   const pool = new pg.Pool({ connectionString });
   return { db: drizzle(pool, { schema }), pool };
 }
+export { applyMigrations } from "./migrate";

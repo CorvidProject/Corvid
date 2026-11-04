@@ -1,0 +1,1024 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Corvid API",
+    "version": "0.1.0"
+  },
+  "components": {
+    "schemas": {}
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "activeAgents": {
+                      "type": "integer"
+                    },
+                    "publishedAgents": {
+                      "type": "integer"
+                    },
+                    "smartWallets": {
+                      "type": "integer"
+                    },
+                    "swapsExecuted": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "activeAgents",
+                    "publishedAgents",
+                    "smartWallets",
+                    "swapsExecuted"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tokens/trending": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "trending",
+                "new"
+              ],
+              "default": "trending"
+            },
+            "in": "query",
+            "name": "tab",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "solana"
+              ],
+              "default": "solana"
+            },
+            "in": "query",
+            "name": "chain",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tokens": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "symbol": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "mint": {
+                            "type": "string",
+                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                          },
+                          "image": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "price": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "marketCap": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "liquidity": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "volume": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change5m": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change1h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change6h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change24h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "buys": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "sells": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "txns": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "makers": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "twitter": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "telegram": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "website": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "riskScore": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "top10": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "devPct": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "buyTax": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "sellTax": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "transferFeeBps": {
+                            "type": "integer",
+                            "nullable": true
+                          },
+                          "dex": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "rugged": {
+                            "type": "boolean"
+                          },
+                          "riskChecked": {
+                            "type": "boolean"
+                          },
+                          "risks": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "level": {
+                                  "type": "string"
+                                },
+                                "score": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "level",
+                                "score"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "lpBurn": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "createdAt": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "holders": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "chain": {
+                            "type": "string",
+                            "enum": [
+                              "solana"
+                            ]
+                          },
+                          "volume1h": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "symbol",
+                          "mint",
+                          "image",
+                          "price",
+                          "marketCap",
+                          "liquidity",
+                          "volume",
+                          "change5m",
+                          "change1h",
+                          "change6h",
+                          "change24h",
+                          "buys",
+                          "sells",
+                          "txns",
+                          "makers",
+                          "twitter",
+                          "telegram",
+                          "website",
+                          "riskScore",
+                          "top10",
+                          "devPct",
+                          "buyTax",
+                          "sellTax",
+                          "transferFeeBps",
+                          "dex",
+                          "rugged",
+                          "riskChecked",
+                          "risks",
+                          "lpBurn",
+                          "createdAt",
+                          "holders",
+                          "chain",
+                          "volume1h"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "tokens"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tokens/trades": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "mint",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "solana"
+              ],
+              "default": "solana"
+            },
+            "in": "query",
+            "name": "chain",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "trades": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "txHash": {
+                            "type": "string"
+                          },
+                          "wallet": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "buy",
+                              "sell"
+                            ]
+                          },
+                          "tokenAmount": {
+                            "type": "number"
+                          },
+                          "solAmount": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "priceUsd": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "marketCapUsd": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "timestamp": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "txHash",
+                          "wallet",
+                          "type",
+                          "tokenAmount",
+                          "solAmount",
+                          "priceUsd",
+                          "marketCapUsd",
+                          "timestamp"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "trades"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tokens/{mint}/security": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "path",
+            "name": "mint",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "checked": {
+                      "type": "boolean"
+                    },
+                    "groups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "checks": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "state": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pass",
+                                    "warn",
+                                    "fail",
+                                    "unknown"
+                                  ]
+                                },
+                                "value": {
+                                  "type": "string"
+                                },
+                                "hint": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "state"
+                              ],
+                              "additionalProperties": false
+                            }
+                          }
+                        },
+                        "required": [
+                          "title",
+                          "checks"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "passed": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "checked",
+                    "groups",
+                    "passed",
+                    "total"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tokens/{mint}": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "path",
+            "name": "mint",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "symbol": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "mint": {
+                          "type": "string",
+                          "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                        },
+                        "image": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "links": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "decimals": {
+                          "type": "integer"
+                        },
+                        "price": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "marketCap": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "liquidity": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "lpBurn": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "volume": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "buys": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "sells": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "txns": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "change1m": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "change5m": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "change1h": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "change6h": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "change24h": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "risk": {
+                          "type": "object",
+                          "properties": {
+                            "score": {
+                              "type": "number",
+                              "nullable": true
+                            },
+                            "rugged": {
+                              "type": "boolean"
+                            },
+                            "risks": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "level": {
+                                    "type": "string"
+                                  },
+                                  "score": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "level",
+                                  "score"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "score",
+                            "rugged",
+                            "risks"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "security": {
+                          "type": "object",
+                          "properties": {
+                            "freezeAuthority": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "mintAuthority": {
+                              "type": "string",
+                              "nullable": true
+                            }
+                          },
+                          "required": [
+                            "freezeAuthority",
+                            "mintAuthority"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "transferFeeBps": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "totalSupply": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "topHoldersPercent": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "devHoldingsPercent": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "devWallet": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "sniperHoldingsPercent": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "bundlerHoldingsPercent": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "insidersPercent": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "insidersCount": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "bundlersCount": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "bundlersInitialPercent": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "snipersCount": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "jitoFees": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "jupiterVerified": {
+                          "type": "boolean",
+                          "nullable": true
+                        },
+                        "holdersCount": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "creatorAddress": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "buyVolume": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "sellVolume": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "makers": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "buyers": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "sellers": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "poolId": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "market": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "createdAt": {
+                          "type": "number",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "symbol",
+                        "mint",
+                        "image",
+                        "description",
+                        "links",
+                        "decimals",
+                        "price",
+                        "marketCap",
+                        "liquidity",
+                        "lpBurn",
+                        "volume",
+                        "buys",
+                        "sells",
+                        "txns",
+                        "change1m",
+                        "change5m",
+                        "change1h",
+                        "change6h",
+                        "change24h",
+                        "risk",
+                        "security",
+                        "transferFeeBps",
+                        "totalSupply",
+                        "topHoldersPercent",
+                        "devHoldingsPercent",
+                        "devWallet",
+                        "sniperHoldingsPercent",
+                        "bundlerHoldingsPercent",
+                        "insidersPercent",
+                        "insidersCount",
+                        "bundlersCount",
+                        "bundlersInitialPercent",
+                        "snipersCount",
+                        "jitoFees",
+                        "jupiterVerified",
+                        "holdersCount",
+                        "creatorAddress",
+                        "buyVolume",
+                        "sellVolume",
+                        "makers",
+                        "buyers",
+                        "sellers",
+                        "poolId",
+                        "market",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "token"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/solana/memescope": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "new",
+                "stretch",
+                "migrated"
+              ],
+              "default": "new"
+            },
+            "in": "query",
+            "name": "stage",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "coins": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mint": {
+                            "type": "string",
+                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                          },
+                          "name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "symbol": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "image": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "progress": {
+                            "type": "number"
+                          },
+                          "marketCapUsd": {
+                            "type": "number"
+                          },
+                          "athMarketCapUsd": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "createdAt": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "lastTradeAt": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "replies": {
+                            "type": "integer"
+                          },
+                          "complete": {
+                            "type": "boolean"
+                          },
+                          "live": {
+                            "type": "boolean"
+                          },
+                          "creator": {
+                            "type": "string"
+                          },
+                          "dex": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "mint",
+                          "name",
+                          "symbol",
+                          "image",
+                          "progress",
+                          "marketCapUsd",
+                          "athMarketCapUsd",
+                          "createdAt",
+                          "lastTradeAt",
+                          "replies",
+                          "complete",
+                          "live",
+                          "creator",
+                          "dex"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "at": {
+                      "type": "number"
+                    },
+                    "stale": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "coins",
+                    "at",
+                    "stale"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
