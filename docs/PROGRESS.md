@@ -58,3 +58,9 @@
 ## 2026-11-05 — Tahap 2a
 - Selesai: `docs/db-analysis.md` (temuan skema, kebutuhan per endpoint, daftar tabel, indeks, RLS, retensi). Default dicatat di DECISIONS.
 - Berikut: REA subset untuk verifikasi field, skema Drizzle di `packages/db`, migrasi, Fastify `apps/api` (mulai `/stats`, `/tokens/*`).
+
+## 2026-11-05 — Tahap 2 mulai: packages/db
+- Skema Drizzle (`packages/db/src/schema`: market + app), migrasi `0000_init` (36 tabel) dan `0001_rls` (RLS + FK ke auth.users, dilewati di Postgres lokal).
+- `node packages/db/scripts/dev-db.mjs migrate-test` memvalidasi migrasi di Postgres embedded (data di D:\.dev); `start` menjalankan server lokal port 54329.
+- Teruji: CHECK menolak alamat 0x, menerima mint Solana. RLS belum teruji (butuh Supabase).
+- Berikut: Fastify `apps/api` (/stats, /tokens/*), seed Solana-only, `packages/shared` (zod).

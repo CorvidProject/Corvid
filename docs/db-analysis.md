@@ -1,7 +1,7 @@
 # Analisis database (Tahap 2a)
 
 Sumber: `legacy/be/db/schema.sql` (titik awal), fixture di `packages/api-client/fixtures/` dan `apps/web/src/server/data/` (bentuk response yang dibaca UI), kebutuhan CLAUDE.md bagian 6.
-Catatan: pemetaan field per chunk halaman dengan REA belum dijalankan; field di bawah diambil dari bentuk response fixture. Verifikasi REA dijadwalkan sebelum migrasi dikunci (lihat "Langkah berikutnya").
+Catatan: field diambil dari bentuk response fixture. Daftar endpoint diverifikasi dengan pencarian path `/api/*` di chunk klien lama (`legacy/_next/static/chunks`, grep lokal, bukan REA penuh; REA terlalu lambat untuk selisih sekecil ini). Verifikasi field per halaman lewat REA tetap opsional.
 
 ## 1. Temuan skema lama
 
@@ -44,6 +44,22 @@ Catatan: pemetaan field per chunk halaman dengan REA belum dijalankan; field di 
 | `/agents*`, `/marketplace/feed`, `/public/live-agent` | `agents`, `agent_runs`, `agent_run_steps`, `agent_knowledge`, `agent_social_config`, `agent_backtests`, `subscriptions` |
 | Inbox UI | `notifications` |
 
+## 2b. Endpoint tambahan dari chunk klien (tidak ada di daftar CLAUDE.md)
+
+| Endpoint | Kebutuhan data |
+| --- | --- |
+| `/wallets/chain-balances`, `/trade/quote` | tanpa tabel; Solana saja (RPC/Jupiter). `chain-balances` dipersempit ke satu chain |
+| `/alpha/smart-money-by-mint` | query `wallet_activity` per mint |
+| `/agents/following`, `/agents/feeds` | `subscriptions`, `agent_runs` |
+| `/agents/:id/avatar`, `/profile/avatar`, `/profile/banner` | kolom `avatar_url`, `banner_url` (Supabase Storage atau placeholder) |
+| `/agents/:id/withdraw-earnings` | `agent_earnings` (agent_id, amount, withdrawn_at); tertutup oleh `PAID_FEATURES_ENABLED=false` |
+| `/profile/telegram-bot`, `/auth/telegram/unlink` | kolom `telegram_chat_id` di `profiles` |
+| `/chats/feedback` | `chat_feedback` (message_id, rating) |
+| `/portfolio/transfer`, `/portfolio/positions` | `swaps`/`portfolio_snapshots`; transfer ikut `TRADE_MODE=dry` |
+| `/apevisor/burns` | menjadi `/corvid/burns`, tabel `burn_events` |
+
+Semua nama `apevisor` di path diganti `corvid`.
+
 ## 3. Daftar tabel final
 
 **Pasar (publik, tulis oleh worker, baca publik):**
@@ -65,6 +81,8 @@ Catatan: pemetaan field per chunk halaman dengan REA belum dijalankan; field di 
 **Agent:** `agents` (owner_id, type, running, published, floor, conviction, token_mint, persona), `agent_runs`, `agent_run_steps`, `agent_knowledge`, `agent_social_config` (kunci Twitter terenkripsi), `agent_backtests`.
 
 **Eksekusi:** `swaps` (agent_id, user_wallet_id, token_id, side, amount_usd, tx_hash, `mode` `dry|live`, `report` jsonb).
+
+**Tambahan:** `agent_earnings`, `chat_feedback`.
 
 **Token $CRVD:** `burn_events` (tx_hash, amount, at). Kosong sampai token diluncurkan.
 
