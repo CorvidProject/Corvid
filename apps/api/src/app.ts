@@ -10,6 +10,7 @@ import {
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { schema } from "@corvid/db";
 import { marketRoutes } from "./routes/market";
+import { discoveryRoutes } from "./routes/discovery";
 import { coingeckoSolPrice, priceRoutes, type SolPriceSource } from "./routes/prices";
 
 export type Db = NodePgDatabase<typeof schema>;
@@ -37,6 +38,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   app.get("/openapi.json", async () => app.swagger());
 
   await app.register(marketRoutes(db), { prefix: "/api" });
+  await app.register(discoveryRoutes(db), { prefix: "/api" });
   await app.register(priceRoutes(solPrice), { prefix: "/api" });
 
   // Rute yang belum ada: 404 bersih (tanpa proxy ke situs lain).

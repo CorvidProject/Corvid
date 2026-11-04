@@ -200,3 +200,78 @@ export const mintParamSchema = z.object({ mint: solanaAddress });
 export const errorSchema = z.object({ error: z.string() });
 
 export const solPriceSchema = z.object({ usd: z.number() });
+
+/* ---- search, live-batch, chart ---- */
+
+export const searchQuerySchema = z.object({
+  q: z.string().trim().min(1).max(100),
+  chain: chainParam,
+});
+export const searchResponseSchema = z.object({
+  tokens: z.array(trendingTokenSchema),
+  agents: z.array(
+    z.object({
+      id: z.number().int(),
+      name: z.string(),
+      type: z.string(),
+      avatarUrl: z.string().nullable(),
+      tokenSymbol: z.string().nullable(),
+    }),
+  ),
+  wallets: z.array(
+    z.object({
+      address: solanaAddress,
+      label: z.string().nullable(),
+      tier: z.string().nullable(),
+      pnlSol: z.number().nullable(),
+    }),
+  ),
+  notice: z.string().optional(),
+});
+
+export const liveBatchBodySchema = z.object({
+  mints: z.array(solanaAddress).min(1).max(50),
+});
+export const liveBatchQuerySchema = z.object({ chain: chainParam });
+export const liveBatchResponseSchema = z.object({
+  data: z.record(
+    z.string(),
+    z.object({
+      price: z.number().nullable(),
+      marketCap: z.number().nullable(),
+      liquidity: z.number().nullable(),
+      volume: z.number().nullable(),
+      buys: z.number().nullable(),
+      sells: z.number().nullable(),
+      txns: z.number().nullable(),
+      change5m: z.number().nullable(),
+      change1h: z.number().nullable(),
+      change6h: z.number().nullable(),
+      change24h: z.number().nullable(),
+      image: z.string().nullable(),
+    }),
+  ),
+});
+
+export const chartIntervals = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
+export const chartQuerySchema = z.object({
+  mint: solanaAddress,
+  type: z.enum(chartIntervals).default("15m"),
+  chain: chainParam,
+  limit: z.coerce.number().int().min(1).max(1000).default(300),
+});
+/** `time` dalam detik (epoch), urut naik. */
+export const chartResponseSchema = z.object({
+  mint: solanaAddress,
+  type: z.enum(chartIntervals),
+  candles: z.array(
+    z.object({
+      time: z.number(),
+      open: z.number(),
+      high: z.number(),
+      low: z.number(),
+      close: z.number(),
+      volume: z.number(),
+    }),
+  ),
+});

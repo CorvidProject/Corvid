@@ -1020,6 +1020,606 @@
         }
       }
     },
+    "/api/search": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "in": "query",
+            "name": "q",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "solana"
+              ],
+              "default": "solana"
+            },
+            "in": "query",
+            "name": "chain",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tokens": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "symbol": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "mint": {
+                            "type": "string",
+                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                          },
+                          "image": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "price": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "marketCap": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "liquidity": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "volume": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change5m": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change1h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change6h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change24h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "buys": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "sells": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "txns": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "makers": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "twitter": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "telegram": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "website": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "riskScore": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "top10": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "devPct": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "buyTax": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "sellTax": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "transferFeeBps": {
+                            "type": "integer",
+                            "nullable": true
+                          },
+                          "dex": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "rugged": {
+                            "type": "boolean"
+                          },
+                          "riskChecked": {
+                            "type": "boolean"
+                          },
+                          "risks": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "level": {
+                                  "type": "string"
+                                },
+                                "score": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "level",
+                                "score"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "lpBurn": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "createdAt": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "holders": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "chain": {
+                            "type": "string",
+                            "enum": [
+                              "solana"
+                            ]
+                          },
+                          "volume1h": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "symbol",
+                          "mint",
+                          "image",
+                          "price",
+                          "marketCap",
+                          "liquidity",
+                          "volume",
+                          "change5m",
+                          "change1h",
+                          "change6h",
+                          "change24h",
+                          "buys",
+                          "sells",
+                          "txns",
+                          "makers",
+                          "twitter",
+                          "telegram",
+                          "website",
+                          "riskScore",
+                          "top10",
+                          "devPct",
+                          "buyTax",
+                          "sellTax",
+                          "transferFeeBps",
+                          "dex",
+                          "rugged",
+                          "riskChecked",
+                          "risks",
+                          "lpBurn",
+                          "createdAt",
+                          "holders",
+                          "chain",
+                          "volume1h"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "agents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "tokenSymbol": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "type",
+                          "avatarUrl",
+                          "tokenSymbol"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "wallets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string",
+                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                          },
+                          "label": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "tier": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "pnlSol": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "address",
+                          "label",
+                          "tier",
+                          "pnlSol"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "notice": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "tokens",
+                    "agents",
+                    "wallets"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tokens/live-batch": {
+      "post": {
+        "tags": [
+          "market"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mints": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                    },
+                    "minItems": 1,
+                    "maxItems": 50
+                  }
+                },
+                "required": [
+                  "mints"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "solana"
+              ],
+              "default": "solana"
+            },
+            "in": "query",
+            "name": "chain",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "price": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "marketCap": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "liquidity": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "volume": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "buys": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "sells": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "txns": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change5m": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change1h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change6h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "change24h": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "image": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "price",
+                          "marketCap",
+                          "liquidity",
+                          "volume",
+                          "buys",
+                          "sells",
+                          "txns",
+                          "change5m",
+                          "change1h",
+                          "change6h",
+                          "change24h",
+                          "image"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tokens/chart": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "mint",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "15m",
+                "1h",
+                "4h",
+                "1d"
+              ],
+              "default": "15m"
+            },
+            "in": "query",
+            "name": "type",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "solana"
+              ],
+              "default": "solana"
+            },
+            "in": "query",
+            "name": "chain",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 300
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mint": {
+                      "type": "string",
+                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "1m",
+                        "5m",
+                        "15m",
+                        "1h",
+                        "4h",
+                        "1d"
+                      ]
+                    },
+                    "candles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "time": {
+                            "type": "number"
+                          },
+                          "open": {
+                            "type": "number"
+                          },
+                          "high": {
+                            "type": "number"
+                          },
+                          "low": {
+                            "type": "number"
+                          },
+                          "close": {
+                            "type": "number"
+                          },
+                          "volume": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "time",
+                          "open",
+                          "high",
+                          "low",
+                          "close",
+                          "volume"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "mint",
+                    "type",
+                    "candles"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/prices/sol": {
       "get": {
         "tags": [

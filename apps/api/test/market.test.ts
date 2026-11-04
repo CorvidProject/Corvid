@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import EmbeddedPostgres from "embedded-postgres";
-import { applyMigrations, createDb } from "@corvid/db";
+import { applyMigrations, createDb, tokenCandles, tokens } from "@corvid/db";
+import { eq } from "drizzle-orm";
 import { buildApp } from "../src/app";
 import { seedAll } from "../src/seed";
 
@@ -23,6 +24,20 @@ beforeAll(async () => {
   const created = createDb(url);
   pool = created.pool;
   await seedAll(created.db);
+  const [tok] = await created.db.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump"));
+  const t0 = Date.UTC(2026, 10, 1, 0, 0, 0);
+  await created.db.insert(tokenCandles).values(
+    [0, 1, 2].map((i) => ({
+      tokenId: tok.id,
+      interval: "15m",
+      bucketStart: new Date(t0 + i * 15 * 60_000),
+      open: String(1 + i),
+      high: String(2 + i),
+      low: String(0.5 + i),
+      close: String(1.5 + i),
+      volumeUsd: "100",
+    })),
+  );
   app = await buildApp({ db: created.db, solPrice: async () => priceNow() });
   await app.ready();
 }, 120_000);
@@ -105,6 +120,45 @@ describe("market API", () => {
     expect(r.json()).toEqual({ usd: 150.25 });
     priceNow = () => 999; // di dalam TTL: tetap nilai cache
     expect((await get("/api/prices/sol")).json()).toEqual({ usd: 150.25 });
+  });
+
+  it("GET /api/search: simbol, nama, mint, dan notice untuk mint tak dikenal", async () => {
+    const bySym = await get("/api/search?q=trip");
+    expect(bySym.statusCode).toBe(200);
+    expect(bySym.json().tokens.some((t: { symbol: string }) => t.symbol === "Tripod")).toBe(true);
+    const byMint = await get("/api/search?q=B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump");
+    expect(byMint.json().tokens).toHaveLength(1);
+    const unknown = await get("/api/search?q=11111111111111111111111111111111");
+    expect(unknown.json().tokens).toHaveLength(0);
+    expect(unknown.json().notice).toMatch(/not indexed/i);
+    // "%" harus dicocokkan literal (bukan wildcard): hanya token yang memuat "%" pada nama/simbol/mint.
+    const pct = (await get("/api/search?q=%25")).json().tokens as { name: string; symbol: string; mint: string }[];
+    expect(pct.length).toBeLessThan(5);
+    for (const t of pct) expect(`${t.name}${t.symbol}${t.mint}`).toContain("%");
+    expect((await get("/api/search?q=")).statusCode).toBe(400);
+  });
+
+  it("POST /api/tokens/live-batch", async () => {
+    const mint = "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump";
+    const r = await app.inject({ method: "POST", url: "/api/tokens/live-batch", payload: { mints: [mint, "11111111111111111111111111111111"] } });
+    expect(r.statusCode).toBe(200);
+    expect(Object.keys(r.json().data)).toEqual([mint]);
+    expect(typeof r.json().data[mint].price).toBe("number");
+    const bad = await app.inject({ method: "POST", url: "/api/tokens/live-batch", payload: { mints: ["0xabc"] } });
+    expect(bad.statusCode).toBe(400);
+  });
+
+  it("GET /api/tokens/chart: candle urut naik, interval, 404", async () => {
+    const mint = "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump";
+    const r = await get(`/api/tokens/chart?mint=${mint}&type=15m`);
+    expect(r.statusCode).toBe(200);
+    const { candles } = r.json();
+    expect(candles).toHaveLength(3);
+    expect(candles[0].time).toBeLessThan(candles[2].time);
+    expect(candles[0]).toMatchObject({ open: 1, high: 2, low: 0.5, close: 1.5, volume: 100 });
+    expect((await get(`/api/tokens/chart?mint=${mint}&type=1h`)).json().candles).toEqual([]);
+    expect((await get(`/api/tokens/chart?mint=${mint}&type=2m`)).statusCode).toBe(400);
+    expect((await get("/api/tokens/chart?mint=11111111111111111111111111111111")).statusCode).toBe(404);
   });
 
   it("GET /openapi.json memuat path pasar", async () => {
