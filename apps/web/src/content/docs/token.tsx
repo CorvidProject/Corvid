@@ -81,7 +81,7 @@ export function DocsTokenContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Subscriptions and per-action AI credits are paid in $CRVD. Every
-              analysis, signal, or pipeline run settles in APE under the hood
+              analysis, signal, or pipeline run settles in $CRVD under the hood
             </p>
           </div>
           <div

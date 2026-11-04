@@ -34,7 +34,7 @@ export function ApplicationLeaderboardContent() {
           </div>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0x9f861dd584cfde90eb5dc1d34c385b49a2be0360"
+            href="/application/alpha/wallet/JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi"
           >
             <span
               className="num text-[14px] font-bold w-8 h-8 rounded-full flex items-center justify-center"
@@ -51,7 +51,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0x9f8...e0360
+                  JCuv...VAfi
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -91,7 +91,7 @@ export function ApplicationLeaderboardContent() {
           </a>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0x8b65363a01510490fba03cea97b14c73b7ee8f75"
+            href="/application/alpha/wallet/EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy"
             style={{ borderTop: "1px solid var(--v2-line-1)" }}
           >
             <span
@@ -109,7 +109,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0x8b6...e8f75
+                  EpMo...7VSy
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -143,7 +143,7 @@ export function ApplicationLeaderboardContent() {
           </a>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0xda215f40f590368d72bf13960e9ab9cc231ee12f"
+            href="/application/alpha/wallet/Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR"
             style={{ borderTop: "1px solid var(--v2-line-1)" }}
           >
             <span
@@ -161,7 +161,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0xda2...ee12f
+                  Ey5X...hsKR
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -195,7 +195,7 @@ export function ApplicationLeaderboardContent() {
           </a>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0x71cee8571bd349571bcebb47a4bff57a427dd72c"
+            href="/application/alpha/wallet/VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb"
             style={{ borderTop: "1px solid var(--v2-line-1)" }}
           >
             <span
@@ -210,7 +210,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0x71c...dd72c
+                  VFB7...GLjb
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -250,7 +250,7 @@ export function ApplicationLeaderboardContent() {
           </a>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0x3a4d8d4c346aac1b911521b6683e62bf6167f598"
+            href="/application/alpha/wallet/phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r"
             style={{ borderTop: "1px solid var(--v2-line-1)" }}
           >
             <span
@@ -265,7 +265,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0x3a4...7f598
+                  phEM...KE8r
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -299,7 +299,7 @@ export function ApplicationLeaderboardContent() {
           </a>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0x4823adf49b282415061585c2e17ff31775e65950"
+            href="/application/alpha/wallet/kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas"
             style={{ borderTop: "1px solid var(--v2-line-1)" }}
           >
             <span
@@ -314,7 +314,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0x482...65950
+                  kMcZ...wtas
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -354,7 +354,7 @@ export function ApplicationLeaderboardContent() {
           </a>
           <a
             className="grid grid-cols-[44px_1fr_auto] sm:grid-cols-[56px_1fr_120px_90px_90px] gap-3 px-4 py-3 items-center transition-colors hover:bg-[var(--v2-bg-2)]"
-            href="/application/alpha/wallet/0x59c26d4ae5b89a5b5844011fee22dd41c0a50cfa"
+            href="/application/alpha/wallet/r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq"
             style={{ borderTop: "1px solid var(--v2-line-1)" }}
           >
             <span
@@ -369,7 +369,7 @@ export function ApplicationLeaderboardContent() {
                   className="num text-[14px]"
                   style={{ color: "var(--v2-t-1)" }}
                 >
-                  0x59c...50cfa
+                  r1ap...hTGq
                 </span>
                 <span
                   className="font-mono text-[10px] px-1.5 py-0.5 rounded"

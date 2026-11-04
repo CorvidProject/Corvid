@@ -58,7 +58,7 @@ export function DocsBurnDashboardContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Running total of APE removed from supply since day one. Updates
+              Running total of $CRVD removed from supply since day one. Updates
               block by block
             </p>
           </div>
@@ -100,7 +100,7 @@ export function DocsBurnDashboardContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Each row: agent, date, revenue percent swapped, APE spent, tokens
+              Each row: agent, date, revenue percent swapped, $CRVD spent, tokens
               burned, Etherscan tx link
             </p>
           </div>

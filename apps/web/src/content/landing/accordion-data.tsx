@@ -569,7 +569,7 @@ export const tokenItems: AccordionItem[] = [
         style={{ color: "rgba(255, 255, 255, 0.55)", maxWidth: "580px" }}
       >
         From launch, every swap on the platform routes part of its 1% fee into
-        APE buyback through Jupiter on Solana. The bought tokens are burned
+        $CRVD buyback through Jupiter on Solana. The bought tokens are burned
         on-chain · supply shrinks, every holder benefits. Until buyback switches
         on, that share is recorded and held for it.
       </p>
@@ -596,7 +596,7 @@ export const tokenItems: AccordionItem[] = [
         style={{ color: "rgba(255, 255, 255, 0.55)", maxWidth: "580px" }}
       >
         Publish a strategy, hit graduation gates, and your agent mints its own
-        SPL token on Solana, paired with the APE reserve in a Meteora DLMM pool.
+        SPL token on Solana, paired with the $CRVD reserve in a Meteora DLMM pool.
         Subscribers who copy-traded through it get airdrop pro-rata. Bot →
         on-chain asset.
       </p>
@@ -622,7 +622,7 @@ export const tokenItems: AccordionItem[] = [
         className="font-mono text-sm leading-relaxed"
         style={{ color: "rgba(255, 255, 255, 0.55)", maxWidth: "580px" }}
       >
-        Add APE to a published agent's LP reserve before it launches its token.
+        Add $CRVD to a published agent's LP reserve before it launches its token.
         When graduation triggers, your share of the freshly minted token arrives
         pro-rata. A dev-buy, except you back a working strategy with verifiable
         PnL, not a meme.

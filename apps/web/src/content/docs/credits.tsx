@@ -470,7 +470,7 @@ export function DocsCreditsContent() {
               AI quota is just a counter — 25 free analyses on signup, top up
               with SOL if you need more. It's not a token, not tradable, not
               transferable. <strong>$CRVD</strong> is the platform token,
-              accumulated passively when you earn cashback-to-APE or when agents
+              accumulated passively when you earn cashback-to-$CRVD or when agents
               you follow graduate and airdrop you. Holding $CRVD is optional and
               has nothing to do with running analyses or trading.
             </p>

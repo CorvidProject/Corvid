@@ -641,7 +641,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0x71cee8571bd349571bcebb47a4bff57a427dd72c?chain=solana"
+                              href="/application/alpha/wallet/VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -748,7 +748,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0x71cee8571bd349571bcebb47a4bff57a427dd72c&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -792,7 +792,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0x8b65363a01510490fba03cea97b14c73b7ee8f75?chain=solana"
+                              href="/application/alpha/wallet/EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -899,7 +899,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0x8b65363a01510490fba03cea97b14c73b7ee8f75&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -943,7 +943,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0x4823adf49b282415061585c2e17ff31775e65950?chain=solana"
+                              href="/application/alpha/wallet/kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -1050,7 +1050,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0x4823adf49b282415061585c2e17ff31775e65950&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -1094,7 +1094,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0xda215f40f590368d72bf13960e9ab9cc231ee12f?chain=solana"
+                              href="/application/alpha/wallet/Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -1201,7 +1201,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0xda215f40f590368d72bf13960e9ab9cc231ee12f&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -1245,7 +1245,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0x3a4d8d4c346aac1b911521b6683e62bf6167f598?chain=solana"
+                              href="/application/alpha/wallet/phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -1352,7 +1352,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0x3a4d8d4c346aac1b911521b6683e62bf6167f598&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -1396,7 +1396,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0x59c26d4ae5b89a5b5844011fee22dd41c0a50cfa?chain=solana"
+                              href="/application/alpha/wallet/r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -1503,7 +1503,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0x59c26d4ae5b89a5b5844011fee22dd41c0a50cfa&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -1547,7 +1547,7 @@ export function ApplicationAlphaContent() {
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/0x9f861dd584cfde90eb5dc1d34c385b49a2be0360?chain=solana"
+                              href="/application/alpha/wallet/JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi?chain=solana"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -1654,7 +1654,7 @@ export function ApplicationAlphaContent() {
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=0x9f861dd584cfde90eb5dc1d34c385b49a2be0360&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi&chain=solana"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
