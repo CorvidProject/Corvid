@@ -87,10 +87,8 @@ function Row({
         </span>
         <motion.span
           className="shrink-0 font-mono text-xl leading-none mt-0.5"
-          animate={{
-            color: active ? th.accent : `rgba(${FG}, 0.45)`,
-            rotate: isOpen ? 45 : 0,
-          }}
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          style={{ color: active ? th.accent : `rgba(${FG}, 0.45)`, transition: "color 0.2s" }}
           transition={{ duration: 0.2 }}
         >
           +
@@ -118,10 +116,8 @@ function Row({
         </div>
         <motion.span
           className="shrink-0 font-mono text-xl leading-none mt-0.5"
-          animate={{
-            color: active ? th.accent : `rgba(${FG}, 0.45)`,
-            rotate: isOpen ? 45 : 0,
-          }}
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          style={{ color: active ? th.accent : `rgba(${FG}, 0.45)`, transition: "color 0.2s" }}
           transition={{ duration: 0.2 }}
         >
           +
@@ -148,10 +144,8 @@ function Row({
         </span>
         <motion.span
           className="shrink-0 font-mono text-xl leading-none"
-          animate={{
-            color: active ? "var(--v2-accent-text)" : "rgba(255,255,255,0.45)",
-            rotate: isOpen ? 45 : 0,
-          }}
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          style={{ color: active ? "var(--v2-accent-text)" : "rgba(255,255,255,0.45)", transition: "color 0.2s" }}
           transition={{ duration: 0.2 }}
         >
           +

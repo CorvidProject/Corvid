@@ -87,7 +87,7 @@ function StatusBar() {
             alt="SOL"
             width={12}
             height={12}
-            className="rounded-full"
+            className="rounded-full shrink-0"
           />
           SOL {sol}
         </span>

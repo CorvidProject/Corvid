@@ -564,12 +564,9 @@ function AgentPanel() {
   for (let c = 0; c < cyc; c++)
     finished.push(buildRun(base, base.n + 1 + c, isBuy(c), isBuy(c) ? 8 : 5));
   const last: Run = isLive ? buildRun(base, curN, buy, revealed) : base;
-  const recent = [
-    ...history,
-    base,
-    ...finished,
-    ...(isLive && done ? [last] : []),
-  ];
+  const recent = [...new Map(
+    [...history, base, ...finished, ...(isLive && done ? [last] : [])].map((r) => [r.n, r] as const),
+  ).values()];
   const lit = ORDER.map(
     (k) => last.steps.find((s) => s.step === k)?.outcome ?? "absent",
   );

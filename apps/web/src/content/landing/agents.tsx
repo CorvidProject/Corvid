@@ -1,3 +1,4 @@
+import { PlatformStats } from "@/components/landing/platform-stats";
 export function Agents() {
   return (
     <>
@@ -288,81 +289,7 @@ export function Agents() {
                         LIVE
                       </span>
                     </div>
-                    <div
-                      className="grid grid-cols-4"
-                      style={{
-                        borderBottom: "1px solid rgba(255,255,255,0.04)",
-                      }}
-                    >
-                      <div className="px-3 py-2">
-                        <div
-                          className="text-[8px] uppercase tracking-[0.16em]"
-                          style={{ color: "rgba(255,255,255,0.55)" }}
-                        >
-                          Agents
-                        </div>
-                        <div
-                          className="font-mono text-[13px] font-semibold tabular-nums mt-0.5"
-                          style={{ color: "#ffffff" }}
-                        >
-                          —
-                        </div>
-                      </div>
-                      <div className="px-3 py-2">
-                        <div
-                          className="text-[8px] uppercase tracking-[0.16em]"
-                          style={{ color: "rgba(255,255,255,0.55)" }}
-                        >
-                          Swaps
-                        </div>
-                        <div
-                          className="font-mono text-[13px] font-semibold tabular-nums mt-0.5"
-                          style={{ color: "#ffffff" }}
-                        >
-                          —
-                        </div>
-                      </div>
-                      <div className="px-3 py-2">
-                        <div
-                          className="text-[8px] uppercase tracking-[0.16em]"
-                          style={{ color: "rgba(255,255,255,0.55)" }}
-                        >
-                          Wallets
-                        </div>
-                        <div
-                          className="font-mono text-[13px] font-semibold tabular-nums mt-0.5"
-                          style={{ color: "#ffffff" }}
-                        >
-                          —
-                        </div>
-                      </div>
-                      <div className="px-3 py-2">
-                        <div
-                          className="text-[8px] uppercase tracking-[0.16em]"
-                          style={{ color: "rgba(255,255,255,0.55)" }}
-                        >
-                          Public
-                        </div>
-                        <div
-                          className="font-mono text-[13px] font-semibold tabular-nums mt-0.5"
-                          style={{ color: "#ffffff" }}
-                        >
-                          —
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="px-3 pt-2 pb-1 text-[8px] uppercase tracking-[0.16em]"
-                      style={{ color: "rgba(255,255,255,0.55)" }}
-                    >
-                      Recent passes
-                    </div>
-                    <div
-                      className="px-3 py-6 text-center font-mono text-[10px] uppercase tracking-wider"
-                      style={{ color: "rgba(255,255,255,0.45)" }}
-                    >
-                      loading…
-                    </div>
+                    <PlatformStats />
                   </div>
                 </div>
               </div>

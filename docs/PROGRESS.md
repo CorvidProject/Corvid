@@ -48,3 +48,9 @@
 ## 2026-11-04 — catatan EVM vs Solana
 - Ditambahkan `docs/EVM-vs-SOLANA.md`: tabel perbedaan konsep (alamat, token, fee, keamanan, swap, MEV, penandatanganan), daftar sisa konteks EVM yang ditemukan, dan perintah pencarian ulang. Penyesuaian dikerjakan pemilik.
 - Latar animasi WebGL Signal Blue terpasang di swap, refund, chat, rugcheck, tokens (komponen `DotBackdrop`).
+
+## 2026-11-05 — interaktivitas layar aplikasi
+- Selesai (fixture, diverifikasi Playwright tanpa error klien): Chat (sesi di localStorage, balasan simulasi, chip, drawer mobile), Tokens (memakai chat), Latest/Gainers/Volume (satu `TokenBoard`: cari, urut per kolom, tampilkan lebih banyak, hanya mint Solana), Memescope (cari, urut, 3 kolom), Leaderboard (filter tier, urut, cari), Inbox (tab + filter), Portfolio, Agents (jeda/lanjut/hapus), Settings (profil + preferensi trading, mode live terkunci), Tokenomics (status $CRVD belum diluncurkan), panel "platform" di landing.
+- Portfolio/Inbox/Agents/Settings menampilkan data fixture hanya saat ada sesi (`useSigned`); tanpa sesi tetap gate "Sign-in required".
+- Sengaja tidak diubah: tombol Activate di /application/pro (nonaktif; fitur berbayar di belakang `PAID_FEATURES_ENABLED=false`); how-it-works memang tata letak scroll, bukan tab.
+- Catatan: tabel Latest/Gainers/Volume/Memescope kini dari fixture `src/server/data`, bukan snapshot crawl lama. `/api/prices/sol` masih 404 bersih sampai Tahap 2.
