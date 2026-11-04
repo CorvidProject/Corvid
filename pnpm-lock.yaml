@@ -199,6 +199,9 @@ importers:
       fastify-type-provider-zod:
         specifier: ^4.0.2
         version: 4.0.2(fastify@5.12.8)(zod@3.25.76)
+      jose:
+        specifier: ^5.9.0
+        version: 5.10.0
       zod:
         specifier: ^3.25.0
         version: 3.25.76
@@ -1719,6 +1722,9 @@ packages:
     resolution: {integrity: sha512-aq+t5NAc+cS6rZQQVWC2x98CPqGtKKTMDd4Gaodv0wShnItdKg/51djkGJ1hqH+Oy0ivDftCbSLCQob8zso01w==}
     engines: {node: '>= 10'}
 
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
   json-schema-ref-resolver@3.0.1:
     resolution: {integrity: sha512-w+HwgljXpVwZ3IidoUR1qPZxSOQ+NRQWuVe6a5pe8XbHsNZE4UAwVPUvzZagn7yBKbJtt6UJnRFYbNTRPZI45Q==}
 
@@ -3073,6 +3079,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   ipaddr.js@2.5.0: {}
+
+  jose@5.10.0: {}
 
   json-schema-ref-resolver@3.0.1:
     dependencies:

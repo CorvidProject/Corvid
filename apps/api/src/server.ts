@@ -1,10 +1,12 @@
 import { createDb } from "@corvid/db";
 import { buildApp } from "./app";
+import { supabaseVerifier } from "./auth";
 import { loadEnv } from "./env";
 
 const env = loadEnv();
 const { db, pool } = createDb(env.DATABASE_URL);
-const app = await buildApp({ db, webOrigin: env.WEB_ORIGIN, logger: true });
+const verifier = env.SUPABASE_URL ? supabaseVerifier(env.SUPABASE_URL, env.SUPABASE_JWT_SECRET) : null;
+const app = await buildApp({ db, webOrigin: env.WEB_ORIGIN, logger: true, verifier, tradeMode: env.TRADE_MODE });
 
 const close = async () => {
   await app.close();

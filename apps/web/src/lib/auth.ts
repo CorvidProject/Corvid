@@ -60,6 +60,34 @@ export function loadSession(): AuthSession | null {
   }
 }
 
+function jwtExp(t: string): number {
+  try {
+    return (JSON.parse(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))) as { exp?: number }).exp ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** Access token yang masih berlaku; diperbarui lewat refresh token bila hampir/sudah kedaluwarsa. */
+export async function getAccessToken(): Promise<string | null> {
+  const s = loadSession();
+  if (!s?.access_token) return null;
+  const expMs = jwtExp(s.access_token) * 1000;
+  if (expMs - Date.now() > 60_000) return s.access_token;
+  if (s.refresh_token && authConfigured()) {
+    try {
+      const { res, data } = await call("token", { refresh_token: s.refresh_token }, "?grant_type=refresh_token");
+      if (res.ok && typeof data.access_token === "string") {
+        saveSession(data as unknown as AuthSession);
+        return data.access_token;
+      }
+    } catch {
+      /* jaringan: jatuh ke token lama bila belum kedaluwarsa */
+    }
+  }
+  return expMs > Date.now() ? s.access_token : null;
+}
+
 export async function signInWithEmail(email: string, password: string): Promise<AuthResult & { session?: AuthSession }> {
   if (!authConfigured()) return { error: NOT_CONFIGURED };
   try {
@@ -67,6 +95,7 @@ export async function signInWithEmail(email: string, password: string): Promise<
     if (!res.ok) return { error: msg(data, "Invalid login credentials") };
     const session = data as unknown as AuthSession;
     saveSession(session);
+    void import("./api").then((m) => m.logLogin()); // catat login ke backend (abaikan bila gagal)
     return { error: null, session };
   } catch {
     return { error: "Network error. Try again" };

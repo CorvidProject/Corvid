@@ -5,6 +5,10 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().default(8787),
   HOST: z.string().default("0.0.0.0"),
   WEB_ORIGIN: z.string().default("http://localhost:3000"),
+  /** URL project Supabase (mis. https://<ref>.supabase.co). Kosong = endpoint ber-auth menjawab 503. */
+  SUPABASE_URL: z.string().url().optional(),
+  /** Hanya untuk project lama dengan JWT HS256; project baru memakai JWKS. */
+  SUPABASE_JWT_SECRET: z.string().optional(),
   TRADE_MODE: z.enum(["dry", "live"]).default("dry"),
 });
 export type Env = z.infer<typeof envSchema>;

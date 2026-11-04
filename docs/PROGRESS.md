@@ -90,3 +90,8 @@
 ## 2026-11-05 — Memescope
 - Worker mengisi memescope (new/stretch/migrated) dari GeckoTerminal + DexScreener tiap 3 menit; progress estimasi dari kurva bonding. Diuji pada data nyata (35-42 koin per siklus). 25 tes worker + 13 tes API lulus.
 - Belum: verifikasi progress on-chain (Helius), replies/creator, Helius untuk data keamanan, auth/alpha/agent/wallet.
+
+## 2026-11-05 — Auth + profil
+- API: verifikasi JWT Supabase, profil otomatis (25 kredit), /api/profile (GET/PUT), /api/profile/activity, /api/auth/log-login, /api/user/trading-prefs (GET/PUT, live terkunci). 9 tes baru (22 total di API). Settings terhubung ke API; e2e Playwright lulus dengan JWT lokal.
+- Menunggu pemilik: migrasi ke Supabase dan env (BLOCKERS no. 13), lalu uji login nyata.
+- Belum: portfolio/inbox/agents via API, wallet kustodian + trade dry, Helius.

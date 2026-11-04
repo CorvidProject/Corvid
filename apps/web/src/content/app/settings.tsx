@@ -4,8 +4,10 @@ import profile from "@/data/profile.json";
 import prefsFx from "@/data/trading-prefs.json";
 import { useSigned } from "@/components/auth/signed";
 import { loadSession, saveSession } from "@/lib/auth";
+import { apiGet, apiSend, ApiError, USE_API } from "@/lib/api";
 
-// Settings: profil dan preferensi trading (fixture + localStorage). Disimpan ke /user/trading-prefs di Tahap 3.
+// Settings: profil dan preferensi trading. Mode fixture: localStorage. Mode API: GET/PUT /api/profile dan
+// /api/user/trading-prefs (butuh login Supabase).
 // Mode "live" tidak bisa dipilih sebelum diizinkan pemilik (TRADE_MODE=dry).
 const KEY = "corvid.trading-prefs.v1";
 type Prefs = { slippageBps: number; priorityFeeLamports: number };
@@ -15,6 +17,8 @@ export function ApplicationSettingsContent() {
   const [p, setP] = useState<Prefs>({ slippageBps: prefsFx.slippageBps, priorityFeeLamports: prefsFx.priorityFeeLamports });
   const [saved, setSaved] = useState(false);
   const [email, setEmail] = useState(profile.email);
+  const [acct, setAcct] = useState<{ plan: string; credits: number; wallet: string | null }>({ plan: profile.plan, credits: profile.credits, wallet: profile.wallet });
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -23,6 +27,17 @@ export function ApplicationSettingsContent() {
     } catch {}
     const u = loadSession()?.user?.email;
     if (u) setEmail(u);
+    if (USE_API && signed) {
+      apiGet<{ email: string | null; plan: string; credits: number; wallet: string | null }>("/api/profile")
+        .then((d) => {
+          if (d.email) setEmail(d.email);
+          setAcct({ plan: d.plan, credits: d.credits, wallet: d.wallet });
+        })
+        .catch(() => setErr("Could not load your profile."));
+      apiGet<Prefs>("/api/user/trading-prefs")
+        .then((d) => setP({ slippageBps: d.slippageBps, priorityFeeLamports: d.priorityFeeLamports }))
+        .catch(() => {});
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signed]);
 
@@ -57,6 +72,13 @@ export function ApplicationSettingsContent() {
     setP((o) => ({ ...o, [k]: n }));
   };
   const save = () => {
+    setErr(null);
+    if (USE_API) {
+      apiSend("PUT", "/api/user/trading-prefs", { slippageBps: p.slippageBps, priorityFeeLamports: p.priorityFeeLamports })
+        .then(() => setSaved(true))
+        .catch((e: unknown) => setErr(e instanceof ApiError && e.status === 400 ? "Slippage must be 1 to 5000 bps." : "Could not save. Try again."));
+      return;
+    }
     try {
       localStorage.setItem(KEY, JSON.stringify(p));
     } catch {}
@@ -80,11 +102,11 @@ export function ApplicationSettingsContent() {
           <dd style={{ color: "var(--v2-t-1)" }}>{email}</dd>
           <dt style={{ color: "var(--v2-t-4)" }}>Plan</dt>
           <dd style={{ color: "var(--v2-t-1)" }} className="capitalize">
-            {profile.plan} · {profile.credits} credits
+            {acct.plan} · {acct.credits} credits
           </dd>
           <dt style={{ color: "var(--v2-t-4)" }}>Wallet</dt>
           <dd className="num break-all" style={{ color: "var(--v2-t-2)" }}>
-            {profile.wallet}
+            {acct.wallet ?? "No wallet yet"}
           </dd>
         </dl>
       </section>
@@ -94,7 +116,7 @@ export function ApplicationSettingsContent() {
         <div className="grid sm:grid-cols-2 gap-4">
           <label className="block text-[12px]" style={{ color: "var(--v2-t-3)" }}>
             Slippage (bps)
-            <input type="number" min={0} max={5000} value={p.slippageBps} onChange={(e) => set("slippageBps", e.target.value)} className="input-v2 mt-1 w-full" />
+            <input type="number" min={1} max={5000} value={p.slippageBps} onChange={(e) => set("slippageBps", e.target.value)} className="input-v2 mt-1 w-full" />
             <span className="block mt-1" style={{ color: "var(--v2-t-4)" }}>
               {(p.slippageBps / 100).toFixed(2)}%
             </span>
@@ -117,9 +139,14 @@ export function ApplicationSettingsContent() {
           <button className="btn-v2 btn-v2-primary" onClick={save}>
             Save changes
           </button>
+          {err && (
+            <span className="text-[12px]" style={{ color: "var(--v2-neg)" }} role="alert">
+              {err}
+            </span>
+          )}
           {saved && (
             <span className="text-[12px]" style={{ color: "var(--v2-pos)" }} role="status">
-              Saved on this device
+              {USE_API ? "Saved" : "Saved on this device"}
             </span>
           )}
         </div>

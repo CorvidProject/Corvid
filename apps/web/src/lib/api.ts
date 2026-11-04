@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { getAccessToken } from "./auth";
 
 // Mode fixture (default): panggilan ke /api/* dilayani rute Next lokal (src/app/api, data contoh).
 // NEXT_PUBLIC_USE_FIXTURES=false: panggilan diarahkan ke backend Fastify di NEXT_PUBLIC_API_URL.
@@ -12,8 +13,13 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const res = await fetch(BASE + path, { signal, headers: { accept: "application/json" } });
+async function request<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+  const headers: Record<string, string> = { accept: "application/json" };
+  if (body !== undefined) headers["content-type"] = "application/json";
+  // Token hanya dikirim ke backend Corvid (mode API), tidak ke rute fixture lokal.
+  const token = USE_API ? await getAccessToken() : null;
+  if (token) headers.authorization = `Bearer ${token}`;
+  const res = await fetch(BASE + path, { method, signal, headers, body: body === undefined ? undefined : JSON.stringify(body) });
   if (!res.ok) {
     let msg = res.statusText;
     try {
@@ -22,6 +28,19 @@ export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> 
     throw new ApiError(res.status, msg);
   }
   return (await res.json()) as T;
+}
+
+export const apiGet = <T>(path: string, signal?: AbortSignal) => request<T>("GET", path, undefined, signal);
+export const apiSend = <T>(method: "POST" | "PUT" | "DELETE", path: string, body?: unknown) => request<T>(method, path, body ?? {});
+
+/** Catat login ke backend (maksimal 1x/menit di sisi server). Gagal diabaikan. */
+export async function logLogin(): Promise<void> {
+  if (!USE_API) return;
+  try {
+    await apiSend("POST", "/api/auth/log-login");
+  } catch {
+    /* tidak kritis */
+  }
 }
 
 export type ApiState<T> = { data: T | null; loading: boolean; error: string | null };
