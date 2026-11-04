@@ -54,3 +54,7 @@
 - Portfolio/Inbox/Agents/Settings menampilkan data fixture hanya saat ada sesi (`useSigned`); tanpa sesi tetap gate "Sign-in required".
 - Sengaja tidak diubah: tombol Activate di /application/pro (nonaktif; fitur berbayar di belakang `PAID_FEATURES_ENABLED=false`); how-it-works memang tata letak scroll, bukan tab.
 - Catatan: tabel Latest/Gainers/Volume/Memescope kini dari fixture `src/server/data`, bukan snapshot crawl lama. `/api/prices/sol` masih 404 bersih sampai Tahap 2.
+
+## 2026-11-05 — Tahap 2a
+- Selesai: `docs/db-analysis.md` (temuan skema, kebutuhan per endpoint, daftar tabel, indeks, RLS, retensi). Default dicatat di DECISIONS.
+- Berikut: REA subset untuk verifikasi field, skema Drizzle di `packages/db`, migrasi, Fastify `apps/api` (mulai `/stats`, `/tokens/*`).
