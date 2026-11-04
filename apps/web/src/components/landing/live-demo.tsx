@@ -35,7 +35,7 @@ function Panel({
     <section
       className={`relative min-w-0 flex flex-col ${className}`}
       style={{
-        background: "#13171B",
+        background: "#111113",
         border: "1px solid rgba(255,255,255,0.08)",
       }}
     >
@@ -123,7 +123,9 @@ function Torus({
   running,
   acted,
   getRight,
+  compact,
 }: {
+  compact: boolean;
   boxes: { current: (HTMLElement | null)[] };
   lit: string[];
   running: boolean;
@@ -391,11 +393,11 @@ function Torus({
       wrap.removeEventListener("pointerup", up);
       wrap.removeEventListener("pointerleave", leave);
     };
-  }, [boxes, getRight]);
+  }, [boxes, getRight, compact]);
   return (
     <canvas
       ref={ref}
-      className="absolute left-0 right-0 top-0 w-full h-full pointer-events-none"
+      className={`absolute left-0 right-0 top-0 w-full pointer-events-none ${compact ? "h-[300px]" : "h-full"}`}
       aria-hidden="true"
     />
   );
@@ -520,7 +522,20 @@ function buildRun(base: Run, n: number, buy: boolean, upto: number): Run {
   return { n, ended: buy ? "bought" : "blocked", steps: all.slice(0, upto) };
 }
 
+function useCompact() {
+  const [c, setC] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(max-width: 1023px)");
+    const f = () => setC(m.matches);
+    f();
+    m.addEventListener("change", f);
+    return () => m.removeEventListener("change", f);
+  }, []);
+  return c;
+}
+
 function AgentPanel() {
+  const compact = useCompact();
   const a = live.agent;
   const base = a.lastRun as unknown as Run;
   const history = a.recentRuns as unknown as Run[];
@@ -572,7 +587,7 @@ function AgentPanel() {
       : `${last.ended} · pass ${last.n}`;
   const badgeColor =
     isLive && (running || last.ended === "bought") ? GREEN : "#FFC24D";
-  const newest = [...recent].reverse().slice(0, 11);
+  const newest = [...recent].reverse().slice(0, compact ? 5 : 11);
   const bars = recent.slice(-28);
   return (
     <Panel
@@ -580,13 +595,13 @@ function AgentPanel() {
       sub={`${a.name.toLowerCase()} · $${a.tokenSymbol.toLowerCase()}`}
       badge={badge}
       badgeColor={badgeColor}
-      className="lg:h-full cv-agent-panel"
+      className={compact ? "" : "lg:h-full cv-agent-panel"}
     >
       <div
-        className="relative flex-1 cv-agent-body overflow-hidden select-none cursor-grab active:cursor-grabbing"
+        className={`relative flex-1 overflow-hidden select-none cursor-grab active:cursor-grabbing ${compact ? "" : "cv-agent-body"}`}
         style={{
           background:
-            "radial-gradient(ellipse 55% 60% at 50% 55%, rgba(var(--v2-accent-rgb),0.26) 0%, rgba(var(--v2-accent-rgb),0.08) 45%, transparent 72%), #13171B",
+            "radial-gradient(ellipse 55% 60% at 50% 55%, rgba(var(--v2-accent-rgb),0.26) 0%, rgba(var(--v2-accent-rgb),0.08) 45%, transparent 72%), #0A0A0F",
           touchAction: "pan-y",
         }}
       >
@@ -596,8 +611,10 @@ function AgentPanel() {
           running={running}
           acted={acted}
           getRight={getRight}
+          compact={compact}
         />
-        {isLive && (
+        {compact && <div className="h-[300px]" />}
+        {isLive && !compact && (
           <div
             className="absolute z-10 uppercase"
             style={{ ...DOT, fontSize: 14, color: DIM, right: 230, top: 48 }}
@@ -608,8 +625,8 @@ function AgentPanel() {
           </div>
         )}
         <div
-          className="absolute left-1/2 -translate-x-1/2 top-3 z-10 uppercase whitespace-nowrap"
-          style={{ ...DOT, fontSize: 16, color: MID }}
+          className={`absolute left-1/2 -translate-x-1/2 top-3 z-10 uppercase ${compact ? "w-full text-center px-3" : "whitespace-nowrap"}`}
+          style={{ ...DOT, fontSize: compact ? 14 : 16, color: MID }}
         >
           conviction <span style={{ color: TXT }}>{conv}</span> · floor{" "}
           <span style={{ color: TXT }}>{floor}</span> · edge{" "}
@@ -618,9 +635,15 @@ function AgentPanel() {
             {edge}
           </span>
         </div>
-        <div className="absolute left-0 top-0 bottom-10 cv-agent-left flex flex-col justify-between py-3 pl-3 z-10">
+        <div
+          className={
+            compact
+              ? "relative grid grid-cols-2 gap-x-4 gap-y-3 px-3 py-3"
+              : "absolute left-0 top-0 bottom-10 cv-agent-left flex flex-col justify-between py-3 pl-3 z-10"
+          }
+        >
           <div
-            className="uppercase"
+            className={`uppercase ${compact ? "col-span-2" : ""}`}
             style={{ ...DOT, fontSize: 14, color: DIM }}
           >
             Model inputs · 8 steps
@@ -644,9 +667,13 @@ function AgentPanel() {
             return (
               <div
                 key={k}
-                ref={(e) => {
-                  boxes.current[i] = e;
-                }}
+                ref={
+                  compact
+                    ? undefined
+                    : (e) => {
+                        boxes.current[i] = e;
+                      }
+                }
                 className="pr-2 min-w-0 relative cursor-default"
                 onMouseEnter={(e) =>
                   setHover({ i, top: e.currentTarget.offsetTop })
@@ -699,7 +726,7 @@ function AgentPanel() {
             );
           })}
         </div>
-        {hover && (
+        {hover && !compact && (
           <div
             className="absolute z-20 cv-agent-hint px-3 py-2 pointer-events-none"
             style={{
@@ -725,8 +752,12 @@ function AgentPanel() {
           </div>
         )}
         <div
-          ref={rightRef}
-          className="absolute right-0 top-0 bottom-10 cv-agent-right py-3 pr-3 z-10 flex flex-col min-h-0"
+          ref={compact ? undefined : rightRef}
+          className={
+            compact
+              ? "relative px-3 pb-3 flex flex-col"
+              : "absolute right-0 top-0 bottom-10 cv-agent-right py-3 pr-3 z-10 flex flex-col min-h-0"
+          }
         >
           <div
             className="flex items-center uppercase mb-1.5"
@@ -780,11 +811,11 @@ function AgentPanel() {
           </div>
         </div>
         <div
-          className="absolute left-0 right-0 bottom-0 h-10 flex items-end gap-3 px-3 pb-1 z-10"
+          className={`${compact ? "relative" : "absolute left-0 right-0 bottom-0"} h-10 flex items-end gap-3 px-3 pb-1 z-10`}
           style={{ borderTop: "1px solid #3A3D3E" }}
         >
           <span
-            className="uppercase shrink-0 self-center cv-agent-foot-hint"
+            className={`uppercase shrink-0 self-center cv-agent-foot-hint ${compact ? "hidden" : ""}`}
             style={{ ...DOT, fontSize: 13, color: DIM }}
           >
             drag to turn · click for needles · hover a step
