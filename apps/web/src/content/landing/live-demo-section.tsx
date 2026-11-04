@@ -5,7 +5,7 @@ export function LiveDemoSection() {
     <>
       <section
         className="relative px-4 lg:px-10 py-20"
-        style={{ background: "#14191d" }}
+        style={{ background: "#0A0A0F" }}
       >
         <div className="max-w-[1400px] mx-auto">
           <div

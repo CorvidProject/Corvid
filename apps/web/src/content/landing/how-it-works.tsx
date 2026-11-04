@@ -3,7 +3,7 @@ export function HowItWorks() {
     <>
       <section
         className="relative overflow-hidden"
-        style={{ background: "var(--v2-section-bg, #d7e1ec)" }}
+        style={{ background: "var(--v2-section-bg, #e8e8eb)" }}
       >
         <svg width="0" height="0" className="absolute" aria-hidden="true">
           <defs>
@@ -528,10 +528,10 @@ export function HowItWorks() {
                     className="mt-6 rounded-xl overflow-hidden"
                     style={{
                       aspectRatio: "16 / 9",
-                      background: "#14191d",
+                      background: "#0A0A0F",
                       border:
                         "1px solid rgba(var(--v2-section-fg-rgb, 10,10,15),0.12)",
-                      boxShadow: "0 24px 48px -24px rgba(20,25,29,0.45)",
+                      boxShadow: "0 24px 48px -24px rgba(10,10,15,0.45)",
                     }}
                   >
                     <video
@@ -657,10 +657,10 @@ export function HowItWorks() {
                     className="mt-6 rounded-xl overflow-hidden"
                     style={{
                       aspectRatio: "16 / 9",
-                      background: "#14191d",
+                      background: "#0A0A0F",
                       border:
                         "1px solid rgba(var(--v2-section-fg-rgb, 10,10,15),0.12)",
-                      boxShadow: "0 24px 48px -24px rgba(20,25,29,0.45)",
+                      boxShadow: "0 24px 48px -24px rgba(10,10,15,0.45)",
                     }}
                   >
                     <video

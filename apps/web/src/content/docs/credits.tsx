@@ -260,7 +260,7 @@ export function DocsCreditsContent() {
             <span
               className="absolute -left-[1.1rem] top-0 w-9 h-9 flex items-center justify-center font-mono text-[11px] tracking-[0.1em]"
               style={{
-                background: "#14191d",
+                background: "#0A0A0F",
                 border: "1px solid rgba(var(--v2-accent-rgb),0.5)",
                 color: "var(--v2-accent-text)",
               }}
@@ -293,7 +293,7 @@ export function DocsCreditsContent() {
             <span
               className="absolute -left-[1.1rem] top-0 w-9 h-9 flex items-center justify-center font-mono text-[11px] tracking-[0.1em]"
               style={{
-                background: "#14191d",
+                background: "#0A0A0F",
                 border: "1px solid rgba(var(--v2-accent-rgb),0.5)",
                 color: "var(--v2-accent-text)",
               }}
@@ -324,7 +324,7 @@ export function DocsCreditsContent() {
             <span
               className="absolute -left-[1.1rem] top-0 w-9 h-9 flex items-center justify-center font-mono text-[11px] tracking-[0.1em]"
               style={{
-                background: "#14191d",
+                background: "#0A0A0F",
                 border: "1px solid rgba(var(--v2-accent-rgb),0.5)",
                 color: "var(--v2-accent-text)",
               }}

@@ -89,7 +89,7 @@ export function SigninView() {
     <div className="relative min-h-screen flex bg-[#E8E8EB]">
       <div
         className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-10"
-        style={{ background: "#13171B" }}
+        style={{ background: "#111113" }}
       >
         <div
           aria-hidden

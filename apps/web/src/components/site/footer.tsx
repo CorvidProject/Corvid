@@ -78,7 +78,7 @@ export function Footer() {
   ].filter((s) => s.url);
 
   return (
-    <footer className="relative overflow-hidden" style={{ background: "var(--v2-bg-0, #13171B)" }}>
+    <footer className="relative overflow-hidden" style={{ background: "var(--v2-bg-0, #111113)" }}>
       <div
         className="absolute inset-0 pointer-events-none z-0"
         style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)", backgroundSize: "28px 28px", opacity: 0.2 }}

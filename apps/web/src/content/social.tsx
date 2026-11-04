@@ -34,7 +34,7 @@ export function SocialContent() {
       </section>
       <section
         className="relative"
-        style={{ background: "var(--v2-section-bg, #d7e1ec)" }}
+        style={{ background: "var(--v2-section-bg, #e8e8eb)" }}
       >
         <div
           className="flex items-center justify-between px-6 lg:px-12 py-5"
@@ -378,7 +378,7 @@ export function SocialContent() {
       </section>
       <section
         className="relative overflow-hidden"
-        style={{ background: "var(--v2-bg-0, #14191d)" }}
+        style={{ background: "var(--v2-bg-0, #0A0A0F)" }}
       >
         <div
           className="relative z-30 flex items-center justify-between px-6 lg:px-12 py-5"

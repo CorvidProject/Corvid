@@ -8,7 +8,7 @@ export function FaqSection() {
         <section
           id="faq"
           className="relative overflow-hidden"
-          style={{ background: "var(--v2-section-bg, #d7e1ec)" }}
+          style={{ background: "var(--v2-section-bg, #e8e8eb)" }}
         >
           <svg width="0" height="0" className="absolute" aria-hidden="true">
             <defs>

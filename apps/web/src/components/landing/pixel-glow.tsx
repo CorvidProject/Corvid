@@ -37,7 +37,7 @@ void main(){
   float shimmer = 0.7 + 0.3 * sin((uv.x * aspect - uv.y) * 26.0 - time * 1.4);
   float dots = dotShape * level * shimmer;
   float alpha = clamp(light * 1.5 * dots, 0.0, 1.0);
-  vec3 base = vec3(0.075, 0.09, 0.106);
+  vec3 base = vec3(0.039, 0.039, 0.059);
   vec3 lit = 1.15 * col / max(light, 0.001);
   gl_FragColor = vec4(mix(base, lit, alpha) + vec3(0.012) * dotShape, 1.0);
 }`;

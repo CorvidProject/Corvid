@@ -8,7 +8,7 @@ export function TokenSection() {
         <section
           id="token"
           className="relative overflow-hidden"
-          style={{ background: "var(--v2-bg-0, #14191d)" }}
+          style={{ background: "var(--v2-bg-0, #0A0A0F)" }}
         >
           <div
             className="absolute inset-0 pointer-events-none z-0"

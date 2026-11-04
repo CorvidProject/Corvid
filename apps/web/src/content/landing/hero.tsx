@@ -6,7 +6,7 @@ export function Hero() {
     <>
       <section
         className="relative overflow-hidden flex flex-col"
-        style={{ background: "#14191d", minHeight: "100vh" }}
+        style={{ background: "#0A0A0F", minHeight: "100vh" }}
       >
         <div className="absolute inset-0 z-0 pointer-events-none">
           <PixelGlow />
@@ -113,7 +113,7 @@ export function Hero() {
               maxWidth: "720px",
               lineHeight: "1.35",
               letterSpacing: "-0.01em",
-              textShadow: "0 0 14px #14191d, 0 0 4px #14191d, 0 1px 2px #000",
+              textShadow: "0 0 14px #0A0A0F, 0 0 4px #0A0A0F, 0 1px 2px #000",
               "--rv-t": "translateY(10px)",
             }}
           >
@@ -210,7 +210,7 @@ export function Hero() {
             className="flex flex-col items-center gap-4 mt-14"
             data-reveal
             style={{
-              textShadow: "0 0 12px #14191d, 0 0 4px #14191d, 0 1px 2px #000",
+              textShadow: "0 0 12px #0A0A0F, 0 0 4px #0A0A0F, 0 1px 2px #000",
               "--rv-t": "translateY(6px)",
             }}
           >

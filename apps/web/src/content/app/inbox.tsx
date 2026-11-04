@@ -346,7 +346,7 @@ export function ApplicationInboxContentExtra() {
       <div
         className="fixed inset-x-0 bottom-0 top-14 z-20 flex items-center justify-center px-4"
         style={{
-          background: "rgba(20, 25, 29, 0.35)",
+          background: "rgba(17,17,19, 0.35)",
           backdropFilter: "blur(14px) saturate(140%)",
         }}
       >

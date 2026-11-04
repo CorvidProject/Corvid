@@ -10,7 +10,7 @@ export function FooterCta() {
       >
         <section
           className="relative overflow-hidden"
-          style={{ background: "var(--v2-bg-0, #14191d)" }}
+          style={{ background: "var(--v2-bg-0, #0A0A0F)" }}
         >
           <div
             className="relative z-30 flex items-center justify-between px-6 lg:px-12 py-5"

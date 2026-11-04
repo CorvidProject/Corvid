@@ -3,7 +3,7 @@ export function BuiltOn() {
     <>
       <section
         className="relative overflow-hidden"
-        style={{ background: "#14191d" }}
+        style={{ background: "#0A0A0F" }}
       >
         <div
           className="flex items-center justify-between px-6 lg:px-16 py-5"
@@ -24,7 +24,7 @@ export function BuiltOn() {
         </div>
         <div
           className="grid grid-cols-2 lg:grid-cols-5"
-          style={{ background: "#14191d" }}
+          style={{ background: "#0A0A0F" }}
         >
           <a
             href="https://solana.com"
@@ -34,7 +34,7 @@ export function BuiltOn() {
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
             style={{
-              background: "#14191d",
+              background: "#0A0A0F",
               borderRight: "1px solid rgba(255,255,255,0.07)",
               borderBottom: "1px solid rgba(255,255,255,0.07)",
             }}
@@ -87,7 +87,7 @@ export function BuiltOn() {
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
             style={{
-              background: "#14191d",
+              background: "#0A0A0F",
               borderBottom: "1px solid rgba(255,255,255,0.07)",
             }}
           >
@@ -139,7 +139,7 @@ export function BuiltOn() {
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
             style={{
-              background: "#14191d",
+              background: "#0A0A0F",
               borderRight: "1px solid rgba(255,255,255,0.07)",
               borderBottom: "1px solid rgba(255,255,255,0.07)",
             }}
@@ -192,7 +192,7 @@ export function BuiltOn() {
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
             style={{
-              background: "#14191d",
+              background: "#0A0A0F",
               borderRight: "1px solid rgba(255,255,255,0.07)",
             }}
           >
@@ -243,7 +243,7 @@ export function BuiltOn() {
             aria-label="GeckoTerminal (opens in new tab)"
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
-            style={{ background: "#14191d" }}
+            style={{ background: "#0A0A0F" }}
           >
             <div
               className="absolute top-0 left-6 right-6 h-px pointer-events-none"
