@@ -586,7 +586,7 @@ function AgentPanel() {
         className="relative flex-1 cv-agent-body overflow-hidden select-none cursor-grab active:cursor-grabbing"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 55%, #1F2224 0%, #151617 70%)",
+            "radial-gradient(ellipse 55% 60% at 50% 55%, rgba(var(--v2-accent-rgb),0.26) 0%, rgba(var(--v2-accent-rgb),0.08) 45%, transparent 72%), #13171B",
           touchAction: "pan-y",
         }}
       >

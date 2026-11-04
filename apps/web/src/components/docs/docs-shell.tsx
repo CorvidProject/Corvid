@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
+import { ScrollToTop } from "@/components/site/scroll-to-top";
 import { site } from "@/lib/site";
 import { DocsNav } from "./docs-nav";
 import { TableOfContents } from "./table-of-contents";
@@ -95,6 +96,7 @@ export function DocsShell({ children }: { children: ReactNode }) {
         </aside>
       </div>
       <Footer />
+      <ScrollToTop />
       <style>{`
         .docs-prose { color: rgba(255,255,255,0.72); font-size: 15px; line-height: 1.75; word-wrap: break-word; overflow-wrap: break-word; }
         .docs-prose h1 { color: #fff; font-family: var(--font-heading, inherit); font-weight: 900; font-style: normal; letter-spacing: -0.04em; font-size: clamp(3rem, 8vw, 4.5rem); line-height: 0.92; word-break: break-word; }

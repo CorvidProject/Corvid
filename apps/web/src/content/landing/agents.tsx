@@ -92,7 +92,7 @@ export function Agents() {
           </div>
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2">
             <div
-              className="relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
+              className="cv-agent-card relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
               data-reveal
               style={{
                 borderRight: "1px solid rgba(255,255,255,0.08)",
@@ -100,62 +100,6 @@ export function Agents() {
                 "--rv-t": "translateY(24px)",
               }}
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 2 2 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 14 2 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 2 14 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 14 14 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
               <div
                 className="mb-5 flex items-stretch overflow-hidden sm:min-h-[210px]"
                 style={{ minHeight: "150px" }}
@@ -211,10 +155,10 @@ export function Agents() {
               </div>
               <div className="flex justify-center mb-4">
                 <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center"
+                  className="cv-agent-dot w-4 h-4 rounded-full flex items-center justify-center"
                   style={{ border: "1.5px solid rgba(255,255,255,0.15)" }}
                 >
-                  <div className="w-1 h-1 rounded-full"></div>
+                  <div className="cv-agent-dot-in w-1 h-1 rounded-full"></div>
                 </div>
               </div>
               <h3 className="font-heading font-bold text-xl lg:text-2xl leading-tight mb-2">
@@ -224,74 +168,18 @@ export function Agents() {
                 Mirror smart wallets in real time
               </p>
               <div
-                className="absolute bottom-0 left-0"
+                className="cv-agent-bar absolute bottom-0 left-0"
                 style={{ height: "2px", background: "var(--v2-accent)" }}
               ></div>
             </div>
             <div
-              className="relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
+              className="cv-agent-card relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
               data-reveal
               style={{
                 borderBottom: "1px solid rgba(255,255,255,0.08)",
                 "--rv-t": "translateY(24px)",
               }}
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 2 2 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 14 2 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 2 14 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 14 14 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
               <div
                 className="mb-5 flex items-stretch overflow-hidden sm:min-h-[210px]"
                 style={{ minHeight: "150px" }}
@@ -341,10 +229,10 @@ export function Agents() {
               </div>
               <div className="flex justify-center mb-4">
                 <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center"
+                  className="cv-agent-dot w-4 h-4 rounded-full flex items-center justify-center"
                   style={{ border: "1.5px solid rgba(255,255,255,0.15)" }}
                 >
-                  <div className="w-1 h-1 rounded-full"></div>
+                  <div className="cv-agent-dot-in w-1 h-1 rounded-full"></div>
                 </div>
               </div>
               <h3 className="font-heading font-bold text-xl lg:text-2xl leading-tight mb-2">
@@ -354,74 +242,18 @@ export function Agents() {
                 Safety verdict on every new launch
               </p>
               <div
-                className="absolute bottom-0 left-0"
+                className="cv-agent-bar absolute bottom-0 left-0"
                 style={{ height: "2px", background: "var(--v2-accent)" }}
               ></div>
             </div>
             <div
-              className="relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
+              className="cv-agent-card relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
               data-reveal
               style={{
                 borderRight: "1px solid rgba(255,255,255,0.08)",
                 "--rv-t": "translateY(24px)",
               }}
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 2 2 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 14 2 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 2 14 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 14 14 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
               <div
                 className="mb-5 flex items-stretch overflow-hidden sm:min-h-[210px]"
                 style={{ minHeight: "150px" }}
@@ -536,10 +368,10 @@ export function Agents() {
               </div>
               <div className="flex justify-center mb-4">
                 <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center"
+                  className="cv-agent-dot w-4 h-4 rounded-full flex items-center justify-center"
                   style={{ border: "1.5px solid rgba(255,255,255,0.15)" }}
                 >
-                  <div className="w-1 h-1 rounded-full"></div>
+                  <div className="cv-agent-dot-in w-1 h-1 rounded-full"></div>
                 </div>
               </div>
               <h3 className="font-heading font-bold text-xl lg:text-2xl leading-tight mb-2">
@@ -549,71 +381,15 @@ export function Agents() {
                 Fire strategies the moment triggers hit
               </p>
               <div
-                className="absolute bottom-0 left-0"
+                className="cv-agent-bar absolute bottom-0 left-0"
                 style={{ height: "2px", background: "var(--v2-accent)" }}
               ></div>
             </div>
             <div
-              className="relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
+              className="cv-agent-card relative p-6 lg:p-8 cursor-default flex flex-col overflow-hidden"
               data-reveal
               style={{ "--rv-t": "translateY(24px)" }}
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 2 2 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute top-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 14 2 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 2 14 L 14 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="absolute bottom-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 14 2 L 14 14 L 2 14"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
               <div
                 className="mb-5 flex items-stretch overflow-hidden sm:min-h-[210px]"
                 style={{ minHeight: "150px" }}
@@ -718,10 +494,10 @@ export function Agents() {
               </div>
               <div className="flex justify-center mb-4">
                 <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center"
+                  className="cv-agent-dot w-4 h-4 rounded-full flex items-center justify-center"
                   style={{ border: "1.5px solid rgba(255,255,255,0.15)" }}
                 >
-                  <div className="w-1 h-1 rounded-full"></div>
+                  <div className="cv-agent-dot-in w-1 h-1 rounded-full"></div>
                 </div>
               </div>
               <h3 className="font-heading font-bold text-xl lg:text-2xl leading-tight mb-2">
@@ -731,7 +507,7 @@ export function Agents() {
                 Publish your agent. Earn when others clone it
               </p>
               <div
-                className="absolute bottom-0 left-0"
+                className="cv-agent-bar absolute bottom-0 left-0"
                 style={{ height: "2px", background: "var(--v2-accent)" }}
               ></div>
             </div>

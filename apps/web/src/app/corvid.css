@@ -81,3 +81,84 @@
 .crv-swap-cta {
   color: #ffffff !important;
 }
+
+/* Tombol "launch app" (HUD) di landing: teks putih di atas Signal Blue */
+.hud-btn-on {
+  color: #ffffff !important;
+}
+
+/* Kartu template Agent di landing: efek saat kursor di atas kartu (port dari referensi) */
+.cv-agent-card {
+  transition: background 0.2s;
+  --cv-c: var(--v2-accent);
+}
+.cv-agent-card:hover {
+  background: rgba(var(--v2-accent-rgb), 0.04);
+}
+/* siku sudut (corner brackets) */
+.cv-agent-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 0.16s ease-out, transform 0.16s ease-out;
+  background:
+    linear-gradient(var(--cv-c), var(--cv-c)) top left / 12px 1.5px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) top left / 1.5px 12px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) top right / 12px 1.5px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) top right / 1.5px 12px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) bottom left / 12px 1.5px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) bottom left / 1.5px 12px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) bottom right / 12px 1.5px no-repeat,
+    linear-gradient(var(--cv-c), var(--cv-c)) bottom right / 1.5px 12px no-repeat;
+}
+.cv-agent-card:hover::before {
+  opacity: 1;
+  transform: none;
+}
+.cv-agent-card > .mb-5 {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cv-agent-card:hover > .mb-5 {
+  transform: translateY(-2px);
+}
+.cv-agent-dot {
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.cv-agent-card:hover .cv-agent-dot {
+  background: var(--v2-accent);
+  border-color: var(--v2-accent) !important;
+  box-shadow: 0 0 12px rgba(var(--v2-accent-rgb), 0.5);
+}
+.cv-agent-dot-in {
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.2s;
+}
+.cv-agent-card:hover .cv-agent-dot-in {
+  background: #fff;
+}
+.cv-agent-card h3 {
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.25s, transform 0.25s;
+}
+.cv-agent-card:hover h3 {
+  color: #fff;
+  transform: translateY(-1px);
+}
+.cv-agent-card p {
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.25s;
+}
+.cv-agent-card:hover p {
+  color: rgba(255, 255, 255, 0.8);
+}
+.cv-agent-bar {
+  width: 0;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cv-agent-card:hover .cv-agent-bar {
+  width: 100%;
+}
