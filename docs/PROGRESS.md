@@ -99,3 +99,7 @@
 ## 2026-11-05 — Agents, Inbox, Signals
 - API + frontend: daftar/buat (dari builder)/jeda/hapus agent, inbox (welcome + read-all), sinyal new_token nyata dari worker. 33 tes API + 25 tes worker lulus; e2e Playwright: daftar, jalan/jeda persisten, deploy dari builder, inbox 17 sinyal nyata.
 - Belum: runner agent (siklus dengan mock), portfolio + wallet kustodian + trade dry, chat, marketplace, Helius.
+
+## 2026-11-05 — Runner agent (simulasi)
+- Runner lima langkah dengan pemutus berbasis aturan, swap `dry`, notifikasi, riwayat run; dijadwalkan di worker. 12 tes runner (semua jalur) + 12 tes agents lulus; diuji pada data nyata (token baru GeckoTerminal): scanner memblokir karena belum ada data keamanan, watcher berhenti di keputusan (likuiditas tipis). UI My agents menampilkan run terakhir.
+- Belum: Helius (data keamanan membuat scanner bisa lolos), penyedia LLM, portfolio + wallet kustodian, chat, marketplace, eksekusi live.

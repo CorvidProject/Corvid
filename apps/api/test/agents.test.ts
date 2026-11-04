@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import { generateKeyPair, SignJWT, type KeyLike } from "jose";
 import EmbeddedPostgres from "embedded-postgres";
-import { applyMigrations, createDb, signals } from "@corvid/db";
+import { agentRunSteps, agentRuns, applyMigrations, createDb, signals } from "@corvid/db";
 import { buildApp } from "../src/app";
 import { createVerifier } from "../src/auth";
 import { MAX_AGENTS_PER_USER } from "../src/routes/agents";
@@ -134,6 +134,41 @@ describe("agents: siklus hidup dan isolasi", () => {
     expect(over.statusCode).toBe(409);
     expect(over.json()).toEqual({ error: "agent_limit" });
     expect((await call("POST", "/api/agents", B, follow())).statusCode).toBe(201); // pengguna lain tidak terpengaruh
+  });
+});
+
+describe("riwayat run agent", () => {
+  it("lastRun di daftar, /runs berisi langkah terurut, milik orang lain 404", async () => {
+    const mk = await call("POST", "/api/agents", B, follow({ name: "Runs" }));
+    const id = mk.json().id;
+    expect(mk.json().lastRun).toBeNull();
+    const [r1] = await created.db.insert(agentRuns).values({ agentId: id, runNumber: 1, ranAt: new Date("2026-11-01T10:00:00Z"), ended: "blocked" }).returning();
+    const [r2] = await created.db.insert(agentRuns).values({ agentId: id, runNumber: 2, ranAt: new Date("2026-11-01T11:00:00Z"), ended: "passed" }).returning();
+    await created.db.insert(agentRunSteps).values([
+      { runId: r2.id, stepName: "safety", detail: "", outcome: "passed", stepValues: { checked: "yes" }, sortOrder: 1 },
+      { runId: r2.id, stepName: "market", detail: "new token", outcome: "passed", stepValues: { mint: MINT }, sortOrder: 0 },
+      { runId: r1.id, stepName: "market", detail: "", outcome: "blocked", stepValues: {}, sortOrder: 0 },
+    ]);
+    const list = (await call("GET", "/api/agents", B)).json().agents.find((x: { id: number }) => x.id === id);
+    expect(list).toMatchObject({ runs: 2, lastRun: { n: 2, at: Math.floor(Date.parse("2026-11-01T11:00:00Z") / 1000), ended: "passed" } });
+    expect((await call("GET", `/api/agents/${id}`, B)).json().lastRun.n).toBe(2);
+    const runs = (await call("GET", `/api/agents/${id}/runs`, B)).json().runs;
+    expect(runs.map((x: { n: number }) => x.n)).toEqual([2, 1]); // terbaru dulu
+    expect(runs[0].steps.map((x: { step: string }) => x.step)).toEqual(["market", "safety"]); // urut sortOrder
+    expect(runs[0].steps[0]).toMatchObject({ detail: "new token", outcome: "passed", values: { mint: MINT } });
+    expect((await call("GET", `/api/agents/${id}/runs?limit=1`, B)).json().runs).toHaveLength(1);
+    // run di waktu yang sama: nomor terbesar dianggap terakhir
+    await created.db.insert(agentRuns).values([
+      { agentId: id, runNumber: 3, ranAt: new Date("2026-11-02T00:00:00Z"), ended: "stopped" },
+      { agentId: id, runNumber: 4, ranAt: new Date("2026-11-02T00:00:00Z"), ended: "failed" },
+    ]);
+    expect((await call("GET", `/api/agents/${id}`, B)).json().lastRun).toMatchObject({ n: 4, ended: "failed" });
+    const l2 = (await call("GET", "/api/agents", B)).json().agents.find((x: { id: number }) => x.id === id);
+    expect(l2.lastRun.n).toBe(4);
+    expect((await call("GET", `/api/agents/${id}/runs`, B)).json().runs.map((x: { n: number }) => x.n)).toEqual([4, 3, 2, 1]);
+    expect((await call("GET", `/api/agents/${id}/runs?limit=0`, B)).statusCode).toBe(400);
+    expect((await call("GET", `/api/agents/${id}/runs`, A)).statusCode).toBe(404); // bukan pemilik
+    expect((await call("GET", `/api/agents/${id}/runs`)).statusCode).toBe(401);
   });
 });
 

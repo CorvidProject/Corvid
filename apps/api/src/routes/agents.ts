@@ -2,11 +2,13 @@ import type { FastifyPluginAsync, FastifyRequest } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { agentRuns, agents, notifications, signals, tokens } from "@corvid/db";
+import { agentRunSteps, agentRuns, agents, notifications, signals, tokens } from "@corvid/db";
 import {
   agentCreateSchema,
   agentDetailSchema,
   agentIdParamSchema,
+  agentRunsResponseSchema,
+  runsQuerySchema,
   agentSummarySchema,
   agentUpdateSchema,
   errorSchema,
@@ -44,7 +46,8 @@ export const agentRoutes =
     const auth = { preHandler: requireAuth };
     const me = (req: FastifyRequest) => req.user!.id;
 
-    const summary = (a: AgentRow, runs: number) => ({
+    type LastRun = { n: number; at: number; ended: "passed" | "blocked" | "stopped" | "failed" } | null;
+    const summary = (a: AgentRow, runs: number, lastRun: LastRun = null) => ({
       id: a.id,
       name: a.name,
       type: a.type,
@@ -54,9 +57,14 @@ export const agentRoutes =
       winRate: null,
       runs,
       createdAt: a.createdAt.toISOString(),
+      lastRun,
     });
-    const detail = (a: AgentRow, runs: number) => ({
-      ...summary(a, runs),
+    const lastRunOf = async (id: number): Promise<LastRun> => {
+      const [r] = await db.select().from(agentRuns).where(eq(agentRuns.agentId, id)).orderBy(desc(agentRuns.ranAt), desc(agentRuns.runNumber)).limit(1);
+      return r ? { n: r.runNumber, at: Math.floor(r.ranAt.getTime() / 1000), ended: r.ended } : null;
+    };
+    const detail = (a: AgentRow, runs: number, lastRun: LastRun = null) => ({
+      ...summary(a, runs, lastRun),
       pipeline: a.pipeline as Pipeline | null,
       mode: a.mode as "signal" | "trading",
       config: a.config as Record<string, string>,
@@ -83,7 +91,15 @@ export const agentRoutes =
               .groupBy(agentRuns.agentId)
           : [];
         const by = new Map(counts.map((c) => [c.id, c.n]));
-        return { agents: rows.map((a) => summary(a, by.get(a.id) ?? 0)) };
+        const lasts = rows.length
+          ? await db
+              .selectDistinctOn([agentRuns.agentId], { id: agentRuns.agentId, n: agentRuns.runNumber, at: agentRuns.ranAt, ended: agentRuns.ended })
+              .from(agentRuns)
+              .where(sql`${agentRuns.agentId} in ${rows.map((r) => r.id)}`)
+              .orderBy(agentRuns.agentId, desc(agentRuns.ranAt), desc(agentRuns.runNumber))
+          : [];
+        const lastBy = new Map(lasts.map((l) => [l.id, { n: l.n, at: Math.floor(l.at.getTime() / 1000), ended: l.ended }]));
+        return { agents: rows.map((a) => summary(a, by.get(a.id) ?? 0, lastBy.get(a.id) ?? null)) };
       },
     );
 
@@ -123,7 +139,29 @@ export const agentRoutes =
       async (req, reply) => {
         const a = await owned(req.params.id, me(req));
         if (!a) return reply.code(404).send({ error: "agent_not_found" }); // milik orang lain = tidak ada
-        return detail(a, await runCount(a.id));
+        return detail(a, await runCount(a.id), await lastRunOf(a.id));
+      },
+    );
+
+    // Riwayat run (terbaru dulu) dengan langkah-langkahnya, bentuk sama dengan referensi.
+    app.get(
+      "/agents/:id/runs",
+      { ...auth, schema: { tags: ["agents"], params: agentIdParamSchema, querystring: runsQuerySchema, response: { 200: agentRunsResponseSchema, 404: errorSchema, ...authErrors } } },
+      async (req, reply) => {
+        const a = await owned(req.params.id, me(req));
+        if (!a) return reply.code(404).send({ error: "agent_not_found" });
+        const runs = await db.select().from(agentRuns).where(eq(agentRuns.agentId, a.id)).orderBy(desc(agentRuns.ranAt), desc(agentRuns.runNumber)).limit(req.query.limit);
+        const steps = runs.length
+          ? await db.select().from(agentRunSteps).where(sql`${agentRunSteps.runId} in ${runs.map((r) => r.id)}`).orderBy(agentRunSteps.runId, agentRunSteps.sortOrder)
+          : [];
+        return {
+          runs: runs.map((r) => ({
+            n: r.runNumber,
+            at: r.ranAt.toISOString(),
+            ended: r.ended,
+            steps: steps.filter((s) => s.runId === r.id).map((s) => ({ step: s.stepName, detail: s.detail ?? "", outcome: s.outcome, values: s.stepValues as Record<string, unknown> })),
+          })),
+        };
       },
     );
 

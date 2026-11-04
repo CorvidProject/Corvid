@@ -293,6 +293,8 @@ export const agentSummarySchema = z.object({
   winRate: z.number().nullable(),
   runs: z.number().int(),
   createdAt: z.string(),
+  /** Run terakhir (null bila belum pernah berjalan). `at` dalam detik. */
+  lastRun: z.object({ n: z.number().int(), at: z.number(), ended: z.enum(["passed", "blocked", "stopped", "failed"]) }).nullable(),
 });
 export const agentDetailSchema = agentSummarySchema.extend({
   pipeline: pipelineSchema.nullable(),
@@ -354,3 +356,21 @@ export const signalsResponseSchema = z.object({
     }),
   ),
 });
+
+export const runStepSchema = z.object({
+  step: z.string(),
+  detail: z.string(),
+  outcome: z.enum(["passed", "blocked", "stopped", "failed"]),
+  values: z.record(z.string(), z.unknown()),
+});
+export const agentRunsResponseSchema = z.object({
+  runs: z.array(
+    z.object({
+      n: z.number().int(),
+      at: z.string(),
+      ended: z.enum(["passed", "blocked", "stopped", "failed"]),
+      steps: z.array(runStepSchema),
+    }),
+  ),
+});
+export const runsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(50).default(20) });

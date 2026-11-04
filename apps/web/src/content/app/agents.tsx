@@ -8,7 +8,21 @@ import { apiGet, apiSend, USE_API } from "@/lib/api";
 // My agents. Mode fixture: daftar contoh (status dan hapus di localStorage). Mode API: GET /api/agents,
 // PUT /api/agents/:id (jeda/lanjut), DELETE /api/agents/:id. Catatan: runner agent belum ada, jadi "Running"
 // hanya status tersimpan sampai siklus agent dibangun.
-type A = { id: number; name: string; type: string; chain: string; running: boolean; tokenSymbol: string | null; winRate: number | null; runs: number; createdAt: string };
+type Last = { n: number; at: number; ended: "passed" | "blocked" | "stopped" | "failed" };
+type A = { id: number; name: string; type: string; chain: string; running: boolean; tokenSymbol: string | null; winRate: number | null; runs: number; createdAt: string; lastRun?: Last | null };
+const ENDED: Record<Last["ended"], { label: string; color: string }> = {
+  passed: { label: "Passed", color: "var(--v2-pos)" },
+  blocked: { label: "Blocked", color: "var(--v2-warn)" },
+  stopped: { label: "Stopped", color: "var(--v2-t-3)" },
+  failed: { label: "Failed", color: "var(--v2-neg)" },
+};
+function ago(ts: number) {
+  const s = Math.max(0, Math.floor(Date.now() / 1000 - ts));
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.floor(s / 60) + "m ago";
+  if (s < 86400) return Math.floor(s / 3600) + "h ago";
+  return Math.floor(s / 86400) + "d ago";
+}
 const KEY = "corvid.agents.v1";
 const TYPE: Record<string, string> = { auto_trader: "Auto trader", wallet_monitor: "Wallet monitor", signal_bot: "Signal bot", token_analyst: "Token analyst" };
 
@@ -132,6 +146,17 @@ export function ApplicationAgentsContent() {
                     </div>
                   </div>
                 </div>
+                {USE_API && (
+                  <div className="text-[12px]" style={{ color: "var(--v2-t-4)" }}>
+                    {a.lastRun ? (
+                      <>
+                        Last run #{a.lastRun.n} · <span style={{ color: ENDED[a.lastRun.ended].color }}>{ENDED[a.lastRun.ended].label}</span> · {ago(a.lastRun.at)}
+                      </>
+                    ) : (
+                      "No runs yet"
+                    )}
+                  </div>
+                )}
                 <div className="flex gap-2 mt-auto">
                   <button className="btn-v2 btn-v2-ghost btn-v2-sm" onClick={() => toggle(a.id)}>
                     {a.running ? <Pause size={12} /> : <Play size={12} />} {a.running ? "Pause" : "Resume"}
