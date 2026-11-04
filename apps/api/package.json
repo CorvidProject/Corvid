@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts",
-    "seed": "tsx src/seed.ts",
-    "openapi": "tsx src/openapi.ts",
+    "dev": "tsx --env-file-if-exists=../../.env watch src/server.ts",
+    "start": "tsx --env-file-if-exists=../../.env src/server.ts",
+    "seed": "tsx --env-file-if-exists=../../.env src/seed.ts",
+    "openapi": "tsx --env-file-if-exists=../../.env src/openapi.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

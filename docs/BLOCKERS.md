@@ -18,15 +18,15 @@
 
 11. **Vercel ↔ GitHub: SELESAI** (2026-11-04). Project `corvid` tersambung ke `CorvidProject/Corvid`, Production Branch `main`, Root Directory `apps/web`. Push ke `main` otomatis men-deploy.
 12. **Vercel Hobby:** project `corvid` ada di akun pribadi (`fauzanbayu123-1072s-projects`, sama dengan `nexa-ai-web`). Hobby melarang penggunaan komersial; pindahkan ke akun/tim Pro terpisah sebelum produksi berpenghasilan.
-
 13. **Langkah pemilik untuk Supabase (jangan kirim password/key ke chat):**
+
     1. Dashboard Supabase > Connect: salin connection string **Session pooler** (IPv4, port 5432; direct connection hanya IPv6 di paket free). Jangan transaction pooler (port 6543).
-    2. Terapkan skema, di terminal Anda sendiri:
+    2. Isi `DATABASE_URL=` di `ROOT/.env` (file sudah dibuat, di-gitignore; ganti seluruh `[YOUR-PASSWORD]` termasuk kurungnya, URL-encode karakter khusus). Lalu terapkan skema:
        ```powershell
        # Jalankan di: ROOT
-       $env:DATABASE_URL = "<connection string dengan password Anda>"
        pnpm --filter @corvid/db migrate
        ```
+       `.env` dimuat otomatis oleh skrip `apps/api`, `apps/worker`, dan `drizzle.config.ts`. Jika error `ECONNREFUSED 127.0.0.1`, berarti `DATABASE_URL` masih kosong.
        Migrasi `0001_rls` otomatis memasang RLS dan FK ke `auth.users` karena schema `auth` ada di Supabase.
     3. Isi `ROOT/.env`: `DATABASE_URL`, `SUPABASE_URL=https://qdlioftfvcoxxkqlkgqx.supabase.co`. Isi `apps/web/.env.local`: `NEXT_PUBLIC_SUPABASE_URL` (sama), `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Project Settings > API Keys: kunci anon/publishable, **bukan** service role), `NEXT_PUBLIC_USE_FIXTURES=false`, `NEXT_PUBLIC_API_URL=http://localhost:8787`.
     4. Dashboard > Authentication: aktifkan Email; untuk uji lokal boleh matikan "Confirm email". Tambahkan `http://localhost:3000` dan `http://localhost:3217` ke URL Configuration > Redirect URLs.
