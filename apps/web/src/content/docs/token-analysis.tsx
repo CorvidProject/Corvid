@@ -59,7 +59,7 @@ export function DocsTokenAnalysisContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              How much real ETH or stablecoin is paired against the token. Thin
+              How much real SOL or stablecoin is paired against the token. Thin
               liquidity means one seller can crash the chart
             </p>
           </div>

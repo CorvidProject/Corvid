@@ -143,7 +143,7 @@ export function DocsBurnDashboardContent() {
         <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Swap-fee burn (5% copy-trade / 30% manual of the 1% commission,
           $CRVD), signal-fee burn (15% of signal fee, $CRVD), and opt-in weekly
-          buybacks from graduated agents (token-level via 0x with 2% max
+          buybacks from graduated agents (token-level via Jupiter with 2% max
           slippage)
         </p>
       </div>

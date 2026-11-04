@@ -12,10 +12,8 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Corvid is a multichain trading terminal with autonomous agents, on
-        Solana, Ethereum and Base. Check any token with an on-chain risk report,
-        deploy no-code agents that watch wallets and signals, and swap through
-        Jupiter on Solana or 0x on EVM · all from one platform.
+        Corvid is a trading terminal with autonomous agents, on Solana. Check any token with an on-chain risk report,
+        deploy no-code agents that watch wallets and signals, and swap through Jupiter · all from one platform.
       </p>
     ),
   },
@@ -49,8 +47,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Every user gets a platform wallet on signup, with an EVM address and a
-        Solana address added the first time you trade there. Keys are encrypted
+        Every user gets a platform wallet on signup, with a Solana address. Keys are encrypted
         at rest in our infrastructure so the platform can sign trades for you,
         which is what lets agents trade while you are offline. Export your
         private key at any time to take full self-custody.
@@ -86,8 +83,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        1% flat commission on swaps, on Solana and EVM alike. On EVM, manual
-        trades get 40% back as cashback (0.6% effective) and copy-trades 20%
+        1% flat commission on swaps. Manual trades get 40% back as cashback (0.6% effective) and copy-trades 20%
         (0.8% effective), half the fee paying the agent's creator. Cashback on
         Solana swaps is coming: those fees are recorded now and paid out once
         the Solana distributor is live.
@@ -105,9 +101,8 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        No. You trade with SOL or ETH like on any DEX. $CRVD accumulates
-        passively under the hood (burn + reserve slots). Cashback comes back in
-        the coin you traded with (EVM today, Solana soon), not $CRVD. Holding
+        No. You trade with SOL like on any DEX. $CRVD accumulates
+        passively under the hood (burn + reserve slots). Cashback comes back in the coin you traded with, not $CRVD. Holding
         $CRVD is optional.
       </p>
     ),
@@ -140,8 +135,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        DexScreener, GeckoTerminal, DexPaprika, GoPlus, pump.fun, Helius and
-        Alchemy. An OpenAI model writes the risk reports and signal summaries
+        DexScreener, GeckoTerminal, DexPaprika, GoPlus, pump.fun and Helius. An OpenAI model writes the risk reports and signal summaries
         from that on-chain data. TradingView-style charts with custom indicators
         built in.
       </p>
@@ -261,7 +255,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Credit system and platform wallets on EVM and Solana
+            Credit system and platform wallets on Solana
           </span>
         </li>
       </ul>
@@ -437,7 +431,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Memescope, Rugcheck and Swap across Solana and EVM
+            Memescope, Rugcheck and Swap on Solana
           </span>
         </li>
         <li
@@ -524,7 +518,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            MetaMask and WalletConnect for non-custodial users
+            Phantom and Solflare for non-custodial users
           </span>
         </li>
         <li

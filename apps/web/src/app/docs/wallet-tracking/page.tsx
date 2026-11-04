@@ -4,7 +4,7 @@ import { DocsWalletTrackingContent } from "@/content/docs/wallet-tracking";
 
 export const metadata: Metadata = {
   title: "Wallet Tracking",
-  description: "Discover and follow smart money wallets on Ethereum",
+  description: "Discover and follow smart money wallets on Solana",
 };
 
 export default function DocsWalletTrackingPage() {

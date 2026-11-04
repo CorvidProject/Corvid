@@ -59,7 +59,7 @@ export function DocsAgentsSignalBotContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Paste any Ethereum mint address. The bot watches this token only
+              Paste any Solana mint address. The bot watches this token only
             </p>
           </div>
           <div

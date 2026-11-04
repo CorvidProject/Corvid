@@ -117,7 +117,7 @@ export function DocsAgentsContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Scan every new Uniswap and Uniswap pool. Filter by safety checks,
+              Scan every new Raydium and Raydium pool. Filter by safety checks,
               snipe the ones that pass
             </p>
           </a>
@@ -184,7 +184,7 @@ export function DocsAgentsContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Alerts only. No ETH moves. You get notified when conditions match
+              Alerts only. No SOL moves. You get notified when conditions match
               and decide what to do yourself
             </p>
           </div>
@@ -331,7 +331,7 @@ export function DocsAgentsContent() {
               style={{ color: "rgba(255,255,255,0.60)" }}
             >
               In signal mode, the alert goes straight to notify. In trading
-              mode, the shared executor routes the swap through 0x on EVM or
+              mode, the shared executor routes the swap through Jupiter or
               Jupiter on Solana
             </p>
           </li>
@@ -417,8 +417,7 @@ export function DocsAgentsContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.60)" }}
             >
-              Base, Ethereum, Arbitrum, BNB Chain, and Robinhood agents use the
-              EVM side of your Trading Wallet. Solana agents use its Solana
+              Agents use the Solana side of your Trading Wallet. They use its Solana
               side. You fund and withdraw from the same Portfolio surface.
             </p>
           </div>
@@ -524,7 +523,7 @@ export function DocsAgentsContent() {
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Only the ones you configure that way. Filter nodes are
-              deterministic code: if a wallet buys more than 0.5 ETH of a pool
+              deterministic code: if a wallet buys more than 0.5 SOL of a pool
               with $10k+ liquidity and no mint authority, the trade fires. No AI
               in that path. Separately, a Token Analyst node can ask an LLM for
               a qualitative take on a mint before the trade fires. That is the

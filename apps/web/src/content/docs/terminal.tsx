@@ -24,7 +24,7 @@ export function DocsTerminalContent() {
           className="text-base sm:text-lg leading-relaxed max-w-xl"
           style={{ color: "rgba(255,255,255,0.65)" }}
         >
-          Paste any Ethereum token address. Price, holders, risk score, and live
+          Paste any Solana token address. Price, holders, risk score, and live
           trades load on one screen. Trade right from here.
         </p>
       </div>
@@ -163,7 +163,7 @@ export function DocsTerminalContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Buy or sell directly from the terminal. 0x routing, no credit cost
+              Buy or sell directly from the terminal. Jupiter routing, no credit cost
             </p>
           </div>
         </div>

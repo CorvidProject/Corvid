@@ -39,8 +39,7 @@ export function AboutContent() {
         </div>
         <div className="max-w-[70ch]">
           <p>
-            Autonomous on-chain trading agents and analysis tools for Ethereum,
-            Base, Arbitrum, BNB Chain and Solana. The platform lets you assess a
+            Autonomous on-chain trading agents and analysis tools for Solana. The platform lets you assess a
             token before touching it, follow wallets that trade well, and run
             automated strategies from a wallet you control.
           </p>

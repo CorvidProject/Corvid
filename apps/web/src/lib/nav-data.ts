@@ -50,7 +50,7 @@ export const NAV_SECTIONS: NavSection[] = [
         {
           title: "Trade",
           items: [
-            { icon: ChartLineUp, label: "Terminal", desc: "Live tokens and charts on six chains", href: "/application/terminal" },
+            { icon: ChartLineUp, label: "Terminal", desc: "Live tokens and charts on Solana", href: "/application/terminal" },
             { icon: ArrowsLeftRight, label: "Swap", desc: "Trade any token in one card", href: "/application/swap" },
             { icon: Clock, label: "Latest Tokens", desc: "Pools opened in the last minutes", href: "/application/latest" },
             { icon: TrendUp, label: "Top Gainers", desc: "What is up the most today", href: "/application/gainers" },

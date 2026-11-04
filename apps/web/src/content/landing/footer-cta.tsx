@@ -154,7 +154,7 @@ export function FooterCta() {
               className="font-mono text-[11px] tracking-[0.18em] uppercase"
               style={{ color: "rgba(255,255,255,0.50)" }}
             >
-              SOLANA · ETHEREUM · BASE · JUPITER · 0x
+              SOLANA · JUPITER · HELIUS
             </span>
             <span
               className="font-mono text-[11px] tracking-[0.18em] uppercase"

@@ -14,7 +14,7 @@ import { FooterCta } from "@/content/landing/footer-cta";
 export const metadata: Metadata = {
   title: "Corvid",
   description:
-    "Autonomous trading agents across EVM and Solana. Analyze tokens with AI, deploy autonomous trading agents, and execute on-chain swaps. Six networks — Ethereum, Base, Arbitrum, BNB Chain, Robinhood and Solana — with real-time data from GeckoTerminal.",
+    "Autonomous trading agents on Solana. Analyze tokens with AI, deploy autonomous trading agents, and execute on-chain swaps. Built on Solana, with real-time data from GeckoTerminal.",
 };
 
 export default function HomePage() {

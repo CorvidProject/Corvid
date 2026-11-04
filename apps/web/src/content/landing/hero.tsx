@@ -226,8 +226,7 @@ export function Hero() {
                   animation: "hero-live-pulse 2s ease-in-out infinite",
                 }}
               ></span>
-              Live on mainnet. Trades route through Jupiter and 0x, data from
-              Helius.
+              Live on mainnet. Trades route through Jupiter, data from Helius.
             </span>
             <div className="flex items-center gap-7">
               <a
@@ -244,21 +243,6 @@ export function Hero() {
                   className="rounded-[6px]"
                 />
                 Jupiter
-              </a>
-              <a
-                href="https://0x.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="crv-hero-logo inline-flex items-center gap-2 font-heading font-bold text-[15px] tracking-[-0.02em]"
-              >
-                <img
-                  src="/shared/0x.png"
-                  alt=""
-                  width="20"
-                  height="20"
-                  className="rounded-[6px]"
-                />
-                0x
               </a>
               <a
                 href="https://helius.dev"

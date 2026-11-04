@@ -621,8 +621,7 @@ export function HowItWorks() {
                       color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.72)",
                     }}
                   >
-                    Triggers fire and the agent takes the best route on its
-                    chain: Jupiter on Solana, 0x with Flashbots on EVM.
+                    Triggers fire and the agent takes the best route on Solana through Jupiter.
                     Approvals only when you want them
                   </p>
                   <div
@@ -642,16 +641,6 @@ export function HowItWorks() {
                         ></span>
                         JUPITER
                       </span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className="w-px h-3"
-                        style={{
-                          background:
-                            "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.20)",
-                        }}
-                      ></span>
-                      <span className="flex items-center gap-1.5">0x</span>
                     </div>
                     <div className="flex items-center gap-2.5">
                       <span

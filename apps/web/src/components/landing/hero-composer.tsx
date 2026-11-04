@@ -7,7 +7,7 @@ const PROMPTS = [
   "Paste a token: 0x6982…1933",
   "Paste a wallet: 0xd8dA…6045",
   "Find wallets that bought $PEPE in the last hour",
-  "Build an agent that buys new Uniswap pairs",
+  "Build an agent that buys new Raydium pairs",
 ];
 
 // Kotak input hero: teks contoh mengetik sendiri saat kosong, kirim ke /application/chat.

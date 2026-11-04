@@ -134,19 +134,19 @@ export function DocsAgentsTemplatesContent() {
               className="text-[13px]"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              0.01 ETH
+              0.01 SOL
             </span>
             <span
               className="text-[13px]"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              0.05 ETH
+              0.05 SOL
             </span>
             <span
               className="text-[13px]"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              0.15 ETH
+              0.15 SOL
             </span>
           </div>
           <div

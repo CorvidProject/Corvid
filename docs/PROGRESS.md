@@ -44,3 +44,7 @@
 - Landing, /social, /auth/signin, 20 layar aplikasi + redirect /application: TypeScript. 0 error hydration; tinggi halaman cocok (selisih <30px pada / dan /terms karena panjang kata brand).
 - Interaktif & diverifikasi: dropdown navbar, cookie, loader, FAQ/roadmap/token akordeon (tinggi buka/tutup sama persis), typewriter hero, input hero, glow WebGL, form masuk/daftar.
 - Belum interaktif: isi layar aplikasi (lihat DECISIONS), tab Analyze/Build/Automate dan panel template di landing, carousel "next ›", panel LiveDemo masih data statis.
+
+## 2026-11-04 — catatan EVM vs Solana
+- Ditambahkan `docs/EVM-vs-SOLANA.md`: tabel perbedaan konsep (alamat, token, fee, keamanan, swap, MEV, penandatanganan), daftar sisa konteks EVM yang ditemukan, dan perintah pencarian ulang. Penyesuaian dikerjakan pemilik.
+- Latar animasi WebGL Signal Blue terpasang di swap, refund, chat, rugcheck, tokens (komponen `DotBackdrop`).
