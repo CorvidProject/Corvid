@@ -15,7 +15,7 @@
 - [x] OG image placeholder, JSON-LD, `grep apevisor` nol di luar `legacy/`, `CLAUDE.md`, dan brief
 - [ ] Detail token `/application/token/[mint]` dan `/application/admin` (belum ada UI)
 - [ ] Screenshot Playwright perbandingan sebelum/sesudah (hanya dicek manual untuk 4 halaman)
-- [ ] Audit kontras teks alfa rendah di docs/legal; `legacy/` belum dihapus
+- [ ] Audit kontras teks alfa rendah di docs/legal; `legacy/` dipertahankan sebagai acuan (lihat DECISIONS)
 - Build: `next build` 48 halaman OK, `tsc` OK.
 
 ## Tahap 1 — efek hero/landing (menyusul)
