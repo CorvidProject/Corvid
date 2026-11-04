@@ -82,3 +82,7 @@
 ## 2026-11-05 — Search
 - Command palette (Ctrl+K, kolom search navbar) memakai /api/search di mode API. Diuji Playwright: cari simbol, notice mint tak dikenal, hasil kosong, Enter membuka detail token; tanpa error konsol.
 - Belum: worker ingest (data nyata), /application/admin, alpha/auth/wallet/agent via API.
+
+## 2026-11-05 — Worker ingest
+- `apps/worker`: papan trending/new, candle, trades, retensi dari GeckoTerminal + DexScreener (tanpa key). 16 tes lulus (parser pada sampel asli, retry HTTP, siklus penuh ke Postgres). Diuji sekali terhadap API publik sungguhan: AMD/RAM/ANSEM tampil lewat /api dengan harga, market cap, likuiditas, 91 candle 15m; satu panggilan trades kena 429 (batas laju dilonggarkan).
+- Belum: Helius (risk/holders/authority/wallet), memescope, deploy worker ke Railway, auth/alpha/agent/wallet.
