@@ -1,3 +1,5 @@
+import { WindowTabs } from "@/components/app/window-tabs";
+
 export function ApplicationTokenomicsContent() {
   return (
     <>
@@ -36,30 +38,7 @@ export function ApplicationTokenomicsContent() {
               border: "1px solid var(--v2-line-2)",
             }}
           >
-            <button
-              className="px-3 py-1.5 rounded-sm font-mono text-[11px] tracking-[0.1em] uppercase transition-colors"
-              style={{ background: "transparent", color: "var(--v2-t-3)" }}
-            >
-              24h
-            </button>
-            <button
-              className="px-3 py-1.5 rounded-sm font-mono text-[11px] tracking-[0.1em] uppercase transition-colors"
-              style={{ background: "var(--v2-accent)", color: "#ffffff" }}
-            >
-              7d
-            </button>
-            <button
-              className="px-3 py-1.5 rounded-sm font-mono text-[11px] tracking-[0.1em] uppercase transition-colors"
-              style={{ background: "transparent", color: "var(--v2-t-3)" }}
-            >
-              30d
-            </button>
-            <button
-              className="px-3 py-1.5 rounded-sm font-mono text-[11px] tracking-[0.1em] uppercase transition-colors"
-              style={{ background: "transparent", color: "var(--v2-t-3)" }}
-            >
-              All
-            </button>
+            <WindowTabs />
           </div>
         </div>
         <div

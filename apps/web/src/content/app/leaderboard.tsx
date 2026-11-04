@@ -74,7 +74,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +17.72 ETH
+              +17.72 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"
@@ -126,7 +126,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +13.97 ETH
+              +13.97 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"
@@ -178,7 +178,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +10.79 ETH
+              +10.79 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"
@@ -233,7 +233,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +7.50 ETH
+              +7.50 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"
@@ -282,7 +282,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +5.72 ETH
+              +5.72 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"
@@ -337,7 +337,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +5.67 ETH
+              +5.67 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"
@@ -386,7 +386,7 @@ export function ApplicationLeaderboardContent() {
               className="text-right num text-[14px] font-semibold"
               style={{ color: "var(--v2-pos)" }}
             >
-              +1.77 ETH
+              +1.77 SOL
             </span>
             <span
               className="hidden sm:block text-right num text-[13px]"

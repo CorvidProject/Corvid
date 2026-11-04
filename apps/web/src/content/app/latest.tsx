@@ -11,7 +11,7 @@ export function ApplicationLatestContent() {
               Latest Tokens
             </h1>
             <p className="text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-              New pools and pump.fun launches, newest first · all chains
+              New pools and pump.fun launches, newest first · Solana
             </p>
           </div>
           <span
@@ -28,26 +28,6 @@ export function ApplicationLatestContent() {
               background: "rgba(var(--v2-accent-rgb),0.12)",
               color: "var(--v2-accent-text)",
               border: "1px solid rgba(var(--v2-accent-rgb),0.45)",
-            }}
-          >
-            All chains<span className="num text-[11px] opacity-70">120</span>
-          </button>
-          <button
-            className="h-8 px-3 rounded-full text-[13px] flex items-center gap-1.5 transition-colors"
-            style={{
-              background: "var(--v2-bg-1)",
-              color: "var(--v2-t-3)",
-              border: "1px solid var(--v2-line-1)",
-            }}
-          >
-            Robinhood<span className="num text-[11px] opacity-70">0</span>
-          </button>
-          <button
-            className="h-8 px-3 rounded-full text-[13px] flex items-center gap-1.5 transition-colors"
-            style={{
-              background: "var(--v2-bg-1)",
-              color: "var(--v2-t-3)",
-              border: "1px solid var(--v2-line-1)",
             }}
           >
             Solana<span className="num text-[11px] opacity-70">120</span>

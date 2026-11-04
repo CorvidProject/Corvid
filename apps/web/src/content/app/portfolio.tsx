@@ -78,7 +78,7 @@ export function ApplicationPortfolioContentExtra() {
           >
             Sign in to see balances, agents and PnL across your wallet
           </p>
-          <button className="btn-v2 btn-v2-primary h-11 px-7 text-[14px] font-semibold">
+          <button data-auth-open="signup" className="btn-v2 btn-v2-primary h-11 px-7 text-[14px] font-semibold">
             Create account
           </button>
         </div>
