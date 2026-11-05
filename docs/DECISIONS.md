@@ -103,3 +103,5 @@
 
 - 2026-11-05 **[Chat]** Konteks LLM dibangun dari database Corvid saja (tanpa panggilan web/chain dari model). Biaya 1 kredit per jawaban; kredit awal 25. Tanpa LLM terkonfigurasi: 503, tidak ada jawaban cadangan. Pesan maks 2000 karakter, 200 pesan per chat, 100 chat per pengguna, riwayat 10 pesan terakhir dikirim ke model.
 - 2026-11-05 **[Marketplace]** Agent publik hanya membuka nama, jenis, pipeline, deskripsi, floor/conviction, simbol token, dan hitungan aktivitas; config, limits, dan alamat tetap privat. Agent trading di marketplace berjalan simulasi (dry), diberi label. Mengikuti agent = menerima sinyal agent itu di Inbox (hanya bila agent dipublikasikan dan run lolos). Tidak ada biaya per aksi (per_action_cost=0) dan klon belum ada fitur (clones_count dari kolom lama).
+
+- 2026-11-05 **[Tes: tanpa paralelisme antar file]** `vitest run --no-file-parallelism` di apps/api dan apps/worker. Tiap file tes menjalankan Postgres embedded sendiri; menjalankan 7+ instance serentak di Windows menimbulkan galat acak "initdb: program postgres ... cannot execute" yang memblokir hook pre-push. Lebih lambat (sekitar 1-2 menit) tetapi stabil.

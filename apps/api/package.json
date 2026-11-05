@@ -9,7 +9,7 @@
     "seed": "tsx --env-file-if-exists=../../.env src/seed.ts",
     "openapi": "tsx --env-file-if-exists=../../.env src/openapi.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --no-file-parallelism"
   },
   "dependencies": {
     "@corvid/db": "workspace:*",
