@@ -15,10 +15,13 @@ import {
 import type { Db } from "../app";
 import { buildContext, SYSTEM_PROMPT } from "../chat-context";
 import { LlmError, type LlmClient } from "../llm";
+import { RateLimiter } from "../ratelimit";
 
 export const CHAT_COST_CREDITS = 1;
 export const MAX_CHATS_PER_USER = 100;
 export const MAX_MESSAGES_PER_CHAT = 200;
+/** Pesan chat per pengguna per menit. */
+export const CHAT_PER_MINUTE = 6;
 const HISTORY = 10;
 const authErrors = { 401: errorSchema, 503: errorSchema };
 
@@ -33,7 +36,20 @@ const toChat = (c: ChatRow): z.infer<typeof chatSchema> => ({
 const toMsg = (m: typeof chatMessages.$inferSelect) => ({ id: m.id, role: m.role as "user" | "assistant", content: m.content, createdAt: m.createdAt.toISOString() });
 
 export const chatRoutes =
-  ({ db, requireAuth, llm }: { db: Db; requireAuth: (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>; llm: LlmClient | null }): FastifyPluginAsync =>
+  ({
+    db,
+    requireAuth,
+    llm,
+    dailyCap = 3000,
+    limiter = new RateLimiter(CHAT_PER_MINUTE, 60_000),
+  }: {
+    db: Db;
+    requireAuth: (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
+    llm: LlmClient | null;
+    /** Pengaman tagihan: jawaban chat per 24 jam untuk semua pengguna. 0 = chat dimatikan. */
+    dailyCap?: number;
+    limiter?: RateLimiter;
+  }): FastifyPluginAsync =>
   async (instance) => {
     const app = instance.withTypeProvider<ZodTypeProvider>();
     const auth = { preHandler: requireAuth };
@@ -83,11 +99,26 @@ export const chatRoutes =
           tags: ["chat"],
           params: chatIdParamSchema,
           body: chatSendBodySchema,
-          response: { 200: chatSendResponseSchema, 402: errorSchema, 404: errorSchema, 409: errorSchema, 502: errorSchema, ...authErrors },
+          response: { 200: chatSendResponseSchema, 402: errorSchema, 404: errorSchema, 409: errorSchema, 429: errorSchema, 502: errorSchema, ...authErrors },
         },
       },
       async (req, reply) => {
         if (!llm) return reply.code(503).send({ error: "llm_unavailable" });
+        const model: LlmClient = llm;
+        const uid = me(req);
+        const gate = limiter.take(uid);
+        if (!gate.ok) return reply.header("retry-after", String(gate.retryAfterSec)).code(429).send({ error: "rate_limited" });
+        // Satu jawaban per pengguna pada satu waktu: mencegah pesan paralel menghabiskan kredit dan tagihan sekaligus.
+        if (!limiter.begin(uid)) return reply.header("retry-after", "2").code(429).send({ error: "rate_limited" });
+        try {
+          return await handle();
+        } finally {
+          limiter.end(uid);
+        }
+
+        async function handle() {
+        const [{ n: today }] = await db.select({ n: sql<number>`coalesce(sum(-${credits.delta}), 0)::int` }).from(credits).where(sql`${credits.reason} = 'chat' and ${credits.createdAt} > now() - interval '24 hours'`);
+        if (today >= dailyCap) return reply.code(503).send({ error: "chat_busy" });
         const chat = await own(req, req.params.id);
         if (!chat) return reply.code(404).send({ error: "not_found" });
         const balance = async (profileId: string) => {
@@ -104,7 +135,7 @@ export const chatRoutes =
         const ctx = await buildContext(db, content, chat.tokenMint);
         let answer: string;
         try {
-          answer = await llm.complete(`${SYSTEM_PROMPT}\n\nDATA:\n${ctx.data}`, [
+          answer = await model.complete(`${SYSTEM_PROMPT}\n\nDATA:\n${ctx.data}`, [
             ...prior.reverse().map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
             { role: "user", content },
           ]);
@@ -133,6 +164,7 @@ export const chatRoutes =
         });
         if (!out) return reply.code(402).send({ error: "no_credits" });
         return out;
+        }
       },
     );
   };

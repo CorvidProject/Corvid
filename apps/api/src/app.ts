@@ -18,6 +18,7 @@ import { agentRoutes } from "./routes/agents";
 import { chatRoutes } from "./routes/chats";
 import { marketplaceRoutes } from "./routes/marketplace";
 import type { LlmClient } from "./llm";
+import type { RateLimiter } from "./ratelimit";
 import type { Verifier } from "./auth";
 import { coingeckoSolPrice, priceRoutes, type SolPriceSource } from "./routes/prices";
 
@@ -34,10 +35,15 @@ export interface AppOptions {
   tradeMode?: "dry" | "live";
   /** Klien LLM untuk chat; null = chat menjawab 503. */
   llm?: LlmClient | null;
+  /** Jumlah proxy tepercaya di depan API (Railway = 1) agar req.ip memakai IP klien asli; 0 = langsung. */
+  trustProxyHops?: number;
+  /** Batas jawaban chat per 24 jam untuk seluruh pengguna (pengaman tagihan LLM). */
+  chatDailyCap?: number;
+  chatLimiter?: RateLimiter;
 }
 
-export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, solPrice = coingeckoSolPrice, verifier = null, tradeMode = "dry", llm = null }: AppOptions) {
-  const app = Fastify({ logger }).withTypeProvider<ZodTypeProvider>();
+export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, solPrice = coingeckoSolPrice, verifier = null, tradeMode = "dry", llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter }: AppOptions) {
+  const app = Fastify({ logger, trustProxy: trustProxyHops > 0 ? (_addr: string, hop: number) => hop < trustProxyHops : false }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
@@ -58,7 +64,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
   await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode }), { prefix: "/api" });
   await app.register(marketplaceRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
-  await app.register(chatRoutes({ db, requireAuth: requireAuth!, llm }), { prefix: "/api" });
+  await app.register(chatRoutes({ db, requireAuth: requireAuth!, llm, dailyCap: chatDailyCap, limiter: chatLimiter }), { prefix: "/api" });
   await app.register(watchlistRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
 
   // Rute yang belum ada: 404 bersih (tanpa proxy ke situs lain).

@@ -15,6 +15,8 @@ const fromApi = (m: ApiMsg): Msg => ({ role: m.role === "user" ? "user" : "agent
 const ERRORS: Record<string, string> = {
   no_credits: "You are out of credits. Each answer uses 1 credit.",
   llm_unavailable: "Chat is not available yet. Try again later.",
+  rate_limited: "You are sending messages too fast. Wait a few seconds and try again.",
+  chat_busy: "Chat is at capacity for today. Try again tomorrow.",
   llm_error: "The assistant could not answer right now. No credit was used. Try again.",
   chat_full: "This chat is full. Start a new one.",
   too_many_chats: "You have too many chats. Delete one to start a new one.",

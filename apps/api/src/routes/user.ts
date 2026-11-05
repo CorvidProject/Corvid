@@ -15,6 +15,9 @@ declare module "fastify" {
 }
 
 const WELCOME_CREDITS = 25;
+/** Kredit selamat datang hanya untuk sekian akun baru per IP (hash) per 24 jam; sisanya tetap dibuat tanpa kredit gratis. */
+export const WELCOME_PER_IP_24H = 5;
+export const hashIp = (salt: string, ip: string) => createHash("sha256").update(`${salt}:${ip}`).digest("hex").slice(0, 32);
 
 const profileSchema = z.object({
   id: z.string(),
@@ -39,7 +42,7 @@ const prefsSchema = z.object({
 const prefsUpdateSchema = prefsSchema.partial();
 
 /** Buat profil (+ kredit selamat datang, preferensi bawaan, notifikasi) sekali saja per pengguna. */
-export async function ensureProfile(db: Db, user: AuthUser): Promise<void> {
+export async function ensureProfile(db: Db, user: AuthUser, ctx: { ipHash?: string | null; userAgent?: string | null } = {}): Promise<void> {
   await db.transaction(async (tx) => {
     const display = user.email ? user.email.split("@")[0].slice(0, 50) : null;
     const inserted = await tx
@@ -48,13 +51,23 @@ export async function ensureProfile(db: Db, user: AuthUser): Promise<void> {
       .onConflictDoNothing()
       .returning({ id: profiles.id });
     if (inserted.length === 0) return;
-    await tx.insert(credits).values({ profileId: user.id, delta: WELCOME_CREDITS, reason: "welcome" });
+    let grant = true;
+    if (ctx.ipHash) {
+      const r = await tx.execute(sql`
+        select count(distinct c.profile_id)::int as n
+        from credits c join login_log l on l.profile_id = c.profile_id
+        where c.reason = 'welcome' and c.created_at > now() - interval '24 hours'
+          and l.ip_hash = ${ctx.ipHash} and l.at > now() - interval '24 hours'`);
+      grant = Number((r.rows[0] as { n: number } | undefined)?.n ?? 0) < WELCOME_PER_IP_24H;
+      await tx.insert(loginLog).values({ profileId: user.id, ipHash: ctx.ipHash, userAgent: ctx.userAgent?.slice(0, 300) || null });
+    }
+    if (grant) await tx.insert(credits).values({ profileId: user.id, delta: WELCOME_CREDITS, reason: "welcome" });
     await tx.insert(tradingPrefs).values({ profileId: user.id }).onConflictDoNothing();
     await tx.insert(notifications).values({
       profileId: user.id,
       kind: "system",
       title: "Welcome to Corvid",
-      body: `${WELCOME_CREDITS} free AI analyses on your account.`,
+      body: grant ? `${WELCOME_CREDITS} free AI analyses on your account.` : "Free analyses are limited per network and this one has reached its daily limit. You can still explore everything else.",
     });
   });
 }
@@ -88,7 +101,7 @@ export const userRoutes =
         return reply.code(401).send({ error: "unauthorized" });
       }
       if (!known.has(req.user.id)) {
-        await ensureProfile(db, req.user);
+        await ensureProfile(db, req.user, { ipHash: hashIp(ipSalt, req.ip), userAgent: req.headers["user-agent"] });
         if (known.size > 10_000) known.clear();
         known.add(req.user.id);
       }
@@ -153,7 +166,7 @@ export const userRoutes =
       async (req) => {
         const [last] = await db.select({ at: loginLog.at }).from(loginLog).where(eq(loginLog.profileId, me(req))).orderBy(desc(loginLog.at)).limit(1);
         if (last && Date.now() - last.at.getTime() < 60_000) return { ok: true as const, logged: false };
-        const ipHash = createHash("sha256").update(`${ipSalt}:${req.ip}`).digest("hex").slice(0, 32);
+        const ipHash = hashIp(ipSalt, req.ip);
         await db.insert(loginLog).values({ profileId: me(req), ipHash, userAgent: (req.headers["user-agent"] ?? "").slice(0, 300) || null });
         return { ok: true as const, logged: true };
       },

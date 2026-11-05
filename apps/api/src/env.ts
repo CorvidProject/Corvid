@@ -19,6 +19,10 @@ const envSchema = z.object({
   LLM_API_KEY: opt(z.string().min(1)),
   ANTHROPIC_API_KEY: opt(z.string().min(1)),
   LLM_MODEL: opt(z.string().min(1)),
+  /** Jumlah proxy tepercaya di depan API (Railway = 1). */
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
+  /** Pengaman tagihan: maksimal jawaban chat per 24 jam untuk semua pengguna. */
+  CHAT_DAILY_CAP: z.coerce.number().int().min(0).default(3000),
   TRADE_MODE: z.enum(["dry", "live"]).default("dry"),
 });
 export type Env = z.infer<typeof envSchema>;

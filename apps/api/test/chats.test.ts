@@ -2,10 +2,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import { generateKeyPair, SignJWT, type KeyLike } from "jose";
 import EmbeddedPostgres from "embedded-postgres";
+import { sql } from "drizzle-orm";
 import { applyMigrations, createDb, credits, tokens } from "@corvid/db";
 import { buildApp } from "../src/app";
 import { createVerifier } from "../src/auth";
 import { LlmError, type LlmClient, type LlmMessage } from "../src/llm";
+import { RateLimiter } from "../src/ratelimit";
+import { ensureProfile, WELCOME_PER_IP_24H } from "../src/routes/user";
 
 const dir = "D:/.dev/tmp/pgtest-chats";
 const port = 54338;
@@ -21,6 +24,8 @@ let pgServer: EmbeddedPostgres;
 let created: ReturnType<typeof createDb>;
 let app: Awaited<ReturnType<typeof buildApp>>;
 let appNoLlm: Awaited<ReturnType<typeof buildApp>>;
+let appStrict: Awaited<ReturnType<typeof buildApp>>;
+let appCapped: Awaited<ReturnType<typeof buildApp>>;
 let key: KeyLike;
 const seen: { system: string; messages: LlmMessage[] }[] = [];
 let failNext = false;
@@ -51,15 +56,21 @@ beforeAll(async () => {
   created = createDb(url);
   await created.db.insert(tokens).values({ mint: TOKEN, symbol: "TST", name: "Test Token", priceUsd: "0.0123", liquidityUsd: "50000", riskScore: 12 });
   const verifier = createVerifier({ issuer: ISS, key: kp.publicKey });
-  app = await buildApp({ db: created.db, verifier, llm });
+  app = await buildApp({ db: created.db, verifier, llm, chatLimiter: new RateLimiter(1000, 60_000) });
+  appStrict = await buildApp({ db: created.db, verifier, llm, chatLimiter: new RateLimiter(2, 60_000) });
+  appCapped = await buildApp({ db: created.db, verifier, llm, chatDailyCap: 0 });
   appNoLlm = await buildApp({ db: created.db, verifier, llm: null });
   await app.ready();
   await appNoLlm.ready();
+  await appStrict.ready();
+  await appCapped.ready();
 }, 120_000);
 
 afterAll(async () => {
   await app?.close();
   await appNoLlm?.close();
+  await appStrict?.close();
+  await appCapped?.close();
   await created?.pool.end();
   await pgServer?.stop();
 });
@@ -152,3 +163,47 @@ describe("chat", () => {
     expect(ids).not.toContain(id);
   });
 });
+
+describe("pembatasan", () => {
+  const D = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+  it("terlalu sering: pesan ke-3 dalam semenit ditolak 429 dengan Retry-After, tanpa memanggil LLM", async () => {
+    const id = (await call("POST", "/api/chats", D, undefined, appStrict)).json().id as number;
+    expect((await send(id, D, "one", appStrict)).statusCode).toBe(200);
+    expect((await send(id, D, "two", appStrict)).statusCode).toBe(200);
+    const before = seen.length;
+    const r = await send(id, D, "three", appStrict);
+    expect(r.statusCode).toBe(429);
+    expect(r.json().error).toBe("rate_limited");
+    expect(Number(r.headers["retry-after"])).toBeGreaterThan(0);
+    expect(seen.length).toBe(before);
+  });
+
+  it("pesan paralel dari satu pengguna: hanya satu yang diproses", async () => {
+    const E = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee";
+    const id = (await call("POST", "/api/chats", E)).json().id as number;
+    const [a, b] = await Promise.all([send(id, E, "parallel a"), send(id, E, "parallel b")]);
+    expect([a.statusCode, b.statusCode].sort()).toEqual([200, 429]);
+    expect((await call("GET", `/api/chats/${id}`, E)).json().messages).toHaveLength(2);
+  });
+
+  it("pagar harian: melewati batas 24 jam, chat menjawab 503 chat_busy dan LLM tidak dipanggil", async () => {
+    const id = (await call("POST", "/api/chats", A, undefined, appCapped)).json().id as number;
+    const before = seen.length;
+    const r = await send(id, A, "capped", appCapped);
+    expect(r.statusCode).toBe(503);
+    expect(r.json().error).toBe("chat_busy");
+    expect(seen.length).toBe(before);
+  });
+
+  it("kredit selamat datang: maksimal 5 akun baru per IP per 24 jam, sisanya tanpa kredit gratis", async () => {
+    const ids = Array.from({ length: WELCOME_PER_IP_24H + 2 }, (_, i) => `00000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`);
+    for (const id of ids) await ensureProfile(created.db, { id, email: `${id.slice(-3)}@x.io` }, { ipHash: "iphash-1", userAgent: "t" });
+    await ensureProfile(created.db, { id: "00000000-0000-4000-8000-0000000000ff", email: "other@x.io" }, { ipHash: "iphash-2" });
+    const bal = async (id: string) => Number((await created.db.execute(sql`select coalesce(sum(delta),0)::int as n from credits where profile_id = ${id}`)).rows[0].n);
+    const got = await Promise.all(ids.map(bal));
+    expect(got.filter((n) => n === 25)).toHaveLength(WELCOME_PER_IP_24H);
+    expect(got.filter((n) => n === 0)).toHaveLength(2);
+    expect(await bal("00000000-0000-4000-8000-0000000000ff")).toBe(25); // IP lain tidak terpengaruh
+  });
+});
+

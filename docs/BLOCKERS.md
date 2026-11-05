@@ -64,3 +64,6 @@
 27. **Tidak perlu lagi:** no. 24 (Ignored Build Step untuk branch testnet) dan no. 25 (proteksi preview). Frontend testnet cukup situs production dari `main` (https://corvid-tau.vercel.app, domain production tidak diminta login). Biarkan Ignored Build Step apa adanya. Branch `testnet` dan PR #1 dibiarkan (tidak dihapus), tidak dipakai deploy.
 
 - [x] **No. 19 selesai** (pemilik, 2026-11-06): Redirect URLs Supabase untuk https://corvid-tau.vercel.app sudah ditambahkan.
+
+24b. **Railway `@corvid/api`: pasang `TRUST_PROXY_HOPS=1`** (pemilik/lewat dashboard). Tanpa ini API melihat semua pengguna dari IP proxy Railway yang sama, sehingga batas "5 kredit selamat datang per IP per 24 jam" akan menghitung semua orang sebagai satu IP. Opsional: `CHAT_DAILY_CAP` (bawaan 3000 jawaban/24 jam untuk semua pengguna, pengaman tagihan LLM).
+24c. **Tes lengkap perlu dijalankan ulang** saat memori Windows lega: pada 2026-11-06 RAM bebas hanya 0,2 GB sehingga vitest gagal (spawn UNKNOWN, heap out of memory). Tes pembatas tanpa DB lulus; tes chat/pembatasan (apps/api/test/chats.test.ts) belum terbukti.
