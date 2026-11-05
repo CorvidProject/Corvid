@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import live from "@/data/live-agent.json";
 import trending from "@/data/tokens-trending.json";
 import security from "@/data/token-security.json";
-import memescope from "@/data/memescope.json";
+import freshTokens from "@/server/data/trending-robinhood-new.json";
 
 // Panel demo "Not a demo. This is the product, running." — data dari fixture (bentuk sama dengan API).
 const DOT = {
@@ -932,11 +932,12 @@ function RugPanel() {
 }
 
 function MemePanel() {
-  const items = memescope.new.slice(0, 6);
+  // Token baru di Robinhood Chain (data nyata GeckoTerminal); bukan kurva bonding, jadi tanpa bar progres.
+  const items = freshTokens.tokens.slice(0, 6).map((t) => ({ mint: t.mint, image: t.image, symbol: t.symbol ?? "?", marketCapUsd: t.marketCap ?? 0 }));
   return (
     <Panel
       title="memescope"
-      sub="newest launches"
+      sub="newest tokens"
       badge="live"
       badgeColor={GREEN}
       className="cv-meme-panel"
@@ -958,15 +959,6 @@ function MemePanel() {
                 style={{ ...DOT, fontSize: 15, color: "#fff" }}
               >
                 {m.symbol}
-              </div>
-              <div className="h-[3px] mt-1.5" style={{ background: "#161616" }}>
-                <div
-                  style={{
-                    width: `${Math.min(100, Math.max(2, m.progress))}%`,
-                    height: "100%",
-                    background: "var(--v2-accent)",
-                  }}
-                />
               </div>
             </div>
             <div

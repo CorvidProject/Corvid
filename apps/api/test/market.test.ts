@@ -68,13 +68,11 @@ describe("market API", () => {
     const { tokens } = r.json();
     expect(tokens.length).toBeGreaterThan(10);
     for (const t of tokens) {
-      expect(t.chain).toBe("solana");
-      expect(t.mint).not.toMatch(/^0x/);
-      expect(t.dex?.toLowerCase()).not.toBe("uniswap");
+      expect(t.chain).toBe("robinhood");
     }
   });
 
-  it("menolak chain selain solana", async () => {
+  it("menolak chain yang tidak dikenal", async () => {
     const r = await get("/api/tokens/trending?chain=ethereum");
     expect(r.statusCode).toBe(400);
   });

@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import newPools from "@/server/data/trending-solana-new.json";
-import trending from "@/server/data/trending-solana-trending.json";
+import newPools from "@/server/data/trending-robinhood-new.json";
+import trending from "@/server/data/trending-robinhood-trending.json";
 
 // Mode "Trenches" di /application/terminal: tiga kolom (New / Trending / High Volume).
 // Data dari fixture (bentuk sama dengan /tokens/trending); diganti API di Tahap 2.

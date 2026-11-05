@@ -51,7 +51,7 @@ export const agentRoutes =
       id: a.id,
       name: a.name,
       type: a.type,
-      chain: "solana" as const,
+      chain: "robinhood" as const,
       running: a.running,
       tokenSymbol: a.tokenSymbol,
       winRate: null,

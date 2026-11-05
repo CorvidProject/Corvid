@@ -13,8 +13,8 @@ function loadJSON(file) {
 const seed = {
   stats: loadJSON('stats.json'),
   liveAgent: loadJSON('live-agent.json'),
-  trendingTrending: loadJSON('trending-solana-trending.json'),
-  trendingNew: loadJSON('trending-solana-new.json'),
+  trendingTrending: loadJSON('trending-robinhood-trending.json'),
+  trendingNew: loadJSON('trending-robinhood-new.json'),
   memescopeNew: loadJSON('memescope-new.json'),
   memescopeStretch: loadJSON('memescope-stretch.json'),
   memescopeMigrated: loadJSON('memescope-migrated.json'),

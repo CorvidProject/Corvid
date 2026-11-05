@@ -79,7 +79,7 @@ describe("agents: siklus hidup dan isolasi", () => {
     expect(r.statusCode).toBe(201);
     const a = r.json();
     id = a.id;
-    expect(a).toMatchObject({ name: "Whale copy", type: "wallet_monitor", pipeline: "follow_wallet", mode: "signal", running: false, execution: "dry", chain: "solana", runs: 0, winRate: null });
+    expect(a).toMatchObject({ name: "Whale copy", type: "wallet_monitor", pipeline: "follow_wallet", mode: "signal", running: false, execution: "dry", chain: "robinhood", runs: 0, winRate: null });
     expect(a.config.wallet_address).toBe(WALLET);
   });
 
@@ -103,7 +103,7 @@ describe("agents: siklus hidup dan isolasi", () => {
   it("daftar hanya milik sendiri; pengguna lain melihat kosong", async () => {
     const mine = (await call("GET", "/api/agents", A)).json().agents;
     expect(mine.length).toBe(4);
-    expect(mine.every((x: { chain: string }) => x.chain === "solana")).toBe(true);
+    expect(mine.every((x: { chain: string }) => x.chain === "robinhood")).toBe(true);
     expect((await call("GET", "/api/agents", B)).json().agents).toEqual([]);
   });
 

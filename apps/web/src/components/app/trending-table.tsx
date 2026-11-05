@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowsClockwise, CaretDown, Check, Funnel, Star, X } from "@phosphor-icons/react";
-import trending from "@/server/data/trending-solana-trending.json";
+import trending from "@/server/data/trending-robinhood-trending.json";
 
 // Tab "Trending" di /application/terminal: interval, filter, dan tabel berbasis data fixture
 // (bentuk sama dengan /tokens/trending). Logika filter mengikuti referensi; diganti API di Tahap 2.
@@ -159,7 +159,12 @@ function ago(ts: number, now: number) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 const chg = (t: Tok, i: Interval) => (i === "5m" ? t.change5m : i === "1h" ? t.change1h : i === "6h" ? t.change6h : t.change24h) ?? 0;
-const dexName = (d: string) => (/^uniswap/i.test(d) ? "raydium" : d.toLowerCase());
+// "uniswap-v3-robinhood" → "Uniswap v3"; "ramses-v3-robinhood" → "Ramses v3"; "uniswap" → "Uniswap".
+const dexName = (d: string) =>
+  d
+    .replace(/-robinhood$/i, "")
+    .replace(/-v(\d)$/i, " v$1")
+    .replace(/^\w/, (c) => c.toUpperCase());
 const riskTone = (s: number, checked: boolean) => (!checked ? "mute" : s <= 30 ? "pos" : s <= 60 ? "warn" : "neg");
 const shortRisk = (n: string) => n.replace(/ concentration$/i, "").replace(/^Top holder$/i, "Top holder").replace(/^Balance control$/i, "Balance ctrl");
 

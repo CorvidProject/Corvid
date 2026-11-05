@@ -21,8 +21,8 @@ import {
   X,
   type Icon,
 } from "@phosphor-icons/react";
-import trending from "@/server/data/trending-solana-trending.json";
-import fresh from "@/server/data/trending-solana-new.json";
+import trending from "@/server/data/trending-robinhood-trending.json";
+import fresh from "@/server/data/trending-robinhood-new.json";
 import memescope from "@/data/memescope.json";
 import market from "@/data/marketplace-feed.json";
 import { useAuthModal } from "@/components/auth/auth-modal";

@@ -16,8 +16,6 @@ export function deriveRisks(t: TokenRow): TrendingToken["risks"] {
   const dev = num(t.devPct);
   if (top10 !== null && top10 >= 50) risks.push({ name: "Top holder concentration", level: top10 >= 80 ? "danger" : "warning", score: Math.round(top10 / 6) });
   if (dev !== null && dev >= 10) risks.push({ name: "Dev holds a large share", level: "warning", score: Math.round(dev) });
-  if (t.mintAuthority) risks.push({ name: "Mint authority not revoked", level: "danger", score: 20 });
-  if (t.freezeAuthority) risks.push({ name: "Freeze authority not revoked", level: "danger", score: 20 });
   if (t.rugged) risks.push({ name: "Marked as rugged", level: "danger", score: 100 });
   return risks;
 }
@@ -57,7 +55,7 @@ export function toTrending(t: TokenRow): TrendingToken {
     lpBurn: num(t.lpBurnPct),
     createdAt: secs(t.createdAtChain),
     holders: t.holders,
-    chain: "solana",
+    chain: "robinhood",
     volume1h: num(t.volume1hUsd),
   };
 }
