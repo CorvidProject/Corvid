@@ -117,3 +117,8 @@
 - Marketplace: migrasi `0004_agent_marketplace` (agents.description, published_at). `/api/marketplace/feed` (publik), `/marketplace/agents/:id` (ringkasan publik tanpa konfigurasi/alamat), follow/unfollow, `/marketplace/following`, `PUT /api/agents/:id/publish` (butuh deskripsi). Runner mengirim sinyal ke pengikut agent yang dipublikasikan. Angka dari data nyata: signals = run lolos, trades = swap simulasi; PnL/win rate null (belum ada posisi tertutup). 5 tes API + 1 tes runner.
 - Web: Chat mode API (percakapan tersimpan, kredit tampil, galat jelas), board marketplace dari API + follow, halaman `/application/agents/[id]`, tombol Publish di My agents.
 - 57 tes API lulus. Tes worker: semua lulus kecuali `wallets.test.ts` yang gagal karena port 54333 dipakai proses postgres uji yatim (PID 33052); bukan galat kode.
+
+## 2026-11-06 — Tahap 4: siapkan testnet
+- Sudah hidup (dibuat pemilik, diverifikasi saya): API https://corvidapi-production.up.railway.app (`/health`, stats, trending, memescope, marketplace 200), worker mengindeks (board, candle, trades, launchpad, wallets 171 bertier), Supabase terisi (migrasi 0000-0004), Vercel production https://corvid-tau.vercel.app (15 halaman uji asap: beranda, about, docs, quick-start, terms, privacy, 8 layar app, signin: semua 200).
+- Saya kerjakan: variabel Preview `NEXT_PUBLIC_API_URL` untuk branch testnet, CORS API (`WEB_ORIGIN` multi-origin), perbaikan worker (candle duplikat, log galat Postgres), docs/infrastructure.md.
+- Menunggu pemilik: merge PR #1 ke testnet, Supabase Redirect URLs, kunci LLM di Railway, RPC berkunci (BLOCKERS no. 18-23).

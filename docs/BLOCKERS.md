@@ -5,7 +5,7 @@
    - `setx PLAYWRIGHT_BROWSERS_PATH D:\.dev\playwright`
    - Pindahkan disk image Docker Desktop ke D: sebelum memakai Docker.
 2. **Supabase:** project `Corvid` sudah dibuat pemilik (ref `qdlioftfvcoxxkqlkgqx`, 2026-11-05). Project lama `nexa-ai-*` milik proyek NEXA tidak dipakai. **Menunggu pemilik:** terapkan migrasi dan isi env (langkah di bawah).
-3. **Railway:** `railway whoami` tidak menampilkan hasil; login ulang (`railway login`) sebelum "siapkan testnet".
+3. **Railway: SELESAI** (2026-11-06). CLI terlogin; project `Corvid` dengan service `@corvid/api` dan `@corvid/worker` sudah hidup (lihat `docs/infrastructure.md`).
 4. **Email kontak, logo (PNG ≥512×512 transparan + favicon), domain:** belum diberikan. Pakai env `CONTACT_EMAIL` dan wordmark placeholder.
 5. **Merek "Corvid" / ticker $CRVD:** cek merek, domain, dan ticker sebelum publik.
 6. **terms/privacy:** perlu dibaca pihak hukum setelah nama entitas diganti.
@@ -46,3 +46,11 @@
     ```
     Model chat yang tersedia di paket: `mimo-v2.6-pro` (lebih kuat) dan `mimo-v2.6-flash` (lebih cepat/murah); model `asr`/`tts` adalah suara dan tidak dipakai chat. Cek koneksi: `pnpm --filter @corvid/api llm:check` (di ROOT; hanya mencetak status). Untuk testnet isi variabel yang sama di Railway. Endpoint `/anthropic` milik MiMo tidak dipakai (adapter Anthropic kita menunjuk ke api.anthropic.com). Catatan privasi: pesan chat beserta data token/wallet yang ikut dikirim sebagai konteks diproses penyedia ini (server Singapura); sebutkan di privacy policy dan minta pihak hukum membacanya (no. 6).
 17. **Proses postgres uji yatim:** `postgres.exe` PID 33052 (embedded-postgres proyek, induknya mati) menahan port 54333 sehingga `apps/worker/test/wallets.test.ts` gagal dan hook `pre-push` akan memblokir push. Hentikan dari PowerShell Anda: `Stop-Process -Id 33052 -Force`, lalu jalankan ulang tes.
+
+## Testnet (2026-11-06): yang menunggu pemilik
+18. **Merge PR #1 `main` -> `testnet`:** semua check hijau (Railway api/worker, Vercel), status CLEAN. Merge ditolak pengaman otomatis saat saya coba, jadi lakukan sendiri: `gh pr merge 1 --merge` di ROOT, atau tombol Merge di https://github.com/CorvidProject/Corvid/pull/1. Setelah merge, Vercel membangun preview branch `testnet` di https://corvid-git-testnet-fauzanbayu123-1072s-projects.vercel.app (variabel Preview dan `NEXT_PUBLIC_API_URL` branch testnet sudah dipasang; CORS API sudah mengizinkan origin itu).
+19. **Supabase Auth > URL Configuration:** tambahkan https://corvid-tau.vercel.app dan URL branch testnet di atas ke Redirect URLs (dan Site URL bila perlu), agar login dari situs yang di-deploy berfungsi.
+20. **Kunci chat LLM di Railway** (rahasia, no. 16): pasang `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` pada service `@corvid/api`. Sebelum itu chat di situs menjawab "Chat is not available yet". Pastikan paket MiMo boleh dipakai sebagai backend aplikasi.
+21. **RPC berkunci (opsional tapi disarankan):** `RPC_URL` dan `MAINNET_RPC_URL` memakai RPC publik yang dibatasi laju (log worker menunjukkan "RPC HTTP 429" pada launchpad Pons). Isi RPC Alchemy milik proyek di Railway.
+22. **Alias `corvid-testnet.vercel.app` tidak tersedia** (sudah dimiliki proyek lain). Bila ingin nama pendek, tentukan nama lain atau domain sendiri.
+23. **Faucet testnet:** belum diverifikasi. Wallet uji butuh ETH testnet untuk estimasi gas simulasi swap.
