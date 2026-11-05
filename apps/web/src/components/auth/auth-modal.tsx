@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { ArrowLeft, CheckCircle, Eye, EyeSlash, SpinnerGap, Wallet, X } from "@phosphor-icons/react";
-import { resetPassword, signInWithEmail, signUpWithEmail } from "@/lib/auth";
+import { authConfigured, resetPassword, signInWithEmail, signUpWithEmail } from "@/lib/auth";
 import { connectWallet, signInWithWallet, switchToAppChain, useWallet } from "@/lib/wallet";
 
 // Modal masuk/daftar (port dari referensi). Dibuka dari elemen bertanda data-auth-open
@@ -97,7 +97,8 @@ function WalletSection({ onDone }: { onDone: () => void }) {
     setPending(id);
     let r = w.address && w.walletId === id ? { error: null } : await connectWallet(id);
     if (!r.error && w.appChain) r = await switchToAppChain();
-    if (!r.error) r = await signInWithWallet();
+    // Tanpa Supabase (belum dikonfigurasi): cukup sambungkan wallet, lewati login akun.
+    if (!r.error && authConfigured()) r = await signInWithWallet();
     setPending(null);
     if (r.error) setError(r.error);
     else onDone();
