@@ -54,3 +54,8 @@
 21. **RPC berkunci (opsional tapi disarankan):** `RPC_URL` dan `MAINNET_RPC_URL` memakai RPC publik yang dibatasi laju (log worker menunjukkan "RPC HTTP 429" pada launchpad Pons). Isi RPC Alchemy milik proyek di Railway.
 22. **Alias `corvid-testnet.vercel.app` tidak tersedia** (sudah dimiliki proyek lain). Bila ingin nama pendek, tentukan nama lain atau domain sendiri.
 23. **Faucet testnet:** belum diverifikasi. Wallet uji butuh ETH testnet untuk estimasi gas simulasi swap.
+
+## Testnet (2026-11-06, sore): hasil setelah PR #1 digabung
+24. **Branch `testnet` tidak dibangun Vercel.** Ignored Build Step proyek `corvid` berbunyi `test "$VERCEL_GIT_COMMIT_REF" != "main"`, sehingga semua branch selain main dilewati (merge PR #1 ke testnet tidak menghasilkan deployment). Perubahan lewat API ditolak pengaman; ubah di dashboard: Vercel > corvid > Settings > Git > Ignored Build Step > Override, isi `test "$VERCEL_GIT_COMMIT_REF" != "main" && test "$VERCEL_GIT_COMMIT_REF" != "testnet"`. Lalu picu build: Deployments > deployment testnet yang berstatus Canceled/Skipped > Redeploy (atau push commit kecil ke testnet).
+25. **Deployment Protection (SSO) aktif untuk preview** (`all_except_custom_domains`): URL branch testnet meminta login Vercel (302) dan tidak bisa dibuka orang lain. Keputusan pemilik: matikan di Settings > Deployment Protection (testnet publik) atau tetap aktif (hanya akun Vercel Anda/tim yang bisa membuka; head dev harus diundang ke tim atau diberi Protection Bypass).
+26. Variabel LLM (`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`) sudah terpasang di Railway `@corvid/api` (nama terverifikasi 2026-11-06). Uji jawaban chat nyata perlu sesi login; belum dijalankan.
