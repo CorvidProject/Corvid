@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
 import { CaretDown, CaretLeft, Funnel, List, Rows } from "@phosphor-icons/react";
+import { explorerAddress, getChain } from "@corvid/shared/chains";
+import { apiGet } from "@/lib/api";
 
-// Tab "Live feed" dan "My lists" di /application/alpha. Filter dan kontrol mengikuti referensi;
-// umpan transaksi dan daftar kosong sampai API (/alpha/activity, /alpha/watchlists) tersambung di Tahap 2.
+// Tab "Live feed" dan "My lists" di /application/alpha. Live feed: GET /api/alpha/activity (trade wallet bertier yang diindeks worker,
+// disegarkan tiap 8 dtk). My lists belum tersambung (daftar pantau butuh login dan API watchlist).
 
 function Pill({ active, onClick, children, color }: { active: boolean; onClick: () => void; children: ReactNode; color?: string }) {
   return (
@@ -69,6 +71,12 @@ function EmptyState({ title, hint }: { title: string; hint: string }) {
 }
 
 type Since = "1h" | "6h" | "24h" | "all";
+type Activity = { wallet: string; side: "buy" | "sell"; symbol: string | null; mint: string; eth: number | null; at: number };
+const MAINNET = getChain("mainnet");
+const ago = (ts: number, now: number) => {
+  const s = Math.max(0, Math.floor(now / 1000 - ts));
+  return s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s / 60)}m` : s < 86400 ? `${Math.floor(s / 3600)}h` : `${Math.floor(s / 86400)}d`;
+};
 type Side = "all" | "buy" | "sell";
 
 export function AlphaLive() {
@@ -76,18 +84,32 @@ export function AlphaLive() {
   const [since, setSince] = useState<Since>("all");
   const [side, setSide] = useState<Side>("all");
   const [minSize, setMinSize] = useState(0);
-  const [tier, setTier] = useState<"all" | "S" | "SA">("all");
-  const [mc, setMc] = useState("all");
   const [compact, setCompact] = useState(false);
   const [updated, setUpdated] = useState(0);
+  const [items, setItems] = useState<Activity[] | null>(null);
+  const [failed, setFailed] = useState(false);
   useEffect(() => {
-    const id = setInterval(() => setUpdated((s) => s + 1), 1000);
-    const poll = setInterval(() => setUpdated(0), 8000);
+    let alive = true;
+    const load = () =>
+      apiGet<{ activity: Activity[] }>("/api/alpha/activity?limit=100")
+        .then((r) => alive && (setItems(r.activity), setFailed(false), setUpdated(0)))
+        .catch(() => alive && setFailed(true));
+    void load();
+    const poll = setInterval(load, 8000);
+    const tick = setInterval(() => setUpdated((s) => s + 1), 1000);
     return () => {
-      clearInterval(id);
+      alive = false;
       clearInterval(poll);
+      clearInterval(tick);
     };
   }, []);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 15_000);
+    return () => clearInterval(id);
+  }, []);
+  const sinceSecs = since === "1h" ? 3600 : since === "6h" ? 21600 : since === "24h" ? 86400 : Infinity;
+  const feed = (items ?? []).filter((a) => (side === "all" || a.side === side) && now / 1000 - a.at <= sinceSecs && (a.eth ?? 0) >= minSize);
   const seg = (k: Side, label: string, color?: string) => (
     <button
       key={k}
@@ -138,28 +160,8 @@ export function AlphaLive() {
           </Section>
           <Section title="Min trade size">
             <div className="flex flex-wrap gap-1.5">
-              {[0, 10, 100, 1000].map((n) => (
-                <Pill key={n} active={minSize === n} onClick={() => setMinSize(n)}>{n === 0 ? "Any" : `$${n}+`}</Pill>
-              ))}
-            </div>
-          </Section>
-          <Section title="Wallet tier">
-            <div className="flex flex-wrap gap-1.5">
-              <Pill active={tier === "all"} onClick={() => setTier("all")}>All tiers</Pill>
-              <Pill active={tier === "S"} onClick={() => setTier("S")} color="#F5C451">S only</Pill>
-              <Pill active={tier === "SA"} onClick={() => setTier("SA")} color="#8FB3FF">S + A</Pill>
-            </div>
-          </Section>
-          <Section title="Market cap" defaultOpen={false}>
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                ["all", "Any"],
-                ["micro", "<100k"],
-                ["small", "100k–1M"],
-                ["mid", "1M–10M"],
-                ["large", ">10M"],
-              ].map(([k, l]) => (
-                <Pill key={k} active={mc === k} onClick={() => setMc(k)}>{l}</Pill>
+              {[0, 0.1, 0.5, 1].map((n) => (
+                <Pill key={n} active={minSize === n} onClick={() => setMinSize(n)}>{n === 0 ? "Any" : `${n}+ ETH`}</Pill>
               ))}
             </div>
           </Section>
@@ -202,7 +204,43 @@ export function AlphaLive() {
           <span className="text-[11px] font-mono uppercase tracking-[0.06em] font-semibold" style={{ color: "var(--v2-pos)" }}>Live</span>
           <span className="text-[11px]" style={{ color: "var(--v2-t-4)" }}>· updated {updated}s ago</span>
         </div>
-        <EmptyState title="No recent activity" hint="Tracked wallets may simply not have traded in the last few seconds. Feed refreshes every 8s" />
+        {feed.length === 0 ? (
+          <EmptyState
+            title={failed && items === null ? "Could not load activity" : items === null ? "Loading activity…" : "No recent activity"}
+            hint={failed && items === null ? "Try again shortly." : "Only wallets that Corvid scores as smart appear here. The feed refreshes every 8s"}
+          />
+        ) : (
+          <div style={{ borderTop: "1px solid var(--v2-line-1)" }}>
+            {feed.map((a) => (
+              <div key={`${a.wallet}${a.mint}${a.at}${a.side}`} className={`flex items-center gap-3 px-3 ${compact ? "py-1.5" : "py-3"}`} style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
+                <span
+                  className="num text-[11px] font-semibold uppercase w-10 text-center py-0.5 rounded-sm"
+                  style={{ color: a.side === "buy" ? "var(--v2-pos)" : "var(--v2-neg)", background: "var(--v2-bg-2)" }}
+                >
+                  {a.side}
+                </span>
+                <a className="text-[14px] font-semibold hover:underline min-w-0 truncate" style={{ color: "var(--v2-t-1)" }} href={`/application/tokens/${a.mint}?chain=robinhood`}>
+                  {a.symbol ?? `${a.mint.slice(0, 6)}…`}
+                </a>
+                <a
+                  className="num text-[12px] hover:underline"
+                  style={{ color: "var(--v2-t-4)" }}
+                  href={explorerAddress(MAINNET, a.wallet)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {a.wallet.slice(0, 6)}…{a.wallet.slice(-4)}
+                </a>
+                <span className="ml-auto num text-[13px]" style={{ color: "var(--v2-t-2)" }}>
+                  {a.eth === null ? "—" : `${a.eth.toFixed(a.eth >= 1 ? 2 : 3)} ETH`}
+                </span>
+                <span className="num text-[12px] w-10 text-right" style={{ color: "var(--v2-t-4)" }}>
+                  {ago(a.at, now)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

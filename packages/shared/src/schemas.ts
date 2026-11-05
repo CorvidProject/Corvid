@@ -207,6 +207,46 @@ export const memescopeResponseSchema = z.object({
   stale: z.boolean(),
 });
 
+// Smart wallets: ditemukan worker dari trade yang diindeks (estimasi, bukan riwayat penuh wallet).
+export const alphaCuratedQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  tier: z.enum(["S", "A", "B", "C"]).optional(),
+});
+export const alphaCuratedResponseSchema = z.object({
+  wallets: z.array(
+    z.object({
+      address: chainAddress,
+      label: z.string().nullable(),
+      tier: z.enum(["S", "A", "B", "C"]).nullable(),
+      /** Persen token tertutup yang untung; null bila belum ada token tertutup. */
+      winRate: nullableNum,
+      /** PnL realisasi estimasi dalam ETH, pada jendela windowHours. */
+      pnlEth: z.number(),
+      trades: z.number().int(),
+      closedTokens: z.number().int(),
+      tokensTraded: z.number().int(),
+      avgHoldHours: nullableNum,
+      lastActive: nullableNum,
+    }),
+  ),
+  /** Jendela data yang dipakai (jam): angka di atas hanya mencakup trade dalam jendela ini. */
+  windowHours: z.number().int(),
+  at: z.number(),
+});
+export const alphaActivityQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(200).default(50) });
+export const alphaActivityResponseSchema = z.object({
+  activity: z.array(
+    z.object({
+      wallet: chainAddress,
+      side: z.enum(["buy", "sell"]),
+      symbol: z.string().nullable(),
+      mint: chainAddress,
+      eth: nullableNum,
+      at: z.number(),
+    }),
+  ),
+});
+
 export const mintParamSchema = z.object({ mint: chainAddress });
 
 export const errorSchema = z.object({ error: z.string() });

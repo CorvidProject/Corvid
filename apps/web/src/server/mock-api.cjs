@@ -143,9 +143,14 @@ function handleMockApi(req, res, pathname, searchParams) {
     return true;
   }
 
+  // Smart wallets berasal dari penemuan worker (data nyata); mode fixture tidak punya data wallet, jadi kosong.
   if (pathname === '/api/alpha/curated') {
-    const limit = Math.max(1, Math.min(seed.curatedWallets.wallets.length, Number(searchParams.get('limit')) || 6));
-    sendJSON(res, 200, { wallets: seed.curatedWallets.wallets.slice(0, limit) });
+    sendJSON(res, 200, { wallets: [], windowHours: 48, at: Math.floor(Date.now() / 1000) });
+    return true;
+  }
+
+  if (pathname === '/api/alpha/activity') {
+    sendJSON(res, 200, { activity: [] });
     return true;
   }
 

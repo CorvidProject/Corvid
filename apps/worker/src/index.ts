@@ -2,6 +2,7 @@ import { createDb } from "@corvid/db";
 import { z } from "zod";
 import { refreshBoard, refreshCandles, refreshLaunchpad, refreshSecurity, refreshTrades, runRetention, type Deps } from "./ingest";
 import { createRpc, PONS, VIRTUALS } from "./sources/launchpads";
+import { pruneWallets, refreshWallets } from "./wallets";
 import { runAgentCycle } from "./runner";
 import { cachedSolUsd } from "./solprice";
 import { createDexScreener } from "./sources/dexscreener";
@@ -15,6 +16,9 @@ const env = z
     WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(600_000),
+    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(600_000),
+    /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
+    WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(48),
     WORKER_LAUNCHPAD_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** RPC mainnet untuk membaca saldo kurva launchpad (data pasar selalu mainnet; RPC_URL bisa testnet). Kosong = RPC publik. */
     MAINNET_RPC_URL: z.string().optional(),
@@ -60,6 +64,7 @@ const timers = [
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),
   every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
+  every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS })), pruned: await pruneWallets(db) })),
   every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, solUsd: cachedSolUsd() })),
   every("retention", env.WORKER_RETENTION_MS, () => runRetention(db)),
 ];

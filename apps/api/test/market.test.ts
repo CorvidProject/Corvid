@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import EmbeddedPostgres from "embedded-postgres";
-import { applyMigrations, createDb, tokenCandles, tokens } from "@corvid/db";
+import { applyMigrations, createDb, tokenCandles, tokens, walletActivity, wallets } from "@corvid/db";
 import { eq } from "drizzle-orm";
 import { buildApp } from "../src/app";
 import { seedAll } from "../src/seed";
@@ -38,6 +38,18 @@ beforeAll(async () => {
       volumeUsd: "100",
     })),
   );
+  // Smart wallets (dari worker): satu bertier, satu tanpa tier (tidak boleh muncul).
+  const WA = "0x" + "a".repeat(40);
+  const WB = "0x" + "b".repeat(40);
+  const [wa] = await created.db
+    .insert(wallets)
+    .values({ address: WA, source: "trades-window", curatedTier: "A", curatedLabel: "Discovered · +2.00 ETH / 48h", winRate30dPct: "100", totalPnlSol: "2", txCount30d: 2, closedTokens30d: 1, tokensTraded: 1, avgHoldHours: "5", lastActiveAt: new Date(t0) })
+    .returning({ id: wallets.id });
+  const [wb] = await created.db.insert(wallets).values({ address: WB, source: "trades-window", curatedTier: null, totalPnlSol: "-1" }).returning({ id: wallets.id });
+  await created.db.insert(walletActivity).values([
+    { walletId: wa.id, tokenId: tok.id, mint: "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump", side: "buy", amountSol: "1", txHash: "0x" + "1".repeat(64), at: new Date(t0 + 1000) },
+    { walletId: wb.id, tokenId: tok.id, mint: "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump", side: "sell", amountSol: "1", txHash: "0x" + "2".repeat(64), at: new Date(t0 + 2000) },
+  ]);
   app = await buildApp({ db: created.db, solPrice: async () => priceNow() });
   await app.ready();
 }, 120_000);
@@ -160,6 +172,26 @@ describe("market API", () => {
     expect((await get(`/api/tokens/chart?mint=${mint}&type=1h`)).json().candles).toEqual([]);
     expect((await get(`/api/tokens/chart?mint=${mint}&type=2m`)).statusCode).toBe(400);
     expect((await get("/api/tokens/chart?mint=11111111111111111111111111111111")).statusCode).toBe(404);
+  });
+
+  it("GET /api/alpha/curated: hanya wallet bertier, dengan jendela data eksplisit", async () => {
+    const r = await get("/api/alpha/curated");
+    expect(r.statusCode).toBe(200);
+    const body = r.json();
+    expect(body.windowHours).toBe(48);
+    expect(body.wallets).toHaveLength(1);
+    expect(body.wallets[0]).toMatchObject({ address: "0x" + "a".repeat(40), tier: "A", pnlEth: 2, winRate: 100, trades: 2, closedTokens: 1, tokensTraded: 1, avgHoldHours: 5 });
+    expect((await get("/api/alpha/curated?tier=S")).json().wallets).toEqual([]);
+    expect((await get("/api/alpha/curated?tier=Z")).statusCode).toBe(400);
+  });
+
+  it("GET /api/alpha/activity: hanya aktivitas wallet bertier", async () => {
+    const r = await get("/api/alpha/activity");
+    expect(r.statusCode).toBe(200);
+    const { activity } = r.json();
+    expect(activity).toHaveLength(1);
+    expect(activity[0]).toMatchObject({ wallet: "0x" + "a".repeat(40), side: "buy", eth: 1 });
+    expect(activity[0].symbol).toBe("Tripod");
   });
 
   it("GET /openapi.json memuat path pasar", async () => {

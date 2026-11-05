@@ -1,6 +1,8 @@
 "use client";
 import { useState, type ReactNode } from "react";
 import { Star } from "@phosphor-icons/react";
+import { explorerAddress, getChain } from "@corvid/shared/chains";
+import { useApi } from "@/lib/api";
 import { AlphaLive, AlphaMyLists } from "@/components/app/alpha-views";
 
 const TIERS = ["all", "S", "A", "B", "C"] as const;
@@ -26,1087 +28,105 @@ function Chip({ on, onClick, big, children }: { on: boolean; onClick: () => void
   );
 }
 
-type Row = { tier: string; pnl: number; win: number | null; trades: number; ago: number; el: ReactNode };
-const ROWS: Row[] = [
-  { tier: "A", pnl: 16000.0, win: 80, trades: 11, ago: 17, el: (
-                        <tr
- key="crv-user-0139"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(34, 197, 94, 0.12)",
-                                        color: "var(--v2-pos)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      A
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-0139
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +7.50 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              80%
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$16.0k
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            11
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            17d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-  { tier: "A", pnl: 14000.0, win: null, trades: 214, ago: 19, el: (
-                        <tr
- key="crv-user-3334"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(34, 197, 94, 0.12)",
-                                        color: "var(--v2-pos)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      A
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-3334
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +13.97 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-t-1)" }}
-                            >
-                              8 trades
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$14.0k
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            214
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            13
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            16d
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            19d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-  { tier: "A", pnl: 419.0, win: 69, trades: 17, ago: 17, el: (
-                        <tr
- key="crv-user-9301"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(34, 197, 94, 0.12)",
-                                        color: "var(--v2-pos)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      A
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-9301
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +5.67 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              69%
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$419
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            17
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            17d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-  { tier: "A", pnl: 28.0, win: null, trades: 0, ago: 4, el: (
-                        <tr
- key="crv-user-1811"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(34, 197, 94, 0.12)",
-                                        color: "var(--v2-pos)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      A
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-1811
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +10.79 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              5 trades
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$28
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            0
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            4d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-  { tier: "A", pnl: 0.0, win: 66, trades: 0, ago: 40, el: (
-                        <tr
- key="crv-user-6797"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(34, 197, 94, 0.12)",
-                                        color: "var(--v2-pos)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      A
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-6797
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +5.72 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              66%
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$0
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            0
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            40d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-  { tier: "B", pnl: 105.0, win: null, trades: 443, ago: 19, el: (
-                        <tr
- key="crv-user-8970"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(59, 130, 246, 0.12)",
-                                        color: "rgb(96, 165, 250)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      B
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-8970
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +1.77 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-t-1)" }}
-                            >
-                              52%
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$105
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            443
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            123
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            4d
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            19d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-  { tier: "B", pnl: 0.0, win: null, trades: 49, ago: 3, el: (
-                        <tr
- key="crv-user-3730"
-                          className="transition-colors group"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <button
-                              className="inline-flex items-center justify-center h-9 w-9 -m-2 rounded-sm transition-colors hover:bg-[var(--v2-bg-2)]"
-                              title="Add to watchlist"
-                              style={{ color: "var(--v2-t-4)" }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18"
-                                height="18"
-                                fill="currentColor"
-                                viewBox="0 0 256 256"
-                              >
-                                <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"></path>
-                              </svg>
-                            </button>
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "left" }}
-                          >
-                            <a
-                              className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi?chain=robinhood"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <img
-                                  alt=""
-                                  width="48"
-                                  height="48"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="rounded-sm object-cover border border-[var(--v2-line-2)] shrink-0"
-                                  src="/avatars/wallets/placeholder.svg"
-                                />
-                                <div className="min-w-0 flex flex-col">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span
-                                      className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
-                                      style={{
-                                        background: "rgba(59, 130, 246, 0.12)",
-                                        color: "rgb(96, 165, 250)",
-                                        fontSize: "14px",
-                                        lineHeight: "1",
-                                      }}
-                                    >
-                                      B
-                                    </span>
-                                    <span
-                                      className="truncate text-[15px] font-medium"
-                                      style={{ color: "var(--v2-t-1)" }}
-                                    >
-                                      crv-user-3730
-                                    </span>
-                                  </div>
-                                  <span
-                                    className="text-[12px] truncate mt-0.5"
-                                    style={{ color: "var(--v2-t-4)" }}
-                                  >
-                                    Discovered · +17.72 ETH / 30d
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-t-1)" }}
-                            >
-                              49%
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums"
-                            style={{ textAlign: "right" }}
-                          >
-                            <span
-                              className="font-semibold"
-                              style={{ color: "var(--v2-pos)" }}
-                            >
-                              +$0
-                            </span>
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden md:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            49
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-2)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden lg:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-3)",
-                            }}
-                          >
-                            —
-                          </td>
-                          <td
-                            className="canvas-td num tabular-nums hidden sm:table-cell"
-                            style={{
-                              textAlign: "right",
-                              color: "var(--v2-t-4)",
-                            }}
-                          >
-                            3d
-                          </td>
-                          <td
-                            className="canvas-td"
-                            style={{ textAlign: "right" }}
-                          >
-                            <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
-                              <a
-                                className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi&chain=robinhood"
-                                style={{
-                                  border: "1px solid var(--v2-accent)",
-                                  background: "transparent",
-                                  color: "var(--v2-accent-text)",
-                                  opacity: "1",
-                                  transition: "background 140ms, color 140ms",
-                                }}
-                              >
-                                Copy
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-  ) },
-];
+// Data dari GET /api/alpha/curated: wallet yang ditemukan worker dari trade yang diindeks (ESTIMASI pada jendela windowHours, bukan riwayat penuh).
+type ApiWallet = {
+  address: string;
+  label: string | null;
+  tier: "S" | "A" | "B" | "C" | null;
+  winRate: number | null;
+  pnlEth: number;
+  trades: number;
+  closedTokens: number;
+  tokensTraded: number;
+  avgHoldHours: number | null;
+  lastActive: number | null;
+};
+type Curated = { wallets: ApiWallet[]; windowHours: number };
+
+const MAINNET = getChain("mainnet"); // data pasar selalu dari mainnet
+const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+const eth = (n: number) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n).toFixed(Math.abs(n) >= 10 ? 1 : 2)} ETH`;
+function agoText(ts: number | null, now: number) {
+  if (!ts) return "—";
+  const s = Math.max(0, Math.floor(now / 1000 - ts));
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.floor(s / 60)}m`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h`;
+  return `${Math.floor(s / 86400)}d`;
+}
+const TIER_COLOR: Record<string, string> = { S: "var(--v2-accent-text)", A: "var(--v2-pos)", B: "var(--v2-t-2)", C: "var(--v2-t-4)" };
+
+function WalletRow({ w, now }: { w: ApiWallet; now: number }) {
+  const tier = w.tier ?? "C";
+  return (
+    <tr className="transition-colors group">
+      <td className="canvas-td" style={{ textAlign: "left" }}></td>
+      <td className="canvas-td" style={{ textAlign: "left" }}>
+        <a
+          className="hover:underline decoration-dotted underline-offset-4"
+          href={explorerAddress(MAINNET, w.address)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Open on the Robinhood Chain explorer"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <span
+              className="eyebrow num shrink-0 flex items-center justify-center font-bold rounded-sm w-7 h-7"
+              style={{ background: "var(--v2-bg-2)", color: TIER_COLOR[tier], fontSize: "14px", lineHeight: "1" }}
+            >
+              {tier}
+            </span>
+            <div className="min-w-0 flex flex-col">
+              <span className="truncate text-[15px] font-medium num" style={{ color: "var(--v2-t-1)" }}>
+                {short(w.address)}
+              </span>
+              <span className="text-[12px] truncate mt-0.5" style={{ color: "var(--v2-t-4)" }}>
+                {w.label ?? "Discovered"}
+              </span>
+            </div>
+          </div>
+        </a>
+      </td>
+      <td className="canvas-td num tabular-nums" style={{ textAlign: "right" }}>
+        {w.winRate === null ? (
+          <span style={{ color: "var(--v2-t-4)" }}>—</span>
+        ) : (
+          <span className="font-semibold" style={{ color: w.winRate >= 50 ? "var(--v2-pos)" : "var(--v2-neg)" }}>
+            {Math.round(w.winRate)}%
+          </span>
+        )}
+      </td>
+      <td className="canvas-td num tabular-nums" style={{ textAlign: "right" }}>
+        <span className="font-semibold" style={{ color: w.pnlEth >= 0 ? "var(--v2-pos)" : "var(--v2-neg)" }}>
+          {eth(w.pnlEth)}
+        </span>
+      </td>
+      <td className="canvas-td num tabular-nums hidden md:table-cell" style={{ textAlign: "right", color: "var(--v2-t-2)" }}>
+        {w.trades}
+      </td>
+      <td className="canvas-td num tabular-nums hidden lg:table-cell" style={{ textAlign: "right", color: "var(--v2-t-2)" }}>
+        {w.tokensTraded}
+      </td>
+      <td className="canvas-td num tabular-nums hidden lg:table-cell" style={{ textAlign: "right", color: "var(--v2-t-3)" }}>
+        {w.avgHoldHours === null ? "—" : w.avgHoldHours < 1 ? `${Math.round(w.avgHoldHours * 60)}m` : `${w.avgHoldHours.toFixed(1)}h`}
+      </td>
+      <td className="canvas-td num tabular-nums hidden sm:table-cell" style={{ textAlign: "right", color: "var(--v2-t-4)" }}>
+        {agoText(w.lastActive, now)}
+      </td>
+      <td className="canvas-td" style={{ textAlign: "right" }}>
+        <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
+          <a
+            className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
+            href={`/application/agents/new?type=copy_trader&wallet=${w.address}&chain=robinhood`}
+            style={{ border: "1px solid var(--v2-accent)", background: "transparent", color: "var(--v2-accent-text)" }}
+          >
+            Copy
+          </a>
+        </div>
+      </td>
+    </tr>
+  );
+}
 
 export function ApplicationAlphaContent() {
   const [tab, setTab] = useState<"wallets" | "live" | "my">("wallets");
@@ -1115,12 +135,18 @@ export function ApplicationAlphaContent() {
   const [minTr, setMinTr] = useState(0);
   const [sort, setSort] = useState<"top" | "trending">("top");
   const [compact, setCompact] = useState(false);
-  const shown = ROWS.filter(
-    (r) =>
-      (tier === "all" || r.tier === tier) &&
-      (minWin === 0 || (r.win !== null && r.win > minWin)) &&
-      r.trades >= minTr,
-  ).sort((a, b) => (sort === "top" ? b.pnl - a.pnl : a.ago - b.ago));
+  const { data, loading, error } = useApi<Curated>("/api/alpha/curated?limit=200");
+  const [now] = useState(() => Date.now());
+  const all = data?.wallets ?? [];
+  const windowHours = data?.windowHours ?? 48;
+  const shown = all
+    .filter(
+      (r) =>
+        (tier === "all" || r.tier === tier) &&
+        (minWin === 0 || (r.winRate !== null && r.winRate > minWin)) &&
+        r.trades >= minTr,
+    )
+    .sort((a, b) => (sort === "top" ? b.pnlEth - a.pnlEth : (b.lastActive ?? 0) - (a.lastActive ?? 0)));
   return (
     <>
       <div className="max-w-[1600px] mx-auto">
@@ -1138,7 +164,7 @@ export function ApplicationAlphaContent() {
                   className="text-[13px] mt-0.5"
                   style={{ color: "var(--v2-t-4)" }}
                 >
-                  Curated top performers, live trades, cluster plays
+                  Wallets with profitable trades on Robinhood Chain
                 </p>
               </div>
             </div>
@@ -1248,7 +274,7 @@ export function ApplicationAlphaContent() {
                     <div className="flex flex-wrap gap-1.5">
                       {TIERS.map((k) => (
                         <Chip key={k} on={tier === k} onClick={() => setTier(k)}>
-                          {k === "all" ? "All" : k}<span className="ml-1 opacity-60">{k === "all" ? ROWS.length : ROWS.filter((r) => r.tier === k).length}</span>
+                          {k === "all" ? "All" : k}<span className="ml-1 opacity-60">{k === "all" ? all.length : all.filter((r) => r.tier === k).length}</span>
                         </Chip>
                       ))}
                     </div>
@@ -1290,7 +316,7 @@ export function ApplicationAlphaContent() {
                     className="flex items-center justify-between w-full px-4 py-3 text-[13px] font-semibold uppercase tracking-[0.06em] transition-colors hover:bg-[var(--v2-bg-1)]"
                     style={{ color: "var(--v2-t-2)" }}
                   >
-                    Min trades (30d)
+                    Min trades ({windowHours}h)
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="12"
@@ -1557,9 +583,25 @@ export function ApplicationAlphaContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {shown.map((r) => r.el)}
+                        {shown.map((r) => (
+                          <WalletRow key={r.address} w={r} now={now} />
+                        ))}
                       </tbody>
                     </table>
+                    {shown.length === 0 && (
+                      <p className="px-6 py-14 text-center text-[13px] mx-auto max-w-[460px] leading-relaxed" style={{ color: "var(--v2-t-3)" }}>
+                        {loading
+                          ? "Loading wallets…"
+                          : error
+                            ? "Could not load wallets. Try again shortly."
+                            : all.length > 0
+                              ? "No wallets match these filters."
+                              : "No smart wallets yet. Wallets show up once the indexer sees profitable trades."}
+                      </p>
+                    )}
+                    <p className="px-3 py-4 text-[12px] leading-relaxed" style={{ color: "var(--v2-t-4)" }}>
+                      Estimates from trades Corvid has indexed in the last {windowHours} hours (ETH-paired pools only). This is not a full wallet history: positions opened before the window are not counted.
+                    </p>
                   </div>
                 </div>
               </div>

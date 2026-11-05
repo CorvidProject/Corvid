@@ -11,6 +11,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { schema } from "@corvid/db";
 import { marketRoutes } from "./routes/market";
 import { discoveryRoutes } from "./routes/discovery";
+import { alphaRoutes } from "./routes/alpha";
 import { userRoutes } from "./routes/user";
 import { agentRoutes } from "./routes/agents";
 import type { Verifier } from "./auth";
@@ -45,6 +46,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
 
   await app.register(marketRoutes(db), { prefix: "/api" });
   await app.register(discoveryRoutes(db), { prefix: "/api" });
+  await app.register(alphaRoutes(db), { prefix: "/api" });
   await app.register(priceRoutes(solPrice), { prefix: "/api" });
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
   await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
