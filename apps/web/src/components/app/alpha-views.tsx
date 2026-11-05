@@ -309,9 +309,9 @@ export function AlphaMyLists() {
             <EmptyState title="No watchlists yet" hint="Star a wallet in the Live feed and it is added to your Starred list" />
           ) : (
             <div style={{ borderTop: "1px solid var(--v2-line-1)" }}>
-              {watched.error && <p className="px-3 py-2 text-[12px]" style={{ color: "var(--v2-neg)" }}>{watched.error}</p>}
+              {watched.error && <p style={{ padding: "8px 12px", fontSize: 12, color: "var(--v2-neg)" }}>{watched.error}</p>}
               {list.map((w) => (
-                <div key={w.address} className="flex items-center gap-3 px-3 py-3" style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
+                <div key={w.address} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px", borderBottom: "1px solid var(--v2-line-1)" }}>
                   <StarButton on onClick={() => void watched.toggle(w.address)} />
                   <a className="num text-[13px] hover:underline" style={{ color: "var(--v2-t-1)" }} href={explorerAddress(MAINNET, w.address)} target="_blank" rel="noopener noreferrer">
                     {w.label ?? `${w.address.slice(0, 6)}…${w.address.slice(-4)}`}

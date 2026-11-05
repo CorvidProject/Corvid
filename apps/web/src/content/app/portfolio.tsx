@@ -5,7 +5,7 @@ import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { SignInGate, useSigned } from "@/components/auth/signed";
 import { apiGet } from "@/lib/api";
 import { readHoldings } from "@/lib/holdings";
-import { shortAddress, useWallet } from "@/lib/wallet";
+import { appChain, shortAddress, useWallet } from "@/lib/wallet";
 
 // Portfolio: saldo wallet terhubung dibaca on-chain (lib/holdings.ts), harga dari API Corvid. Tanpa PnL (belum ada riwayat biaya).
 // Gaya memakai kelas `pf-*` di app/corvid.css: CSS utilitas situs bersifat statis, kelas Tailwind baru tidak tersedia.
@@ -13,7 +13,6 @@ type Tok = { mint: string; symbol: string | null; name: string | null; image: st
 type Row = { key: string; mint: string | null; symbol: string; name: string; image: string | null; amount: number; priceUsd: number | null; change24h: number | null; valueUsd: number | null };
 type Sort = "value" | "change";
 
-const MAINNET = getChain("mainnet");
 const usd = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const usdPrice = (n: number) => (n >= 1 ? usd(n) : "$" + n.toPrecision(3));
 const qty = (n: number) => n.toLocaleString("en-US", { maximumFractionDigits: n >= 1000 ? 0 : 4 });
@@ -50,6 +49,11 @@ export function ApplicationPortfolioContent() {
   const [copied, setCopied] = useState(false);
   const [tick, setTick] = useState(0);
   const address = w.address;
+  // Testnet hanya ditawarkan bila app berjalan di testnet. Saat NEXT_PUBLIC_CHAIN_ENV=mainnet, pilihan ini tidak ada sama sekali.
+  const testnetAllowed = appChain().env !== "mainnet";
+  const [net, setNet] = useState<"mainnet" | "testnet">("mainnet");
+  const env = testnetAllowed ? net : "mainnet";
+  const explorerChain = getChain(env);
 
   useEffect(() => {
     if (!signed || !address) {
@@ -60,6 +64,13 @@ export function ApplicationPortfolioContent() {
     setError(null);
     setLoading(true);
     (async () => {
+      if (env === "testnet") {
+        const { eth } = await readHoldings(address, [], "testnet");
+        if (!alive) return;
+        // ETH testnet tidak bernilai: tanpa harga dan tanpa nilai USD.
+        setRows([{ key: "eth", mint: null, symbol: "ETH", name: "Ether (testnet)", image: null, amount: eth, priceUsd: null, change24h: null, valueUsd: null }]);
+        return;
+      }
       const [list, px] = await Promise.all([apiGet<{ tokens: Tok[] }>("/api/tokens/trending?limit=200"), apiGet<{ usd: number }>("/api/prices/native")]);
       const { eth, holdings } = await readHoldings(address, list.tokens);
       if (!alive) return;
@@ -83,7 +94,7 @@ export function ApplicationPortfolioContent() {
     return () => {
       alive = false;
     };
-  }, [signed, address, tick]);
+  }, [signed, address, tick, env]);
 
   const total = (rows ?? []).reduce((n, r) => n + (r.valueUsd ?? 0), 0);
   const sorted = useMemo(
@@ -134,12 +145,22 @@ export function ApplicationPortfolioContent() {
         </div>
         {address && (
           <div className="pf-tools">
+            {testnetAllowed && (
+              <span className="pf-sorts" role="group" aria-label="Network">
+                <button onClick={() => setNet("mainnet")} aria-pressed={env === "mainnet"}>
+                  Mainnet
+                </button>
+                <button onClick={() => setNet("testnet")} aria-pressed={env === "testnet"}>
+                  Testnet
+                </button>
+              </span>
+            )}
             <span className="pf-chip num">
               {shortAddress(address)}
               <button onClick={copy} aria-label="Copy address" className="pf-icon">
                 {copied ? <Check size={13} /> : <Copy size={13} />}
               </button>
-              <a href={explorerAddress(MAINNET, address)} target="_blank" rel="noopener noreferrer" aria-label="Open in explorer" className="pf-icon">
+              <a href={explorerAddress(explorerChain, address)} target="_blank" rel="noopener noreferrer" aria-label="Open in explorer" className="pf-icon">
                 <ArrowSquareOut size={13} />
               </a>
             </span>
@@ -170,9 +191,9 @@ export function ApplicationPortfolioContent() {
         <>
           <div className="pf-hero">
             <div className="pf-label">Total value</div>
-            <div className="pf-total num">{usd(total)}</div>
+            <div className="pf-total num">{env === "testnet" ? `${qty(rows[0].amount)} ETH` : usd(total)}</div>
             <div className="pf-sub num">
-              {rows.length - 1} token{rows.length - 1 === 1 ? "" : "s"} · {qty(rows[0].amount)} ETH
+              {env === "testnet" ? "Testnet ETH has no market value" : `${rows.length - 1} token${rows.length - 1 === 1 ? "" : "s"} · ${qty(rows[0].amount)} ETH`}
             </div>
             {total > 0 && (
               <>
@@ -253,9 +274,13 @@ export function ApplicationPortfolioContent() {
                 </div>
               );
             })}
-            {sorted.length === 1 && <p className="pf-empty">No tracked tokens in this wallet yet.</p>}
+            {sorted.length === 1 && env === "mainnet" && <p className="pf-empty">No tracked tokens in this wallet yet.</p>}
           </div>
-          <p className="pf-note">Balances from Robinhood Chain mainnet. Tokens Corvid does not track are not listed, and PnL needs trade history so it is not shown.</p>
+          <p className="pf-note">
+            {env === "testnet"
+              ? "Robinhood Chain testnet: only the ETH balance is shown. Tracked tokens and prices exist on mainnet."
+              : "Balances from Robinhood Chain mainnet. Tokens Corvid does not track are not listed, and PnL needs trade history so it is not shown."}
+          </p>
         </>
       )}
     </div>

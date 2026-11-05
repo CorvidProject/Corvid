@@ -25,8 +25,16 @@ async function batch(url: string, calls: Rpc[]): Promise<Map<number, string | nu
 const toBig = (hex: string | null | undefined) => (hex && hex !== "0x" ? BigInt(hex) : 0n);
 const scale = (v: bigint, dec: number) => Number(v) / 10 ** dec;
 
-export async function readHoldings<T extends { mint: string }>(owner: string, tokens: T[]): Promise<{ eth: number; holdings: Holding<T>[] }> {
-  const rpc = getChain("mainnet").publicRpcUrl;
+/**
+ * `env` "testnet": hanya saldo ETH (token yang diindeks Corvid ada di mainnet, alamatnya tidak berlaku di testnet).
+ * Testnet hanya boleh dipakai bila NEXT_PUBLIC_CHAIN_ENV bukan mainnet; pemanggil yang memastikan.
+ */
+export async function readHoldings<T extends { mint: string }>(owner: string, tokens: T[], env: "mainnet" | "testnet" = "mainnet"): Promise<{ eth: number; holdings: Holding<T>[] }> {
+  const rpc = getChain(env).publicRpcUrl;
+  if (env === "testnet") {
+    const r = await batch(rpc, [{ jsonrpc: "2.0", id: 0, method: "eth_getBalance", params: [owner, "latest"] }]);
+    return { eth: scale(toBig(r.get(0)), 18), holdings: [] };
+  }
   const calls: Rpc[] = [{ jsonrpc: "2.0", id: 0, method: "eth_getBalance", params: [owner, "latest"] }];
   tokens.forEach((t, i) =>
     calls.push({ jsonrpc: "2.0", id: i + 1, method: "eth_call", params: [{ to: t.mint, data: BALANCE_OF + pad(owner) }, "latest"] }),
