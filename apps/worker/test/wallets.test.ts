@@ -59,7 +59,7 @@ describe("scoreWallets (biaya rata-rata, hanya pembelian dalam jendela)", () => 
 
 describe("refreshWallets (Postgres)", () => {
   const dir = "D:/.dev/tmp/pgtest-wallets";
-  const port = 54333;
+  const port = 54340;
   const url = `postgres://corvid:corvid-dev@localhost:${port}/corvid`;
   let pg: EmbeddedPostgres;
   let created: ReturnType<typeof createDb>;

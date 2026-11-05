@@ -8,7 +8,7 @@
     "start": "tsx --env-file-if-exists=../../.env src/index.ts",
     "once": "tsx --env-file-if-exists=../../.env src/once.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --no-file-parallelism"
+    "test": "vitest run"
   },
   "dependencies": {
     "@corvid/db": "workspace:*",
