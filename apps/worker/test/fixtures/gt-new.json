@@ -1,0 +1,280 @@
+{
+ "data": [
+  {
+   "id": "robinhood_0x11088eb82cb655a96662d0c108ab34d807c89ebdbb25a90c6bf1d26174abcd4c",
+   "type": "pool",
+   "attributes": {
+    "base_token_price_usd": "0.0000630829355626395",
+    "base_token_price_native_currency": null,
+    "quote_token_price_usd": "2421.92",
+    "quote_token_price_native_currency": null,
+    "base_token_price_quote_token": null,
+    "quote_token_price_base_token": null,
+    "address": "0x11088eb82cb655a96662d0c108ab34d807c89ebdbb25a90c6bf1d26174abcd4c",
+    "name": "Look / WETH 1%",
+    "pool_created_at": "2026-11-05T05:26:55Z",
+    "fdv_usd": "63082.93556",
+    "market_cap_usd": null,
+    "price_change_percentage": {
+     "m5": "89.612",
+     "m15": "89.612",
+     "m30": "89.612",
+     "h1": "89.612",
+     "h6": "89.612",
+     "h24": "89.612"
+    },
+    "transactions": {
+     "m5": {
+      "buys": 19,
+      "sells": 14,
+      "buyers": 18,
+      "sellers": 7
+     },
+     "m15": {
+      "buys": 19,
+      "sells": 14,
+      "buyers": 18,
+      "sellers": 7
+     },
+     "m30": {
+      "buys": 19,
+      "sells": 14,
+      "buyers": 18,
+      "sellers": 7
+     },
+     "h1": {
+      "buys": 19,
+      "sells": 14,
+      "buyers": 18,
+      "sellers": 7
+     },
+     "h6": {
+      "buys": 19,
+      "sells": 14,
+      "buyers": 18,
+      "sellers": 7
+     },
+     "h24": {
+      "buys": 19,
+      "sells": 14,
+      "buyers": 18,
+      "sellers": 7
+     }
+    },
+    "volume_usd": {
+     "m5": "8447.9636266483",
+     "m15": "8447.9636266483",
+     "m30": "8447.9636266483",
+     "h1": "8447.9636266483",
+     "h6": "8447.9636266483",
+     "h24": "8447.9636266483"
+    },
+    "reserve_in_usd": "0.0"
+   },
+   "relationships": {
+    "base_token": {
+     "data": {
+      "id": "robinhood_0x6e25b3f044a845cc27e61b19e3e8a1ea0676ac40",
+      "type": "token"
+     }
+    },
+    "quote_token": {
+     "data": {
+      "id": "robinhood_0x0000000000000000000000000000000000000000",
+      "type": "token"
+     }
+    },
+    "dex": {
+     "data": {
+      "id": "uniswap-v4-robinhood",
+      "type": "dex"
+     }
+    }
+   }
+  },
+  {
+   "id": "robinhood_0xc2dd5eceb3962e802a633f91f4acc578f7515dc3c4cb299daf7a3713043f04d4",
+   "type": "pool",
+   "attributes": {
+    "base_token_price_usd": "0.00000558696852295365",
+    "base_token_price_native_currency": null,
+    "quote_token_price_usd": "2421.9",
+    "quote_token_price_native_currency": null,
+    "base_token_price_quote_token": null,
+    "quote_token_price_base_token": null,
+    "address": "0xc2dd5eceb3962e802a633f91f4acc578f7515dc3c4cb299daf7a3713043f04d4",
+    "name": "WISP / WETH 85.563%",
+    "pool_created_at": "2026-11-05T05:24:43Z",
+    "fdv_usd": "5586.968523",
+    "market_cap_usd": null,
+    "price_change_percentage": {
+     "m5": "0",
+     "m15": "0",
+     "m30": "0",
+     "h1": "0",
+     "h6": "0",
+     "h24": "0"
+    },
+    "transactions": {
+     "m5": {
+      "buys": 1,
+      "sells": 1,
+      "buyers": 1,
+      "sellers": 1
+     },
+     "m15": {
+      "buys": 1,
+      "sells": 1,
+      "buyers": 1,
+      "sellers": 1
+     },
+     "m30": {
+      "buys": 1,
+      "sells": 1,
+      "buyers": 1,
+      "sellers": 1
+     },
+     "h1": {
+      "buys": 1,
+      "sells": 1,
+      "buyers": 1,
+      "sellers": 1
+     },
+     "h6": {
+      "buys": 1,
+      "sells": 1,
+      "buyers": 1,
+      "sellers": 1
+     },
+     "h24": {
+      "buys": 1,
+      "sells": 1,
+      "buyers": 1,
+      "sellers": 1
+     }
+    },
+    "volume_usd": {
+     "m5": "2.6422409125",
+     "m15": "2.6422409125",
+     "m30": "2.6422409125",
+     "h1": "2.6422409125",
+     "h6": "2.6422409125",
+     "h24": "2.6422409125"
+    },
+    "reserve_in_usd": "0.0"
+   },
+   "relationships": {
+    "base_token": {
+     "data": {
+      "id": "robinhood_0x498d0879e240971d227a9c8ec3ee4772eeb42db2",
+      "type": "token"
+     }
+    },
+    "quote_token": {
+     "data": {
+      "id": "robinhood_0x0000000000000000000000000000000000000000",
+      "type": "token"
+     }
+    },
+    "dex": {
+     "data": {
+      "id": "uniswap-v4-robinhood",
+      "type": "dex"
+     }
+    }
+   }
+  },
+  {
+   "id": "robinhood_0x26bc4d22da29499c543866c4a41db715b4a5d28f968c747dbb68c0df051bc6b9",
+   "type": "pool",
+   "attributes": {
+    "base_token_price_usd": "0.00000100396918548922",
+    "base_token_price_native_currency": null,
+    "quote_token_price_usd": "2421.9",
+    "quote_token_price_native_currency": null,
+    "base_token_price_quote_token": null,
+    "quote_token_price_base_token": null,
+    "address": "0x26bc4d22da29499c543866c4a41db715b4a5d28f968c747dbb68c0df051bc6b9",
+    "name": "YouTube / WETH",
+    "pool_created_at": "2026-11-05T05:24:20Z",
+    "fdv_usd": "10039.69185",
+    "market_cap_usd": null,
+    "price_change_percentage": {
+     "m5": "0",
+     "m15": "3.62",
+     "m30": "3.62",
+     "h1": "3.62",
+     "h6": "3.62",
+     "h24": "3.62"
+    },
+    "transactions": {
+     "m5": {
+      "buys": 0,
+      "sells": 0,
+      "buyers": 0,
+      "sellers": 0
+     },
+     "m15": {
+      "buys": 14,
+      "sells": 0,
+      "buyers": 14,
+      "sellers": 0
+     },
+     "m30": {
+      "buys": 14,
+      "sells": 0,
+      "buyers": 14,
+      "sellers": 0
+     },
+     "h1": {
+      "buys": 14,
+      "sells": 0,
+      "buyers": 14,
+      "sellers": 0
+     },
+     "h6": {
+      "buys": 14,
+      "sells": 0,
+      "buyers": 14,
+      "sellers": 0
+     },
+     "h24": {
+      "buys": 14,
+      "sells": 0,
+      "buyers": 14,
+      "sellers": 0
+     }
+    },
+    "volume_usd": {
+     "m5": "0.0",
+     "m15": "194.0222713131",
+     "m30": "194.0222713131",
+     "h1": "194.0222713131",
+     "h6": "194.0222713131",
+     "h24": "194.0222713131"
+    },
+    "reserve_in_usd": "0.0"
+   },
+   "relationships": {
+    "base_token": {
+     "data": {
+      "id": "robinhood_0x7bec433a34f38b41c03ca45f50079b0638c32184",
+      "type": "token"
+     }
+    },
+    "quote_token": {
+     "data": {
+      "id": "robinhood_0x0000000000000000000000000000000000000000",
+      "type": "token"
+     }
+    },
+    "dex": {
+     "data": {
+      "id": "uniswap-v4-robinhood",
+      "type": "dex"
+     }
+    }
+   }
+  }
+ ]
+}

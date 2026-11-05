@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "kind": "signal",
+      "title": "Smart wallet bought BIRB",
+      "body": "Fixture notification.",
+      "at": 1793599400,
+      "read": false
+    },
+    {
+      "id": 2,
+      "kind": "system",
+      "title": "Welcome to Corvid",
+      "body": "25 free AI analyses on your account.",
+      "at": 1793513600,
+      "read": true
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "slippageBps": 100,
+  "priorityFeeLamports": 100000,
+  "mode": "dry"
+}

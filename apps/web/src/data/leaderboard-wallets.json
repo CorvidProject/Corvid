@@ -1,0 +1,58 @@
+[
+{
+"w": "JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi",
+"tier": "B",
+"kind": "smart",
+"pnl": 17.72,
+"win": "49%",
+"closed": "49"
+},
+{
+"w": "EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy",
+"tier": "A",
+"kind": null,
+"pnl": 13.97,
+"win": "44%",
+"closed": "8"
+},
+{
+"w": "Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR",
+"tier": "A",
+"kind": null,
+"pnl": 10.79,
+"win": "100%",
+"closed": "5"
+},
+{
+"w": "VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb",
+"tier": "A",
+"kind": "smart",
+"pnl": 7.5,
+"win": "80%",
+"closed": "10"
+},
+{
+"w": "phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r",
+"tier": "A",
+"kind": null,
+"pnl": 5.72,
+"win": "66%",
+"closed": "32"
+},
+{
+"w": "kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas",
+"tier": "A",
+"kind": "smart",
+"pnl": 5.67,
+"win": "69%",
+"closed": "13"
+},
+{
+"w": "r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq",
+"tier": "B",
+"kind": null,
+"pnl": 1.77,
+"win": "52%",
+"closed": "52"
+}
+]

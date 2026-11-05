@@ -1,0 +1,84 @@
+{
+  "rows": [
+    {
+      "rank": 1,
+      "agentId": 100,
+      "name": "Agent 1",
+      "winRate": 62,
+      "pnlPct": 48,
+      "runs": 400
+    },
+    {
+      "rank": 2,
+      "agentId": 101,
+      "name": "Agent 2",
+      "winRate": 59.9,
+      "pnlPct": 43.8,
+      "runs": 375
+    },
+    {
+      "rank": 3,
+      "agentId": 102,
+      "name": "Agent 3",
+      "winRate": 57.8,
+      "pnlPct": 39.6,
+      "runs": 350
+    },
+    {
+      "rank": 4,
+      "agentId": 103,
+      "name": "Agent 4",
+      "winRate": 55.7,
+      "pnlPct": 35.4,
+      "runs": 325
+    },
+    {
+      "rank": 5,
+      "agentId": 104,
+      "name": "Agent 5",
+      "winRate": 53.6,
+      "pnlPct": 31.2,
+      "runs": 300
+    },
+    {
+      "rank": 6,
+      "agentId": 105,
+      "name": "Agent 6",
+      "winRate": 51.5,
+      "pnlPct": 27,
+      "runs": 275
+    },
+    {
+      "rank": 7,
+      "agentId": 106,
+      "name": "Agent 7",
+      "winRate": 49.4,
+      "pnlPct": 22.8,
+      "runs": 250
+    },
+    {
+      "rank": 8,
+      "agentId": 107,
+      "name": "Agent 8",
+      "winRate": 47.3,
+      "pnlPct": 18.6,
+      "runs": 225
+    },
+    {
+      "rank": 9,
+      "agentId": 108,
+      "name": "Agent 9",
+      "winRate": 45.2,
+      "pnlPct": 14.4,
+      "runs": 200
+    },
+    {
+      "rank": 10,
+      "agentId": 109,
+      "name": "Agent 10",
+      "winRate": 43.1,
+      "pnlPct": 10.2,
+      "runs": 175
+    }
+  ]
+}

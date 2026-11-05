@@ -1,0 +1,97 @@
+{
+  "checked": true,
+  "groups": [
+    {
+      "title": "Contract",
+      "checks": [
+        {
+          "label": "Can be sold (not a honeypot)",
+          "state": "unknown",
+          "hint": "Non-transferable tokens cannot be sold"
+        },
+        {
+          "label": "Mint authority revoked",
+          "state": "pass",
+          "hint": "Nobody can print more supply"
+        },
+        {
+          "label": "Freeze authority revoked",
+          "state": "pass",
+          "hint": "Nobody can freeze your tokens"
+        },
+        {
+          "label": "Balances cannot be changed",
+          "state": "pass",
+          "hint": "No authority can edit wallet balances"
+        },
+        {
+          "label": "Accounts cannot be closed by others",
+          "state": "pass",
+          "hint": "No authority can close holder accounts"
+        },
+        {
+          "label": "No transfer hook",
+          "state": "pass",
+          "hint": "No custom code runs on every transfer"
+        },
+        {
+          "label": "Metadata locked",
+          "state": "warn",
+          "hint": "Name and image cannot be swapped later"
+        }
+      ]
+    },
+    {
+      "title": "Trading",
+      "checks": [
+        {
+          "label": "Transfer fee",
+          "state": "pass",
+          "value": "0.0%"
+        }
+      ]
+    },
+    {
+      "title": "Liquidity",
+      "checks": [
+        {
+          "label": "Enough liquidity to exit",
+          "state": "pass",
+          "value": "$799.2K"
+        },
+        {
+          "label": "LP burned or locked",
+          "state": "unknown",
+          "hint": "LP that is burned or locked cannot be pulled from the pool"
+        }
+      ]
+    },
+    {
+      "title": "Holders",
+      "checks": [
+        {
+          "label": "Holder count",
+          "state": "pass",
+          "value": "15,631"
+        },
+        {
+          "label": "Top 10 own a fair share",
+          "state": "fail",
+          "value": "89%"
+        },
+        {
+          "label": "No single whale",
+          "state": "fail",
+          "value": "25%",
+          "hint": "The largest wallet, excluding burn addresses"
+        },
+        {
+          "label": "Deployer holds little",
+          "state": "unknown"
+        }
+      ]
+    }
+  ],
+  "passed": 8,
+  "total": 11
+}

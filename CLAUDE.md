@@ -91,10 +91,10 @@ Hanya **satu environment aktif pada satu waktu**. Testnet bersifat sementara: se
 | Environment | Branch | Frontend | Backend | Database | Chain |
 | --- | --- | --- | --- | --- | --- |
 | localhost | `main` | `pnpm dev` | `pnpm dev` | Postgres (Docker/embedded di D:) atau Supabase | Fixture/mock |
-| testnet | `testnet` | Vercel (alias `corvid-testnet.vercel.app`) | Railway `corvid` | Supabase `corvid` | **Solana devnet** |
-| mainnet | `mainnet` | Vercel production | Railway `corvid` (env diganti) | Supabase `corvid` (dibersihkan) | **Solana mainnet-beta** |
+| testnet | `testnet` | Vercel (alias `corvid-testnet.vercel.app`) | Railway `corvid` | Supabase `corvid` | **Robinhood Chain testnet (46630)** |
+| mainnet | `mainnet` | Vercel production | Railway `corvid` (env diganti) | Supabase `corvid` (dibersihkan) | **Robinhood Chain mainnet (4663)** |
 
-**Chain: hanya Solana.** Tidak ada Ethereum/Base/EVM. Buang semua referensi EVM dari UI, copy, dan data (lihat bagian 6).
+**Chain: hanya Robinhood Chain (EVM L2, Arbitrum Orbit), gas ETH.** Arahan head dev menggantikan Solana. Buang semua referensi Solana dari UI, copy, dan data. Wallet milik user sendiri (MetaMask, dll.), bukan kustodian. Parameter chain: `packages/shared/src/chains.ts`, dipilih lewat `CHAIN_ENV` / `NEXT_PUBLIC_CHAIN_ENV`. Lihat `docs/MIGRATION-ROBINHOOD.md`.
 
 Alur: fitur jalan di localhost → PR `main` → `testnet`; setelah testnet teruji → "pindah ke mainnet".
 
@@ -181,14 +181,14 @@ Setiap endpoint: skema zod → route → `openapi.json` → `api-client` → fix
 ### Database
 Mulai dari `legacy/be/db/schema.sql` (tokens, trades, security, memescope, wallets, agents, runs, swaps, stats) lalu tambah: `profiles`, `user_wallets`, `watchlists`, `signals`, `chats`, `agent_knowledge`, `subscriptions`, `credits`, `trading_prefs`, `portfolio_snapshots`, `login_log`, `burn_events`. Semua lewat migrasi; RLS Supabase aktif untuk tabel milik user.
 
-### Sumber data (Solana saja)
-Helius (RPC + data wallet), Jupiter (swap/harga), DexScreener, GeckoTerminal, CoinGecko; broadcast lewat Jito bundle (pengganti Flashbots yang EVM). **Alchemy, 0x, Flashbots tidak dipakai** (EVM). Dengan cache dan rate limit; API key diisi lewat env oleh saya. Parameter `chain` di endpoint hanya menerima `solana`.
+### Sumber data (Robinhood Chain)
+Alchemy (RPC, pengganti Helius; arahan head dev), Uniswap v3 langsung lewat kontrak (swap; pengganti Jupiter), DexScreener, GeckoTerminal, GoPlus (keamanan token), CoinGecko. Data pasar selalu dari mainnet. Helius, Jupiter, Jito tidak dipakai (Solana). Dengan cache dan rate limit; API key diisi lewat env oleh saya. Parameter `chain` di endpoint menerima `robinhood`. Komisi/cashback ditunda (kata head dev: "next aja").
 
 ### Analisis database (Tahap 2a, wajib sebelum integrasi)
 Database lama (`legacy/be/db/schema.sql` + `seed.sql`) hanya **titik awal**. Sebelum menulis migrasi, buat `docs/db-analysis.md` yang membandingkan skema lama dengan kebutuhan Corvid, per endpoint dan per halaman (pakai REA pada chunk halaman untuk memastikan field yang benar-benar dibaca UI). Temuan awal yang harus dikonfirmasi:
 - **Kurang di skema:** field keamanan token yang ada di response tetapi tidak di tabel (`devWallet`, `sniperHoldingsPercent`, `bundlerHoldingsPercent`, `insidersPercent`, `insidersCount`, `bundlersCount`, `bundlersInitialPercent`, `snipersCount`, `jitoFees`); candle OHLCV untuk `/tokens/chart`; tabel pengguna, wallet kustodian, watchlist, chat, signal, notifikasi/inbox, knowledge/persona/social config agent, langganan agent, backtest, kredit, dan `burn_events`.
-- **Buang/ubah (EVM):** enum `chain_t` dikecilkan menjadi `solana`; `buy_tax_pct`/`sell_tax_pct` (konsep honeypot EVM) diganti `transfer_fee_bps` (Token-2022) bila perlu.
-- **Data seed tercemar EVM:** `curated-wallets.json` berisi alamat `0x…` dan PnL dalam ETH. Seed harus dibuat ulang hanya dengan alamat Solana, atau dikosongkan.
+- **Buang/ubah (EVM):** alamat Solana diganti alamat EVM (`0x`, kolom `chainAddr`); field khusus Solana (mint/freeze authority, Token-2022) dibuang. (Catatan lama, sudah dikerjakan di migrasi 0003.)
+- **Data seed:** seed lama berisi alamat Solana; harus diganti data nyata Robinhood Chain (alamat `0x`) atau dikosongkan.
 - **Retensi:** tabel ingest (trades, trending, candle) diberi kebijakan pembersihan agar muat di Supabase free 500 MB.
 Hasil analisis berupa daftar tabel final, relasi, indeks, kebijakan RLS, dan perkiraan ukuran data.
 
@@ -198,8 +198,8 @@ Supabase Auth milik project baru. **Ganti URL dan anon key Supabase milik apevis
 ### Wallet kustodian dan trade (sensitif)
 - Private key user terenkripsi (envelope/KMS), tidak pernah di log atau repo.
 - `/trade/execute`, `/wallets/withdraw`, `/broadcast`: **default `TRADE_MODE=dry`** (simulasi dengan laporan). `live` hanya setelah saya mengizinkan.
-- Konfigurasi cluster Solana (devnet/mainnet-beta) di `packages/shared/src/chains.ts` dengan sumbernya; **jangan menebak alamat program/mint**, verifikasi lewat explorer atau RPC (`solana`/`@solana/web3.js`). Gunakan RPC lewat env (Helius), bukan hardcode.
-- Token **$CRVD**: ditunda sampai saya putuskan (jika perlu, tambahkan tahap SPL token/program, bukan Foundry).
+- Konfigurasi chain Robinhood (testnet/mainnet) di `packages/shared/src/chains.ts` dengan sumbernya; **jangan menebak alamat kontrak**, verifikasi lewat explorer atau RPC (viem). Gunakan RPC lewat env (`RPC_URL`, Alchemy), bukan hardcode.
+- Token **$CRVD**: ditunda sampai saya putuskan (jika perlu, tambahkan tahap token ERC-20 di Robinhood Chain).
 
 ---
 
@@ -252,11 +252,11 @@ Supabase Auth milik project baru. **Ganti URL dan anon key Supabase milik apevis
 | 0 | Setup (bagian 9), pindahkan crawl ke `legacy/`, struktur monorepo, penyimpanan di D: | Repo + docs siap, baseline ter-commit |
 | 1 | **Seluruh frontend Next.js dulu, dengan fixture**: token Corvid, layout, 16 layar app, `auth/signin`, landing, docs, legal, copy baru, favicon/OG, hapus kartu sibling, buang referensi EVM. Backend belum disentuh | Semua halaman jalan dengan fixture; screenshot cocok; kontras AA; `grep apevisor` nol (selain legacy) |
 | 2a | **Analisis database** (bagian 6) → `docs/db-analysis.md` | Daftar tabel final disetujui dengan default tertulis di `DECISIONS.md` |
-| 2 | **Integrasi backend + DB**: migrasi, Fastify, endpoint publik + `openapi.json`, Supabase Auth, ingest Solana + retensi; ganti fixture dengan API halaman demi halaman (`NEXT_PUBLIC_USE_FIXTURES=false`) | Tidak ada halaman 404 setelah proxy dihapus |
+| 2 | **Integrasi backend + DB**: migrasi, Fastify, endpoint publik + `openapi.json`, Supabase Auth, ingest Robinhood Chain + retensi; ganti fixture dengan API halaman demi halaman (`NEXT_PUBLIC_USE_FIXTURES=false`) | Tidak ada halaman 404 setelah proxy dihapus |
 | 3 | Agents, signals, marketplace, portfolio, chat; wallet + trade mode `dry` | Siklus agent penuh jalan dengan mock |
 | 4 | **"siapkan testnet"**: Supabase + Railway + Vercel, uji end-to-end | Testnet live, smoke test lolos (beranda, ≥3 layar app, docs, legal) |
 | 5 | **"pindah ke mainnet"**: backup, bersihkan, ganti env, redeploy, verifikasi | Mainnet live, trade tetap `dry` |
-| Opsional | Token $CRVD di Solana (SPL), `live` trade | Hanya atas perintah saya |
+| Opsional | Token $CRVD di Robinhood Chain (ERC-20), `live` trade | Hanya atas perintah saya |
 
 ---
 
@@ -277,8 +277,8 @@ Supabase Auth milik project baru. **Ganti URL dan anon key Supabase milik apevis
 | Keputusan | Default sementara |
 | --- | --- |
 | Palet | Wajib dari gambar: Black `#262626`, Dove Grey `#676B6C`, Casper `#AABBC5` (bagian 5) |
-| Chain testnet/mainnet | **Solana saja** (devnet / mainnet-beta) |
-| Token $CRVD (Solana) | Ditunda |
+| Chain testnet/mainnet | **Robinhood Chain saja** (testnet 46630 / mainnet 4663) |
+| Token $CRVD (Robinhood Chain) | Ditunda |
 | Email kontak, logo, domain | Placeholder lewat env / wordmark |
 | Wallet kustodian + trade | Dibangun, `TRADE_MODE=dry` |
 | LLM untuk agent | Adapter dengan penyedia lewat env; test pakai mock |

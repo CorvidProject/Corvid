@@ -1,0 +1,8 @@
+{
+  "id": "fixture-user",
+  "email": "user@example.com",
+  "displayName": "Fixture User",
+  "credits": 25,
+  "wallet": "9XeBxpUMTnpaJC5csiS4dkBTvXsChbaZ5ysTSp2ZeiuQ",
+  "plan": "free"
+}

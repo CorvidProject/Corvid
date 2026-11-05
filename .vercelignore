@@ -1,0 +1,8 @@
+# Path diawali "/" = hanya dari root repo (tanpa "/" ikut mencocokkan apps/web/src/app/docs)
+/legacy
+/docs
+/.claude
+/.githooks
+**/.next
+**/.turbo
+**/*.tsbuildinfo

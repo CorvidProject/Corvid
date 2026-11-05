@@ -6,3 +6,8 @@ node_modules/
 .turbo/
 dist/
 *.log
+*.tsbuildinfo
+.vercel
+
+# Acuan crawl lama (hanya lokal, jangan masuk GitHub)
+/legacy/

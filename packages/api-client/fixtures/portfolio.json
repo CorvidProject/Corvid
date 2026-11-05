@@ -1,0 +1,40 @@
+{
+  "totalUsd": 1842.55,
+  "pnlUsd": 212.4,
+  "pnlPct": 13.03,
+  "positions": [
+    {
+      "mint": "G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG",
+      "symbol": "BIRB",
+      "amount": 1000,
+      "valueUsd": 300,
+      "pnlUsd": 18,
+      "pnlPct": 4
+    },
+    {
+      "mint": "GexThZHgaswpAQ7Fi8QrHFubjPimUNSYhJiAA7XZpump",
+      "symbol": "WASTED",
+      "amount": 2000,
+      "valueUsd": 420,
+      "pnlUsd": -27,
+      "pnlPct": -5
+    },
+    {
+      "mint": "CWZ6BsdnjkDVTGkmL6bGbJXXig6ceef12KvyGQW14cMt",
+      "symbol": "ANTFUN",
+      "amount": 3000,
+      "valueUsd": 540,
+      "pnlUsd": 36,
+      "pnlPct": 6
+    },
+    {
+      "mint": "HsprHxBRgiVaQdRf3TnKNuZZtaX9JUSPgMFdAkk6pump",
+      "symbol": "GATO",
+      "amount": 4000,
+      "valueUsd": 660,
+      "pnlUsd": -45,
+      "pnlPct": -7
+    }
+  ],
+  "agents": []
+}

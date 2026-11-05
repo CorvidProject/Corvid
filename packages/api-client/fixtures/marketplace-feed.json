@@ -1,0 +1,22 @@
+{
+  "agents": [
+    {
+      "id": 59,
+      "name": "Token Trading - Balanced",
+      "creator": "corvid",
+      "type": "auto_trader",
+      "winRate": 54.2,
+      "subscribers": 41,
+      "priceCredits": 0
+    },
+    {
+      "id": 61,
+      "name": "New Token Sniper",
+      "creator": "fixture",
+      "type": "signal_bot",
+      "winRate": 47.8,
+      "subscribers": 17,
+      "priceCredits": 0
+    }
+  ]
+}
