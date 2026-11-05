@@ -4,7 +4,7 @@ import { ArrowSquareOut, Fire, Robot, Rocket, GraduationCap } from "@phosphor-ic
 import { useApi } from "@/lib/api";
 import { money } from "@/components/app/token-board";
 
-// Memescope: peluncuran pump.fun dari trade pertama sampai DEX. Data dari GET /api/solana/memescope
+// Memescope: peluncuran token baru dari trade pertama sampai DEX (sumber peluncuran di Robinhood Chain belum dipilih; kosong sampai ada). Data dari GET /api/solana/memescope
 // (fixture atau backend, lihat src/lib/api.ts).
 type Coin = {
   mint: string;
@@ -108,7 +108,7 @@ function Column({
             className="group relative px-4 py-3 transition-colors hover:bg-[var(--v2-bg-2)]"
             style={{ borderTop: i ? "1px solid var(--v2-line-1)" : undefined }}
           >
-            <a className="flex gap-3" href={`/application/tokens/${c.mint}?chain=solana`}>
+            <a className="flex gap-3" href={`/application/tokens/${c.mint}?chain=robinhood`}>
               <span className="relative shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -173,10 +173,10 @@ function Column({
                 <Robot size={14} />
               </a>
               <a
-                href={`https://pump.fun/coin/${c.mint}`}
+                href={`https://dexscreener.com/robinhood/${c.mint}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Open on pump.fun"
+                aria-label="Open on DexScreener"
                 className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-white/10"
                 style={{ color: "var(--v2-t-3)" }}
               >
@@ -206,7 +206,7 @@ export function ApplicationMemescopeContent() {
             Memescope
           </h1>
           <p className="text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-            pump.fun launches on Solana, from first trade to the DEX
+            New token launches, from first trade to the DEX
           </p>
         </div>
         <input

@@ -423,7 +423,7 @@ function Avatar({ t, size, round = true }: { t: Tok; size: number; round?: boole
   );
 }
 const dotCls = (t: Tok) => (t.riskChecked === false ? "bg-[var(--v2-t-4)]" : t.riskScore <= 30 ? "bg-[var(--v2-pos)]" : t.riskScore <= 60 ? "bg-[var(--v2-warn)]" : "bg-[var(--v2-neg)]");
-const href = (t: Tok) => `/application/tokens/${t.mint}?chain=solana`;
+const href = (t: Tok) => `/application/tokens/${t.mint}?chain=robinhood`;
 
 function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: Interval; now: number; watched: boolean; onWatch: () => void }) {
   const uid = useId().replace(/:/g, "");
@@ -453,7 +453,7 @@ function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: 
             </span>
           </div>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="inline-flex items-center gap-1.5 shrink-0" title="Trades on Solana">
+            <span className="inline-flex items-center gap-1.5 shrink-0" title="Trades on Robinhood Chain">
               <span className="inline-flex items-center justify-center rounded-full font-semibold shrink-0" style={{ width: 11, height: 11, fontSize: 7, background: "var(--v2-bg-3)", color: "var(--v2-t-2)" }}>S</span>
             </span>
             <span className="num text-[11px]" style={{ color: "var(--v2-t-4)" }} suppressHydrationWarning>{ago(t.createdAt, now)}</span>
@@ -522,7 +522,7 @@ function MobileCard({ t, interval, now }: { t: Tok; interval: Interval; now: num
           <div className="flex items-center gap-1.5 text-[11px] text-[var(--v2-t-3)]">
             <span className="num">{t.name.trim()}</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Solana" width={11} height={11} className="rounded-full" src="/chains/solana.png" />
+            <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 11, height: 11, background: "var(--v2-accent)" }} />
             <span className="text-[var(--v2-t-4)] num" suppressHydrationWarning>{ago(t.createdAt, now)}</span>
           </div>
         </div>

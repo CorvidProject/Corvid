@@ -175,7 +175,7 @@ export function ApplicationInboxContent() {
                 <div className="min-w-0 flex-1">
                   <p className="text-[14px] font-medium" style={{ color: "var(--v2-t-1)" }}>
                     {i.mint ? (
-                      <a href={`/application/tokens/${i.mint}?chain=solana`} className="hover:underline">
+                      <a href={`/application/tokens/${i.mint}?chain=robinhood`} className="hover:underline">
                         {i.title}
                       </a>
                     ) : (
@@ -186,6 +186,16 @@ export function ApplicationInboxContent() {
                     {i.body}
                   </p>
                 </div>
+                {i.mint && /^0x[0-9a-fA-F]{40}$/.test(i.mint) && (
+                  <a
+                    href={`/application/swap?mint=${i.mint}`}
+                    title="Opens Swap with this token. Your wallet signs; nothing is sent in dry mode."
+                    className="shrink-0 h-7 px-3 rounded-sm text-[12px] font-medium inline-flex items-center transition-colors hover:bg-[var(--v2-bg-3)]"
+                    style={{ color: "var(--v2-accent-text)", border: "1px solid var(--v2-line-2)" }}
+                  >
+                    Execute
+                  </a>
+                )}
                 <span className="eyebrow shrink-0" style={{ color: "var(--v2-t-4)" }}>
                   {i.cat} · {ago(i.at)}
                 </span>

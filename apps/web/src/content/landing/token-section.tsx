@@ -1080,7 +1080,7 @@ export function TokenSection() {
                 className="font-mono text-sm flex items-center gap-2"
                 style={{ color: "rgba(255,255,255,0.60)" }}
               >
-                SOLANA
+                ROBINHOOD CHAIN
               </span>
             </div>
             <div className="px-6 lg:px-12 py-5">

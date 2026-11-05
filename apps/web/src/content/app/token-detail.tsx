@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useApi } from "@/lib/api";
 import { money, price } from "@/components/app/token-board";
 
-// Detail token Solana: harga, statistik, chart candle, rugcheck, dan trade terbaru.
+// Detail token Robinhood Chain: harga, statistik, chart candle, rugcheck, dan trade terbaru.
 // Data: GET /api/tokens/:mint, /security, /chart, /trades (fixture atau backend, lihat src/lib/api.ts).
 
 type Detail = {
@@ -179,7 +179,7 @@ export function TokenDetailContent({ mint }: { mint: string }) {
             {sym} <span className="text-[14px] font-normal" style={{ color: "var(--v2-t-4)" }}>{(t.name ?? "").trim()}</span>
           </h1>
           <p className="font-mono text-[12px]" style={{ color: "var(--v2-t-4)" }}>
-            {short(mint)} · Solana{t.market ? ` · ${t.market}` : ""}
+            {short(mint)} · Robinhood Chain{t.market ? ` · ${t.market}` : ""}
             {t.risk.rugged ? " · RUGGED" : ""}
           </p>
         </div>
@@ -306,7 +306,7 @@ export function TokenDetailContent({ mint }: { mint: string }) {
                     {tr.type}
                   </span>
                   <span className="num" style={{ color: "var(--v2-t-2)" }}>
-                    {tr.solAmount != null ? `${tr.solAmount} SOL` : "·"}
+                    {tr.solAmount != null ? `${tr.solAmount} ETH` : "·"}
                   </span>
                   <span className="font-mono" style={{ color: "var(--v2-t-4)" }}>
                     {short(tr.wallet)}

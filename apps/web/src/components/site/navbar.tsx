@@ -163,7 +163,7 @@ export function Navbar() {
                   ※ Trading OS
                 </span>
                 <span className="font-mono text-[11px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255, 0.65)" }}>
-                  Solana · agent-native
+                  Robinhood Chain · agent-native
                 </span>
               </div>
               {MOBILE_LINKS.map((item, i) => (

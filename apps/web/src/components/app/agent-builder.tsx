@@ -26,7 +26,7 @@ import {
   PRESETS,
   buildConfig,
   getPipeline,
-  isSolanaAddress,
+  isEvmAddress,
   nodeSubtitle,
   summarize,
   type Config,
@@ -63,7 +63,7 @@ function useSigned() {
 }
 
 function FieldInput({ f, value, onChange }: { f: Field; value: string; onChange: (v: string) => void }) {
-  const invalid = f.required && value && (f.key === "wallet_address" || f.key === "token_mint") && !isSolanaAddress(value);
+  const invalid = f.required && value && (f.key === "wallet_address" || f.key === "token_mint") && !isEvmAddress(value);
   const base = { color: "var(--v2-t-1)", border: `1px solid ${invalid ? "var(--v2-neg)" : "var(--v2-line-2)"}`, background: "var(--v2-bg-0)" } as const;
   return (
     <div className="py-2.5">
@@ -103,7 +103,7 @@ function FieldInput({ f, value, onChange }: { f: Field; value: string; onChange:
               style={base}
             />
           )}
-          {invalid && <span className="block text-[11px] mt-1" style={{ color: "var(--v2-neg)" }}>Enter a valid Solana address</span>}
+          {invalid && <span className="block text-[11px] mt-1" style={{ color: "var(--v2-neg)" }}>Enter a valid address (0x…)</span>}
         </label>
       )}
     </div>
@@ -211,7 +211,7 @@ export function AgentBuilder() {
     const n: NodeDef[] = [
       { id: "persona", label: "Identity", sub: persona ? persona.slice(0, 18) : "Define identity", x: 60, y: 10, w: 76, size: 76, kind: "config" },
       { id: "knowledge", label: "Knowledge", sub: knowledge ? `${knowledge.length} chars` : "No knowledge", x: 60, y: 200, w: 76, size: 76, kind: "config" },
-      { id: "network", label: "Solana", sub: "tap to change", x: 300, y: 200, w: 92, size: 92, kind: "network" },
+      { id: "network", label: "Robinhood Chain", sub: "tap to change", x: 300, y: 200, w: 92, size: 92, kind: "network" },
       { id: first, label: first === "scan" ? "Scan" : "Watch", sub: nodeSubtitle(first, pipe, mode, cfg), x: 560, y: 200, w: 92, size: 92, kind: "trigger" },
       { id: "filter", label: pipe === TOKEN_PIPE ? "Trigger" : "Filter", sub: nodeSubtitle("filter", pipe, mode, cfg), x: 780, y: 200, w: 116, size: 92, kind: "step" },
       { id: "execute", label: "Execute", sub: nodeSubtitle("execute", pipe, mode, cfg), sub2: mode === "signal" ? "No trades executed" : cfg.take_profit_pct ? `TP ${cfg.take_profit_pct}% · SL ${cfg.stop_loss_pct || "—"}%` : undefined, x: 1000, y: 200, w: 99, size: 92, kind: "step" },
@@ -271,9 +271,9 @@ export function AgentBuilder() {
         setSelected(pipeline.steps[0].id);
         return say(`${f.label} is required before you can deploy`);
       }
-      if (!isSolanaAddress(v)) {
+      if (!isEvmAddress(v)) {
         setSelected(pipeline.steps[0].id);
-        return say(`${f.label} is not a valid Solana address`);
+        return say(`${f.label} is not a valid address (0x…)`);
       }
     }
     if (mode === "trading" && !limits.perTrade) {
@@ -292,7 +292,7 @@ export function AgentBuilder() {
       );
   };
   const share = () => {
-    const t = `I'm building a ${pipeline.name} agent on Corvid: ${summary.title}. ${mode === "signal" ? "Signal mode" : "Live trading"} on Solana.`;
+    const t = `I'm building a ${pipeline.name} agent on Corvid: ${summary.title}. ${mode === "signal" ? "Signal mode" : "Live trading"} on Robinhood Chain.`;
     window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}&url=${encodeURIComponent(window.location.origin)}`, "_blank", "noopener,noreferrer");
   };
 
@@ -384,7 +384,7 @@ export function AgentBuilder() {
             </button>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-[13px] leading-relaxed whitespace-nowrap opacity-0 pointer-events-none group-hover/mode:opacity-100 transition-opacity z-50" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
               {isTrading ? (
-                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong> — executes real trades with SOL<br />Click to switch to signal-only</span>
+                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong> — executes real trades with ETH<br />Click to switch to signal-only</span>
               ) : (
                 <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-t-1)" }}>Signal mode</strong> — alerts only, no trades executed<br />Click to switch to auto-trading</span>
               )}
@@ -398,8 +398,8 @@ export function AgentBuilder() {
               {limitsOpen && (
                 <div className="absolute top-full right-0 mt-2 w-[min(320px,calc(100vw-24px))] p-3 z-50 rounded-sm space-y-3" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 12px 32px rgba(0,0,0,0.45)" }}>
                   {[
-                    ["perTrade", "Per trade (SOL) required before trading", "Example: 0.05", "number"],
-                    ["daily", "Daily limit (SOL)", "Optional", "number"],
+                    ["perTrade", "Per trade (ETH) required before trading", "Example: 0.05", "number"],
+                    ["daily", "Daily limit (ETH)", "Optional", "number"],
                     ["allowed", "Allowed token addresses (optional)", "One per line or comma separated", "text"],
                   ].map(([k, label, ph, type]) => (
                     <label key={k} className="block">
@@ -516,7 +516,7 @@ export function AgentBuilder() {
                           <Icon size={n.size === 76 ? 26 : 32} weight="duotone" style={{ color: on ? "var(--v2-accent-text)" : "rgba(255,255,255,0.45)", transition: "0.2s" }} />
                         ) : (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img alt="Solana" width={36} height={36} src="/chains/solana.png" className="rounded-full" style={{ opacity: 0.85 }} />
+                          <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 36, height: 36, background: "var(--v2-accent)" }} />
                         )}
                       </button>
                       <span className="mt-2.5 text-center whitespace-nowrap" style={{ fontSize: 14, fontWeight: 600, color: on ? "var(--v2-t-1)" : "rgba(255,255,255,0.8)" }}>{n.label}</span>
@@ -578,10 +578,10 @@ export function AgentBuilder() {
                     <Panel title="Network" prompt="Where the agent runs" onClose={() => setSelected(null)}>
                       <div className="flex items-center gap-3 py-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img alt="" width={32} height={32} src="/chains/solana.png" className="rounded-full" />
+                        <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 32, height: 32, background: "var(--v2-accent)" }} />
                         <div>
-                          <p className="text-[14px] font-semibold" style={{ color: "var(--v2-t-1)" }}>Solana</p>
-                          <p className="text-[12px]" style={{ color: "var(--v2-t-4)" }}>Corvid agents run on Solana only</p>
+                          <p className="text-[14px] font-semibold" style={{ color: "var(--v2-t-1)" }}>Robinhood Chain</p>
+                          <p className="text-[12px]" style={{ color: "var(--v2-t-4)" }}>Corvid agents run on Robinhood Chain only</p>
                         </div>
                         <span className="ml-auto text-[11px]" style={{ color: "var(--v2-pos)" }}>Selected</span>
                       </div>
@@ -616,7 +616,7 @@ export function AgentBuilder() {
                       {isTrading && (
                         <div className="flex items-center gap-1.5 text-[12px] pt-1" style={{ color: "var(--v2-accent-text)" }}>
                           <Warning size={12} weight="fill" />
-                          {maxLive ? `Live trading — up to ${maxLive} SOL per trade from your wallet` : "Live trading — set a per-trade limit before you deploy"}
+                          {maxLive ? `Live trading — up to ${maxLive} ETH per trade from your wallet` : "Live trading — set a per-trade limit before you deploy"}
                         </div>
                       )}
                     </div>

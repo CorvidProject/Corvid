@@ -50,12 +50,12 @@ export const NAV_SECTIONS: NavSection[] = [
         {
           title: "Trade",
           items: [
-            { icon: ChartLineUp, label: "Terminal", desc: "Live tokens and charts on Solana", href: "/application/terminal" },
+            { icon: ChartLineUp, label: "Terminal", desc: "Live tokens and charts on Robinhood Chain", href: "/application/terminal" },
             { icon: ArrowsLeftRight, label: "Swap", desc: "Trade any token in one card", href: "/application/swap" },
             { icon: Clock, label: "Latest Tokens", desc: "Pools opened in the last minutes", href: "/application/latest" },
             { icon: TrendUp, label: "Top Gainers", desc: "What is up the most today", href: "/application/gainers" },
             { icon: ChartBar, label: "High Volume", desc: "Where the money is trading", href: "/application/volume" },
-            { icon: Planet, label: "Memescope", desc: "pump.fun launches, live by stage", href: "/application/memescope" },
+            { icon: Planet, label: "Memescope", desc: "New launches, live by stage", href: "/application/memescope" },
           ],
         },
       ],
@@ -97,7 +97,6 @@ export const NAV_SECTIONS: NavSection[] = [
           items: [
             { icon: ShieldCheck, label: "Rugcheck", desc: "Check a token's contract and risks", href: "/application/rugcheck" },
             { icon: Rocket, label: "Token Creator", desc: "Launch a token", href: "/application/create", soon: true },
-            { icon: Recycle, label: "Refund SOL", desc: "Close empty accounts, reclaim rent", href: "/application/refund" },
           ],
         },
       ],

@@ -226,38 +226,24 @@ export function Hero() {
                   animation: "hero-live-pulse 2s ease-in-out infinite",
                 }}
               ></span>
-              Live on mainnet. Trades route through Jupiter, data from Helius.
+              Live on mainnet. Trades route through Uniswap, data from GeckoTerminal and GoPlus.
             </span>
             <div className="flex items-center gap-7">
               <a
-                href="https://jup.ag"
+                href="https://www.geckoterminal.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="crv-hero-logo inline-flex items-center gap-2 font-heading font-bold text-[15px] tracking-[-0.02em]"
               >
-                <img
-                  src="/shared/jupiter.png"
-                  alt=""
-                  width="20"
-                  height="20"
-                  className="rounded-[6px]"
-                />
-                Jupiter
+                GeckoTerminal
               </a>
               <a
-                href="https://helius.dev"
+                href="https://gopluslabs.io"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="crv-hero-logo inline-flex items-center gap-2 font-heading font-bold text-[15px] tracking-[-0.02em]"
               >
-                <img
-                  src="/shared/helius.png"
-                  alt=""
-                  width="20"
-                  height="20"
-                  className="rounded-[6px]"
-                />
-                Helius
+                GoPlus
               </a>
             </div>
           </div>

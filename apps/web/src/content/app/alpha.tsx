@@ -60,7 +60,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb?chain=solana"
+                              href="/application/alpha/wallet/VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -96,7 +96,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +7.50 SOL / 30d
+                                    Discovered · +7.50 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -167,7 +167,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=VFB7KktqFhR6mfea8ogbRt7dhcgeHr7rToDfLfkiGLjb&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -214,7 +214,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy?chain=solana"
+                              href="/application/alpha/wallet/EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -250,7 +250,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +13.97 SOL / 30d
+                                    Discovered · +13.97 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -321,7 +321,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=EpMooWca3h6mB1gL2YC8SKkLB19H14JcVWxHuXAn7VSy&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -368,7 +368,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas?chain=solana"
+                              href="/application/alpha/wallet/kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -404,7 +404,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +5.67 SOL / 30d
+                                    Discovered · +5.67 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -475,7 +475,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=kMcZYuarYRbVMCpTpEAfFk3zbMoYa1uZPYRUDGujwtas&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -522,7 +522,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR?chain=solana"
+                              href="/application/alpha/wallet/Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -558,7 +558,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +10.79 SOL / 30d
+                                    Discovered · +10.79 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -629,7 +629,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=Ey5XBPrVTj6aixNGSDcd5DcAemGj4Yy1Apr2CHwMhsKR&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -676,7 +676,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r?chain=solana"
+                              href="/application/alpha/wallet/phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -712,7 +712,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +5.72 SOL / 30d
+                                    Discovered · +5.72 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -783,7 +783,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=phEMQYe2FR1ixbeugm5WRy2VxkBxcXnGvvuw8rKmKE8r&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -830,7 +830,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq?chain=solana"
+                              href="/application/alpha/wallet/r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -866,7 +866,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +1.77 SOL / 30d
+                                    Discovered · +1.77 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -937,7 +937,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=r1apWbFcLqjrUh37Z7NU9pzoby1wrHgQ5B6vmyQLhTGq&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",
@@ -984,7 +984,7 @@ const ROWS: Row[] = [
                           >
                             <a
                               className="hover:underline decoration-dotted underline-offset-4"
-                              href="/application/alpha/wallet/JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi?chain=solana"
+                              href="/application/alpha/wallet/JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi?chain=robinhood"
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <img
@@ -1020,7 +1020,7 @@ const ROWS: Row[] = [
                                     className="text-[12px] truncate mt-0.5"
                                     style={{ color: "var(--v2-t-4)" }}
                                   >
-                                    Discovered · +17.72 SOL / 30d
+                                    Discovered · +17.72 ETH / 30d
                                   </span>
                                 </div>
                               </div>
@@ -1091,7 +1091,7 @@ const ROWS: Row[] = [
                             <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
                               <a
                                 className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-                                href="/application/agents/new?type=copy_trader&wallet=JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi&chain=solana"
+                                href="/application/agents/new?type=copy_trader&wallet=JCuvKvqT5kz2KDPDtHmwWPpDdF11MMyMt2DD7DNHVAfi&chain=robinhood"
                                 style={{
                                   border: "1px solid var(--v2-accent)",
                                   background: "transparent",

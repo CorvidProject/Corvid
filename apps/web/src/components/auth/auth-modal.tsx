@@ -1,7 +1,8 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowLeft, CheckCircle, Eye, EyeSlash, SpinnerGap, X } from "@phosphor-icons/react";
+import { ArrowLeft, CheckCircle, Eye, EyeSlash, SpinnerGap, Wallet, X } from "@phosphor-icons/react";
 import { resetPassword, signInWithEmail, signUpWithEmail } from "@/lib/auth";
+import { connectWallet, signInWithWallet, switchToAppChain, useWallet } from "@/lib/wallet";
 
 // Modal masuk/daftar (port dari referensi). Dibuka dari elemen bertanda data-auth-open
 // ("signin" | "signup") atau lewat useAuthModal().openAuthModal().
@@ -85,6 +86,60 @@ function Notice({ title, children }: { title: string; children: ReactNode }) {
     </div>
   );
 }
+// Login dengan wallet EVM: pilih wallet terdeteksi → sambungkan → tanda tangani pesan (tanpa gas).
+function WalletSection({ onDone }: { onDone: () => void }) {
+  const w = useWallet();
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState<string | null>(null);
+
+  const go = async (id: string) => {
+    setError(null);
+    setPending(id);
+    let r = w.address && w.walletId === id ? { error: null } : await connectWallet(id);
+    if (!r.error && w.appChain) r = await switchToAppChain();
+    if (!r.error) r = await signInWithWallet();
+    setPending(null);
+    if (r.error) setError(r.error);
+    else onDone();
+  };
+
+  return (
+    <div className="mt-5">
+      <div className="space-y-2">
+        {w.wallets.map((x) => (
+          <button
+            key={x.id}
+            type="button"
+            onClick={() => go(x.id)}
+            disabled={w.busy}
+            className="w-full h-11 px-3 flex items-center gap-3 rounded-sm text-[13px] font-medium transition-colors hover:bg-[var(--v2-bg-2)] disabled:opacity-50"
+            style={{ color: "var(--v2-t-1)", border: "1px solid var(--v2-line-2)", background: "var(--v2-bg-0)" }}
+          >
+            {x.icon ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={x.icon} alt="" width={20} height={20} style={{ borderRadius: 4 }} />
+            ) : (
+              <Wallet size={18} />
+            )}
+            <span className="flex-1 text-left">Continue with {x.name}</span>
+            {pending === x.id && <SpinnerGap size={14} className="animate-spin" />}
+          </button>
+        ))}
+        {w.wallets.length === 0 && (
+          <p className="text-[12px] rounded-sm px-3 py-2.5" style={{ color: "var(--v2-t-3)", border: "1px dashed var(--v2-line-2)" }}>
+            No wallet detected in this browser. Install an EVM wallet such as MetaMask, then reload. You can still log in with email.
+          </p>
+        )}
+      </div>
+      {error && (
+        <div className="mt-2">
+          <Alert>{error}</Alert>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const INPUT = "w-full h-11 px-3 rounded-sm bg-transparent outline-none text-[14px]";
 const inputStyle = { color: "var(--v2-t-1)", border: "1px solid var(--v2-line-2)", background: "var(--v2-bg-0)" } as const;
 
@@ -201,6 +256,7 @@ function AuthModal({ initial, onClose }: { initial: "signin" | "signup"; onClose
                   We sent a confirmation link to <span style={{ color: "var(--v2-t-1)" }}>{email}</span>. Click it, then log in here.
                 </Notice>
               )}
+              <WalletSection onDone={onClose} />
               <div className="flex items-center gap-3 my-5">
                 <div className="flex-1 h-px" style={{ background: "var(--v2-line-1)" }} />
                 <span className="text-[11px]" style={{ color: "var(--v2-t-4)" }}>

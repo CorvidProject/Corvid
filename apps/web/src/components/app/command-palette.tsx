@@ -26,7 +26,7 @@ import fresh from "@/server/data/trending-solana-new.json";
 import memescope from "@/data/memescope.json";
 import market from "@/data/marketplace-feed.json";
 import { useAuthModal } from "@/components/auth/auth-modal";
-import { isSolanaAddress } from "@/lib/builder-defs";
+import { isChainAddress } from "@/lib/builder-defs";
 import { loadSession, signOut } from "@/lib/auth";
 import { apiGet, USE_API } from "@/lib/api";
 
@@ -249,7 +249,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   const term = q.trim();
-  const isAddr = isSolanaAddress(term);
+  const isAddr = isChainAddress(term);
   const [remote, setRemote] = useState<Remote>(NO_REMOTE);
   useEffect(() => {
     if (!USE_API || !term) {
@@ -324,7 +324,7 @@ function Palette({ onClose }: { onClose: () => void }) {
     if (r.kind === "token") {
       remember({ label: `$${r.symbol}`, kind: "token", query: r.mint });
       onClose();
-      router.push(`/application/tokens/${r.mint}?chain=solana`);
+      router.push(`/application/tokens/${r.mint}?chain=robinhood`);
     } else if (r.kind === "agent") {
       remember({ label: r.name, kind: "agent", query: r.name });
       onClose();
@@ -333,7 +333,7 @@ function Palette({ onClose }: { onClose: () => void }) {
       remember({ label: shortAddr(r.address), kind: "wallet", query: r.address });
       onClose();
       if (!signed) return openAuthModal("signin");
-      router.push(`/application/alpha/wallet/${r.address}?chain=solana`);
+      router.push(`/application/alpha/wallet/${r.address}?chain=robinhood`);
     }
   };
 
@@ -421,7 +421,7 @@ function Palette({ onClose }: { onClose: () => void }) {
                         <div className="flex items-center gap-2">
                           <span className="text-[13px] font-medium truncate" style={{ color: "var(--v2-t-1)" }}>${row.symbol}</span>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="/chains/solana.png" alt="Solana" width={12} height={12} className="rounded-full" />
+                          <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 12, height: 12, background: "var(--v2-accent)" }} />
                           <span className="text-[11px] truncate" style={{ color: "var(--v2-t-3)" }}>{row.name}</span>
                         </div>
                         {(mc || vol) && (
@@ -485,7 +485,7 @@ function Palette({ onClose }: { onClose: () => void }) {
               <p className="eyebrow mb-2" style={{ color: "var(--v2-t-4)", fontSize: 11 }}>Try</p>
               <ul className="text-[12px] space-y-1" style={{ color: "var(--v2-t-3)" }}>
                 <li>· token symbol or name</li>
-                <li>· wallet or token address (Solana)</li>
+                <li>· wallet or token address (0x…)</li>
                 <li>· agent name</li>
                 <li>· command (open inbox, new agent)</li>
               </ul>

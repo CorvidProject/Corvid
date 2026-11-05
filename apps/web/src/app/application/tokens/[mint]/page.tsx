@@ -5,11 +5,12 @@ import { TokenDetailContent } from "@/content/app/token-detail";
 
 export const metadata: Metadata = { title: "Token · Corvid App" };
 
-const SOLANA_MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+// Alamat EVM (utama); base58 diterima sementara karena fixture lama masih memuat token Solana.
+const TOKEN_ADDRESS = /^(0x[0-9a-fA-F]{40}|[1-9A-HJ-NP-Za-km-z]{32,44})$/;
 
 export default async function Page({ params }: { params: Promise<{ mint: string }> }) {
   const { mint } = await params;
-  if (!SOLANA_MINT.test(mint)) notFound(); // bukan alamat Solana (mis. 0x…): 404 bersih
+  if (!TOKEN_ADDRESS.test(mint)) notFound(); // bukan alamat token: 404 bersih
   return (
     <AppShell mainClassName="pt-[80px] pb-10 px-3 sm:px-5 flex-1" bare={false}>
       <TokenDetailContent mint={mint} />

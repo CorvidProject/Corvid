@@ -459,8 +459,8 @@ export function Agents() {
                 <span style={{ color: "#fff", fontWeight: "600" }}>
                   autonomously 24/7
                 </span>
-                . No Phantom popups, no manual approvals on every swap. Export
-                your private key to Phantom anytime to take full self-custody.
+                . No MetaMask popups, no manual approvals on every swap. Export
+                your private key to MetaMask anytime to take full self-custody.
               </p>
             </div>
           </div>

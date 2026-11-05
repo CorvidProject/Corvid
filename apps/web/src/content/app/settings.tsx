@@ -122,10 +122,10 @@ export function ApplicationSettingsContent() {
             </span>
           </label>
           <label className="block text-[12px]" style={{ color: "var(--v2-t-3)" }}>
-            Priority fee (lamports)
+            Priority fee (gwei)
             <input type="number" min={0} value={p.priorityFeeLamports} onChange={(e) => set("priorityFeeLamports", e.target.value)} className="input-v2 mt-1 w-full" />
             <span className="block mt-1" style={{ color: "var(--v2-t-4)" }}>
-              {(p.priorityFeeLamports / 1e9).toFixed(6)} SOL
+              {(p.priorityFeeLamports / 1e9).toFixed(6)} ETH
             </span>
           </label>
         </div>

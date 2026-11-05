@@ -5,7 +5,7 @@ import { DocsContent } from "@/content/docs/index";
 export const metadata: Metadata = {
   title: "Documentation",
   description:
-    "Corvid runs autonomous trading agents on Solana. Build pipelines, follow smart money, pay per action",
+    "Corvid runs autonomous trading agents on Robinhood Chain. Build pipelines, follow smart money, pay per action",
 };
 
 export default function DocsPage() {

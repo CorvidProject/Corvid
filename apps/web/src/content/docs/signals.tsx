@@ -81,7 +81,7 @@ export function DocsSignalsContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Fired by New Tokens pipelines. Shows the token, market
-              (Raydium/Raydium), LP depth, and safety status
+              (Uniswap v3/v4), LP depth, and safety status
             </p>
           </div>
           <div
@@ -123,7 +123,7 @@ export function DocsSignalsContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Confirmation that a trading-mode pipeline bought or sold. Includes
-              SOL amount and transaction link
+              ETH amount and transaction link
             </p>
           </div>
           <div

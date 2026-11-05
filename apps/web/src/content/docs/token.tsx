@@ -38,7 +38,7 @@ export function DocsTokenContent() {
           <span>
             Until the token exists, these balances are tracked in the platform
             ledger and settle on-chain after TGE. Swap commissions and cashback
-            already move in SOL.
+            already move in ETH.
           </span>
         </div>
         <p
@@ -124,8 +124,8 @@ export function DocsTokenContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Add $CRVD to a published agent's LP reserve before graduation.
-              When the agent graduates into its own SPL token, your share
-              mints pro-rata. Like dev-buy on Raydium, but for working
+              When the agent graduates into its own ERC-20 token, your share
+              mints pro-rata. Like dev-buy on Uniswap, but for working
               strategies
             </p>
           </div>
@@ -147,7 +147,7 @@ export function DocsTokenContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               When an agent graduates, the $CRVD accumulated in its reserve
-              seeds a Raydium pool paired with the freshly minted SPL
+              seeds a Uniswap pool paired with the freshly minted ERC-20
               token. Pool LP fees flow back to the agent's wallet
             </p>
           </div>

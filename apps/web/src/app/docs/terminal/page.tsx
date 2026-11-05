@@ -5,7 +5,7 @@ import { DocsTerminalContent } from "@/content/docs/terminal";
 export const metadata: Metadata = {
   title: "Terminal",
   description:
-    "Paste any Solana token address: price, holders, risk, live trades on one screen",
+    "Paste any token contract address: price, holders, risk, live trades on one screen",
 };
 
 export default function DocsTerminalPage() {

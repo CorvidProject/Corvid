@@ -26,7 +26,7 @@ function StatusBar() {
   useEffect(() => {
     let alive = true;
     const load = () =>
-      apiGet<{ usd?: number }>("/api/prices/sol")
+      apiGet<{ usd?: number }>("/api/prices/native")
         .then((j) => {
           if (alive && j && typeof j.usd === "number")
             setSol(`$${j.usd.toFixed(2)}`);
@@ -82,14 +82,7 @@ function StatusBar() {
           className="flex items-center gap-1 tabular-nums rounded px-1 transition-colors"
           style={{ color: "var(--v2-t-3)" }}
         >
-          <Image
-            src="/chains/solana.png"
-            alt="SOL"
-            width={12}
-            height={12}
-            className="rounded-full shrink-0"
-          />
-          SOL {sol}
+          ETH {sol}
         </span>
         <span
           className="w-px h-3.5"

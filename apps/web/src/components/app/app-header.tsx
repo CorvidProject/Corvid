@@ -19,7 +19,11 @@ import { site } from "@/lib/site";
 import { NavDropdown } from "@/components/site/nav-dropdown";
 import { useSigned } from "@/components/auth/signed";
 import { loadSession, signOut } from "@/lib/auth";
+import { connectWallet, disconnectWallet, shortAddress, switchToAppChain, useWallet } from "@/lib/wallet";
+import { getChain } from "@corvid/shared/chains";
 import { MobileDrawer } from "./mobile-drawer";
+
+const CHAIN = getChain(process.env.NEXT_PUBLIC_CHAIN_ENV);
 
 // Bagian "More" di navbar aplikasi (ikon dicocokkan dengan bentuk SVG di build referensi).
 const MORE_SECTION: NavSection = {
@@ -78,7 +82,7 @@ function ChainSelector({ compact = false }: { compact?: boolean }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        title="Market data: Solana"
+        title={`Network: ${CHAIN.name}`}
         aria-haspopup="menu"
         aria-expanded={open}
         className="flex items-center gap-1.5 h-8 px-2 rounded-sm text-[12px] font-medium transition-colors"
@@ -94,14 +98,8 @@ function ChainSelector({ compact = false }: { compact?: boolean }) {
           (e.currentTarget.style.borderColor = "var(--v2-line-1)")
         }
       >
-        <Image
-          src="/chains/solana.png"
-          alt=""
-          width={16}
-          height={16}
-          className="rounded-full shrink-0"
-        />
-        {!compact && <span>Solana</span>}
+        <span aria-hidden className="rounded-full shrink-0" style={{ width: 10, height: 10, background: "var(--v2-accent)" }} />
+        {!compact && <span className="whitespace-nowrap">{CHAIN.name}</span>}
         <CaretDown size={10} weight="bold" style={{ color: "var(--v2-t-4)" }} />
       </button>
       {open && (
@@ -125,18 +123,12 @@ function ChainSelector({ compact = false }: { compact?: boolean }) {
             className="flex items-center gap-2.5 h-9 px-3 w-full text-left"
             style={{ cursor: "default" }}
           >
-            <Image
-              src="/chains/solana.png"
-              alt=""
-              width={18}
-              height={18}
-              className="rounded-full shrink-0"
-            />
+            <span aria-hidden className="rounded-full shrink-0" style={{ width: 10, height: 10, background: "var(--v2-accent)" }} />
             <span
               className="flex-1 text-[13px]"
               style={{ color: "var(--v2-t-1)" }}
             >
-              Solana
+              {CHAIN.name}
             </span>
             <Check size={12} weight="bold" style={{ color: "var(--v2-pos)" }} />
           </div>
@@ -147,7 +139,7 @@ function ChainSelector({ compact = false }: { compact?: boolean }) {
               borderTop: "1px solid var(--v2-line-1)",
             }}
           >
-            Trading and agents run on Solana
+            Trading and agents run on {CHAIN.name}
           </div>
         </div>
       )}
@@ -216,8 +208,16 @@ function AccountMenu() {
     };
   }, [open]);
 
-  if (!signed) return <ConnectButton />;
-  const initial = (email ?? "?").trim().charAt(0).toUpperCase() || "?";
+  const w = useWallet();
+  const [walletErr, setWalletErr] = useState<string | null>(null);
+  if (!signed && !w.address) return <ConnectButton />;
+  const label = email ?? (w.address ? shortAddress(w.address) : "");
+  const initial = (email ?? (w.address ? w.address.slice(2) : "?")).trim().charAt(0).toUpperCase() || "?";
+  const pickWallet = async (id: string) => {
+    setWalletErr(null);
+    const r = await connectWallet(id);
+    if (r.error) setWalletErr(r.error);
+  };
   const item = "flex items-center w-full h-9 px-3 text-[13px] text-left transition-colors hover:bg-[var(--v2-bg-2)]";
   return (
     <div ref={ref} className="relative">
@@ -237,7 +237,7 @@ function AccountMenu() {
           {initial}
         </span>
         <span className="hidden xl:block truncate" style={{ maxWidth: 140 }}>
-          {email}
+          {label}
         </span>
         <CaretDown size={12} />
       </button>
@@ -248,8 +248,43 @@ function AccountMenu() {
           style={{ top: "calc(100% + 8px)", width: 224, background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 12px 40px rgba(0,0,0,0.55)" }}
         >
           <div className="px-3 py-2.5 text-[12px] truncate" style={{ color: "var(--v2-t-3)", borderBottom: "1px solid var(--v2-line-1)" }}>
-            {email}
+            {label}
           </div>
+          {w.address ? (
+            <div style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
+              <div className="px-3 pt-2.5 pb-1 text-[11px]" style={{ color: "var(--v2-t-4)" }}>Wallet</div>
+              <div className="num px-3 pb-2 text-[12px]" style={{ color: "var(--v2-t-1)" }}>{shortAddress(w.address)}</div>
+              {w.wrongChain && w.appChain && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={item}
+                  style={{ color: "var(--v2-warn, var(--v2-t-1))" }}
+                  onClick={async () => setWalletErr((await switchToAppChain()).error)}
+                >
+                  Switch to {w.appChain.name}
+                </button>
+              )}
+              <button type="button" role="menuitem" className={item} style={{ color: "var(--v2-t-2)" }} onClick={() => { setOpen(false); disconnectWallet(); }}>
+                Disconnect wallet
+              </button>
+            </div>
+          ) : (
+            <div style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
+              {w.wallets.length === 0 ? (
+                <div className="px-3 py-2.5 text-[12px]" style={{ color: "var(--v2-t-3)" }}>No wallet detected in this browser</div>
+              ) : (
+                w.wallets.map((x) => (
+                  <button key={x.id} type="button" role="menuitem" disabled={w.busy} className={`${item} gap-2 disabled:opacity-50`} style={{ color: "var(--v2-t-1)" }} onClick={() => pickWallet(x.id)}>
+                    <Wallet size={14} /> Connect {x.name}
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+          {walletErr && (
+            <div className="px-3 py-2 text-[11px]" style={{ color: "var(--v2-neg)", borderBottom: "1px solid var(--v2-line-1)" }}>{walletErr}</div>
+          )}
           <Link role="menuitem" href="/application/settings" onClick={() => setOpen(false)} className={item} style={{ color: "var(--v2-t-1)" }}>
             Settings
           </Link>
@@ -260,6 +295,7 @@ function AccountMenu() {
             style={{ color: "var(--v2-neg)", borderTop: "1px solid var(--v2-line-1)" }}
             onClick={() => {
               setOpen(false);
+              disconnectWallet();
               void signOut();
             }}
           >

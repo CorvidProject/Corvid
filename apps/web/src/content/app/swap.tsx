@@ -3,6 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import { DotBackdrop } from "@/components/app/dot-backdrop";
 import trending from "@/data/tokens-trending.json";
 import memescope from "@/data/memescope.json";
+import { formatUnits, type Address } from "viem";
+import { USE_API, useApi } from "@/lib/api";
+import { switchToAppChain, useWallet } from "@/lib/wallet";
+import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, slippageBps, swapSetup, tokenDecimals, tradeMode, type Plan } from "@/lib/swap";
+
+const EVM = /^0x[0-9a-fA-F]{40}$/;
+const GAS_RESERVE = 500_000_000_000_000n; // 0,0005 ETH disisakan saat memilih Max
+const fmt = (t: string) => Number(t).toLocaleString("en-US", { maximumFractionDigits: 6 });
 
 type SwapToken = {
   mint: string;
@@ -14,16 +22,16 @@ type SwapToken = {
   change24h?: number;
 };
 
-// Solana saja: aset native adalah SOL.
-const SOL: SwapToken = {
-  mint: "So11111111111111111111111111111111111111112",
-  symbol: "SOL",
-  name: "Solana",
-  image: "/chains/solana.png",
+// Aset native Robinhood Chain adalah ETH (alamat nol = penanda aset native, bukan kontrak).
+const NATIVE: SwapToken = {
+  mint: "0x0000000000000000000000000000000000000000",
+  symbol: "ETH",
+  name: "Ether",
+  image: null,
 };
 
 function allTokens(): SwapToken[] {
-  const seen = new Set<string>([SOL.mint]);
+  const seen = new Set<string>([NATIVE.mint]);
   const out: SwapToken[] = [];
   const push = (t: SwapToken) => {
     if (!t.mint || seen.has(t.mint)) return;
@@ -81,7 +89,16 @@ function TokenButton({ token, onClick }: { token: SwapToken | null; onClick: () 
 
 function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => void; onPick: (t: SwapToken) => void }) {
   const [q, setQ] = useState("");
-  const list = useMemo(() => allTokens(), []);
+  const api = useApi<{ tokens: { mint: string; symbol: string | null; name: string | null; image: string | null; price: number | null; marketCap: number | null; change24h: number | null }[] }>(
+    USE_API ? "/api/tokens/trending?tab=trending&limit=100" : null,
+  );
+  const list = useMemo<SwapToken[]>(
+    () =>
+      USE_API
+        ? (api.data?.tokens ?? []).map((t) => ({ mint: t.mint, symbol: t.symbol ?? "?", name: t.name ?? "", image: t.image, price: t.price ?? undefined, marketCap: t.marketCap ?? undefined, change24h: t.change24h ?? undefined }))
+        : allTokens(),
+    [api.data],
+  );
   useEffect(() => {
     if (!open) return;
     const k = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -115,7 +132,7 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
           />
         </div>
         <div className="px-2 pb-3 overflow-y-auto" style={{ minHeight: 0 }}>
-          <div className="px-3 pb-1 text-[12px]" style={{ color: "var(--v2-t-4)" }}>{shown.length} tokens on Solana</div>
+          <div className="px-3 pb-1 text-[12px]" style={{ color: "var(--v2-t-4)" }}>{shown.length} tokens on Robinhood Chain</div>
           {shown.map((t) => (
             <button key={t.mint} onClick={() => onPick(t)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left transition-colors hover:bg-[var(--v2-bg-2)]">
               <Avatar t={t} size={34} />
@@ -142,7 +159,15 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
               </span>
             </button>
           ))}
-          {shown.length === 0 && <div className="px-3 py-6 text-[14px]" style={{ color: "var(--v2-t-3)" }}>No token found</div>}
+          {EVM.test(term) && !list.some((t) => t.mint.toLowerCase() === term) && (
+            <button
+              onClick={() => onPick({ mint: term, symbol: `${term.slice(0, 6)}…${term.slice(-4)}`, name: "Custom token", image: null })}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left transition-colors hover:bg-[var(--v2-bg-2)]"
+            >
+              <span className="text-[14px]" style={{ color: "var(--v2-t-1)" }}>Use token at {term.slice(0, 6)}…{term.slice(-4)}</span>
+            </button>
+          )}
+          {shown.length === 0 && !EVM.test(term) && <div className="px-3 py-6 text-[14px]" style={{ color: "var(--v2-t-3)" }}>No token found</div>}
         </div>
       </div>
     </div>
@@ -154,14 +179,114 @@ export function ApplicationSwapContent() {
   const [amount, setAmount] = useState("");
   const [token, setToken] = useState<SwapToken | null>(null);
   const [open, setOpen] = useState(false);
+  const w = useWallet();
+  const setup = swapSetup();
+  const [plan, setPlan] = useState<Plan | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [slip, setSlip] = useState(100);
+  useEffect(() => setSlip(slippageBps()), []);
+  // Tautan dari Inbox/tabel token: /application/swap?mint=0x…  (&side=sell untuk menjual)
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const m = (q.get("mint") ?? "").trim();
+    if (EVM.test(m)) {
+      setToken({ mint: m.toLowerCase(), symbol: `${m.slice(0, 6)}…${m.slice(-4)}`, name: "Token from link", image: null });
+      if (q.get("side") === "sell") setFlipped(true);
+    }
+  }, []);
+  const isEvm = !!token && EVM.test(token.mint);
+  const sellAddr = (flipped ? token?.mint : NATIVE_ADDR) as Address;
+  const buyAddr = (flipped ? NATIVE_ADDR : token?.mint) as Address;
+
+  useEffect(() => {
+    setPlan(null);
+    setErr(null);
+    setMsg(null);
+    if (!setup || !token || !isEvm || !(Number(amount) > 0)) return;
+    let alive = true;
+    const t = setTimeout(() => {
+      planSwap({ account: (w.address as Address | null) ?? null, sell: sellAddr, buy: buyAddr, amount, slippageBps: slip })
+        .then((p) => alive && setPlan(p))
+        .catch((e: unknown) => alive && setErr(e instanceof Error ? e.message.split("\n")[0] : "Could not get a quote"));
+    }, 450);
+    return () => {
+      alive = false;
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, token, flipped, w.address, slip]);
+
+  const pct = async (p: number) => {
+    if (!setup || !w.address || !token || !isEvm) return;
+    try {
+      const bal = await balanceOf(setup, sellAddr, w.address as Address);
+      const dec = await tokenDecimals(setup, sellAddr);
+      let v = (bal * BigInt(p)) / 100n;
+      if (sellAddr === NATIVE_ADDR && p === 100) v = bal > GAS_RESERVE ? bal - GAS_RESERVE : 0n;
+      setAmount(formatUnits(v, dec));
+    } catch {
+      /* saldo tidak terbaca */
+    }
+  };
+
+  const act = async () => {
+    setBusy(true);
+    setErr(null);
+    setMsg(null);
+    try {
+      if (w.wrongChain) {
+        const r = await switchToAppChain();
+        if (r.error) setErr(r.error);
+        return;
+      }
+      if (!plan || !w.address) return;
+      const acct = w.address as Address;
+      if (tradeMode() === "dry") {
+        const r = await simulatePlan(plan, acct);
+        if (!r.ok) setErr(r.note ?? "Simulation failed");
+        else setMsg(`Dry run OK: you would receive about ${fmt(plan.outText)} (minimum ${fmt(plan.minText)})${r.gas ? `, gas about ${r.gas.toString()}` : ""}${r.note ? `. ${r.note}` : ""}. No transaction was sent (dry mode).`);
+      } else {
+        const provider = w.wallets.find((x) => x.id === w.walletId)?.provider;
+        if (!provider) throw new Error("Connect a wallet first");
+        const hash = await executePlan(plan, acct, provider);
+        setMsg(`Swap confirmed: ${hash}`);
+      }
+    } catch (e) {
+      const x = e as { code?: number; shortMessage?: string; message?: string };
+      setErr(x.code === 4001 ? "Request rejected in your wallet" : (x.shortMessage ?? x.message ?? "Swap failed").split("\n")[0]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cta: { label: string; disabled: boolean; signin?: boolean } = !setup
+    ? { label: "Swaps are available on mainnet only", disabled: true }
+    : !token
+      ? { label: "Select a token", disabled: true }
+      : !isEvm
+        ? { label: "Select an EVM token", disabled: true }
+        : !(Number(amount) > 0)
+          ? { label: "Enter an amount", disabled: true }
+          : !w.address
+            ? { label: "Connect wallet", disabled: false, signin: true }
+            : w.wrongChain
+              ? { label: `Switch to ${w.appChain.name}`, disabled: false }
+              : !plan
+                ? { label: err ? "No route" : "Getting quote…", disabled: true }
+                : tradeMode() === "dry"
+                  ? { label: "Simulate swap (dry mode)", disabled: false }
+                  : { label: plan.needsApproval ? "Approve & swap" : "Swap", disabled: false };
+
   const usd = token?.price && flipped && amount ? Number(amount) * token.price : 0;
   const sellPill = flipped ? (
     <TokenButton token={token} onClick={() => setOpen(true)} />
   ) : (
-    <TokenChip token={SOL} />
+    <TokenChip token={NATIVE} />
   );
   const buyPill = flipped ? (
-    <TokenChip token={SOL} />
+    <TokenChip token={NATIVE} />
   ) : (
     <TokenButton token={token} onClick={() => setOpen(true)} />
   );
@@ -236,24 +361,28 @@ export function ApplicationSwapContent() {
               </span>
               <div className="flex gap-3">
                 <button
+                  onClick={() => pct(25)}
                   className="num text-[13px] transition-colors hover:text-[var(--v2-t-1)] disabled:opacity-40"
                   style={{ color: "var(--v2-t-3)" }}
                 >
                   25%
                 </button>
                 <button
+                  onClick={() => pct(50)}
                   className="num text-[13px] transition-colors hover:text-[var(--v2-t-1)] disabled:opacity-40"
                   style={{ color: "var(--v2-t-3)" }}
                 >
                   50%
                 </button>
                 <button
+                  onClick={() => pct(75)}
                   className="num text-[13px] transition-colors hover:text-[var(--v2-t-1)] disabled:opacity-40"
                   style={{ color: "var(--v2-t-3)" }}
                 >
                   75%
                 </button>
                 <button
+                  onClick={() => pct(100)}
                   className="num text-[13px] transition-colors hover:text-[var(--v2-t-1)] disabled:opacity-40"
                   style={{ color: "var(--v2-t-3)" }}
                 >
@@ -292,9 +421,9 @@ export function ApplicationSwapContent() {
             <div className="flex items-center gap-3">
               <div
                 className="flex-1 min-w-0 num text-[38px] font-medium truncate"
-                style={{ color: "var(--v2-t-4)" }}
+                style={{ color: plan ? "var(--v2-t-1)" : "var(--v2-t-4)" }}
               >
-                0.0
+                {plan ? fmt(plan.outText) : "0.0"}
               </div>
               {buyPill}
             </div>
@@ -307,9 +436,25 @@ export function ApplicationSwapContent() {
               </span>
             </div>
           </div>
-          <button data-auth-open="signin" className="crv-swap-cta mt-2 w-full h-14 rounded-[20px] text-[16px] font-semibold flex items-center justify-center gap-2 disabled:cursor-not-allowed">
-            Sign in to swap
+          <button
+            {...(cta.signin ? { "data-auth-open": "signin" } : { onClick: act })}
+            disabled={cta.disabled || busy}
+            className="crv-swap-cta mt-2 w-full h-14 rounded-[20px] text-[16px] font-semibold flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+          >
+            {busy ? "Working…" : cta.label}
           </button>
+          {plan && (
+            <p className="px-3 pt-2 text-[12px]" style={{ color: "var(--v2-t-4)" }}>
+              Uniswap v3 · fee {(plan.fee / 10000).toString()}% · slippage {slip / 100}% · minimum received {fmt(plan.minText)}
+              {tradeMode() === "dry" ? " · dry mode: no transactions are sent" : ""}
+            </p>
+          )}
+          {err && (
+            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-neg)" }}>{err}</p>
+          )}
+          {msg && (
+            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-pos)" }}>{msg}</p>
+          )}
           <TokenModal open={open} onClose={() => setOpen(false)} onPick={(t) => { setToken(t); setOpen(false); }} />
         </div>
       </div>

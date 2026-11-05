@@ -37,7 +37,7 @@ export function ApplicationRugcheckContent() {
               textShadow: "rgb(20, 25, 29) 0px 0px 14px",
             }}
           >
-            Contract, holder and liquidity checks on any Solana token. A score before you trade.
+            Contract, holder and liquidity checks on any Robinhood Chain token. A score before you trade.
           </p>
           <form className="relative mt-10">
             <div
@@ -88,7 +88,7 @@ export function ApplicationRugcheckContent() {
               >
                 <path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"></path>
               </svg>
-              Any Solana token, one search
+              Any token, one search
             </span>
             <span className="flex items-center gap-2">
               <svg
@@ -133,20 +133,14 @@ export function ApplicationRugcheckContent() {
                   color: "var(--v2-t-2)",
                 }}
               >
-                <img
-                  alt=""
-                  width="22"
-                  height="22"
-                  className="w-[22px] h-[22px] rounded-full"
-                  src="/chains/solana.png"
-                />
+                <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 22, height: 22, background: "var(--v2-accent)" }} />
                 <span
                   className="font-semibold"
                   style={{ color: "var(--v2-t-1)" }}
                 >
                   BONK
                 </span>
-                <span style={{ color: "var(--v2-t-4)" }}>Solana</span>
+                <span style={{ color: "var(--v2-t-4)" }}>Robinhood Chain</span>
               </button>
               <button
                 className="flex items-center gap-2 h-9 pl-1.5 pr-3.5 rounded-full text-[13px] transition-colors hover:bg-[#1A1A20]"
@@ -156,20 +150,14 @@ export function ApplicationRugcheckContent() {
                   color: "var(--v2-t-2)",
                 }}
               >
-                <img
-                  alt=""
-                  width="22"
-                  height="22"
-                  className="w-[22px] h-[22px] rounded-full"
-                  src="/chains/solana.png"
-                />
+                <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 22, height: 22, background: "var(--v2-accent)" }} />
                 <span
                   className="font-semibold"
                   style={{ color: "var(--v2-t-1)" }}
                 >
                   WIF
                 </span>
-                <span style={{ color: "var(--v2-t-4)" }}>Solana</span>
+                <span style={{ color: "var(--v2-t-4)" }}>Robinhood Chain</span>
               </button>
             </div>
           </div>

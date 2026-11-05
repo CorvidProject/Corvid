@@ -25,10 +25,10 @@ export function DocsContent() {
           className="text-base sm:text-lg leading-relaxed max-w-xl"
           style={{ color: "rgba(255,255,255,0.65)" }}
         >
-          Corvid runs autonomous trading agents on Solana. You build pipelines
+          Corvid runs autonomous trading agents on Robinhood Chain. You build pipelines
           that watch the chain, filter noise, and either alert you or trade for
-          you. Every swap pays a 1% platform fee via Jupiter; 20-40% of that fee
-          comes right back to you as SOL cashback.
+          you. Every swap pays a 1% platform fee via Uniswap; 20-40% of that fee
+          comes right back to you as ETH cashback.
         </p>
       </div>
       <div className="mb-16">
@@ -103,7 +103,7 @@ export function DocsContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Follow any agent for free. Pay a 1% swap fee only when a
-              copy-trade actually fires, get 20% of it back as SOL
+              copy-trade actually fires, get 20% of it back as ETH
             </p>
           </a>
           <a
@@ -158,13 +158,13 @@ export function DocsContent() {
               </span>
             </div>
             <h3 className="font-heading font-semibold text-[15px] text-white mb-1.5 tracking-[-0.01em]">
-              Graduation to SPL
+              Graduation to ERC-20
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Top agents launch their own SPL token with a Raydium liquidity
+              Top agents launch their own ERC-20 token with a Uniswap liquidity
               pool funded by the agent's own copy-trade reserve
             </p>
           </a>
@@ -195,7 +195,7 @@ export function DocsContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Paste any Solana token address. Price, holders, risk score, live
+              Paste any token contract address. Price, holders, risk score, live
               trades on one screen
             </p>
           </a>
@@ -227,7 +227,7 @@ export function DocsContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Keys encrypted at rest in our infrastructure. The platform signs
-              trades for you so agents can run autonomously. Export to Phantom
+              trades for you so agents can run autonomously. Export to MetaMask
               anytime for full self-custody
             </p>
           </a>
@@ -270,7 +270,7 @@ export function DocsContent() {
               className="text-[14px] m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Email or Google. A Solana wallet is generated for you and 25
+              Email or Google. A wallet is generated for you and 25
               free AI analyses land on your account
             </p>
           </li>
@@ -351,8 +351,8 @@ export function DocsContent() {
               className="text-[14px] m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              1% swap commission is taken by Jupiter; 20-40% comes right back to you
-              in SOL. No subscriptions, no prepaid balance
+              1% swap commission is taken on-chain; 20-40% comes right back to you
+              in ETH. No subscriptions, no prepaid balance
             </p>
           </li>
         </ol>
@@ -370,7 +370,7 @@ export function DocsContent() {
           </h2>
         </div>
         <p className="mb-5" style={{ color: "rgba(255,255,255,0.70)" }}>
-          1% commission on every swap via Jupiter. Split depends on whether the trade
+          1% commission on every swap via Uniswap. Split depends on whether the trade
           was manual or triggered by an agent.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -490,7 +490,7 @@ export function DocsContent() {
           </div>
         </div>
         <p style={{ color: "rgba(255,255,255,0.55)" }} className="text-sm">
-          Cashback is paid in SOL instantly in the same transaction. Your
+          Cashback is paid in ETH instantly in the same transaction. Your
           effective fee:{" "}
           <strong className="text-white">0.6% manual / 0.8% copy-trade</strong>,
           20-40% cheaper than Axiom. See{" "}
@@ -529,12 +529,12 @@ export function DocsContent() {
             ※ Custodial with encryption + export
           </div>
           <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
-            A Solana wallet is generated the moment you sign up. It holds SOL,
+            A wallet is generated the moment you sign up. It holds ETH,
             $CRVD, and any tokens earned via graduation. The private key is
             encrypted at rest in our infrastructure (AES-256-GCM, master key
             never exposed to application code). The platform signs trades on
             your behalf — that's what lets autonomous agents work while you're
-            offline. You can export the raw key to Phantom at any time and take
+            offline. You can export the raw key to MetaMask at any time and take
             full self-custody. If we go dark tomorrow, your funds remain
             accessible directly on-chain via the exported key — no platform
             dependency

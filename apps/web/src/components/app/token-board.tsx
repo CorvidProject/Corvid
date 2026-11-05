@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useApi } from "@/lib/api";
 
 // Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
-// (fixture atau backend, lihat src/lib/api.ts). Hanya mint Solana (base58) yang ditampilkan.
+// (fixture atau backend, lihat src/lib/api.ts). Hanya mint Robinhood Chain (base58) yang ditampilkan.
 
 type T = {
   name: string;
@@ -42,9 +42,9 @@ const clean = (list: Raw[]): T[] =>
     }));
 
 const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number }> = {
-  latest: { title: "Latest Tokens", sub: "New pools and pump.fun launches, newest first · Solana", sort: "age", dir: -1, minLiq: 0 },
-  gainers: { title: "Top Gainers", sub: "Up the most in 24 hours, with real liquidity · Solana", sort: "change24h", dir: -1, minLiq: 10000 },
-  volume: { title: "High Volume", sub: "Most traded in 24 hours · Solana", sort: "volume", dir: -1, minLiq: 0 },
+  latest: { title: "Latest Tokens", sub: "New pools, newest first · Robinhood Chain", sort: "age", dir: -1, minLiq: 0 },
+  gainers: { title: "Top Gainers", sub: "Up the most in 24 hours, with real liquidity · Robinhood Chain", sort: "change24h", dir: -1, minLiq: 10000 },
+  volume: { title: "High Volume", sub: "Most traded in 24 hours · Robinhood Chain", sort: "volume", dir: -1, minLiq: 0 },
 };
 
 export function money(n: number | null | undefined) {
@@ -140,7 +140,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
           className="h-8 px-3 rounded-full text-[13px] flex items-center gap-1.5"
           style={{ background: "rgba(var(--v2-accent-rgb),0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.45)" }}
         >
-          Solana<span className="num text-[11px] opacity-70">{rows.length}</span>
+          Robinhood Chain<span className="num text-[11px] opacity-70">{rows.length}</span>
         </span>
         <input
           value={q}
@@ -183,7 +183,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
               <span className="num text-[13px]" style={{ color: "var(--v2-t-4)" }}>
                 {i + 1}
               </span>
-              <a className="flex items-center gap-3 min-w-0" href={`/application/tokens/${t.mint}?chain=solana`}>
+              <a className="flex items-center gap-3 min-w-0" href={`/application/tokens/${t.mint}?chain=robinhood`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   alt=""
@@ -201,7 +201,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
                       {t.symbol.trim()}
                     </span>
                     <span className="font-mono text-[9.5px] uppercase px-1.5 py-0.5 rounded" style={{ color: "var(--v2-t-3)", background: "var(--v2-bg-2)" }}>
-                      Solana
+                      Robinhood Chain
                     </span>
                   </span>
                   <span className="block text-[12px] truncate" style={{ color: "var(--v2-t-4)" }}>
@@ -252,7 +252,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
                 </a>
                 <a
                   className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-semibold opacity-70 group-hover:opacity-100 transition-all"
-                  href={`/application/swap?mint=${t.mint}&chain=solana`}
+                  href={`/application/swap?mint=${t.mint}&chain=robinhood`}
                   style={{ color: "#ffffff", background: "linear-gradient(180deg, #0037fd 0%, var(--v2-accent) 100%)" }}
                 >
                   Swap

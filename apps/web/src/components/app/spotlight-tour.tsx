@@ -27,7 +27,7 @@ export const BUILDER_TOUR: TourStep[] = [
   {
     targetSelector: '[data-tour="mode-toggle"]',
     title: "Signal or Trading",
-    description: "Signal mode sends alerts only. Trading mode executes real swaps with SOL",
+    description: "Signal mode sends alerts only. Trading mode executes real swaps with ETH",
     position: "bottom",
   },
   {

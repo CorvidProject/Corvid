@@ -124,7 +124,7 @@ export function ApplicationAgentsContent() {
                       {a.name}
                     </div>
                     <div className="text-[12px]" style={{ color: "var(--v2-t-4)" }}>
-                      {TYPE[a.type] ?? a.type} · Solana{a.tokenSymbol ? ` · $${a.tokenSymbol}` : ""}
+                      {TYPE[a.type] ?? a.type} · Robinhood Chain{a.tokenSymbol ? ` · $${a.tokenSymbol}` : ""}
                     </div>
                   </div>
                   <span className="inline-flex items-center gap-1.5 eyebrow shrink-0" style={{ color: a.running ? "var(--v2-pos)" : "var(--v2-t-4)" }}>

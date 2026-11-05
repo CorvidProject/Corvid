@@ -60,7 +60,7 @@ export function DocsAgentsAutoTraderContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Every buy or sell is simulated with live prices. No real SOL
+              Every buy or sell is simulated with live prices. No real ETH
               moves. Use it to sanity-check a strategy before you risk capital
             </p>
           </div>

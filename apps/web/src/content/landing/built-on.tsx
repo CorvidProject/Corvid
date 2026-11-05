@@ -27,10 +27,10 @@ export function BuiltOn() {
           style={{ background: "#0A0A0F" }}
         >
           <a
-            href="https://solana.com"
+            href="https://docs.robinhood.com/chain"
             target="_blank"
             rel="noreferrer noopener"
-            aria-label="Solana (opens in new tab)"
+            aria-label="Robinhood Chain (opens in new tab)"
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
             style={{
@@ -48,27 +48,6 @@ export function BuiltOn() {
                 transition: "opacity 0.25s ease",
               }}
             ></div>
-            <img
-              alt="Solana"
-              loading="lazy"
-              width="256"
-              height="256"
-              decoding="async"
-              data-nimg="1"
-              className="integration-logo"
-              style={{
-                color: "transparent",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                filter: "grayscale(1)",
-                opacity: "0.8",
-                transition: "opacity 0.25s ease, filter 0.25s ease",
-              }}
-              srcSet="/shared/solana.png 1x, /shared/solana.png 2x"
-              src="/shared/solana.png"
-            />
             <span
               className="integration-name font-mono font-medium text-[11px] tracking-[0.14em] uppercase"
               style={{
@@ -76,66 +55,14 @@ export function BuiltOn() {
                 transition: "color 0.25s ease",
               }}
             >
-              Solana
+              Robinhood Chain
             </span>
           </a>
           <a
-            href="https://jup.ag"
+            href="https://uniswap.org"
             target="_blank"
             rel="noreferrer noopener"
-            aria-label="Jupiter (opens in new tab)"
-            className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
-            data-reveal
-            style={{
-              background: "#0A0A0F",
-              borderBottom: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            <div
-              className="absolute top-0 left-6 right-6 h-px pointer-events-none"
-              data-reveal
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, var(--v2-accent) 50%, transparent)",
-                transition: "opacity 0.25s ease",
-              }}
-            ></div>
-            <img
-              alt="Jupiter"
-              loading="lazy"
-              width="256"
-              height="256"
-              decoding="async"
-              data-nimg="1"
-              className="integration-logo"
-              style={{
-                color: "transparent",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                filter: "grayscale(1)",
-                opacity: "0.8",
-                transition: "opacity 0.25s ease, filter 0.25s ease",
-              }}
-              srcSet="/shared/jupiter.png 1x, /shared/jupiter.png 2x"
-              src="/shared/jupiter.png"
-            />
-            <span
-              className="integration-name font-mono font-medium text-[11px] tracking-[0.14em] uppercase"
-              style={{
-                color: "rgba(255,255,255,0.78)",
-                transition: "color 0.25s ease",
-              }}
-            >
-              Jupiter
-            </span>
-          </a>
-          <a
-            href="https://helius.dev"
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label="Helius (opens in new tab)"
+            aria-label="Uniswap (opens in new tab)"
             className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
             data-reveal
             style={{
@@ -153,27 +80,6 @@ export function BuiltOn() {
                 transition: "opacity 0.25s ease",
               }}
             ></div>
-            <img
-              alt="Helius"
-              loading="lazy"
-              width="256"
-              height="256"
-              decoding="async"
-              data-nimg="1"
-              className="integration-logo"
-              style={{
-                color: "transparent",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                filter: "grayscale(1)",
-                opacity: "0.8",
-                transition: "opacity 0.25s ease, filter 0.25s ease",
-              }}
-              srcSet="/shared/helius.png 1x, /shared/helius.png 2x"
-              src="/shared/helius.png"
-            />
             <span
               className="integration-name font-mono font-medium text-[11px] tracking-[0.14em] uppercase"
               style={{
@@ -181,7 +87,39 @@ export function BuiltOn() {
                 transition: "color 0.25s ease",
               }}
             >
-              Helius
+              Uniswap
+            </span>
+          </a>
+          <a
+            href="https://gopluslabs.io"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="GoPlus (opens in new tab)"
+            className="integration-cell group relative flex flex-col items-center justify-center gap-3 py-10 px-4 cursor-pointer"
+            data-reveal
+            style={{
+              background: "#0A0A0F",
+              borderRight: "1px solid rgba(255,255,255,0.07)",
+              borderBottom: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <div
+              className="absolute top-0 left-6 right-6 h-px pointer-events-none"
+              data-reveal
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--v2-accent) 50%, transparent)",
+                transition: "opacity 0.25s ease",
+              }}
+            ></div>
+            <span
+              className="integration-name font-mono font-medium text-[11px] tracking-[0.14em] uppercase"
+              style={{
+                color: "rgba(255,255,255,0.78)",
+                transition: "color 0.25s ease",
+              }}
+            >
+              GoPlus
             </span>
           </a>
           <a

@@ -80,7 +80,7 @@ export function DocsAgentsWalletMonitorContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Minimum SOL or USD value of a swap to count. Filters out dust and
+              Minimum ETH or USD value of a swap to count. Filters out dust and
               rebalancing noise
             </p>
           </div>

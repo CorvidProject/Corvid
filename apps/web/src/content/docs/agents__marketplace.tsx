@@ -197,7 +197,7 @@ export function DocsAgentsMarketplaceContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               The swap runs in your platform wallet the moment the signal fires,
-              sized to your max-SOL-per-copy setting. No clicks from you. Good
+              sized to your max-ETH-per-copy setting. No clicks from you. Good
               when you trust the strategy and want to sleep through it.
             </p>
           </div>

@@ -46,11 +46,11 @@ const NOTE = "\n\n— Simulated reply (fixture). Live market data and agents con
 function reply(q: string): string {
   const s = q.toLowerCase();
   if (/\.sol\b|wallet|audit/.test(s))
-    return "Wallet audit\n• Holds 14 tokens, ~71% in SOL and stablecoins\n• 9 swaps in the last 7 days, mostly via Jupiter\n• No interactions with flagged programs\n• Risk: low. Concentration is the only watch item." + NOTE;
+    return "Wallet audit\n• Holds 14 tokens, ~71% in ETH and stablecoins\n• 9 swaps in the last 7 days, mostly via Uniswap\n• No interactions with flagged contracts\n• Risk: low. Concentration is the only watch item." + NOTE;
   if (/smart money|smart wallet/.test(s))
-    return "Smart money today\n• 3 tracked wallets bought into new Solana pairs in the last 6h\n• Net flow: positive into SOL-quoted memecoins\n• Open Smart Wallets in Terminal to follow them live." + NOTE;
+    return "Smart money today\n• 3 tracked wallets bought into new Robinhood Chain pairs in the last 6h\n• Net flow: positive into ETH-quoted memecoins\n• Open Smart Wallets in Terminal to follow them live." + NOTE;
   if (/agent|new pairs|create/.test(s))
-    return "Agent draft\nTrigger: new pair on Solana with liquidity above 25 SOL\nChecks: mint authority renounced, top-10 holders under 40%, no bundler cluster\nAction: simulated buy (dry mode), TP +60%, SL -25%\nOpen the Agent Builder to refine and backtest it." + NOTE;
+    return "Agent draft\nTrigger: new pair on Robinhood Chain with liquidity above 25 ETH\nChecks: ownership renounced, top-10 holders under 40%, no linked-wallet cluster\nAction: simulated buy (dry mode), TP +60%, SL -25%\nOpen the Agent Builder to refine and backtest it." + NOTE;
   if (/\$[a-z]{2,10}|token|mint|[1-9A-HJ-NP-Za-km-z]{32,44}/.test(s))
     return "Token read\n• Liquidity and holder spread look healthy for its size\n• Mint and freeze authority: revoked\n• Top-10 holders: 31%\n• Sniper and bundler share: low\nVerdict: no blocking risk found. Not financial advice." + NOTE;
   return "I can analyze a token or wallet, summarize smart-money flow, or draft an agent. Paste a mint or wallet address, or pick one of the suggestions." + NOTE;

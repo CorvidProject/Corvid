@@ -116,13 +116,13 @@ export function DocsPortfolioContent() {
               04 · TOKENS
             </div>
             <h3 className="font-heading font-semibold text-[15px] text-white mb-1.5 tracking-[-0.01em]">
-              SPL tokens
+              ERC-20 tokens
             </h3>
             <p
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Real Solana tokens you received when agents graduated. These sit
+              Real tokens you received when agents graduated. These sit
               in your main platform wallet
             </p>
           </div>
@@ -165,7 +165,7 @@ export function DocsPortfolioContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Hit Export in Settings to pull the 32-byte private key (hex).
-              Import it into Phantom or Solflare and you own the wallet outright
+              Import it into MetaMask or another EVM wallet and you own the wallet outright
             </p>
           </div>
         </div>
@@ -183,12 +183,12 @@ export function DocsPortfolioContent() {
           </h2>
         </div>
         <p className="mb-5" style={{ color: "rgba(255,255,255,0.70)" }}>
-          The platform is custodial: when you sign up we generate a Solana
+          The platform is custodial: when you sign up we generate a
           wallet for you and store the private key encrypted at rest in our
           infrastructure. That's what lets autonomous agents and copy-trade fire
           while you're offline — without it the whole product premise doesn't
           work. We're upfront about the trade-off: you can export the raw key to
-          Phantom at any moment and take full self-custody if that matters more
+          MetaMask at any moment and take full self-custody if that matters more
           than automation.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -255,7 +255,7 @@ export function DocsPortfolioContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Settings → Export Private Key returns the 32-byte key as hex.
-              Import it into Phantom or Solflare. Your wallet now exists outside
+              Import it into MetaMask or another EVM wallet. Your wallet now exists outside
               the platform, fully self-custodial
             </p>
           </div>
@@ -314,7 +314,7 @@ export function DocsPortfolioContent() {
               could be decrypted by us. The defenses are operational, not
               cryptographic: master encryption key kept in SOPS-managed secrets,
               withdrawals require your in-app authorization, and most
-              importantly, you can export the key to Phantom at any moment to
+              importantly, you can export the key to MetaMask at any moment to
               get out of the trust relationship entirely. If you're holding
               meaningful size, export and self-custody is the right move.
             </p>
@@ -336,9 +336,9 @@ export function DocsPortfolioContent() {
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Export your private key while we're up — Settings → Export Private
-              Key. Once you have the raw 64-byte key in Phantom, your wallet is
-              independent of our infrastructure. The SOL, the $CRVD, and any
-              SPL tokens earned through graduation all live on-chain forever.
+              Key. Once you have the raw private key in MetaMask, your wallet is
+              independent of our infrastructure. The ETH, the $CRVD, and any
+              ERC-20 tokens earned through graduation all live on-chain forever.
               No migration sprint needed if you've already exported.
             </p>
           </details>
@@ -348,7 +348,7 @@ export function DocsPortfolioContent() {
           >
             <summary className="cursor-pointer font-heading font-semibold text-[14px] text-white list-none flex items-start justify-between gap-3">
               <span className="break-words">
-                Why not just use Phantom directly?
+                Why not just use MetaMask directly?
               </span>
               <span className="font-mono text-[var(--v2-accent)] group-open:rotate-45 transition-transform shrink-0">
                 +
@@ -359,12 +359,12 @@ export function DocsPortfolioContent() {
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Because autonomous agents need to sign transactions while you
-              sleep. Phantom requires a manual click each time. A custodial
+              sleep. MetaMask requires a manual click each time. A custodial
               wallet lets the platform sign on your behalf so a Copy Trader can
               react to a whale move in 200ms without you being at the keyboard.
-              If you prefer manual, connect Phantom for the main trading UI —
+              If you prefer manual, connect MetaMask for the main trading UI —
               we support both, and you can run agents on the platform wallet
-              while doing manual swaps from Phantom.
+              while doing manual swaps from MetaMask.
             </p>
           </details>
           <details

@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import data from "@/data/leaderboard-wallets.json";
 
-// PnL Leaderboard. Data fixture (7 wallet Solana terlacak); diganti /alpha/curated di Tahap 2.
+// PnL Leaderboard. Data fixture (7 wallet Robinhood Chain terlacak); diganti /alpha/curated di Tahap 2.
 type Row = { w: string; tier: string | null; kind: string | null; pnl: number | null; win: string | null; closed: string | null };
 type Key = "pnl" | "win" | "closed";
 
@@ -126,7 +126,7 @@ export function ApplicationLeaderboardContent() {
               )}
             </span>
             <span className="text-right num text-[14px] font-semibold" style={{ color: (r.pnl ?? 0) >= 0 ? "var(--v2-pos)" : "var(--v2-neg)" }}>
-              {r.pnl == null ? "·" : `${r.pnl >= 0 ? "+" : ""}${r.pnl.toFixed(2)} SOL`}
+              {r.pnl == null ? "·" : `${r.pnl >= 0 ? "+" : ""}${r.pnl.toFixed(2)} ETH`}
             </span>
             <span className="hidden sm:block text-right num text-[13px]" style={{ color: "var(--v2-t-2)" }}>
               {r.win ?? "·"}

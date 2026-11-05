@@ -515,7 +515,7 @@ function buildRun(base: Run, n: number, buy: boolean, upto: number): Run {
       ? [
           mk("router", { impact_pct: 0.12, slippage_bps: 50 }),
           mk("sign", { wallet: "agent wallet" }),
-          mk("chain", { size: "0.5 SOL" }),
+          mk("chain", { size: "0.5 ETH" }),
         ]
       : []),
   ];
@@ -855,7 +855,7 @@ function RugPanel() {
   return (
     <Panel
       title="rugcheck"
-      sub={`$${tk.symbol.toLowerCase()} · trending on solana`}
+      sub={`$${tk.symbol.toLowerCase()} · trending on robinhood chain`}
       badge={`${security.passed}/${security.total} passed`}
       badgeColor="#FFC24D"
       extra={
@@ -936,7 +936,7 @@ function MemePanel() {
   return (
     <Panel
       title="memescope"
-      sub="newest pump.fun launches"
+      sub="newest launches"
       badge="live"
       badgeColor={GREEN}
       className="cv-meme-panel"

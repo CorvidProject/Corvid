@@ -103,7 +103,7 @@ export function DocsCreditsContent() {
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
               Once the 25 starter runs are used, each new analysis costs $0.10
-              in SOL. Pay only what you use
+              in ETH. Pay only what you use
             </p>
           </div>
           <div
@@ -143,7 +143,7 @@ export function DocsCreditsContent() {
         </div>
         <p className="mb-4" style={{ color: "rgba(255,255,255,0.70)" }}>
           Most things are free. The only billed items are actual AI compute
-          (deep analysis) and token swaps (1% via Jupiter, taken atomically).
+          (deep analysis) and token swaps (1% via Uniswap, taken atomically).
         </p>
         <div className="flex flex-col gap-3">
           <div
@@ -231,7 +231,7 @@ export function DocsCreditsContent() {
               className="text-[13px] leading-relaxed m-0 break-words"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              $0.40 in SOL (one-time) to mint your own experimental SPL.
+              $0.40 in ETH (one-time) to mint your own experimental ERC-20.
               Anti-spam + mint cost recovery
             </p>
           </div>
@@ -338,13 +338,13 @@ export function DocsCreditsContent() {
               CONFIRM
             </div>
             <h3 className="font-heading font-semibold text-[17px] text-white m-0 mb-1.5 tracking-[-0.01em]">
-              Pay with SOL
+              Pay with ETH
             </h3>
             <p
               className="text-[14px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.60)" }}
             >
-              SOL is debited from your platform wallet. Top-up lands on your
+              ETH is debited from your platform wallet. Top-up lands on your
               quota instantly
             </p>
           </li>
@@ -468,7 +468,7 @@ export function DocsCreditsContent() {
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
               AI quota is just a counter — 25 free analyses on signup, top up
-              with SOL if you need more. It's not a token, not tradable, not
+              with ETH if you need more. It's not a token, not tradable, not
               transferable. <strong>$CRVD</strong> is the platform token,
               accumulated passively when you earn cashback-to-$CRVD or when agents
               you follow graduate and airdrop you. Holding $CRVD is optional and

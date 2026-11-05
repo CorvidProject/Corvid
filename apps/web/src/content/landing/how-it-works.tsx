@@ -621,7 +621,7 @@ export function HowItWorks() {
                       color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.72)",
                     }}
                   >
-                    Triggers fire and the agent takes the best route on Solana through Jupiter.
+                    Triggers fire and the agent takes the best route on Robinhood Chain through Uniswap.
                     Approvals only when you want them
                   </p>
                   <div
@@ -639,7 +639,7 @@ export function HowItWorks() {
                               "var(--v2-section-accent, var(--v2-accent))",
                           }}
                         ></span>
-                        JUPITER
+                        UNISWAP
                       </span>
                     </div>
                     <div className="flex items-center gap-2.5">

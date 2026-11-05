@@ -60,9 +60,9 @@ export function DocsQuickStartContent() {
             className="text-[14px] leading-relaxed m-0"
             style={{ color: "rgba(255,255,255,0.60)" }}
           >
-            Use Google or email. A Solana wallet is generated for you,
+            Use Google or email. A wallet is generated for you,
             encrypted at rest in our infrastructure, and 25 free AI analyses
-            land on your account. Export the key to Phantom anytime if you want
+            land on your account. Export the key to MetaMask anytime if you want
             full self-custody
           </p>
         </li>
@@ -200,7 +200,7 @@ export function DocsQuickStartContent() {
             style={{ color: "rgba(255,255,255,0.60)" }}
           >
             Trading is free (no credit cost). Fund your platform wallet with
-            SOL, pick a token, and swap. Credits are only for AI and automation
+            ETH, pick a token, and swap. Credits are only for AI and automation
             features
           </p>
         </li>
@@ -252,8 +252,8 @@ export function DocsQuickStartContent() {
         </div>
         <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           You don't need to own $CRVD to start. Credits are the in-app unit (1
-          credit ≈ $0.01). Buy credits with SOL. Your Solana wallet only
-          matters when an agent you hold graduates and pays you SPL tokens
+          credit ≈ $0.01). Buy credits with ETH. Your wallet only
+          matters when an agent you hold graduates and pays you ERC-20 tokens
         </p>
       </div>
       <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-3">

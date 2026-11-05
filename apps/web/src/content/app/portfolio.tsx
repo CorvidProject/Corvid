@@ -87,7 +87,7 @@ export function ApplicationPortfolioContent() {
         {rows.map((p, i) => (
           <a
             key={p.mint}
-            href={`/application/tokens/${p.mint}?chain=solana`}
+            href={`/application/tokens/${p.mint}?chain=robinhood`}
             className="grid grid-cols-[1fr_auto_auto] sm:grid-cols-[1fr_110px_110px_90px] gap-3 px-4 py-3 items-center hover:bg-[var(--v2-bg-2)] transition-colors"
             style={{ borderTop: i ? "1px solid var(--v2-line-1)" : undefined }}
           >

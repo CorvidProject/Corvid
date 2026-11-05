@@ -99,7 +99,7 @@ function Row({ t, kind, now }: { t: Tok; kind: "new" | "trending" | "volume"; no
   const [imgFailed, setImgFailed] = useState(false);
   return (
     <div className="relative flex gap-3 py-3 px-1 hover:bg-[var(--v2-bg-2)] transition-colors group">
-      <Link href={`/application/tokens/${t.mint}?chain=solana`} prefetch={false} className="flex gap-3 flex-1 min-w-0">
+      <Link href={`/application/tokens/${t.mint}?chain=robinhood`} prefetch={false} className="flex gap-3 flex-1 min-w-0">
         <div className="relative shrink-0">
           {t.image && !imgFailed ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -244,9 +244,9 @@ export function Trenches() {
   }, []);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8" style={{ paddingBottom: 40 }}>
-      <Column title="New" hint="Fresh pools · Solana" kind="new" tokens={cols.fresh} now={now} />
-      <Column title="Trending" hint="Most trades, 24h · Solana" kind="trending" tokens={cols.trend} now={now} />
-      <Column title="High Volume" hint="Top 24h volume · Solana" kind="volume" tokens={cols.vol} now={now} />
+      <Column title="New" hint="Fresh pools · Robinhood Chain" kind="new" tokens={cols.fresh} now={now} />
+      <Column title="Trending" hint="Most trades, 24h · Robinhood Chain" kind="trending" tokens={cols.trend} now={now} />
+      <Column title="High Volume" hint="Top 24h volume · Robinhood Chain" kind="volume" tokens={cols.vol} now={now} />
     </div>
   );
 }

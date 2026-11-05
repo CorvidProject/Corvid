@@ -1,5 +1,5 @@
 // Definisi pipeline builder agent (port dari referensi): langkah, field, dan preset.
-// Chain: hanya Solana, "native coin" = SOL.
+// Chain: Robinhood Chain (EVM), "native coin" = ETH.
 export type PipelineKey = "follow_wallet" | "new_tokens" | "token_trading";
 export type Preset = "safety" | "balanced" | "degen";
 export type Mode = "signal" | "trading";
@@ -32,14 +32,14 @@ export const PIPELINES: Pipeline[] = [
     signalDesc: "Get notified when the wallet buys, sells, or accumulates",
     tradingDesc: "Automatically mirror trades with your own wallet",
     steps: [
-      { id: "monitor", label: "Watch", prompt: "Which wallet do you want to track?", alwaysOn: true, fields: [{ key: "wallet_address", label: "Wallet Address", hint: "Solana wallet address", type: "text", required: true }] },
+      { id: "monitor", label: "Watch", prompt: "Which wallet do you want to track?", alwaysOn: true, fields: [{ key: "wallet_address", label: "Wallet Address", hint: "Wallet address (0x…)", type: "text", required: true }] },
       {
         id: "filter",
         label: "Filter",
         prompt: "What trades should pass through?",
         fields: [
           { key: "only_buys", label: "Only Buys", hint: "Ignore sells from source wallet", type: "toggle" },
-          { key: "min_source_trade_sol", label: "Min Trade Size (SOL)", hint: "Skip dust trades below this amount", placeholder: "0.05", type: "number" },
+          { key: "min_source_trade_sol", label: "Min Trade Size (ETH)", hint: "Skip dust trades below this amount", placeholder: "0.05", type: "number" },
           { key: "min_source_win_rate", label: "Min Wallet Win Rate %", hint: "Only copy if wallet win rate is above this", placeholder: "0", type: "number", advanced: true },
         ],
       },
@@ -48,7 +48,7 @@ export const PIPELINES: Pipeline[] = [
         label: "Execute",
         prompt: "How should trades be executed?",
         fields: [
-          { key: "max_sol_per_copy", label: "Max SOL per Trade", hint: "Hard cap per mirrored trade", placeholder: "0.05", type: "number", showInMode: "trading" },
+          { key: "max_sol_per_copy", label: "Max ETH per Trade", hint: "Hard cap per mirrored trade", placeholder: "0.05", type: "number", showInMode: "trading" },
           { key: "slippage_bps", label: "Slippage (bps)", hint: "100 = 1%. Higher fills more, worse price", placeholder: "200", type: "number", showInMode: "trading" },
           { key: "cancel_if_quote_moved_pct", label: "Cancel if Price Moved %", hint: "Abort if price drifts more than this", placeholder: "3", type: "number", showInMode: "trading", advanced: true },
           { key: "take_profit_pct", label: "Take Profit %", hint: "Auto-sell copied position at this profit", placeholder: "30", type: "number", showInMode: "trading", advanced: true },
@@ -65,7 +65,7 @@ export const PIPELINES: Pipeline[] = [
     signalDesc: "Get alerts when new pools pass your safety filters",
     tradingDesc: "Auto-buy tokens that match your criteria",
     steps: [
-      { id: "scan", label: "Scan", prompt: "Automatic - scans fresh pools on Solana", alwaysOn: true, fields: [] },
+      { id: "scan", label: "Scan", prompt: "Automatic - scans fresh pools on Robinhood Chain", alwaysOn: true, fields: [] },
       {
         id: "filter",
         label: "Filter",
@@ -85,8 +85,8 @@ export const PIPELINES: Pipeline[] = [
             advanced: true,
             options: [
               { value: "", label: "All markets" },
-              { value: "raydium", label: "Raydium only" },
-              { value: "pumpfun", label: "Pump.fun only" },
+              { value: "raydium", label: "Uniswap only" },
+              { value: "pumpfun", label: "Other DEXs" },
             ],
           },
         ],
@@ -96,7 +96,7 @@ export const PIPELINES: Pipeline[] = [
         label: "Execute",
         prompt: "How should buys be executed?",
         fields: [
-          { key: "max_sol_per_trade", label: "Max SOL per Trade", hint: "Maximum SOL per auto-buy", placeholder: "0.1", type: "number", showInMode: "trading" },
+          { key: "max_sol_per_trade", label: "Max ETH per Trade", hint: "Maximum ETH per auto-buy", placeholder: "0.1", type: "number", showInMode: "trading" },
           { key: "slippage_bps", label: "Slippage (bps)", hint: "100 = 1%", placeholder: "300", type: "number", showInMode: "trading" },
           { key: "take_profit_pct", label: "Take Profit %", hint: "Auto-sell when token reaches this profit", placeholder: "50", type: "number", showInMode: "trading", advanced: true },
           { key: "stop_loss_pct", label: "Stop Loss %", hint: "Auto-sell to cut losses", placeholder: "20", type: "number", showInMode: "trading", advanced: true },
@@ -112,7 +112,7 @@ export const PIPELINES: Pipeline[] = [
     signalDesc: "Get notified when price hits your conditions",
     tradingDesc: "Auto-execute trades on your conditions",
     steps: [
-      { id: "monitor", label: "Watch", prompt: "Which token do you want to watch?", alwaysOn: true, fields: [{ key: "token_mint", label: "Token Address", hint: "Token mint address on Solana", type: "text", required: true }] },
+      { id: "monitor", label: "Watch", prompt: "Which token do you want to watch?", alwaysOn: true, fields: [{ key: "token_mint", label: "Token Address", hint: "Token contract address on Robinhood Chain", type: "text", required: true }] },
       {
         id: "filter",
         label: "Trigger",
@@ -156,7 +156,7 @@ export const PIPELINES: Pipeline[] = [
         label: "Execute",
         prompt: "How should the trade work?",
         fields: [
-          { key: "max_sol_per_trade", label: "Max SOL per Trade", hint: "Maximum SOL per execution", placeholder: "0.1", type: "number", showInMode: "trading" },
+          { key: "max_sol_per_trade", label: "Max ETH per Trade", hint: "Maximum ETH per execution", placeholder: "0.1", type: "number", showInMode: "trading" },
           { key: "slippage_bps", label: "Slippage (bps)", hint: "100 = 1%. Higher fills more, worse price", placeholder: "200", type: "number", showInMode: "trading" },
           { key: "cancel_if_quote_moved_pct", label: "Cancel if Price Moved %", hint: "Abort if price drifts before execution", placeholder: "5", type: "number", showInMode: "trading", advanced: true },
           { key: "take_profit_pct", label: "Take Profit %", hint: "Auto-sell when profit reaches this", placeholder: "20", type: "number", showInMode: "trading", advanced: true },
@@ -199,7 +199,10 @@ export function buildConfig(key: PipelineKey, preset: Preset = "balanced"): Conf
 
 const short = (a: string) => (a.length > 12 ? `${a.slice(0, 4)}…${a.slice(-4)}` : a);
 export const shortAddr = short;
-export const isSolanaAddress = (a: string) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a.trim());
+/** Alamat EVM (0x + 40 hex). Input pengguna baru hanya menerima ini. */
+export const isEvmAddress = (a: string) => /^0x[0-9a-fA-F]{40}$/.test(a.trim());
+/** Selama transisi data Solana lama masih ada di fixture: untuk tautan/pencarian, terima juga base58. */
+export const isChainAddress = (a: string) => isEvmAddress(a) || /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a.trim());
 
 /** Ringkasan pipeline (judul + butir) untuk panel "Saved/Draft". */
 export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: string; lines: string[] } {
@@ -208,7 +211,7 @@ export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: str
   if (key === "follow_wallet") {
     title = c.wallet_address ? `Following ${short(c.wallet_address)}` : "No wallet selected";
     lines.push(c.only_buys === "true" ? "Copies only buy trades" : "Copies buys and sells");
-    if (c.min_source_trade_sol) lines.push(`Skips trades under ${c.min_source_trade_sol} SOL`);
+    if (c.min_source_trade_sol) lines.push(`Skips trades under ${c.min_source_trade_sol} ETH`);
     if (Number(c.min_source_win_rate) > 0) lines.push(`Only wallets above ${c.min_source_win_rate}% win rate`);
   } else if (key === "new_tokens") {
     title = "Scanning every new pool";
@@ -217,7 +220,7 @@ export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: str
     if (c.no_freeze_authority === "true") lines.push("No freeze authority");
     if (c.lp_locked === "true") lines.push("LP locked");
     if (c.max_dev_wallet_pct) lines.push(`Dev holds at most ${c.max_dev_wallet_pct}%`);
-    if (c.markets) lines.push(c.markets === "pumpfun" ? "Pump.fun pools only" : "Raydium pools only");
+    if (c.markets) lines.push(c.markets === "pumpfun" ? "Other DEX pools only" : "Uniswap pools only");
   } else {
     title = c.token_mint ? `Watching ${short(c.token_mint)}` : "No token selected";
     const t = (c.trigger_type || "price_drop").replace(/_/g, " ");
@@ -227,7 +230,7 @@ export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: str
   if (mode === "signal") lines.push("Sends signal alerts, no trades");
   else {
     const max = c.max_sol_per_copy || c.max_sol_per_trade;
-    if (max) lines.push(`Each trade uses up to ${max} SOL`);
+    if (max) lines.push(`Each trade uses up to ${max} ETH`);
     if (c.slippage_bps) lines.push(`Slippage tolerance ${(Number(c.slippage_bps) / 100).toFixed(1)}%`);
     if (c.take_profit_pct || c.stop_loss_pct) lines.push(`TP ${c.take_profit_pct || "—"}% · SL ${c.stop_loss_pct || "—"}%`);
   }
@@ -243,6 +246,6 @@ export function nodeSubtitle(step: string, key: PipelineKey, mode: Mode, c: Conf
     if (key === "new_tokens") return `LP ≥ $${Number(c.min_lp_usd || 0).toLocaleString("en-US")}${c.no_mint_authority === "true" ? " · mint off" : ""}`;
     return `${(c.trigger_type || "price_drop").replace(/_/g, " ")} ${c.trigger_threshold || ""}%`.trim();
   }
-  if (step === "execute") return mode === "signal" ? "Signal mode" : `Up to ${c.max_sol_per_copy || c.max_sol_per_trade || "?"} SOL`;
+  if (step === "execute") return mode === "signal" ? "Signal mode" : `Up to ${c.max_sol_per_copy || c.max_sol_per_trade || "?"} ETH`;
   return "";
 }
