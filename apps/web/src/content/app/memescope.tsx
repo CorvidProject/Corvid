@@ -4,8 +4,8 @@ import { ArrowSquareOut, Fire, Robot, Rocket, GraduationCap } from "@phosphor-ic
 import { useApi } from "@/lib/api";
 import { money } from "@/components/app/token-board";
 
-// Memescope: peluncuran token di launchpad Pons V2 (Robinhood Chain), dari kurva sampai DEX. Progres = ETH terkumpul di kurva / ambang
-// kelulusan (perkiraan, lihat apps/worker/src/sources/pons.ts). Data dari GET /api/solana/memescope (nama rute lama dipertahankan;
+// Memescope: peluncuran token di launchpad berkurva (Pons V2, Virtuals) di Robinhood Chain, dari kurva sampai DEX. Progres = aset yang
+// terkumpul di kurva / ambang kelulusan (perkiraan, lihat apps/worker/src/sources/launchpads.ts). Data dari GET /api/solana/memescope (nama rute lama dipertahankan;
 // fixture atau backend, lihat src/lib/api.ts).
 type Coin = {
   mint: string;
@@ -54,7 +54,6 @@ function Column({
   coins,
   q,
   now,
-  showDex,
   emptyText,
 }: {
   title: string;
@@ -63,7 +62,6 @@ function Column({
   coins: Coin[];
   q: string;
   now: number;
-  showDex?: boolean;
   emptyText?: string;
 }) {
   const [sort, setSort] = useState<Sort>("new");
@@ -138,13 +136,13 @@ function Column({
                 </span>
                 <span className="flex items-center gap-2.5 mt-0.5 text-[12px]" style={{ color: "var(--v2-t-4)" }}>
                   <span className="num">{age(c.createdAt, now)}</span>
-                  {showDex && c.dex && (
+                  {c.dex && (
                     <span className="font-mono text-[9.5px] uppercase px-1.5 py-0.5 rounded" style={{ color: "var(--v2-t-3)", background: "var(--v2-bg-2)" }}>
                       {c.dex}
                     </span>
                   )}
                 </span>
-                {!showDex && (
+                {!c.complete && (
                   <span className="flex items-center gap-2 mt-2">
                     <span className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--v2-bg-3, rgba(255,255,255,0.06))" }}>
                       <span
@@ -229,7 +227,7 @@ export function ApplicationMemescopeContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Column title="New" hint="Early on the curve" icon={<Rocket size={16} />} coins={cols.n} q={q} now={now} />
         <Column title="Final Stretch" hint="Past halfway to graduating" icon={<Fire size={16} />} coins={cols.s} q={q} now={now} />
-        <Column title="Migrated" hint="Now trading on a DEX" icon={<GraduationCap size={16} />} coins={cols.m} q={q} now={now} showDex />
+        <Column title="Migrated" hint="Now trading on a DEX" icon={<GraduationCap size={16} />} coins={cols.m} q={q} now={now} />
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ import {
 } from "@corvid/db";
 import { eq, and as andOp, ne } from "drizzle-orm";
 import type { GoPlus } from "./sources/goplus";
-import { classifyPons, GRADUATION_ETH_DEFAULT, migratedDexOf, PONS_DEX, type Rpc } from "./sources/pons";
+import { classifyCurve, FRESH_MIN_SHARE, LAUNCHPADS, migratedDexOf, type Launchpad, type LaunchpadId, type Rpc } from "./sources/launchpads";
 import type { DexScreener, DsToken } from "./sources/dexscreener";
 import type { ChartInterval, GeckoTerminal, Pool } from "./sources/geckoterminal";
 
@@ -105,44 +105,71 @@ export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 
 }
 
 /**
- * Memescope Robinhood Chain: kurva launchpad Pons V2. Progres dihitung dari saldo ETH kontrak kurva (RPC mainnet)
- * dibagi ambang kelulusan; tahap menurut classifyPons. Token ikut disimpan di tabel tokens supaya halaman detailnya ada.
+ * Memescope Robinhood Chain: kurva launchpad (lihat sources/launchpads.ts). Progres = aset kuotasi yang terkumpul di kontrak
+ * kurva (RPC mainnet) / ambang kelulusan; tahap menurut classifyCurve. Token ikut disimpan di tabel tokens supaya halaman
+ * detailnya ada. Kegagalan satu launchpad tidak menghentikan yang lain.
  */
+export interface LaunchpadResult {
+  pools: number;
+  new: number;
+  stretch: number;
+  migrated: number;
+  skipped: number;
+}
 export async function refreshLaunchpad(
   deps: Deps & { rpc: Rpc },
-  opts: { graduationEth?: number; pages?: number } = {},
-): Promise<{ pools: number; new: number; stretch: number; migrated: number; skipped: number }> {
-  const graduationEth = opts.graduationEth ?? GRADUATION_ETH_DEFAULT;
+  opts: { graduation?: Partial<Record<LaunchpadId, number>>; pages?: number; launchpads?: Launchpad[] } = {},
+): Promise<Record<string, LaunchpadResult | { error: string }>> {
+  const out: Record<string, LaunchpadResult | { error: string }> = {};
+  for (const lp of opts.launchpads ?? LAUNCHPADS) {
+    try {
+      out[lp.id] = await refreshOneLaunchpad(deps, { ...lp, graduation: opts.graduation?.[lp.id] ?? lp.graduation }, opts.pages ?? 3);
+    } catch (e) {
+      out[lp.id] = { error: (e as Error).message };
+      logOf(deps)(`launchpad ${lp.id} gagal: ${(e as Error).message}`);
+    }
+  }
+  return out;
+}
+
+async function refreshOneLaunchpad(deps: Deps & { rpc: Rpc }, lp: Launchpad, pages: number): Promise<LaunchpadResult> {
   const now = (deps.now ?? (() => new Date()))();
   const all: Pool[] = [];
-  for (let page = 1; page <= (opts.pages ?? 3); page++) {
-    const batch = await deps.gt.launchpadPools(PONS_DEX, page);
+  for (let page = 1; page <= pages; page++) {
+    const batch = await deps.gt.launchpadPools(lp.dex, page);
     if (batch.length === 0) break;
     all.push(...batch);
   }
   const seen = new Set<string>();
   const pools = all.filter((p) => (seen.has(p.baseMint) ? false : (seen.add(p.baseMint), true)));
-  if (pools.length === 0) return { pools: 0, new: 0, stretch: 0, migrated: 0, skipped: 0 };
+  const counts = { new: 0, stretch: 0, migrated: 0, skipped: 0 };
+  if (pools.length === 0) return { pools: 0, ...counts };
 
-  const balances = await deps.rpc.balances(pools.map((p) => p.poolAddress));
+  const addrs = pools.map((p) => p.poolAddress);
+  const raisedBy = lp.quote.kind === "eth" ? await deps.rpc.balances(addrs) : await deps.rpc.erc20Balances(lp.quote.token, addrs);
+  // Pool tanpa pembelian: pangsa supply token di kontrak kurva menentukan "fresh" (hanya untuk launchpad yang menampilkannya).
+  const emptyPools = lp.showFresh ? pools.filter((p) => raisedBy.get(p.poolAddress.toLowerCase()) === 0) : [];
+  const shareBy = emptyPools.length ? await deps.rpc.erc20Share(emptyPools.map((p) => ({ token: p.baseMint, holder: p.poolAddress }))) : new Map<string, number>();
+
   let ds: DsToken[] = [];
   try {
     ds = await deps.ds.tokens(pools.map((p) => p.baseMint));
   } catch (e) {
-    logOf(deps)(`dexscreener gagal (launchpad): ${(e as Error).message}`);
+    logOf(deps)(`dexscreener gagal (launchpad ${lp.id}): ${(e as Error).message}`);
   }
   const dsBy = new Map(ds.map((t) => [t.mint, t]));
 
-  const counts = { new: 0, stretch: 0, migrated: 0, skipped: 0 };
   for (const pool of pools) {
-    const raised = balances.get(pool.poolAddress.toLowerCase());
+    const key = pool.poolAddress.toLowerCase();
+    const raised = raisedBy.get(key);
     if (raised === undefined) {
       counts.skipped++; // saldo tidak terbaca: jangan menebak tahapnya
       continue;
     }
     const d = dsBy.get(pool.baseMint);
     const migratedDex = migratedDexOf(d?.dex, d?.liquidityUsd);
-    const c = classifyPons({ ethRaised: raised, graduationEth, migratedDex });
+    const fresh = lp.showFresh && (shareBy.get(key) ?? 0) >= FRESH_MIN_SHARE;
+    const c = classifyCurve({ raised, graduation: lp.graduation, migratedDex, fresh });
     if (!c) {
       counts.skipped++;
       continue;
@@ -159,7 +186,7 @@ export async function refreshLaunchpad(
       marketCapUsd: Number(values.marketCapUsd ?? pool.fdvUsd ?? 0).toFixed(2),
       complete: c.complete,
       live: false,
-      dex: c.stage === "migrated" ? (migratedDex ?? null) : PONS_DEX,
+      dex: c.stage === "migrated" ? (migratedDex ?? null) : lp.dex,
       createdAtChain: pool.createdAt,
       lastTradeAt: now,
     };

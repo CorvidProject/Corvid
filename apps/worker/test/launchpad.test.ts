@@ -4,10 +4,10 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq } from "drizzle-orm";
 import { applyMigrations, createDb, memescopeCoins, tokens } from "@corvid/db";
-import { refreshLaunchpad } from "../src/ingest";
+import { refreshLaunchpad, type LaunchpadResult } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
-import { classifyPons, createRpc, migratedDexOf, type Rpc } from "../src/sources/pons";
+import { classifyCurve, classifyPons, createRpc, migratedDexOf, PONS, VIRTUALS, VIRTUAL_TOKEN, type Rpc } from "../src/sources/launchpads";
 
 const fx = (n: string) => fs.readFileSync(path.join(__dirname, "fixtures", n), "utf8");
 const json = (body: string) => new Response(body, { status: 200, headers: { "content-type": "application/json" } });
@@ -30,6 +30,11 @@ describe("classifyPons", () => {
   it("saldo 0: migrated bila ada pasangan DEX lain, selain itu tidak ditampilkan", () => {
     expect(classifyPons({ ethRaised: 0, graduationEth: 4.2, migratedDex: "uniswap" })).toEqual({ stage: "migrated", progress: 100, complete: true });
     expect(classifyPons({ ethRaised: 0, graduationEth: 4.2, migratedDex: null })).toBeNull();
+  });
+  it("classifyCurve: pool fresh (belum ada pembelian) = new 0%, bukan fresh = tidak ditampilkan", () => {
+    expect(classifyCurve({ raised: 0, graduation: 42_000, migratedDex: null, fresh: true })).toEqual({ stage: "new", progress: 0, complete: false });
+    expect(classifyCurve({ raised: 0, graduation: 42_000, migratedDex: null, fresh: false })).toBeNull();
+    expect(classifyCurve({ raised: 0, graduation: 42_000, migratedDex: "uniswap", fresh: true })?.stage).toBe("migrated");
   });
   it("migratedDexOf mengabaikan DEX Pons dan pasangan tanpa likuiditas", () => {
     expect(migratedDexOf("uniswap", "5000")).toBe("uniswap");
@@ -76,6 +81,7 @@ describe("refreshLaunchpad", () => {
   let tackleMint = "";
   const fakeFetch = async (u: string) => {
     if (u.includes("/dexes/pons-v2/pools")) return json(fx("gt-pons-pools.json"));
+    if (u.includes("/dexes/virtuals-robinhood/pools")) return json(fx("gt-virtuals-pools.json"));
     if (u.includes("dexscreener.com/tokens/v1/robinhood/")) {
       return json(
         JSON.stringify([
@@ -121,7 +127,8 @@ describe("refreshLaunchpad", () => {
 
   it("mengisi tiga tahap dari data pool nyata; saldo 0 tanpa pasangan DEX dan saldo tak terbaca dilewati", async () => {
     // Fixture hanya 1 halaman (20 pool): halaman 2 dan seterusnya juga dijawab fixture yang sama → dedup per token.
-    const res = await refreshLaunchpad(deps({ [BYTE_POOL]: 3.1123, [DWRK_POOL]: 0.3676, [TACKLE_POOL]: 0 }), { graduationEth: 4.2, pages: 1 });
+    const out = await refreshLaunchpad(deps({ [BYTE_POOL]: 3.1123, [DWRK_POOL]: 0.3676, [TACKLE_POOL]: 0 }), { graduation: { pons: 4.2 }, pages: 1, launchpads: [PONS] });
+    const res = out.pons as LaunchpadResult;
     expect(res).toMatchObject({ pools: 20, new: 1, stretch: 1, migrated: 1 });
     expect(res.skipped).toBe(17); // 17 pool lain: saldo tak terbaca → dilewati, tidak ditebak
 
@@ -140,13 +147,51 @@ describe("refreshLaunchpad", () => {
   });
 
   it("idempoten dan memindahkan tahap bila saldo berubah", async () => {
-    await refreshLaunchpad(deps({ [BYTE_POOL]: 3.1123, [DWRK_POOL]: 0.3676, [TACKLE_POOL]: 0 }), { pages: 1 });
+    await refreshLaunchpad(deps({ [BYTE_POOL]: 3.1123, [DWRK_POOL]: 0.3676, [TACKLE_POOL]: 0 }), { pages: 1, launchpads: [PONS] });
     expect((await created.db.select().from(memescopeCoins)).length).toBe(3);
-    await refreshLaunchpad(deps({ [BYTE_POOL]: 0, [DWRK_POOL]: 2.5, [TACKLE_POOL]: 0 }), { pages: 1 });
+    await refreshLaunchpad(deps({ [BYTE_POOL]: 0, [DWRK_POOL]: 2.5, [TACKLE_POOL]: 0 }), { pages: 1, launchpads: [PONS] });
     const rows = await created.db.select().from(memescopeCoins);
     const by = Object.fromEntries(rows.map((r) => [r.symbol, r]));
     expect(by.DWRK.stage).toBe("stretch"); // 2.5 / 4.2 = 59,5%
     // byte kini saldo 0 tanpa pasangan DEX: baris lamanya tidak dihapus di sini (dibersihkan retensi), tahap tidak diubah.
     expect(by.byte.stage).toBe("stretch");
+  });
+
+  it("Virtuals: progres dari saldo VIRTUAL (ambang 42.000); pool baru (supply di kurva) = new 0%; saldo 0 tanpa DEX lain dilewati", async () => {
+    const pools = JSON.parse(fx("gt-virtuals-pools.json")).data as { attributes: { address: string; name: string } }[];
+    const addr = (name: string) => pools.find((p) => p.attributes.name.startsWith(name))!.attributes.address.toLowerCase();
+    const HELIX = addr("HELIX"); // pool pertama di fixture
+    const LOONA = addr("LOONA");
+    const WORK = addr("WORK");
+    const rpc = {
+      erc20Balances: async (token: string) => {
+        expect(token).toBe(VIRTUAL_TOKEN);
+        return new Map([[HELIX, 21_000], [LOONA, 0], [WORK, 0]]); // pool lain: tak terbaca
+      },
+      erc20Share: async () => new Map([[LOONA, 1], [WORK, 0.45]]), // LOONA: semua supply di kurva; WORK: sudah banyak keluar
+    } as unknown as Rpc;
+    const out = await refreshLaunchpad({ ...deps({}), rpc }, { pages: 1, launchpads: [VIRTUALS] });
+    const res = out.virtuals as LaunchpadResult;
+    expect(res).toMatchObject({ new: 1, stretch: 1, migrated: 0 });
+    const rows = await created.db.select().from(memescopeCoins).where(eq(memescopeCoins.dex, "virtuals-robinhood"));
+    const by = Object.fromEntries(rows.map((r) => [r.symbol, r]));
+    expect(by.HELIX).toMatchObject({ stage: "stretch" });
+    expect(Number(by.HELIX.progressPct)).toBe(50); // 21.000 / 42.000
+    expect(by.LOONA).toMatchObject({ stage: "new", complete: false });
+    expect(Number(by.LOONA.progressPct)).toBe(0);
+    expect(by.WORK).toBeUndefined(); // saldo 0 dan supply sebagian keluar, tanpa pasangan DEX: tidak ditampilkan
+  });
+
+  it("kegagalan satu launchpad tidak menghentikan yang lain", async () => {
+    const rpc = {
+      balances: async () => {
+        throw new Error("RPC mati");
+      },
+      erc20Balances: async () => new Map<string, number>(),
+      erc20Share: async () => new Map<string, number>(),
+    } as unknown as Rpc;
+    const out = await refreshLaunchpad({ ...deps({}), rpc }, { pages: 1, launchpads: [PONS, VIRTUALS] });
+    expect(out.pons).toEqual({ error: "RPC mati" });
+    expect(out.virtuals).toMatchObject({ pools: 20 });
   });
 });

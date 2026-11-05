@@ -1,7 +1,7 @@
 import { createDb } from "@corvid/db";
 import { z } from "zod";
 import { refreshBoard, refreshCandles, refreshLaunchpad, refreshSecurity, refreshTrades, runRetention, type Deps } from "./ingest";
-import { createRpc, GRADUATION_ETH_DEFAULT } from "./sources/pons";
+import { createRpc, PONS, VIRTUALS } from "./sources/launchpads";
 import { runAgentCycle } from "./runner";
 import { cachedSolUsd } from "./solprice";
 import { createDexScreener } from "./sources/dexscreener";
@@ -18,8 +18,9 @@ const env = z
     WORKER_LAUNCHPAD_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** RPC mainnet untuk membaca saldo kurva launchpad (data pasar selalu mainnet; RPC_URL bisa testnet). Kosong = RPC publik. */
     MAINNET_RPC_URL: z.string().optional(),
-    /** Ambang kelulusan kurva Pons V2 (ETH). Perkiraan terverifikasi on-chain, lihat sources/pons.ts. */
-    PONS_GRADUATION_ETH: z.coerce.number().positive().default(GRADUATION_ETH_DEFAULT),
+    /** Ambang kelulusan kurva (lihat sources/launchpads.ts untuk dasar verifikasi). Pons dalam ETH, Virtuals dalam VIRTUAL. */
+    PONS_GRADUATION_ETH: z.coerce.number().positive().default(PONS.graduation),
+    VIRTUALS_GRADUATION: z.coerce.number().positive().default(VIRTUALS.graduation),
     WORKER_AGENTS_MS: z.coerce.number().int().min(15_000).default(60_000),
     WORKER_RETENTION_MS: z.coerce.number().int().min(60_000).default(3_600_000),
     /** Jeda antar request GeckoTerminal; batas publik ketat (observasi: 429 pada ~2,2 dtk). */
@@ -58,7 +59,7 @@ const timers = [
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),
-  every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduationEth: env.PONS_GRADUATION_ETH })),
+  every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
   every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, solUsd: cachedSolUsd() })),
   every("retention", env.WORKER_RETENTION_MS, () => runRetention(db)),
 ];
