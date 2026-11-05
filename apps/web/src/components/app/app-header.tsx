@@ -98,7 +98,7 @@ function ChainSelector({ compact = false }: { compact?: boolean }) {
           (e.currentTarget.style.borderColor = "var(--v2-line-1)")
         }
       >
-        <span aria-hidden className="rounded-full shrink-0" style={{ width: 10, height: 10, background: "var(--v2-accent)" }} />
+        <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={16} height={16} className="shrink-0" style={{ width: 16, height: 16 }} />
         {!compact && <span className="whitespace-nowrap">{CHAIN.name}</span>}
         <CaretDown size={10} weight="bold" style={{ color: "var(--v2-t-4)" }} />
       </button>
@@ -123,7 +123,7 @@ function ChainSelector({ compact = false }: { compact?: boolean }) {
             className="flex items-center gap-2.5 h-9 px-3 w-full text-left"
             style={{ cursor: "default" }}
           >
-            <span aria-hidden className="rounded-full shrink-0" style={{ width: 10, height: 10, background: "var(--v2-accent)" }} />
+            <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={16} height={16} className="shrink-0" style={{ width: 16, height: 16 }} />
             <span
               className="flex-1 text-[13px]"
               style={{ color: "var(--v2-t-1)" }}

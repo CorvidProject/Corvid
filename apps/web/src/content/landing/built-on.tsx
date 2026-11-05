@@ -48,15 +48,16 @@ export function BuiltOn() {
                 transition: "opacity 0.25s ease",
               }}
             ></div>
-            <span
-              className="integration-name font-mono font-medium text-[11px] tracking-[0.14em] uppercase"
-              style={{
-                color: "rgba(255,255,255,0.78)",
-                transition: "color 0.25s ease",
-              }}
-            >
-              Robinhood Chain
-            </span>
+            {/* Logo resmi Robinhood Chain, dipakai apa adanya (putih di atas gelap) sesuai brand guidelines. */}
+            <img
+              alt="Robinhood Chain"
+              loading="lazy"
+              decoding="async"
+              width="1576"
+              height="207"
+              src="/brand/robinhood-chain-logo-white.svg"
+              style={{ height: "22px", width: "auto", maxWidth: "100%" }}
+            />
           </a>
           <a
             href="https://uniswap.org"
