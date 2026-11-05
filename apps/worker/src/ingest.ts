@@ -1,6 +1,7 @@
 import { and, gt as gtOp, isNotNull, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
+  memescopeCoins,
   signals,
   tokenCandles,
   tokenSecurityChecks,
@@ -14,6 +15,7 @@ import {
 } from "@corvid/db";
 import { eq, and as andOp, ne } from "drizzle-orm";
 import type { GoPlus } from "./sources/goplus";
+import { classifyPons, GRADUATION_ETH_DEFAULT, migratedDexOf, PONS_DEX, type Rpc } from "./sources/pons";
 import type { DexScreener, DsToken } from "./sources/dexscreener";
 import type { ChartInterval, GeckoTerminal, Pool } from "./sources/geckoterminal";
 
@@ -100,6 +102,71 @@ export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 
     }
   }
   return { tokens: unique.length, withDexScreener: ds.length, newSignals };
+}
+
+/**
+ * Memescope Robinhood Chain: kurva launchpad Pons V2. Progres dihitung dari saldo ETH kontrak kurva (RPC mainnet)
+ * dibagi ambang kelulusan; tahap menurut classifyPons. Token ikut disimpan di tabel tokens supaya halaman detailnya ada.
+ */
+export async function refreshLaunchpad(
+  deps: Deps & { rpc: Rpc },
+  opts: { graduationEth?: number; pages?: number } = {},
+): Promise<{ pools: number; new: number; stretch: number; migrated: number; skipped: number }> {
+  const graduationEth = opts.graduationEth ?? GRADUATION_ETH_DEFAULT;
+  const now = (deps.now ?? (() => new Date()))();
+  const all: Pool[] = [];
+  for (let page = 1; page <= (opts.pages ?? 3); page++) {
+    const batch = await deps.gt.launchpadPools(PONS_DEX, page);
+    if (batch.length === 0) break;
+    all.push(...batch);
+  }
+  const seen = new Set<string>();
+  const pools = all.filter((p) => (seen.has(p.baseMint) ? false : (seen.add(p.baseMint), true)));
+  if (pools.length === 0) return { pools: 0, new: 0, stretch: 0, migrated: 0, skipped: 0 };
+
+  const balances = await deps.rpc.balances(pools.map((p) => p.poolAddress));
+  let ds: DsToken[] = [];
+  try {
+    ds = await deps.ds.tokens(pools.map((p) => p.baseMint));
+  } catch (e) {
+    logOf(deps)(`dexscreener gagal (launchpad): ${(e as Error).message}`);
+  }
+  const dsBy = new Map(ds.map((t) => [t.mint, t]));
+
+  const counts = { new: 0, stretch: 0, migrated: 0, skipped: 0 };
+  for (const pool of pools) {
+    const raised = balances.get(pool.poolAddress.toLowerCase());
+    if (raised === undefined) {
+      counts.skipped++; // saldo tidak terbaca: jangan menebak tahapnya
+      continue;
+    }
+    const d = dsBy.get(pool.baseMint);
+    const migratedDex = migratedDexOf(d?.dex, d?.liquidityUsd);
+    const c = classifyPons({ ethRaised: raised, graduationEth, migratedDex });
+    if (!c) {
+      counts.skipped++;
+      continue;
+    }
+    const values = mergeToken(pool, d);
+    await upsertToken(deps.db, values, now);
+    const row = {
+      mint: pool.baseMint,
+      stage: c.stage,
+      name: values.name ?? null,
+      symbol: values.symbol ?? null,
+      imageUrl: values.imageUrl ?? null,
+      progressPct: c.progress.toFixed(2),
+      marketCapUsd: Number(values.marketCapUsd ?? pool.fdvUsd ?? 0).toFixed(2),
+      complete: c.complete,
+      live: false,
+      dex: c.stage === "migrated" ? (migratedDex ?? null) : PONS_DEX,
+      createdAtChain: pool.createdAt,
+      lastTradeAt: now,
+    };
+    await deps.db.insert(memescopeCoins).values(row).onConflictDoUpdate({ target: memescopeCoins.mint, set: row });
+    counts[c.stage]++;
+  }
+  return { pools: pools.length, ...counts };
 }
 
 async function activeTokens(deps: Deps, topN: number) {

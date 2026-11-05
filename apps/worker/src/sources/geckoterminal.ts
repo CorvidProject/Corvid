@@ -200,6 +200,10 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     async dexPools(dex: string): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/dexes/${dex}/pools?page=1&sort=h24_volume_usd_desc`));
     },
+    /** Pool per DEX tanpa pengurutan khusus (urutan bawaan GeckoTerminal, terbaru lebih dulu); dipakai untuk launchpad. */
+    async launchpadPools(dex: string, page = 1): Promise<Pool[]> {
+      return parsePools(await http.getJson(`${BASE}/dexes/${dex}/pools?page=${page}`));
+    },
     async ohlcv(pool: string, interval: ChartInterval, limit = 200): Promise<Candle[]> {
       const [tf, agg] = TF[interval];
       return parseOhlcv(await http.getJson(`${BASE}/pools/${pool}/ohlcv/${tf}?aggregate=${agg}&limit=${limit}`));

@@ -51,6 +51,6 @@ Rencana: satu project `corvid`, dua service dari repo yang sama (root = ROOT, bu
 Env vars (tanpa nilai; diisi pemilik di dashboard Railway, jangan di repo):
 
 - `api`: `DATABASE_URL` (Supabase direct/session, bukan transaction pooler), `SUPABASE_URL`, `WEB_ORIGIN` (URL Vercel, tanpa slash akhir), `TRADE_MODE=dry`, `CHAIN_ENV=testnet`. `PORT` diisi Railway.
-- `worker`: `DATABASE_URL`, `CHAIN_ENV=testnet`; opsional `WORKER_*_MS` (lihat `.env.example`).
+- `worker`: `DATABASE_URL`, `CHAIN_ENV=testnet`; opsional `WORKER_*_MS`, `MAINNET_RPC_URL` (RPC mainnet untuk Memescope; kosong = RPC publik), `PONS_GRADUATION_ETH` (lihat `.env.example`).
 
 Setelah API hidup: isi `NEXT_PUBLIC_API_URL` di Vercel, set `NEXT_PUBLIC_USE_FIXTURES=false`, Redeploy. Migrasi DB: `pnpm --filter @corvid/db migrate` dengan `DATABASE_URL` Supabase (dijalankan pemilik).

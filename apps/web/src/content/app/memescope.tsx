@@ -4,8 +4,9 @@ import { ArrowSquareOut, Fire, Robot, Rocket, GraduationCap } from "@phosphor-ic
 import { useApi } from "@/lib/api";
 import { money } from "@/components/app/token-board";
 
-// Memescope: peluncuran token baru dari trade pertama sampai DEX (sumber peluncuran di Robinhood Chain belum dipilih; kosong sampai ada). Data dari GET /api/solana/memescope
-// (fixture atau backend, lihat src/lib/api.ts).
+// Memescope: peluncuran token di launchpad Pons V2 (Robinhood Chain), dari kurva sampai DEX. Progres = ETH terkumpul di kurva / ambang
+// kelulusan (perkiraan, lihat apps/worker/src/sources/pons.ts). Data dari GET /api/solana/memescope (nama rute lama dipertahankan;
+// fixture atau backend, lihat src/lib/api.ts).
 type Coin = {
   mint: string;
   name: string;
@@ -20,7 +21,6 @@ type Coin = {
 type Sort = "new" | "mc";
 // "uniswap-v3-robinhood" → "Uniswap v3"
 const dexLabel = (d: string) => d.replace(/-robinhood$/i, "").replace(/-v(\d)$/i, " v$1").replace(/^\w/, (c) => c.toUpperCase());
-type NewPool = { mint: string; name: string; symbol: string; image: string | null; marketCap: number | null; createdAt: number | null; dex?: string | null };
 
 const MINT = /^0x[0-9a-fA-F]{40}$/;
 type RawCoin = { [K in keyof Coin]: Coin[K] | null };
@@ -36,7 +36,7 @@ const pick = (a: { coins: RawCoin[] } | null): Coin[] =>
       marketCapUsd: c.marketCapUsd ?? 0,
       createdAt: c.createdAt ?? 0,
       complete: !!c.complete,
-      dex: c.dex ?? undefined,
+      dex: c.dex ? dexLabel(c.dex) : undefined,
     }));
 
 function age(ts: number, now: number) {
@@ -153,7 +153,7 @@ function Column({
                       ></span>
                     </span>
                     <span className="num text-[11px] w-10 text-right" style={{ color: "var(--v2-t-3)" }}>
-                      {Math.round(c.progress)}%
+                      ~{Math.round(c.progress)}%
                     </span>
                   </span>
                 )}
@@ -198,30 +198,11 @@ function Column({
 export function ApplicationMemescopeContent() {
   const [q, setQ] = useState("");
   const [now] = useState(() => Date.now());
-  // Robinhood Chain belum punya sumber launchpad: kolom New diisi pool terbaru (data nyata), tahap lain tampil kosong.
-  const n = useApi<{ tokens: NewPool[] }>("/api/tokens/trending?tab=new&limit=100");
+  // Sumber: kurva launchpad Pons V2 (worker membaca saldo ETH kontrak kurva). Tahap lain dari API apa adanya.
+  const n = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=new");
   const st = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=stretch");
   const mg = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=migrated");
-  const cols = useMemo(
-    () => ({
-      n: pick({
-        coins: (n.data?.tokens ?? []).map((t) => ({
-          mint: t.mint,
-          name: t.name,
-          symbol: t.symbol,
-          image: t.image,
-          progress: 0,
-          marketCapUsd: t.marketCap,
-          createdAt: t.createdAt,
-          complete: true,
-          dex: t.dex ? dexLabel(t.dex) : null,
-        })),
-      }),
-      s: pick(st.data),
-      m: pick(mg.data),
-    }),
-    [n.data, st.data, mg.data],
-  );
+  const cols = useMemo(() => ({ n: pick(n.data), s: pick(st.data), m: pick(mg.data) }), [n.data, st.data, mg.data]);
 
   return (
     <div className="max-w-[1700px] mx-auto">
@@ -246,9 +227,9 @@ export function ApplicationMemescopeContent() {
         </span>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <Column title="New" hint="Newest pools" icon={<Rocket size={16} />} coins={cols.n} q={q} now={now} showDex />
-        <Column title="Final Stretch" hint="Close to graduating" icon={<Fire size={16} />} coins={cols.s} q={q} now={now} emptyText="Launchpad stages are not available on Robinhood Chain yet" />
-        <Column title="Migrated" hint="Now trading on a DEX" icon={<GraduationCap size={16} />} coins={cols.m} q={q} now={now} showDex emptyText="Launchpad stages are not available on Robinhood Chain yet" />
+        <Column title="New" hint="Early on the curve" icon={<Rocket size={16} />} coins={cols.n} q={q} now={now} />
+        <Column title="Final Stretch" hint="Past halfway to graduating" icon={<Fire size={16} />} coins={cols.s} q={q} now={now} />
+        <Column title="Migrated" hint="Now trading on a DEX" icon={<GraduationCap size={16} />} coins={cols.m} q={q} now={now} showDex />
       </div>
     </div>
   );
