@@ -1,10 +1,14 @@
 import { z } from "zod";
-import { solanaAddress } from "@corvid/shared";
+import { evmAddress } from "@corvid/shared";
+import { CHAINS } from "@corvid/shared/chains";
 import { createHttp, type FetchLike, type Http } from "../http";
 
 // GeckoTerminal API v2 (publik, tanpa key; batas laju ketat dan tidak terdokumentasi pasti, jaga <10 request/menit). Semua respons divalidasi zod.
-const BASE = "https://api.geckoterminal.com/api/v2/networks/solana";
-export const WSOL = "So11111111111111111111111111111111111111112";
+// Data pasar selalu dari jaringan mainnet "robinhood" di GeckoTerminal (testnet tidak punya pasar; env chain hanya mengatur wallet/transaksi).
+const NETWORK = "robinhood";
+const BASE = `https://api.geckoterminal.com/api/v2/networks/${NETWORK}`;
+/** WETH di Robinhood Chain mainnet (diverifikasi: eth_call symbol() = "WETH" di chain ID 4663). */
+export const WETH = CHAINS.mainnet.wrappedNative;
 
 const strNum = z.union([z.string(), z.number()]).nullable().optional();
 const poolSchema = z.object({
@@ -62,10 +66,10 @@ export interface Pool {
   name: string | null;
   createdAt: Date | null;
   priceUsd: string | null;
-  /** Harga dalam mata uang native chain (SOL). */
+  /** Harga dalam mata uang native chain (ETH). */
   priceNative: string | null;
   marketCapUsd: string | null;
-  /** FDV = harga x total supply. Untuk token pump.fun (supply tetap 1 miliar) lebih andal daripada market_cap_usd. */
+  /** FDV = harga x total supply; sering lebih andal daripada market_cap_usd. */
   fdvUsd: string | null;
   liquidityUsd: string | null;
   volume24hUsd: string | null;
@@ -82,7 +86,7 @@ export interface PoolTrade {
   wallet: string;
   side: "buy" | "sell";
   tokenAmount: string;
-  /** Jumlah SOL hanya bila token kuotasi pool adalah wSOL; selain itu null. */
+  /** Jumlah ETH (native) hanya bila token kuotasi pool adalah WETH; selain itu null. (Nama field `solAmount` dipertahankan untuk kompatibilitas skema DB.) */
   solAmount: string | null;
   priceUsd: string | null;
   at: Date;
@@ -97,13 +101,13 @@ export interface Candle {
 }
 
 const s = (v: string | number | null | undefined) => (v === null || v === undefined || v === "" ? null : String(v));
-const mintOf = (id: string) => id.replace(/^solana_/, "");
+const mintOf = (id: string) => id.replace(/^robinhood_/, "").toLowerCase();
 
 export function parsePools(json: unknown): Pool[] {
   const out: Pool[] = [];
   for (const p of poolsResponse.parse(json).data) {
     const baseMint = mintOf(p.relationships.base_token.data.id);
-    if (!solanaAddress.safeParse(baseMint).success) continue; // buang alamat non-Solana
+    if (!evmAddress.safeParse(baseMint).success) continue; // buang alamat non-EVM
     const a = p.attributes;
     out.push({
       poolAddress: a.address,
@@ -140,13 +144,13 @@ export function parseTrades(json: unknown, baseMint: string): PoolTrade[] {
     const quoteAmount = sell ? t.to_token_amount : t.from_token_amount;
     const baseAddr = sell ? t.from_token_address : t.to_token_address;
     const quoteAddr = sell ? t.to_token_address : t.from_token_address;
-    if (baseAddr !== baseMint) continue; // pastikan sisi yang benar
+    if (baseAddr.toLowerCase() !== baseMint.toLowerCase()) continue; // pastikan sisi yang benar
     out.push({
       txHash: t.tx_hash,
-      wallet: t.tx_from_address,
+      wallet: t.tx_from_address.toLowerCase(),
       side: t.kind,
       tokenAmount: baseAmount,
-      solAmount: quoteAddr === WSOL ? quoteAmount : null,
+      solAmount: quoteAddr.toLowerCase() === WETH ? quoteAmount : null,
       priceUsd: s(sell ? t.price_from_in_usd : t.price_to_in_usd),
       at: new Date(t.block_timestamp),
     });
@@ -192,7 +196,7 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     async newPools(page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/new_pools?page=${page}`));
     },
-    /** Pool per DEX (mis. "pump-fun", "pumpswap"), diurutkan menurut volume 24 jam. */
+    /** Pool per DEX (mis. "uniswap-v3-robinhood"), diurutkan menurut volume 24 jam. */
     async dexPools(dex: string): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/dexes/${dex}/pools?page=1&sort=h24_volume_usd_desc`));
     },

@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { solanaAddress } from "@corvid/shared";
+import { evmAddress } from "@corvid/shared";
 import { createHttp, type FetchLike } from "../http";
 
-// DexScreener (publik, tanpa key). Endpoint batch: /tokens/v1/solana/{mint1,mint2,...} (maks 30).
-const BASE = "https://api.dexscreener.com/tokens/v1/solana";
+// DexScreener (publik, tanpa key). Endpoint batch: /tokens/v1/robinhood/{0x…,0x…,...} (maks 30).
+const BASE = "https://api.dexscreener.com/tokens/v1/robinhood";
 export const DS_BATCH = 30;
 
 const n = z.number().nullable().optional();
@@ -63,20 +63,21 @@ const s = (v: string | number | null | undefined) => (v === null || v === undefi
 export function parseTokens(json: unknown): DsToken[] {
   const best = new Map<string, { liq: number; t: DsToken }>();
   for (const p of response.parse(json)) {
-    if (p.chainId !== "solana" || !solanaAddress.safeParse(p.baseToken.address).success) continue;
+    if (p.chainId !== "robinhood" || !evmAddress.safeParse(p.baseToken.address).success) continue;
+    const addr = p.baseToken.address.toLowerCase(); // DexScreener memakai checksum campuran; disimpan lowercase
     const liq = p.liquidity?.usd ?? 0;
-    const prev = best.get(p.baseToken.address);
+    const prev = best.get(addr);
     if (prev && prev.liq >= liq) continue;
     const social = (type: string) => p.info?.socials?.find((x) => x.type === type)?.url ?? null;
-    best.set(p.baseToken.address, {
+    best.set(addr, {
       liq,
       t: {
-        mint: p.baseToken.address,
+        mint: addr,
         name: p.baseToken.name ?? null,
         symbol: p.baseToken.symbol ?? null,
         image: p.info?.imageUrl ?? null,
-        poolAddress: p.pairAddress,
-        quoteMint: p.quoteToken.address,
+        poolAddress: p.pairAddress.toLowerCase(),
+        quoteMint: p.quoteToken.address.toLowerCase(),
         dex: p.dexId ?? null,
         priceUsd: p.priceUsd ?? null,
         marketCapUsd: s(p.marketCap ?? p.fdv),
@@ -103,7 +104,7 @@ export function createDexScreener(opts: { fetch?: FetchLike; minIntervalMs?: num
   const http = createHttp({ fetch: opts.fetch, sleep: opts.sleep, minIntervalMs: opts.minIntervalMs ?? 250 }); // < 300/menit
   return {
     async tokens(mints: string[]): Promise<DsToken[]> {
-      const valid = [...new Set(mints)].filter((m) => solanaAddress.safeParse(m).success);
+      const valid = [...new Set(mints)].filter((m) => evmAddress.safeParse(m).success);
       const out: DsToken[] = [];
       for (let i = 0; i < valid.length; i += DS_BATCH) {
         const chunk = valid.slice(i, i + DS_BATCH);

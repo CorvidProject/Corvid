@@ -1,1 +1,89 @@
-[{"chainId":"solana","dexId":"pumpswap","url":"https://dexscreener.com/solana/7rd5yalhcmlufkj8frepgd6ei11f15uxzf1rc7mpkecv","pairAddress":"7RD5YALHcMLUFKJ8FRePGd6ei11F15uXZF1rc7mPKeCv","baseToken":{"address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","name":"A Meme Dog","symbol":"AMD"},"quoteToken":{"address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","name":"Advanced Micro Devices - Backpack Securities","symbol":"AMD"},"priceNative":"0.000001474","priceUsd":"0.0007106","txns":{"m5":{"buys":57,"sells":24},"h1":{"buys":698,"sells":498},"h6":{"buys":4307,"sells":3043},"h24":{"buys":62060,"sells":49810}},"volume":{"h24":10896734.9,"h6":710155.56,"h1":127445.93,"m5":3529.48},"priceChange":{"m5":0.34,"h1":-11.11,"h6":-48.05,"h24":1368},"liquidity":{"usd":87742.41,"base":63441880,"quote":88.4993},"fdv":683220,"marketCap":683220,"pairCreatedAt":1793741437000,"info":{"imageUrl":"https://cdn.dexscreener.com/cms/images/Duqt_xWS8rXZcePH?width=800&height=800&quality=95&format=auto","openGraph":"https://cdn.dexscreener.com/token-images/og/solana/DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump?timestamp=1793822400000","websites":[],"socials":[{"url":"https://x.com/SKupeal1973/status/2117728954882678804","type":"twitter"}]}}]
+[
+ {
+  "chainId": "robinhood",
+  "dexId": "uniswap",
+  "url": "https://dexscreener.com/robinhood/0xa70fc67c9f69da90b63a0e4c05d229954574e313",
+  "pairAddress": "0xA70fc67C9F69da90B63a0e4C05D229954574E313",
+  "labels": [
+   "v3"
+  ],
+  "baseToken": {
+   "address": "0x020bfC650A365f8BB26819deAAbF3E21291018b4",
+   "name": "Cash Cat",
+   "symbol": "CASHCAT"
+  },
+  "quoteToken": {
+   "address": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+   "name": "WETH",
+   "symbol": "WETH"
+  },
+  "priceNative": "0.00004414",
+  "priceUsd": "0.1069",
+  "txns": {
+   "m5": {
+    "buys": 0,
+    "sells": 0
+   },
+   "h1": {
+    "buys": 3,
+    "sells": 6
+   },
+   "h6": {
+    "buys": 56,
+    "sells": 127
+   },
+   "h24": {
+    "buys": 512,
+    "sells": 1012
+   }
+  },
+  "volume": {
+   "h24": 483892.51,
+   "h6": 42946.5,
+   "h1": 887.85,
+   "m5": 0
+  },
+  "priceChange": {
+   "h1": 0.1,
+   "h6": -0.26,
+   "h24": -6.94
+  },
+  "liquidity": {
+   "usd": 2062468.3,
+   "base": 10919404,
+   "quote": 369.2098
+  },
+  "fdv": 105647390,
+  "marketCap": 105647390,
+  "pairCreatedAt": 1781812885000,
+  "info": {
+   "imageUrl": "https://cdn.dexscreener.com/cms/images/Lq7a3pS9Wn8EuGp0?width=800&height=800&quality=95&format=auto",
+   "header": "https://cdn.dexscreener.com/cms/images/PfcMZWxAGU7_TDa8?width=1500&height=500&quality=95&format=auto",
+   "openGraph": "https://cdn.dexscreener.com/token-images/og/robinhood/0x020bfc650a365f8bb26819deaabf3e21291018b4?timestamp=1793856600000",
+   "websites": [
+    {
+     "url": "https://cashcat.cc/",
+     "label": "Website"
+    },
+    {
+     "url": "https://letscash.fun/",
+     "label": "Letscash"
+    }
+   ],
+   "socials": [
+    {
+     "url": "https://x.com/cashcat_token",
+     "type": "twitter"
+    },
+    {
+     "url": "https://t.me/cashcat_robinhood",
+     "type": "telegram"
+    },
+    {
+     "url": "https://www.reddit.com/r/cashcattoken/s/L8GOOuy9Ch",
+     "type": "reddit"
+    }
+   ]
+  }
+ }
+]

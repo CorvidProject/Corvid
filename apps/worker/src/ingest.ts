@@ -1,6 +1,19 @@
 import { and, gt as gtOp, isNotNull, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { signals, tokenCandles, tokenTrades, tokenTrending, tokens, type schema } from "@corvid/db";
+import {
+  signals,
+  tokenCandles,
+  tokenSecurityChecks,
+  tokenSecurityGroups,
+  tokenSecurityMetrics,
+  tokenSecurityReports,
+  tokenTrades,
+  tokenTrending,
+  tokens,
+  type schema,
+} from "@corvid/db";
+import { eq, and as andOp, ne } from "drizzle-orm";
+import type { GoPlus } from "./sources/goplus";
 import type { DexScreener, DsToken } from "./sources/dexscreener";
 import type { ChartInterval, GeckoTerminal, Pool } from "./sources/geckoterminal";
 
@@ -9,6 +22,8 @@ export interface Deps {
   db: Db;
   gt: GeckoTerminal;
   ds: DexScreener;
+  /** Data keamanan token (GoPlus). Opsional agar tes/siklus lain tidak wajib menyediakannya. */
+  sec?: GoPlus;
   now?: () => Date;
   log?: (msg: string) => void;
 }
@@ -96,6 +111,48 @@ async function activeTokens(deps: Deps, topN: number) {
     .where(and(isNotNull(tokens.poolId), gtOp(tokens.lastSeenAt, since)))
     .orderBy(sql`${tokens.volumeUsd} desc nulls last`)
     .limit(topN);
+}
+
+/** Ambil data keamanan (GoPlus) untuk token aktif teratas dan simpan: kolom ringkas di tokens, metrik, serta laporan terbaru. */
+export async function refreshSecurity(deps: Deps, topN = 30): Promise<{ checked: number; unknown: number }> {
+  if (!deps.sec) return { checked: 0, unknown: 0 };
+  const rows = await activeTokens(deps, topN);
+  if (rows.length === 0) return { checked: 0, unknown: 0 };
+  const infos = await deps.sec.tokens(rows.map((r) => r.mint));
+  const byAddr = new Map(infos.map((i) => [i.address, i]));
+  const now = (deps.now ?? (() => new Date()))();
+  let checked = 0;
+  for (const t of rows) {
+    const info = byAddr.get(t.mint);
+    if (!info) continue; // tidak dikenal GoPlus: biarkan null (tidak dikarang)
+    await deps.db.transaction(async (tx) => {
+      await tx
+        .update(tokens)
+        .set({
+          riskScore: info.riskScore,
+          rugged: info.rugged,
+          top10Pct: info.top10Pct === null ? undefined : info.top10Pct.toFixed(2),
+          devPct: info.devPct === null ? undefined : info.devPct.toFixed(2),
+          holders: info.holders ?? undefined,
+          lpBurnPct: info.lockedLpPct === null ? undefined : info.lockedLpPct.toFixed(2),
+          updatedAt: now,
+        })
+        .where(eq(tokens.id, t.id));
+      await tx
+        .insert(tokenSecurityMetrics)
+        .values({ tokenId: t.id, devWallet: info.creator, creatorAddress: info.creator, updatedAt: now })
+        .onConflictDoUpdate({ target: tokenSecurityMetrics.tokenId, set: { devWallet: info.creator, creatorAddress: info.creator, updatedAt: now } });
+      const [report] = await tx.insert(tokenSecurityReports).values({ tokenId: t.id, checked: true, passed: info.passed, total: info.total, checkedAt: now }).returning({ id: tokenSecurityReports.id });
+      for (const [gi, g] of info.groups.entries()) {
+        const [grp] = await tx.insert(tokenSecurityGroups).values({ reportId: report.id, title: g.title, sortOrder: gi }).returning({ id: tokenSecurityGroups.id });
+        await tx.insert(tokenSecurityChecks).values(g.checks.map((c, ci) => ({ groupId: grp.id, label: c.label, state: c.state, value: c.value, hint: c.hint, sortOrder: ci })));
+      }
+      // Hanya laporan terbaru yang disimpan per token (hemat penyimpanan Supabase).
+      await tx.delete(tokenSecurityReports).where(andOp(eq(tokenSecurityReports.tokenId, t.id), ne(tokenSecurityReports.id, report.id)));
+    });
+    checked++;
+  }
+  return { checked, unknown: rows.length - checked };
 }
 
 export async function refreshCandles(deps: Deps, intervals: ChartInterval[], topN = 10): Promise<{ candles: number; errors: number }> {

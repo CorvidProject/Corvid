@@ -1,1 +1,172 @@
-{"data":[{"id":"solana_465428369_2fipkmUj71FBJWcn56zxCQPc4WhJicx9sYGZXLtthY9oZwrfhL2t9QqjhuvJhm759LjjWPZHi6LdRMBjfgCZHBC2_30_1793822490","type":"trade","attributes":{"block_number":465428369,"block_timestamp":"2026-11-04T20:01:27Z","tx_hash":"2fipkmUj71FBJWcn56zxCQPc4WhJicx9sYGZXLtthY9oZwrfhL2t9QqjhuvJhm759LjjWPZHi6LdRMBjfgCZHBC2","tx_from_address":"AvpEyP27kVhSckYmXJFndKSsHtPGmPvFKMmaBLp2nH3n","kind":"sell","from_token_address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","to_token_address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","from_token_amount":"120035.237392","to_token_amount":"0.172862","price_from_in_usd":"0.00069491901336975490852752074182788519169760186290109809726495708","price_to_in_usd":"482.5512185330086752257624204442159750358606499436272658906413","price_from_in_currency_token":"0.0000073642306386204","price_to_in_currency_token":"5.11371598683481","volume_in_usd":"83.41476873805295231795819741051414299074306709043474792267862902049113536","is_anomalous":false}},{"id":"solana_465428283_2aM3ebkv857AZX7YQYLNiq3ht5JZ7sx1fqAdAWjieRSb2DuFA6frCkHz9ivh1wW8z5gcDPqqgn5zSRsGCfd6aZ7s_21_1793822475","type":"trade","attributes":{"block_number":465428283,"block_timestamp":"2026-11-04T20:01:09Z","tx_hash":"2aM3ebkv857AZX7YQYLNiq3ht5JZ7sx1fqAdAWjieRSb2DuFA6frCkHz9ivh1wW8z5gcDPqqgn5zSRsGCfd6aZ7s","tx_from_address":"44gCcout88WVKshesueSNzVZH69Rg3ZnAq2NgjjVdCkd","kind":"sell","from_token_address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","to_token_address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","from_token_amount":"17847.500396","to_token_amount":"0.025756","price_from_in_usd":"0.00069664382521314393772704708629776316379643040707466364219111141","price_to_in_usd":"482.73609824361463324883686573086166662359477076273147546266415","price_from_in_currency_token":"0.00000738236417050175","price_to_in_currency_token":"5.11557491289199","volume_in_usd":"12.43335094636254121298847221260997423977100455365150055557266319765511836","is_anomalous":false}},{"id":"solana_465428280_49FH9LLLVZGAYbE77iSBHyJwzkECVB4UWZHYrnzvFgKVjC7ecLuyGr4pn7Fyb3wvWZU2dNq18e2DirAGEqw9SR9r_36_1793822474","type":"trade","attributes":{"block_number":465428280,"block_timestamp":"2026-11-04T20:01:08Z","tx_hash":"49FH9LLLVZGAYbE77iSBHyJwzkECVB4UWZHYrnzvFgKVjC7ecLuyGr4pn7Fyb3wvWZU2dNq18e2DirAGEqw9SR9r","tx_from_address":"EmjZNfDvRjHqW3EvGnfakPbFQgLwtspVNKApggw3YrJq","kind":"buy","from_token_address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","to_token_address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","from_token_amount":"0.0019","to_token_amount":"1296.260459","price_from_in_usd":"482.73609824361463324883686573086166662359477076273147546266415","price_to_in_usd":"0.000707572756921429607628514614148149065788608410218039910071189185","price_from_in_currency_token":"5.11557491289199","price_to_in_currency_token":"0.00000749817852346816","volume_in_usd":"0.917198586662867803172790044888637166584830064449189803379061885","is_anomalous":false}},{"id":"solana_465428264_YffNSBiNUVZJWaKdTZTyv6gHL7hAkGGJRFtg9yGp5eMcsiXwQzWp37k6JtF5BxPcPHYQowEWFJt9HWMeKByzdnU_36_1793822482","type":"trade","attributes":{"block_number":465428264,"block_timestamp":"2026-11-04T20:01:05Z","tx_hash":"YffNSBiNUVZJWaKdTZTyv6gHL7hAkGGJRFtg9yGp5eMcsiXwQzWp37k6JtF5BxPcPHYQowEWFJt9HWMeKByzdnU","tx_from_address":"DYzuCyneFzeZpRSp4UG4fewj6JYybawtMZN8WEtsc6ko","kind":"buy","from_token_address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","to_token_address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","from_token_amount":"0.065074","to_token_amount":"44510.734817","price_from_in_usd":"482.76015735137882243792261926729210174517552980464628642012562","price_to_in_usd":"0.000705787819694345727209688266910697412379921513175670868301132706","price_from_in_currency_token":"5.11557491289199","price_to_in_currency_token":"0.00000747889072715089","volume_in_usd":"31.4151344794836303189269500399879906081917450994285698942585526423428642012562","is_anomalous":false}},{"id":"solana_465428264_cdcR2G4DTqG5fXcLh7eNnxKLc5gKjG2x9VgvSSbYxc7ngh5nRo9cfGjfWwGPpKuLAjwERNeUYU4Sjm5CHvhxknQ_46_1793822482","type":"trade","attributes":{"block_number":465428264,"block_timestamp":"2026-11-04T20:01:05Z","tx_hash":"cdcR2G4DTqG5fXcLh7eNnxKLc5gKjG2x9VgvSSbYxc7ngh5nRo9cfGjfWwGPpKuLAjwERNeUYU4Sjm5CHvhxknQ","tx_from_address":"883igYPHHrZav5tv7UjTWXsUXh69ReHP8S2T7DmSK3K2","kind":"buy","from_token_address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","to_token_address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","from_token_amount":"0.067976","to_token_amount":"46706.488681","price_from_in_usd":"482.76015735137882243792261926729210174517552980464628642012562","price_to_in_usd":"0.000702602687182236649706837711522558050789091569840354318964374846","price_from_in_currency_token":"5.11557491289199","price_to_in_currency_token":"0.00000744513942492542","volume_in_usd":"32.8161044561173220064386544535252235290038591410796185139391610986571357987438","is_anomalous":false}},{"id":"solana_465428264_5GN6c1dWHmHxKn7Q47uuU1hM8oWYd5whStrMBUx2GyciA39ssvTo95sEa62SCRoJghJ5BNf5A9L3vfCkdTmmczNE_36_1793822482","type":"trade","attributes":{"block_number":465428264,"block_timestamp":"2026-11-04T20:01:05Z","tx_hash":"5GN6c1dWHmHxKn7Q47uuU1hM8oWYd5whStrMBUx2GyciA39ssvTo95sEa62SCRoJghJ5BNf5A9L3vfCkdTmmczNE","tx_from_address":"AziAGaWkav9h2fZ7qxBKvnTqRdsCUpQjCV8ex9oTivor","kind":"buy","from_token_address":"AMD8XwJXgQ9WV45Wyj9yFLejxzf2J6VM1PJY8bJEjeES","to_token_address":"DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump","from_token_amount":"0.076465","to_token_amount":"52382.235696","price_from_in_usd":"482.76015735137882243792261926729210174517552980464628642012562","price_to_in_usd":"0.000704709429473473614494368100544864144669390995270806470943091718","price_from_in_currency_token":"5.11557491289199","price_to_in_currency_token":"0.00000746746354974986","volume_in_usd":"36.9142554318731864853173265960617149391710395594332957428702035797628642012562","is_anomalous":false}}]}
+{
+ "data": [
+  {
+   "id": "robinhood_106493624_0x687dfb3efc0bccd071ecf360f6652f642e9a9315a011d0b2eed80636ce8a6c47_12_1793856592",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106493624,
+    "block_timestamp": "2026-11-05T05:29:31Z",
+    "tx_hash": "0x687dfb3efc0bccd071ecf360f6652f642e9a9315a011d0b2eed80636ce8a6c47",
+    "tx_from_address": "0x433762e52919717cd871d97c087f2d5c3e2dd392",
+    "kind": "sell",
+    "from_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "to_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "from_token_amount": "27.8182978773814",
+    "to_token_amount": "0.00121590573274779",
+    "price_from_in_usd": "0.105864139311041",
+    "price_to_in_usd": "2422.03",
+    "price_from_in_currency_token": "0.0000437088472525281",
+    "price_to_in_currency_token": "1.0",
+    "volume_in_usd": "2.94496016188713",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106493035_0x43ffc73c8a012e37a6369b5f7a81c35b91dc66700db9e39f620d159c1f847fb8_4_1793856534",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106493035,
+    "block_timestamp": "2026-11-05T05:28:31Z",
+    "tx_hash": "0x43ffc73c8a012e37a6369b5f7a81c35b91dc66700db9e39f620d159c1f847fb8",
+    "tx_from_address": "0x9a3811b1afeadf2800b499eb234a7ab8f366dfbf",
+    "kind": "buy",
+    "from_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "to_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "from_token_amount": "0.00122323412691264",
+    "to_token_amount": "27.8182978773814",
+    "price_from_in_usd": "2421.92",
+    "price_to_in_usd": "0.106497356873192",
+    "price_from_in_currency_token": "1.0",
+    "price_to_in_currency_token": "0.0000439722851593744",
+    "volume_in_usd": "2.96257519665225",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106491932_0x5ca1eccf037c6e3e2c9e5b4a4db6daaf028d599d03d2d9544bce6e32ff6c40cb_15_1793856488",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106491932,
+    "block_timestamp": "2026-11-05T05:26:39Z",
+    "tx_hash": "0x5ca1eccf037c6e3e2c9e5b4a4db6daaf028d599d03d2d9544bce6e32ff6c40cb",
+    "tx_from_address": "0x8836fa482d9ae1107f5313a9d2bddc584440dca0",
+    "kind": "sell",
+    "from_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "to_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "from_token_amount": "7.36526456341853",
+    "to_token_amount": "0.000321927126628698",
+    "price_from_in_usd": "0.105858862304252",
+    "price_to_in_usd": "2421.91",
+    "price_from_in_currency_token": "0.0000437088340624763",
+    "price_to_in_currency_token": "1.0",
+    "volume_in_usd": "0.77967852725331",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106491839_0xcbe436c89183496b88c9066ba615df1cb8108fc916b7d64ed2639a45ebeb4dc0_4_1793856481",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106491839,
+    "block_timestamp": "2026-11-05T05:26:30Z",
+    "tx_hash": "0xcbe436c89183496b88c9066ba615df1cb8108fc916b7d64ed2639a45ebeb4dc0",
+    "tx_from_address": "0x9a3811b1afeadf2800b499eb234a7ab8f366dfbf",
+    "kind": "buy",
+    "from_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "to_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "from_token_amount": "0.00122424295288195",
+    "to_token_amount": "27.8412569359336",
+    "price_from_in_usd": "2421.91",
+    "price_to_in_usd": "0.1064968530996",
+    "price_from_in_currency_token": "1.0",
+    "price_to_in_currency_token": "0.0000439722587129991",
+    "volume_in_usd": "2.96500625001433",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106490797_0x947d80801027cfa127ec0672fb3a88229a583d061ae3ddd076463301d601f3d4_11_1793856456",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106490797,
+    "block_timestamp": "2026-11-05T05:24:45Z",
+    "tx_hash": "0x947d80801027cfa127ec0672fb3a88229a583d061ae3ddd076463301d601f3d4",
+    "tx_from_address": "0x829aba4016e39231146c02667e0406e25ea9d40b",
+    "kind": "buy",
+    "from_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "to_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "from_token_amount": "0.00570146503065103",
+    "to_token_amount": "129.660799307882",
+    "price_from_in_usd": "2421.87",
+    "price_to_in_usd": "0.106494847999471",
+    "price_from_in_currency_token": "1.0",
+    "price_to_in_currency_token": "0.0000439721570519768",
+    "volume_in_usd": "13.8082071137828",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106489975_0xe49c596a07c04b5b4b0af43c4fdfcb21bde3a75cf354eb790103b8c8200686df_15_1793856212",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106489975,
+    "block_timestamp": "2026-11-05T05:23:23Z",
+    "tx_hash": "0xe49c596a07c04b5b4b0af43c4fdfcb21bde3a75cf354eb790103b8c8200686df",
+    "tx_from_address": "0x21c19c6d9cb77d87f0f0d7c86dfed6a548dcc160",
+    "kind": "sell",
+    "from_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "to_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "from_token_amount": "4723.79668838284",
+    "to_token_amount": "0.206484990655977",
+    "price_from_in_usd": "0.10593913995804",
+    "price_to_in_usd": "2423.59",
+    "price_from_in_currency_token": "0.0000437116591329559",
+    "price_to_in_currency_token": "1.0",
+    "volume_in_usd": "500.434958503918",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106489948_0xeefea62ae6e7d71a08065fa6a2a8624abe55036fc50f3f160cd4a4edd9a05839_2_1793856211",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106489948,
+    "block_timestamp": "2026-11-05T05:23:20Z",
+    "tx_hash": "0xeefea62ae6e7d71a08065fa6a2a8624abe55036fc50f3f160cd4a4edd9a05839",
+    "tx_from_address": "0x624922849a2c5a336c1684aabfb6a705e33c5e23",
+    "kind": "sell",
+    "from_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "to_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "from_token_amount": "5542.59275845104",
+    "to_token_amount": "0.242312339149995",
+    "price_from_in_usd": "0.105955062483187",
+    "price_to_in_usd": "2423.59",
+    "price_from_in_currency_token": "0.0000437182289426787",
+    "price_to_in_currency_token": "1.0",
+    "volume_in_usd": "587.265762040538",
+    "is_anomalous": false
+   }
+  },
+  {
+   "id": "robinhood_106489947_0x9a4fa322a0c82c7fddbc49e4aa5f5818d4cdb29403f87a091a680a5086debfa8_9_1793856232",
+   "type": "trade",
+   "attributes": {
+    "block_number": 106489947,
+    "block_timestamp": "2026-11-05T05:23:20Z",
+    "tx_hash": "0x9a4fa322a0c82c7fddbc49e4aa5f5818d4cdb29403f87a091a680a5086debfa8",
+    "tx_from_address": "0x3d8f0c85b118a1238c54df859a8968039ae6be43",
+    "kind": "sell",
+    "from_token_address": "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    "to_token_address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    "from_token_amount": "1017.69847640889",
+    "to_token_amount": "0.0445053372085036",
+    "price_from_in_usd": "0.10598688384183",
+    "price_to_in_usd": "2423.59",
+    "price_from_in_currency_token": "0.0000437313587866885",
+    "price_to_in_currency_token": "1.0",
+    "volume_in_usd": "107.862690205157",
+    "is_anomalous": false
+   }
+  }
+ ]
+}

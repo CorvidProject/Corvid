@@ -4,19 +4,22 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
-import { refreshBoard, refreshCandles, refreshTrades, runRetention } from "../src/ingest";
+import { refreshBoard, refreshCandles, refreshSecurity, refreshTrades, runRetention } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
+import { createGoPlus } from "../src/sources/goplus";
+import { tokenSecurityChecks, tokenSecurityReports } from "@corvid/db";
 
 const fx = (n: string) => fs.readFileSync(path.join(__dirname, "fixtures", n), "utf8");
-const AMD = "DDmGnuvroxVrb7CSyjYcezFU8gnAfhKasg4ZZezmpump";
+const CASH = "0x020bfc650a365f8bb26819deaabf3e21291018b4";
 const json = (body: string) => new Response(body, { status: 200, headers: { "content-type": "application/json" } });
 const fakeFetch = async (url: string) => {
   if (url.includes("/trending_pools")) return json(fx("gt-trending.json"));
   if (url.includes("/new_pools")) return json(fx("gt-new.json"));
   if (url.includes("/ohlcv/")) return json(fx("gt-ohlcv.json"));
   if (url.includes("/trades")) return json(fx("gt-trades.json"));
-  if (url.includes("dexscreener.com/tokens/v1/solana/")) return json(fx("ds-tokens.json")); // hanya AMD ada di DexScreener
+  if (url.includes("api.gopluslabs.io/api/v1/token_security/4663")) return json(fx("goplus-cashcat.json"));
+  if (url.includes("dexscreener.com/tokens/v1/robinhood/")) return json(fx("ds-tokens.json")); // hanya CASHCAT ada di DexScreener
   return new Response("not found", { status: 404 });
 };
 const noSleep = async () => {};
@@ -30,6 +33,7 @@ const deps = () => ({
   db: created.db,
   gt: createGeckoTerminal({ fetch: fakeFetch, minIntervalMs: 0, sleep: noSleep }),
   ds: createDexScreener({ fetch: fakeFetch, minIntervalMs: 0, sleep: noSleep }),
+  sec: createGoPlus({ fetch: fakeFetch, minIntervalMs: 0, sleep: noSleep }),
 });
 
 beforeAll(async () => {
@@ -58,15 +62,15 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
   it("refreshBoard(trending): upsert token, gabung DexScreener, simpan peringkat", async () => {
     const r = await refreshBoard(deps(), "trending");
     expect(r).toEqual({ tokens: 3, withDexScreener: 1, newSignals: 0 }); // tab trending tidak membuat sinyal
-    const [amd] = await created.db.select().from(tokens).where(eq(tokens.mint, AMD));
+    const [amd] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
     expect(amd.imageUrl).toMatch(/dexscreener/);
-    expect(amd.poolId).toBe("7RD5YALHcMLUFKJ8FRePGd6ei11F15uXZF1rc7mPKeCv");
-    expect(amd.buys).toBe(62060);
+    expect(amd.poolId).toBe("0xa70fc67c9f69da90b63a0e4c05d229954574e313"); // pasangan likuiditas tertinggi dari DexScreener
+    expect(amd.buys).toBe(512);
     expect(amd.riskScore).toBeNull(); // data keamanan butuh Helius: tidak dikarang
-    const others = (await created.db.select().from(tokens)).filter((t) => t.mint !== AMD);
+    const others = (await created.db.select().from(tokens)).filter((t) => t.mint !== CASH);
     expect(others).toHaveLength(2);
     for (const o of others) {
-      expect(o.symbol).toBeTruthy(); // dari nama pool "X / SOL"
+      expect(o.symbol).toBeTruthy(); // dari nama pool "X / WETH"
       expect(o.imageUrl).toBeNull();
       expect(o.priceUsd).not.toBeNull();
     }
@@ -77,7 +81,7 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
   it("siklus kedua tanpa DexScreener tidak menimpa kolom terisi dengan null", async () => {
     const failingDs = createDexScreener({ fetch: async () => new Response("x", { status: 404 }), minIntervalMs: 0, sleep: noSleep });
     await refreshBoard({ ...deps(), ds: failingDs }, "trending");
-    const [amd] = await created.db.select().from(tokens).where(eq(tokens.mint, AMD));
+    const [amd] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
     expect(amd.imageUrl).toMatch(/dexscreener/);
   });
 
@@ -93,6 +97,23 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     const r2 = await refreshBoard(deps(), "new");
     expect(r2.newSignals).toBe(0);
     expect(await created.db.select().from(signals)).toHaveLength(3);
+  });
+
+  it("refreshSecurity: skor, holders, laporan terbaru saja; token tak dikenal GoPlus tetap null", async () => {
+    const r1 = await refreshSecurity(deps(), 10);
+    expect(r1.checked).toBe(1); // hanya CASHCAT ada di respons GoPlus
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(t.riskScore).not.toBeNull();
+    expect(t.holders).toBe(114625);
+    expect(t.rugged).toBe(false);
+    const others = (await created.db.select().from(tokens)).filter((x) => x.mint !== CASH);
+    expect(others.every((o) => o.riskScore === null)).toBe(true); // tidak dikarang
+    // ulang: laporan lama dibuang, tersisa satu
+    await refreshSecurity(deps(), 10);
+    const reports = await created.db.select().from(tokenSecurityReports).where(eq(tokenSecurityReports.tokenId, t.id));
+    expect(reports).toHaveLength(1);
+    const checks = await created.db.select().from(tokenSecurityChecks);
+    expect(checks.length).toBe(reports[0].total);
   });
 
   it("refreshCandles: candle 15m tersimpan, ulang tidak menggandakan", async () => {
