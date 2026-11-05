@@ -31,6 +31,14 @@ export interface Deps {
 }
 const logOf = (d: Deps) => d.log ?? (() => {});
 
+/** Pesan galat ringkas: drizzle membungkus galat Postgres (penyebab asli ada di `cause`) dan menyertakan seluruh teks query. */
+export function errText(e: unknown): string {
+  const err = e as { message?: string; cause?: { message?: string; code?: string; detail?: string } };
+  const head = String(err.message ?? e).split(/\r?\n/)[0].slice(0, 120);
+  const c = err.cause;
+  return c?.message ? `${head} | ${c.code ? `${c.code} ` : ""}${c.message}${c.detail ? ` (${c.detail})` : ""}`.slice(0, 400) : head;
+}
+
 type TokenValues = typeof tokens.$inferInsert;
 
 const symbolFromPoolName = (name: string | null) => (name ? name.split(" / ")[0].trim() || null : null);
@@ -267,7 +275,7 @@ export async function refreshCandles(deps: Deps, intervals: ChartInterval[], top
         candles += list.length;
       } catch (e) {
         errors++;
-        logOf(deps)(`candle ${t.mint} ${interval}: ${(e as Error).message}`);
+        logOf(deps)(`candle ${t.mint} ${interval}: ${errText(e)}`);
       }
     }
   }

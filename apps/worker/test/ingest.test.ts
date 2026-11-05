@@ -4,7 +4,7 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
-import { refreshBoard, refreshCandles, refreshSecurity, refreshTrades, runRetention } from "../src/ingest";
+import { errText, refreshBoard, refreshCandles, refreshSecurity, refreshTrades, runRetention } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
 import { createGoPlus } from "../src/sources/goplus";
@@ -144,5 +144,16 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     const candles = await created.db.select().from(tokenCandles);
     expect(candles.filter((c) => c.interval === "15m")).toHaveLength(0);
     expect((await created.db.select().from(tokenTrending)).length).toBeGreaterThan(0);
+  });
+});
+
+describe("errText", () => {
+  it("memotong teks query dan menampilkan penyebab Postgres", () => {
+    const e = Object.assign(new Error("Failed query: insert into token_candles (...)\nparams: 1,2,3"), { cause: { code: "22003", message: "numeric field overflow", detail: "A field with precision 38, scale 18 must round to an absolute value less than 10^20." } });
+    const t = errText(e);
+    expect(t).toContain("22003 numeric field overflow");
+    expect(t).not.toContain("params");
+    expect(t.length).toBeLessThanOrEqual(400);
+    expect(errText(new Error("plain"))).toBe("plain");
   });
 });

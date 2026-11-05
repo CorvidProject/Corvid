@@ -35,6 +35,13 @@ describe("GeckoTerminal parser (sampel respons asli, jaringan robinhood)", () =>
     expect(c[2].bucketStart.getTime()).toBe(1793854800 * 1000);
   });
 
+  it("parseOhlcv: timestamp ganda digabung (entri terakhir dipakai), urut naik", () => {
+    const raw = { data: { attributes: { ohlcv_list: [[200, 1, 2, 0.5, 1.5, 10], [100, 1, 1, 1, 1, 1], [200, 9, 9, 9, 9, 99]] } } };
+    const c = parseOhlcv(raw);
+    expect(c.map((x) => x.bucketStart.getTime() / 1000)).toEqual([100, 200]);
+    expect(c[1]).toMatchObject({ open: "9", volumeUsd: "99" });
+  });
+
   it("parseTrades: sisi base benar, solAmount (ETH) hanya bila quote WETH", () => {
     const trades = parseTrades(fx("gt-trades.json"), CASH);
     expect(trades.length).toBeGreaterThan(0);

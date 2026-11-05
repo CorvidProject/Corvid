@@ -169,7 +169,10 @@ export function parseOhlcv(json: unknown): Candle[] {
       close: String(c),
       volumeUsd: String(v),
     }))
-    .sort((a, b) => a.bucketStart.getTime() - b.bucketStart.getTime());
+    .sort((a, b) => a.bucketStart.getTime() - b.bucketStart.getTime())
+    // Sumber kadang mengirim timestamp yang sama dua kali; satu batch upsert tidak boleh memuat kunci ganda
+    // ("ON CONFLICT DO UPDATE command cannot affect row a second time"). Entri terakhir dipakai.
+    .filter((c, i, all) => i === all.length - 1 || all[i + 1].bucketStart.getTime() !== c.bucketStart.getTime());
 }
 
 export type ChartInterval = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
