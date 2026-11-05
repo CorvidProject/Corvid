@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useApi } from "@/lib/api";
 
 // Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
-// (fixture atau backend, lihat src/lib/api.ts). Hanya mint Robinhood Chain (base58) yang ditampilkan.
+// (fixture atau backend, lihat src/lib/api.ts). Hanya alamat token EVM (0x…) yang ditampilkan.
 
 type T = {
   name: string;
@@ -22,11 +22,11 @@ type T = {
 export type BoardMode = "latest" | "gainers" | "volume";
 type SortKey = "price" | "change1h" | "change24h" | "marketCap" | "liquidity" | "volume" | "age";
 
-const SOL_MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const EVM_ADDR = /^0x[0-9a-fA-F]{40}$/;
 type Raw = { [K in keyof T]: T[K] | null };
 const clean = (list: Raw[]): T[] =>
   list
-    .filter((t) => t.mint && SOL_MINT.test(t.mint))
+    .filter((t) => t.mint && EVM_ADDR.test(t.mint))
     .map((t) => ({
       ...t,
       name: t.name ?? "",

@@ -18,8 +18,11 @@ type Coin = {
   dex?: string;
 };
 type Sort = "new" | "mc";
+// "uniswap-v3-robinhood" → "Uniswap v3"
+const dexLabel = (d: string) => d.replace(/-robinhood$/i, "").replace(/-v(\d)$/i, " v$1").replace(/^\w/, (c) => c.toUpperCase());
+type NewPool = { mint: string; name: string; symbol: string; image: string | null; marketCap: number | null; createdAt: number | null; dex?: string | null };
 
-const MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const MINT = /^0x[0-9a-fA-F]{40}$/;
 type RawCoin = { [K in keyof Coin]: Coin[K] | null };
 const pick = (a: { coins: RawCoin[] } | null): Coin[] =>
   (a?.coins ?? [])
@@ -52,6 +55,7 @@ function Column({
   q,
   now,
   showDex,
+  emptyText,
 }: {
   title: string;
   hint: string;
@@ -60,6 +64,7 @@ function Column({
   q: string;
   now: number;
   showDex?: boolean;
+  emptyText?: string;
 }) {
   const [sort, setSort] = useState<Sort>("new");
   const rows = useMemo(() => {
@@ -99,7 +104,7 @@ function Column({
       <div className="flex-1 min-h-0 overflow-y-auto token-col-scroll">
         {rows.length === 0 && (
           <p className="px-4 py-10 text-center text-[13px]" style={{ color: "var(--v2-t-4)" }}>
-            {q ? `No match for “${q}”` : "Nothing here yet"}
+            {q ? `No match for “${q}”` : (emptyText ?? "Nothing here yet")}
           </p>
         )}
         {rows.map((c, i) => (
@@ -193,10 +198,30 @@ function Column({
 export function ApplicationMemescopeContent() {
   const [q, setQ] = useState("");
   const [now] = useState(() => Date.now());
-  const n = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=new");
+  // Robinhood Chain belum punya sumber launchpad: kolom New diisi pool terbaru (data nyata), tahap lain tampil kosong.
+  const n = useApi<{ tokens: NewPool[] }>("/api/tokens/trending?tab=new&limit=100");
   const st = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=stretch");
   const mg = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=migrated");
-  const cols = useMemo(() => ({ n: pick(n.data), s: pick(st.data), m: pick(mg.data) }), [n.data, st.data, mg.data]);
+  const cols = useMemo(
+    () => ({
+      n: pick({
+        coins: (n.data?.tokens ?? []).map((t) => ({
+          mint: t.mint,
+          name: t.name,
+          symbol: t.symbol,
+          image: t.image,
+          progress: 0,
+          marketCapUsd: t.marketCap,
+          createdAt: t.createdAt,
+          complete: true,
+          dex: t.dex ? dexLabel(t.dex) : null,
+        })),
+      }),
+      s: pick(st.data),
+      m: pick(mg.data),
+    }),
+    [n.data, st.data, mg.data],
+  );
 
   return (
     <div className="max-w-[1700px] mx-auto">
@@ -221,9 +246,9 @@ export function ApplicationMemescopeContent() {
         </span>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <Column title="New" hint="Just launched" icon={<Rocket size={16} />} coins={cols.n} q={q} now={now} />
-        <Column title="Final Stretch" hint="Close to graduating" icon={<Fire size={16} />} coins={cols.s} q={q} now={now} />
-        <Column title="Migrated" hint="Now trading on a DEX" icon={<GraduationCap size={16} />} coins={cols.m} q={q} now={now} showDex />
+        <Column title="New" hint="Newest pools" icon={<Rocket size={16} />} coins={cols.n} q={q} now={now} showDex />
+        <Column title="Final Stretch" hint="Close to graduating" icon={<Fire size={16} />} coins={cols.s} q={q} now={now} emptyText="Launchpad stages are not available on Robinhood Chain yet" />
+        <Column title="Migrated" hint="Now trading on a DEX" icon={<GraduationCap size={16} />} coins={cols.m} q={q} now={now} showDex emptyText="Launchpad stages are not available on Robinhood Chain yet" />
       </div>
     </div>
   );
