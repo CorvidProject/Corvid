@@ -151,8 +151,21 @@ export async function connectWallet(id: string): Promise<{ error: string | null 
   }
 }
 
+/**
+ * Putuskan wallet. Selain menghapus status lokal, minta wallet mencabut izin situs ini (wallet_revokePermissions,
+ * didukung MetaMask) supaya MetaMask ikut menampilkan "tidak terhubung". Wallet yang tidak mendukungnya cukup
+ * terputus di sisi aplikasi; pencabutan izin bersifat best-effort dan tidak pernah menggagalkan disconnect.
+ */
 export function disconnectWallet() {
+  const provider = state.wallets.find((x) => x.id === state.walletId)?.provider ?? boundProvider;
   clearConnection();
+  if (provider) {
+    void provider
+      .request({ method: "wallet_revokePermissions", params: [{ eth_accounts: {} }] })
+      .catch(() => {
+        /* tidak didukung / ditolak: abaikan */
+      });
+  }
 }
 
 /** Pindahkan wallet ke chain aplikasi (menambahkannya bila belum dikenal). Tidak berbuat apa pun bila chain belum dikonfigurasi. */
