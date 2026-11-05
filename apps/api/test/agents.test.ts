@@ -63,7 +63,7 @@ describe("agents: akses dan validasi", () => {
   it("menolak input tidak valid (400)", async () => {
     expect((await call("POST", "/api/agents", A, follow({ name: "" }))).statusCode).toBe(400);
     expect((await call("POST", "/api/agents", A, follow({ pipeline: "unknown" }))).statusCode).toBe(400);
-    expect((await call("POST", "/api/agents", A, follow({ config: { wallet_address: "0x8b65363a01510490fba03cea97b14c73b7ee8f75" } }))).statusCode).toBe(400);
+    expect((await call("POST", "/api/agents", A, follow({ config: { wallet_address: "0x8b65" } }))).statusCode).toBe(400); // 0x tidak lengkap
     expect((await call("POST", "/api/agents", A, follow({ config: {} }))).statusCode).toBe(400); // wallet wajib untuk follow_wallet
     expect((await call("POST", "/api/agents", A, follow({ mode: "trading" }))).statusCode).toBe(400); // trading tanpa batas per trade
     const many = Object.fromEntries(Array.from({ length: 41 }, (_, i) => [`k${i}`, "v"]));

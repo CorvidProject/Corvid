@@ -2,18 +2,18 @@ import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { errorSchema, solPriceSchema } from "@corvid/shared";
 
-/** Mengembalikan harga SOL dalam USD. Boleh melempar bila sumber gagal. */
+/** Mengembalikan harga ETH (native Robinhood Chain) dalam USD. Boleh melempar bila sumber gagal. */
 export type SolPriceSource = () => Promise<number>;
 
 /** CoinGecko (tanpa key, rate limit publik). Diganti/ditambah Jupiter bila perlu. */
 export const coingeckoSolPrice: SolPriceSource = async () => {
-  const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd", {
+  const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd", {
     headers: { accept: "application/json" },
     signal: AbortSignal.timeout(5000),
   });
   if (!res.ok) throw new Error(`coingecko ${res.status}`);
-  const j = (await res.json()) as { solana?: { usd?: number } };
-  const usd = j.solana?.usd;
+  const j = (await res.json()) as { ethereum?: { usd?: number } };
+  const usd = j.ethereum?.usd;
   if (typeof usd !== "number" || !isFinite(usd) || usd <= 0) throw new Error("coingecko: bentuk tidak valid");
   return usd;
 };
@@ -28,8 +28,9 @@ export const priceRoutes =
     let cache: { usd: number; at: number } | null = null;
     let inflight: Promise<number> | null = null;
 
-    app.get(
-      "/prices/sol",
+    // "/prices/native" = nama baru; "/prices/sol" dipertahankan sementara untuk klien lama (mengembalikan harga ETH).
+    for (const url of ["/prices/native", "/prices/sol"]) app.get(
+      url,
       { schema: { tags: ["market"], response: { 200: solPriceSchema, 503: errorSchema } } },
       async (_req, reply) => {
         const now = Date.now();

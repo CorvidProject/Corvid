@@ -3,7 +3,7 @@ import {
   smallint, text, uniqueIndex, uuid,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { money, ts, solAddr } from "./common";
+import { money, ts, chainAddr } from "./common";
 import { tokens, tradeSide } from "./market";
 
 export const walletKind = pgEnum("wallet_kind", ["custodial", "external"]);
@@ -46,7 +46,7 @@ export const userWallets = pgTable(
   (t) => [
     uniqueIndex("user_wallets_addr_uq").on(t.address),
     index("user_wallets_profile_idx").on(t.profileId),
-    check("user_wallets_addr_chk", solAddr("address")),
+    check("user_wallets_addr_chk", chainAddr("address")),
   ],
 );
 
@@ -183,7 +183,7 @@ export const wallets = pgTable(
   (t) => [
     uniqueIndex("wallets_addr_uq").on(t.address),
     index("wallets_tier_idx").on(t.curatedTier, t.totalPnlSol.desc()),
-    check("wallets_addr_chk", solAddr("address")),
+    check("wallets_addr_chk", chainAddr("address")),
     check("wallets_tier_chk", sql`${t.curatedTier} is null or ${t.curatedTier} in ('S','A','B','C')`),
   ],
 );

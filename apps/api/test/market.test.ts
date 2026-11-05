@@ -92,11 +92,14 @@ describe("market API", () => {
     expect(t.json().trades.length).toBe(5);
   });
 
-  it("mint tidak dikenal: 404 bersih; mint 0x: 400", async () => {
+  it("mint tidak dikenal: 404 bersih; alamat 0x lengkap valid (404), 0x rusak 400", async () => {
     const r = await get("/api/tokens/11111111111111111111111111111111");
     expect(r.statusCode).toBe(404);
     expect(r.json()).toEqual({ error: "token_not_found" });
-    const bad = await get("/api/tokens/0x8b65363a01510490fba03cea97b14c73b7ee8f75");
+    const evm = await get("/api/tokens/0x8b65363a01510490fba03cea97b14c73b7ee8f75");
+    expect(evm.statusCode).toBe(404); // format EVM diterima, token belum terindeks
+    expect(evm.json()).toEqual({ error: "token_not_found" });
+    const bad = await get("/api/tokens/0x8b65");
     expect(bad.statusCode).toBe(400);
   });
 

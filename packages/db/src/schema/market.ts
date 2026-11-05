@@ -3,7 +3,7 @@ import {
   smallint, text, uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { money, ts, solAddr } from "./common";
+import { money, ts, chainAddr } from "./common";
 
 export const memescopeStage = pgEnum("memescope_stage", ["new", "stretch", "migrated"]);
 export const tradeSide = pgEnum("trade_side", ["buy", "sell"]);
@@ -61,7 +61,7 @@ export const tokens = pgTable(
     index("tokens_volume_idx").on(t.volumeUsd.desc()),
     index("tokens_created_idx").on(t.createdAtChain.desc()),
     index("tokens_last_seen_idx").on(t.lastSeenAt),
-    check("tokens_mint_chk", solAddr("mint")),
+    check("tokens_mint_chk", chainAddr("mint")),
   ],
 );
 

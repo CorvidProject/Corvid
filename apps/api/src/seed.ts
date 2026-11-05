@@ -16,7 +16,7 @@ import {
   tokenTrending,
   tokens,
 } from "@corvid/db";
-import { solanaAddress } from "@corvid/shared";
+import { solanaAddress } from "@corvid/shared"; // seed lama = Solana saja
 import type { Db } from "./app";
 
 const seedDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../seed");

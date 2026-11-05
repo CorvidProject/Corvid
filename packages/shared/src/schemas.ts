@@ -1,12 +1,24 @@
 import { z } from "zod";
 
-/** Alamat/mint Solana base58. */
+/** Alamat/mint Solana base58 (data lama; dibuang setelah migrasi data selesai). */
 export const solanaAddress = z
   .string()
   .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "bukan alamat Solana yang valid");
 
-/** Parameter `chain` hanya menerima `solana`. */
-export const chainParam = z.literal("solana").default("solana");
+/** Alamat EVM (Robinhood Chain): 0x + 40 hex. Checksum EIP-55 divalidasi di klien (viem); server menyimpan lowercase. */
+export const evmAddress = z
+  .string()
+  .regex(/^0x[0-9a-fA-F]{40}$/, "bukan alamat EVM yang valid")
+  .transform((a) => a.toLowerCase());
+
+/** Alamat on-chain yang diterima API selama transisi: EVM (utama) atau Solana (data lama). */
+export const chainAddress = z.union([evmAddress, solanaAddress]);
+
+/** Normalisasi untuk penyimpanan/pembandingan: EVM → lowercase, lainnya (base58) apa adanya. */
+export const normalizeAddress = (a: string) => (/^0x[0-9a-fA-F]{40}$/.test(a) ? a.toLowerCase() : a);
+
+/** Parameter `chain`: nilai bawaan "robinhood"; "solana" masih diterima untuk data lama selama transisi. */
+export const chainParam = z.enum(["robinhood", "solana"]).default("robinhood");
 
 export const statsSchema = z.object({
   activeAgents: z.number().int(),
@@ -25,7 +37,7 @@ export const riskItemSchema = z.object({
 export const trendingTokenSchema = z.object({
   name: z.string().nullable(),
   symbol: z.string().nullable(),
-  mint: solanaAddress,
+  mint: chainAddress,
   image: z.string().nullable(),
   price: z.number().nullable(),
   marketCap: z.number().nullable(),
@@ -56,7 +68,7 @@ export const trendingTokenSchema = z.object({
   lpBurn: z.number().nullable(),
   createdAt: z.number().nullable(),
   holders: z.number().nullable(),
-  chain: z.literal("solana"),
+  chain: z.enum(["robinhood", "solana"]),
   volume1h: z.number().nullable(),
 });
 export type TrendingToken = z.infer<typeof trendingTokenSchema>;
@@ -74,7 +86,7 @@ export const tokenDetailSchema = z.object({
   token: z.object({
     name: z.string().nullable(),
     symbol: z.string().nullable(),
-    mint: solanaAddress,
+    mint: chainAddress,
     image: z.string().nullable(),
     description: z.string(),
     links: z.array(z.string()),
@@ -149,7 +161,7 @@ export const securityResponseSchema = z.object({
 });
 
 export const tradesQuerySchema = z.object({
-  mint: solanaAddress,
+  mint: chainAddress,
   chain: chainParam,
   limit: z.coerce.number().int().min(1).max(500).default(100),
 });
@@ -175,7 +187,7 @@ export const memescopeQuerySchema = z.object({
 export const memescopeResponseSchema = z.object({
   coins: z.array(
     z.object({
-      mint: solanaAddress,
+      mint: chainAddress,
       name: z.string().nullable(),
       symbol: z.string().nullable(),
       image: z.string().nullable(),
@@ -195,7 +207,7 @@ export const memescopeResponseSchema = z.object({
   stale: z.boolean(),
 });
 
-export const mintParamSchema = z.object({ mint: solanaAddress });
+export const mintParamSchema = z.object({ mint: chainAddress });
 
 export const errorSchema = z.object({ error: z.string() });
 
@@ -220,7 +232,7 @@ export const searchResponseSchema = z.object({
   ),
   wallets: z.array(
     z.object({
-      address: solanaAddress,
+      address: chainAddress,
       label: z.string().nullable(),
       tier: z.string().nullable(),
       pnlSol: z.number().nullable(),
@@ -230,7 +242,7 @@ export const searchResponseSchema = z.object({
 });
 
 export const liveBatchBodySchema = z.object({
-  mints: z.array(solanaAddress).min(1).max(50),
+  mints: z.array(chainAddress).min(1).max(50),
 });
 export const liveBatchQuerySchema = z.object({ chain: chainParam });
 export const liveBatchResponseSchema = z.object({
@@ -255,14 +267,14 @@ export const liveBatchResponseSchema = z.object({
 
 export const chartIntervals = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
 export const chartQuerySchema = z.object({
-  mint: solanaAddress,
+  mint: chainAddress,
   type: z.enum(chartIntervals).default("15m"),
   chain: chainParam,
   limit: z.coerce.number().int().min(1).max(1000).default(300),
 });
 /** `time` dalam detik (epoch), urut naik. */
 export const chartResponseSchema = z.object({
-  mint: solanaAddress,
+  mint: chainAddress,
   type: z.enum(chartIntervals),
   candles: z.array(
     z.object({
@@ -286,7 +298,7 @@ export const agentSummarySchema = z.object({
   id: z.number().int(),
   name: z.string(),
   type: agentTypeSchema,
-  chain: z.literal("solana"),
+  chain: z.enum(["robinhood", "solana"]),
   running: z.boolean(),
   tokenSymbol: z.string().nullable(),
   /** Belum ada data trade agent: selalu null sampai siklus agent berjalan (tidak dikarang). */
@@ -316,12 +328,12 @@ export const agentCreateSchema = z
   })
   .superRefine((v, ctx) => {
     const w = v.config.wallet_address;
-    if (v.pipeline === "follow_wallet" && !(typeof w === "string" && solanaAddress.safeParse(w.trim()).success))
-      ctx.addIssue({ code: "custom", path: ["config", "wallet_address"], message: "alamat wallet Solana wajib" });
+    if (v.pipeline === "follow_wallet" && !(typeof w === "string" && chainAddress.safeParse(w.trim()).success))
+      ctx.addIssue({ code: "custom", path: ["config", "wallet_address"], message: "alamat wallet (EVM) wajib" });
     if (v.pipeline === "token_trading") {
       const m = v.config.token_mint;
-      if (!(typeof m === "string" && solanaAddress.safeParse(m.trim()).success))
-        ctx.addIssue({ code: "custom", path: ["config", "token_mint"], message: "mint token Solana wajib" });
+      if (!(typeof m === "string" && chainAddress.safeParse(m.trim()).success))
+        ctx.addIssue({ code: "custom", path: ["config", "token_mint"], message: "alamat token (EVM) wajib" });
     }
     if (v.mode === "trading") {
       const per = Number(v.limits.perTrade);
@@ -350,7 +362,7 @@ export const signalsResponseSchema = z.object({
       id: z.number().int(),
       type: z.string(),
       symbol: z.string().nullable(),
-      mint: solanaAddress,
+      mint: chainAddress,
       score: z.number().int(),
       at: z.number(),
     }),

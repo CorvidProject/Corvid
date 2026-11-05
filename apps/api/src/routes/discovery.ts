@@ -11,7 +11,8 @@ import {
   liveBatchResponseSchema,
   searchQuerySchema,
   searchResponseSchema,
-  solanaAddress,
+  chainAddress,
+  normalizeAddress,
 } from "@corvid/shared";
 import type { Db } from "../app";
 import { num, toTrending } from "../mappers";
@@ -28,7 +29,7 @@ export const discoveryRoutes =
       { schema: { tags: ["market"], querystring: searchQuerySchema, response: { 200: searchResponseSchema } } },
       async (req) => {
         const q = escapeLike(req.query.q);
-        const isMint = solanaAddress.safeParse(req.query.q).success;
+        const isMint = chainAddress.safeParse(req.query.q).success;
 
         const tokenRows = await db
           .select()
@@ -37,7 +38,7 @@ export const discoveryRoutes =
             or(
               ilike(tokens.symbol, `${q}%`),
               ilike(tokens.name, `%${q}%`),
-              isMint ? eq(tokens.mint, req.query.q) : ilike(tokens.mint, `${q}%`),
+              isMint ? eq(tokens.mint, normalizeAddress(req.query.q)) : ilike(tokens.mint, `${q}%`),
             ),
           )
           .orderBy(sql`${tokens.marketCapUsd} desc nulls last`)

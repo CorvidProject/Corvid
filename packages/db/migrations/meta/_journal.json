@@ -22,6 +22,13 @@
       "when": 1793826634271,
       "tag": "0002_agent_builder",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793854756360,
+      "tag": "0003_evm_addresses",
+      "breakpoints": true
     }
   ]
 }
