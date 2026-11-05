@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowsDownUp, MagnifyingGlass, Robot, Rows, SquaresFour } from "@phosphor-icons/react";
 import feed from "@/data/marketplace-feed.json";
 import { useAuthModal } from "@/components/auth/auth-modal";
+import { useSigned } from "@/components/auth/signed";
+import { USE_API, apiGet, apiSend } from "@/lib/api";
 
 // Daftar agent publik di /application/marketplace. Filter, tab, jangka waktu, tampilan grid/list,
-// urutan kolom, dan follow mengikuti referensi. Data dari fixture (bentuk sama dengan
-// /marketplace/feed); kosong sampai API tersambung di Tahap 3.
+// urutan kolom, dan follow mengikuti referensi. Mode API: GET /api/marketplace/feed (agent yang dipublikasikan pemiliknya),
+// follow lewat /api/marketplace/agents/:id/follow. Mode fixture: daftar kosong. PnL/win rate null sampai ada posisi tertutup yang dilacak.
 export type MarketAgent = {
   id: number | string;
   name: string;
@@ -29,13 +31,13 @@ export type MarketAgent = {
   clones_count?: number;
 };
 
-const AGENTS = (feed as { agents: MarketAgent[] }).agents;
+const FIXTURE_AGENTS = (feed as { agents: MarketAgent[] }).agents;
 
 const TYPE_FILTERS = [
   { label: "All", value: "" },
-  { label: "Follow Wallet", value: "wallet_monitor,copy_trader" },
-  { label: "New Tokens", value: "token_scanner" },
-  { label: "Token Trading", value: "auto_trader,ai_trader,custom" },
+  { label: "Follow Wallet", value: "follow_wallet" },
+  { label: "New Tokens", value: "new_tokens" },
+  { label: "Token Trading", value: "token_trading" },
 ];
 const MODE_FILTERS = [
   { label: "All", value: "" },
@@ -54,7 +56,7 @@ function kind(a: MarketAgent) {
   const trading = a.config?._mode === "trading" || a.type === "copy_trader";
   if (p === "follow_wallet" || a.type === "wallet_monitor" || a.type === "copy_trader") return { label: trading ? "Copy Trade" : "Wallet Tracker", isTrading: trading };
   if (p === "new_tokens" || a.type === "token_scanner") return { label: trading ? "Sniper" : "Token Scanner", isTrading: trading };
-  return { label: "Auto Trader", isTrading: true };
+  return { label: trading ? "Auto Trader" : "Token Analyst", isTrading: trading };
 }
 const compact = (n: number) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}k` : String(n ?? 0));
 const dayAge = (iso: string, now: number) => {
@@ -226,6 +228,29 @@ export function MarketplaceBoard() {
   const [followed, setFollowed] = useState<Set<string>>(new Set());
   const [now, setNow] = useState(0);
   useEffect(() => setNow(Date.now()), []);
+  const signed = useSigned();
+  const [agents, setAgents] = useState<MarketAgent[]>(USE_API ? [] : FIXTURE_AGENTS);
+  const [loadErr, setLoadErr] = useState(false);
+  useEffect(() => {
+    if (!USE_API) return;
+    let alive = true;
+    apiGet<{ agents: MarketAgent[] }>("/api/marketplace/feed")
+      .then((r) => alive && (setAgents(r.agents), setLoadErr(false)))
+      .catch(() => alive && setLoadErr(true));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (!USE_API || !signed) return;
+    let alive = true;
+    apiGet<{ ids: number[] }>("/api/marketplace/following")
+      .then((r) => alive && setFollowed(new Set(r.ids.map(String))))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [signed]);
 
   // Follow butuh akun: tanpa sesi, buka modal masuk (perilaku referensi untuk pengguna anonim).
   const onFollow = (id: string) => {
@@ -236,12 +261,20 @@ export function MarketplaceBoard() {
       /* abaikan */
     }
     if (!signedIn) return openAuthModal("signin");
-    setFollowed((s) => {
-      const n = new Set(s);
-      if (n.has(id)) n.delete(id);
-      else n.add(id);
-      return n;
-    });
+    const on = followed.has(id);
+    const flip = (add: boolean) =>
+      setFollowed((s) => {
+        const n = new Set(s);
+        if (add) n.add(id);
+        else n.delete(id);
+        return n;
+      });
+    flip(!on);
+    if (USE_API) {
+      apiSend(on ? "DELETE" : "POST", `/api/marketplace/agents/${id}/follow`)
+        .then(() => apiGet<{ agents: MarketAgent[] }>("/api/marketplace/feed").then((r) => setAgents(r.agents)))
+        .catch(() => flip(on)); // kembalikan bila gagal
+    }
   };
   const onSort = (c: SortKey) => {
     if (sort === c) setDir((d) => (d === "desc" ? "asc" : "desc"));
@@ -254,12 +287,12 @@ export function MarketplaceBoard() {
   const items = useMemo(() => {
     const term = q.trim().toLowerCase();
     const types = type ? type.split(",") : null;
-    let list = AGENTS.filter((a) => {
+    let list = agents.filter((a) => {
       if (tab === "following") return followed.has(String(a.id));
       // tab Top/Trending hanya menampilkan agent yang punya aktivitas atau deskripsi memadai (seperti referensi)
       return a.runs_count > 0 || a.signals_count > 0 || a.subscriber_count > 0 || !!(a.description && a.description.trim().length >= 20);
     })
-      .filter((a) => !types || types.includes(a.type))
+      .filter((a) => !types || types.includes(a.config?._pipeline ?? ""))
       .filter((a) => !mode || (mode === "trading") === kind(a).isTrading)
       .filter((a) => !term || a.name.toLowerCase().includes(term) || (a.description ?? "").toLowerCase().includes(term) || (a.creator?.display_name ?? "").toLowerCase().includes(term))
       .filter((a) => win === "all" || !now || (!!a.last_run_at && now - new Date(a.last_run_at).getTime() <= WIN_MS[win]));
@@ -277,7 +310,7 @@ export function MarketplaceBoard() {
       });
     }
     return list;
-  }, [tab, type, mode, q, win, sort, dir, followed, now]);
+  }, [agents, tab, type, mode, q, win, sort, dir, followed, now]);
 
   const following = tab === "following";
   return (
@@ -327,21 +360,26 @@ export function MarketplaceBoard() {
           </div>
         </div>
         <SearchBox q={q} onQ={setQ} className="relative lg:hidden" />
+        {loadErr && agents.length === 0 && (
+          <p role="alert" className="text-[13px]" style={{ color: "var(--v2-neg)" }}>
+            Could not load the marketplace. Try again shortly.
+          </p>
+        )}
         {items.length === 0 ? (
           <div className="rounded-sm p-10 text-center" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)" }}>
             <div className="flex h-14 w-14 items-center justify-center rounded-sm mx-auto mb-4" style={{ background: "var(--v2-bg-2)" }}>
               <Robot size={24} style={{ color: "var(--v2-t-4)" }} />
             </div>
             <h3 className="font-heading font-semibold text-[16px]" style={{ color: "var(--v2-t-1)" }}>
-              {following ? "You're not following any agents yet" : AGENTS.length && (q || type || mode || win !== "all") ? "No agents match these filters" : "No agents published yet"}
+              {following ? "You're not following any agents yet" : agents.length && (q || type || mode || win !== "all") ? "No agents match these filters" : "No agents published yet"}
             </h3>
             <p className="text-[13px] mt-1 max-w-md mx-auto" style={{ color: "var(--v2-t-3)" }}>
-              {following ? "Follow agents from the Top or Trending tabs to see them here" : AGENTS.length && (q || type || mode || win !== "all") ? "Try clearing the search or a filter" : "Be the first — build an agent, run it, then publish to the marketplace"}
+              {following ? "Follow agents from the Top or Trending tabs to see them here" : agents.length && (q || type || mode || win !== "all") ? "Try clearing the search or a filter" : "Be the first — build an agent, run it, then publish to the marketplace"}
             </p>
-            {!following && !AGENTS.length && (
+            {!following && !agents.length && (
               <Link href="/application/agents/new" className="btn-v2 btn-v2-primary btn-v2-sm inline-block mt-4">Create an agent</Link>
             )}
-            {!following && AGENTS.length > 0 && (q || type || mode || win !== "all") && (
+            {!following && agents.length > 0 && (q || type || mode || win !== "all") && (
               <button
                 onClick={() => {
                   setQ("");

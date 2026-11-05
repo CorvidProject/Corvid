@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import EmbeddedPostgres from "embedded-postgres";
 import { asc, eq } from "drizzle-orm";
-import { agentRunSteps, agentRuns, agents, applyMigrations, createDb, notifications, profiles, swaps, tokens, wallets, walletActivity } from "@corvid/db";
+import { agentRunSteps, agentRuns, agents, applyMigrations, createDb, notifications, profiles, subscriptions, swaps, tokens, wallets, walletActivity } from "@corvid/db";
 import { runAgentCycle, ruleDecider, type Decider, type RunnerDeps } from "../src/runner";
 
 const dir = "D:/.dev/tmp/pgtest-runner";
@@ -258,5 +258,34 @@ describe("ketahanan dan kontrol", () => {
     await runAgentCycle(deps({ now: () => new Date(Date.now() + 16 * 60_000) }));
     expect(await runsOf(a.id)).toHaveLength(2);
     await stop(a.id);
+  });
+});
+
+describe("pengikut agent marketplace", () => {
+  it("agent publik: pengikut aktif menerima sinyal; pemilik tidak ganda; agent tidak publik tidak mengirim ke pengikut", async () => {
+    const FOLLOWER = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
+    const GONE = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee";
+    await db().insert(profiles).values([{ id: FOLLOWER, email: "f@x.io", displayName: "f" }, { id: GONE, email: "g@x.io", displayName: "g" }]);
+    const cfg = { min_lp_usd: "5000", no_mint_authority: "true", no_freeze_authority: "true", max_dev_wallet_pct: "10", markets: "" };
+    const pub = await mkAgent({ name: "Public scanner", published: true, config: cfg });
+    await db().insert(subscriptions).values([
+      { profileId: FOLLOWER, agentId: pub.id },
+      { profileId: GONE, agentId: pub.id, status: "paused" },
+      { profileId: OWNER, agentId: pub.id },
+    ]);
+    await runAgentCycle(deps());
+    await stop(pub.id);
+    const got = await db().select().from(notifications).where(eq(notifications.profileId, FOLLOWER));
+    expect(got).toHaveLength(1);
+    expect(got[0]).toMatchObject({ kind: "signal" });
+    expect(got[0].title).toContain("Public scanner");
+    expect(got[0].title).toContain("GOOD");
+    expect(await db().select().from(notifications).where(eq(notifications.profileId, GONE))).toHaveLength(0);
+
+    const priv = await mkAgent({ name: "Private scanner", published: false, config: cfg });
+    await db().insert(subscriptions).values({ profileId: GONE, agentId: priv.id });
+    await runAgentCycle(deps());
+    await stop(priv.id);
+    expect(await db().select().from(notifications).where(eq(notifications.profileId, GONE))).toHaveLength(0);
   });
 });

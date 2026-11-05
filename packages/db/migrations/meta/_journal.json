@@ -29,6 +29,13 @@
       "when": 1793854756360,
       "tag": "0003_evm_addresses",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793881111321,
+      "tag": "0004_agent_marketplace",
+      "breakpoints": true
     }
   ]
 }

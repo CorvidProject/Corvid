@@ -16,6 +16,7 @@ import { userRoutes } from "./routes/user";
 import { watchlistRoutes } from "./routes/watchlists";
 import { agentRoutes } from "./routes/agents";
 import { chatRoutes } from "./routes/chats";
+import { marketplaceRoutes } from "./routes/marketplace";
 import type { LlmClient } from "./llm";
 import type { Verifier } from "./auth";
 import { coingeckoSolPrice, priceRoutes, type SolPriceSource } from "./routes/prices";
@@ -56,6 +57,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
   await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
   await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode }), { prefix: "/api" });
+  await app.register(marketplaceRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
   await app.register(chatRoutes({ db, requireAuth: requireAuth!, llm }), { prefix: "/api" });
   await app.register(watchlistRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
 

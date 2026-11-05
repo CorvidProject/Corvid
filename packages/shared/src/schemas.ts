@@ -341,6 +341,8 @@ export const agentSummarySchema = z.object({
   chain: z.enum(["robinhood", "solana"]),
   running: z.boolean(),
   tokenSymbol: z.string().nullable(),
+  published: z.boolean(),
+  description: z.string().nullable(),
   /** Belum ada data trade agent: selalu null sampai siklus agent berjalan (tidak dikarang). */
   winRate: z.number().nullable(),
   runs: z.number().int(),
@@ -470,3 +472,43 @@ export const chatsResponseSchema = z.object({ chats: z.array(chatSchema) });
 export const chatDetailSchema = z.object({ chat: chatSchema, messages: z.array(chatMessageSchema) });
 export const chatSendBodySchema = z.object({ content: z.string().trim().min(1).max(CHAT_MESSAGE_MAX) });
 export const chatSendResponseSchema = z.object({ messages: z.array(chatMessageSchema).length(2), credits: z.number().int() });
+
+/* ---- marketplace agent ---- */
+
+export const AGENT_DESCRIPTION_MAX = 280;
+export const publishBodySchema = z.object({
+  published: z.boolean(),
+  description: z.string().trim().max(AGENT_DESCRIPTION_MAX).optional(),
+});
+export const marketAgentSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  type: z.string(),
+  description: z.string().nullable(),
+  chain: z.literal("robinhood"),
+  config: z.object({ _pipeline: z.string().nullable(), _mode: z.string() }),
+  creator: z.object({ display_name: z.string().nullable(), avatar_url: z.string().nullable() }),
+  published_at: z.string(),
+  last_run_at: z.string().nullable(),
+  /** Trade = simulasi (mode dry). PnL dan win rate belum ada: tidak ada posisi tertutup yang dilacak. */
+  trades_count: z.number().int(),
+  runs_count: z.number().int(),
+  signals_count: z.number().int(),
+  closed_trades_count: z.number().int(),
+  subscriber_count: z.number().int(),
+  avg_pnl_pct: z.number().nullable(),
+  win_rate: z.number().nullable(),
+  per_action_cost: z.number().int(),
+  clones_count: z.number().int(),
+});
+export const marketFeedResponseSchema = z.object({ agents: z.array(marketAgentSchema) });
+export const marketAgentIdParamSchema = z.object({ id: z.coerce.number().int().positive() });
+export const marketAgentDetailSchema = z.object({
+  agent: marketAgentSchema,
+  pipeline: z.string().nullable(),
+  mode: z.string(),
+  floor: z.number().int().nullable(),
+  conviction: z.number().int().nullable(),
+  tokenSymbol: z.string().nullable(),
+});
+export const marketFollowingResponseSchema = z.object({ ids: z.array(z.number().int()) });

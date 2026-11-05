@@ -265,6 +265,9 @@ export const agents = pgTable(
     conviction: smallint("conviction"),
     running: boolean("running").notNull().default(false),
     published: boolean("published").notNull().default(false),
+    /** Deskripsi singkat untuk marketplace (maks 280 karakter, divalidasi di API). */
+    description: text("description"),
+    publishedAt: ts("published_at"),
     publicClones: integer("public_clones").notNull().default(0),
     createdAt: ts("created_at").notNull().defaultNow(),
   },

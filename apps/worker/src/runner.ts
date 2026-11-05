@@ -1,5 +1,5 @@
 import { and, desc, eq, gt as gtOp, sql } from "drizzle-orm";
-import { agentRunSteps, agentRuns, agents, notifications, swaps, tokens, walletActivity, wallets } from "@corvid/db";
+import { agentRunSteps, agentRuns, agents, notifications, subscriptions, swaps, tokens, walletActivity, wallets } from "@corvid/db";
 import type { Deps } from "./ingest";
 
 // Runner agent (SIMULASI). Satu siklus: untuk tiap agent berstatus running, cari kandidat token menurut
@@ -261,6 +261,12 @@ async function recordRun(deps: RunnerDeps, a: AgentRow, c: Candidate, r: Awaited
       await tx.insert(notifications).values({ profileId: a.ownerId, kind: "trade", title: `${a.name}: simulated buy of ${sym}`, body: `Dry run, ${r.sol} SOL. ${r.decision?.for ?? ""}`.trim(), at: now });
     } else if (r.ended === "passed") {
       await tx.insert(notifications).values({ profileId: a.ownerId, kind: "signal", title: `${a.name}: ${sym} matches your pipeline`, body: r.decision?.for ?? c.note, at: now });
+    }
+    // Pengikut agent yang dipublikasikan menerima sinyal yang sama (tanpa detail simulasi trade). Hanya saat run lolos.
+    if (a.published && r.ended === "passed") {
+      const followers = await tx.select({ id: subscriptions.profileId }).from(subscriptions).where(and(eq(subscriptions.agentId, a.id), eq(subscriptions.status, "active")));
+      const rows = followers.filter((f) => f.id !== a.ownerId).map((f) => ({ profileId: f.id, kind: "signal", title: `${a.name}: ${sym} matches this agent's pipeline`, body: r.decision?.for ?? c.note, at: now }));
+      if (rows.length) await tx.insert(notifications).values(rows);
     }
   });
 }

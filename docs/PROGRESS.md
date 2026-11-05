@@ -111,3 +111,9 @@
 
 ## 2026-11-05 — Portfolio nyata
 - `/application/portfolio` tidak lagi memakai data contoh: saldo ETH + token yang diindeks Corvid (200 teratas dari /api/tokens/trending) dibaca on-chain dari RPC mainnet publik (batch JSON-RPC, `lib/holdings.ts`) untuk wallet yang terhubung; harga dari API. Tanpa PnL (tidak ada riwayat biaya). Token di luar indeks tidak terlihat. tsc bersih; batch RPC diverifikasi. Belum diuji dengan wallet berisi token.
+
+## 2026-11-05 — Chat dan Marketplace (Tahap 3)
+- Chat: `/api/chats` (daftar, buat, detail, hapus, kirim pesan). Jawaban dari LLM lewat adapter Anthropic (`ANTHROPIC_API_KEY`, `LLM_MODEL`, bawaan claude-haiku-5-5); tanpa kunci chat menjawab 503 (tidak ada balasan karangan). Konteks hanya dari DB Corvid (token berdasarkan 0x atau $SIMBOL, laporan keamanan, wallet, blok smart money); model diminta tidak mengarang. 1 kredit per jawaban, dipotong setelah jawaban ada, galat LLM tidak memotong. 11 tes (8 chat + 3 adapter).
+- Marketplace: migrasi `0004_agent_marketplace` (agents.description, published_at). `/api/marketplace/feed` (publik), `/marketplace/agents/:id` (ringkasan publik tanpa konfigurasi/alamat), follow/unfollow, `/marketplace/following`, `PUT /api/agents/:id/publish` (butuh deskripsi). Runner mengirim sinyal ke pengikut agent yang dipublikasikan. Angka dari data nyata: signals = run lolos, trades = swap simulasi; PnL/win rate null (belum ada posisi tertutup). 5 tes API + 1 tes runner.
+- Web: Chat mode API (percakapan tersimpan, kredit tampil, galat jelas), board marketplace dari API + follow, halaman `/application/agents/[id]`, tombol Publish di My agents.
+- 57 tes API lulus. Tes worker: semua lulus kecuali `wallets.test.ts` yang gagal karena port 54333 dipakai proses postgres uji yatim (PID 33052); bukan galat kode.

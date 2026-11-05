@@ -9,7 +9,7 @@ import { apiGet, apiSend, USE_API } from "@/lib/api";
 // PUT /api/agents/:id (jeda/lanjut), DELETE /api/agents/:id. Catatan: runner agent belum ada, jadi "Running"
 // hanya status tersimpan sampai siklus agent dibangun.
 type Last = { n: number; at: number; ended: "passed" | "blocked" | "stopped" | "failed" };
-type A = { id: number; name: string; type: string; chain: string; running: boolean; tokenSymbol: string | null; winRate: number | null; runs: number; createdAt: string; lastRun?: Last | null };
+type A = { id: number; name: string; type: string; chain: string; running: boolean; tokenSymbol: string | null; winRate: number | null; runs: number; createdAt: string; lastRun?: Last | null; published?: boolean; description?: string | null };
 const ENDED: Record<Last["ended"], { label: string; color: string }> = {
   passed: { label: "Passed", color: "var(--v2-pos)" },
   blocked: { label: "Blocked", color: "var(--v2-warn)" },
@@ -31,6 +31,8 @@ export function ApplicationAgentsContent() {
   const [list, setList] = useState<A[]>(USE_API ? [] : (fixture.agents as A[]));
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // Formulir publikasi ke marketplace (hanya mode API): satu agent terbuka pada satu waktu.
+  const [pub, setPub] = useState<{ id: number; text: string } | null>(null);
   useEffect(() => {
     if (USE_API) {
       setReady(true);
@@ -68,6 +70,16 @@ export function ApplicationAgentsContent() {
         setList((p) => p.map((a) => (a.id === id ? { ...a, running: cur.running } : a))); // kembalikan bila gagal
         setErr("Could not update the agent.");
       });
+  };
+  const publish = async (id: number, published: boolean, description?: string) => {
+    try {
+      const r = await apiSend<{ published: boolean; description: string | null }>("PUT", `/api/agents/${id}/publish`, { published, description });
+      setList((p) => p.map((a) => (a.id === id ? { ...a, published: r.published, description: r.description } : a)));
+      setPub(null);
+      setErr(null);
+    } catch (e) {
+      setErr(e instanceof Error && e.message === "description_required" ? "Add a short description to publish." : "Could not update the listing.");
+    }
   };
   const remove = (id: number) => {
     const before = list;
@@ -161,10 +173,41 @@ export function ApplicationAgentsContent() {
                   <button className="btn-v2 btn-v2-ghost btn-v2-sm" onClick={() => toggle(a.id)}>
                     {a.running ? <Pause size={12} /> : <Play size={12} />} {a.running ? "Pause" : "Resume"}
                   </button>
+                  {USE_API && (
+                    <button
+                      className="btn-v2 btn-v2-ghost btn-v2-sm"
+                      onClick={() => (a.published ? void publish(a.id, false) : setPub({ id: a.id, text: a.description ?? "" }))}
+                    >
+                      {a.published ? "Unpublish" : "Publish"}
+                    </button>
+                  )}
                   <button className="btn-v2 btn-v2-ghost btn-v2-sm" onClick={() => remove(a.id)} aria-label={`Delete ${a.name}`}>
                     <Trash size={12} />
                   </button>
                 </div>
+                {pub?.id === a.id && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+                    <textarea
+                      value={pub.text}
+                      onChange={(e) => setPub({ id: a.id, text: e.target.value })}
+                      maxLength={280}
+                      rows={3}
+                      placeholder="What does this agent do? (shown in the marketplace)"
+                      className="input-v2"
+                      style={{ resize: "none" }}
+                    />
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <button className="btn-v2 btn-v2-primary btn-v2-sm" disabled={!pub.text.trim()} onClick={() => void publish(a.id, true, pub.text)}>
+                        Publish to marketplace
+                      </button>
+                      <button className="btn-v2 btn-v2-ghost btn-v2-sm" onClick={() => setPub(null)}>
+                        Cancel
+                      </button>
+                      <span className="num" style={{ marginLeft: "auto", fontSize: 11, color: "var(--v2-t-4)" }}>{pub.text.length}/280</span>
+                    </div>
+                    <p style={{ fontSize: 11, color: "var(--v2-t-4)", margin: 0 }}>Public: name, type, description and activity counts. Your settings, limits and addresses stay private.</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>

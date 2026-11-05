@@ -54,6 +54,8 @@ export const agentRoutes =
       chain: "robinhood" as const,
       running: a.running,
       tokenSymbol: a.tokenSymbol,
+      published: a.published,
+      description: a.description,
       winRate: null,
       runs,
       createdAt: a.createdAt.toISOString(),

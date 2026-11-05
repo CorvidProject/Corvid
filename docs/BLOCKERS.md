@@ -36,3 +36,7 @@
 - [ ] Supabase Auth → Providers: aktifkan **Web3 Wallet (Ethereum)** agar login wallet berfungsi; pastikan `NEXT_PUBLIC_CHAIN_ENV=testnet` di `apps/web/.env.local` (parameter chain sudah di `packages/shared/src/chains.ts`). Uji manual dengan wallet asli belum dilakukan.
 
 - [x] **Login wallet berfungsi** (dikonfirmasi pemilik, 2026-11-05): provider Web3 Wallet di Supabase aktif. Uji My lists dengan sesi nyata masih perlu dijalankan manual; pastikan migrasi terbaru sudah diterapkan (`pnpm --filter @corvid/db migrate`).
+
+15. **Migrasi `0004_agent_marketplace` untuk Supabase (pemilik):** jalankan `pnpm --filter @corvid/db migrate` di ROOT (menambah `agents.description` dan `published_at`; dibutuhkan marketplace).
+16. **Kunci LLM untuk chat (pemilik):** isi `ANTHROPIC_API_KEY` (dan opsional `LLM_MODEL`) di `ROOT/.env` lokal dan di environment Railway saat testnet. Kosong = chat menjawab "Chat is not available yet". Jangan kirim kunci ke chat/repo.
+17. **Proses postgres uji yatim:** `postgres.exe` PID 33052 (embedded-postgres proyek, induknya mati) menahan port 54333 sehingga `apps/worker/test/wallets.test.ts` gagal dan hook `pre-push` akan memblokir push. Hentikan dari PowerShell Anda: `Stop-Process -Id 33052 -Force`, lalu jalankan ulang tes.
