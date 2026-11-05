@@ -12,8 +12,8 @@ Env vars (tanpa nilai): lihat `.env.example`.
 | Framework / Node | Next.js / 22.x |
 | Install / Build | `pnpm install --frozen-lockfile` / `pnpm build` |
 | Domain | https://corvid-tau.vercel.app (production), https://corvid-testnet.vercel.app (alias) |
-| Integrasi Git | **Belum.** Deploy manual dari lokal (lihat di bawah) |
-| Env vars | Belum ada. Nanti: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_USE_FIXTURES` |
+| Integrasi Git | Terhubung ke `CorvidProject/Corvid` (2026-11-05); push ke `main` men-deploy. Ignored Build Step project ini hanya membangun `main` |
+| Env vars | `NEXT_PUBLIC_CHAIN_ENV` (testnet/mainnet), `NEXT_PUBLIC_TRADE_MODE` (dry), `NEXT_PUBLIC_USE_FIXTURES`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL` (setelah API ada), `NEXT_PUBLIC_SITE_URL`. Nilai `NEXT_PUBLIC_*` tertanam saat build: ubah lalu Redeploy |
 
 Deploy ulang dari lokal:
 
@@ -39,4 +39,18 @@ Nama env (tanpa nilai): backend `SUPABASE_URL`, `DATABASE_URL` (direct/session, 
 
 ## Railway
 
-Belum dibuat. Dibuat saat "siapkan testnet".
+Akun pemilik sudah ada dan CLI `railway` terlogin (dicek 2026-11-05). **Project belum dibuat** (menunggu perintah "siapkan testnet").
+
+Rencana: satu project `corvid`, dua service dari repo yang sama (root = ROOT, bukan subfolder, karena workspace pnpm):
+
+| Service | Config as code | Start | Health |
+| --- | --- | --- | --- |
+| `api` | `deploy/railway.api.json` | `pnpm --filter @corvid/api start` | `/health` |
+| `worker` | `deploy/railway.worker.json` | `pnpm --filter @corvid/worker start` | (proses long-running, tanpa HTTP) |
+
+Env vars (tanpa nilai; diisi pemilik di dashboard Railway, jangan di repo):
+
+- `api`: `DATABASE_URL` (Supabase direct/session, bukan transaction pooler), `SUPABASE_URL`, `WEB_ORIGIN` (URL Vercel, tanpa slash akhir), `TRADE_MODE=dry`, `CHAIN_ENV=testnet`. `PORT` diisi Railway.
+- `worker`: `DATABASE_URL`, `CHAIN_ENV=testnet`; opsional `WORKER_*_MS` (lihat `.env.example`).
+
+Setelah API hidup: isi `NEXT_PUBLIC_API_URL` di Vercel, set `NEXT_PUBLIC_USE_FIXTURES=false`, Redeploy. Migrasi DB: `pnpm --filter @corvid/db migrate` dengan `DATABASE_URL` Supabase (dijalankan pemilik).
