@@ -34,3 +34,5 @@
 14. **Migrasi baru untuk Supabase (pemilik):** setiap ada file baru di `packages/db/migrations`, jalankan lagi `pnpm --filter @corvid/db migrate` (di ROOT, `DATABASE_URL` di `ROOT/.env`). Saat ini ada migrasi `0002_agent_builder` yang belum diterapkan ke Supabase (dibutuhkan untuk membuat agent).
 
 - [ ] Supabase Auth → Providers: aktifkan **Web3 Wallet (Ethereum)** agar login wallet berfungsi; pastikan `NEXT_PUBLIC_CHAIN_ENV=testnet` di `apps/web/.env.local` (parameter chain sudah di `packages/shared/src/chains.ts`). Uji manual dengan wallet asli belum dilakukan.
+
+- [x] **Login wallet berfungsi** (dikonfirmasi pemilik, 2026-11-05): provider Web3 Wallet di Supabase aktif. Uji My lists dengan sesi nyata masih perlu dijalankan manual; pastikan migrasi terbaru sudah diterapkan (`pnpm --filter @corvid/db migrate`).

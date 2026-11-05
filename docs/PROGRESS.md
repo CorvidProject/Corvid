@@ -108,3 +108,6 @@
 - API: `GET /api/alpha/watchlists`, `PUT|DELETE /api/alpha/watchlists/wallets/:address` (daftar bawaan "Starred", maks 200, terisolasi per pengguna). 5 tes baru lulus, tsc bersih.
 - Web: tombol bintang di Live feed (hanya saat masuk + mode API), tab My lists menampilkan wallet berbintang dengan tier/PnL dari data worker. Belum diuji Playwright dengan sesi nyata (menunggu Supabase, BLOCKERS no. 13).
 - Berikut: portfolio (saldo on-chain wallet pengguna), chat via API, marketplace, `/application/admin`.
+
+## 2026-11-05 — Portfolio nyata
+- `/application/portfolio` tidak lagi memakai data contoh: saldo ETH + token yang diindeks Corvid (200 teratas dari /api/tokens/trending) dibaca on-chain dari RPC mainnet publik (batch JSON-RPC, `lib/holdings.ts`) untuk wallet yang terhubung; harga dari API. Tanpa PnL (tidak ada riwayat biaya). Token di luar indeks tidak terlihat. tsc bersih; batch RPC diverifikasi. Belum diuji dengan wallet berisi token.
