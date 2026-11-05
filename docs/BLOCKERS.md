@@ -38,5 +38,11 @@
 - [x] **Login wallet berfungsi** (dikonfirmasi pemilik, 2026-11-05): provider Web3 Wallet di Supabase aktif. Uji My lists dengan sesi nyata masih perlu dijalankan manual; pastikan migrasi terbaru sudah diterapkan (`pnpm --filter @corvid/db migrate`).
 
 15. **Migrasi `0004_agent_marketplace` untuk Supabase (pemilik):** jalankan `pnpm --filter @corvid/db migrate` di ROOT (menambah `agents.description` dan `published_at`; dibutuhkan marketplace).
-16. **Penyedia LLM untuk chat (keputusan pemilik):** kunci Anthropic pemilik TIDAK dipakai (arahan pemilik). Chat tetap menjawab "Chat is not available yet" sampai penyedia dipilih dan env diisi (`.env.example`, bagian Chat). Opsi: (a) Ollama lokal gratis untuk pengembangan (`LLM_BASE_URL=http://localhost:11434/v1`, `LLM_MODEL=<model>`); (b) penyedia kompatibel OpenAI berkunci milik proyek/head dev (OpenRouter, Groq, dll.); (c) akun Anthropic proyek terpisah. Apa pun pilihannya: pasang batas pengeluaran bulanan di penyedia, kunci hanya di Railway, dan batasi pembuatan akun (kredit gratis = biaya nyata).
+16. **Penyedia LLM untuk chat: Xiaomi MiMo (dipilih pemilik, 2026-11-06).** Pakai mode OpenAI-compatible. Isi `ROOT/.env` sendiri (jangan kirim kunci ke chat):
+    ```
+    LLM_BASE_URL=https://token-plan-sgp.xiaomimimo.com/v1
+    LLM_API_KEY=<kunci dari dashboard MiMo>
+    LLM_MODEL=mimo-v2.6-flash
+    ```
+    Model chat yang tersedia di paket: `mimo-v2.6-pro` (lebih kuat) dan `mimo-v2.6-flash` (lebih cepat/murah); model `asr`/`tts` adalah suara dan tidak dipakai chat. Cek koneksi: `pnpm --filter @corvid/api llm:check` (di ROOT; hanya mencetak status). Untuk testnet isi variabel yang sama di Railway. Endpoint `/anthropic` milik MiMo tidak dipakai (adapter Anthropic kita menunjuk ke api.anthropic.com). Catatan privasi: pesan chat beserta data token/wallet yang ikut dikirim sebagai konteks diproses penyedia ini (server Singapura); sebutkan di privacy policy dan minta pihak hukum membacanya (no. 6).
 17. **Proses postgres uji yatim:** `postgres.exe` PID 33052 (embedded-postgres proyek, induknya mati) menahan port 54333 sehingga `apps/worker/test/wallets.test.ts` gagal dan hook `pre-push` akan memblokir push. Hentikan dari PowerShell Anda: `Stop-Process -Id 33052 -Force`, lalu jalankan ulang tes.
