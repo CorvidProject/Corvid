@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { anthropicClient, LlmError, llmFromEnv } from "../src/llm";
+import { anthropicClient, LlmError, llmFromEnv, openAiCompatClient } from "../src/llm";
+import { loadEnv } from "../src/env";
 
 const res = (status: number, body: unknown) => new Response(JSON.stringify(body), { status });
 
@@ -34,8 +35,44 @@ describe("anthropicClient", () => {
     expect(String((err as Error).message)).not.toContain("sk-test-secret");
   });
 
-  it("tanpa kunci: null", () => {
-    expect(llmFromEnv({ LLM_MODEL: "m" })).toBeNull();
-    expect(llmFromEnv({ ANTHROPIC_API_KEY: "k", LLM_MODEL: "m" })).not.toBeNull();
+  it("tanpa konfigurasi: null; pemilihan penyedia lewat env", () => {
+    expect(llmFromEnv({})).toBeNull();
+    expect(llmFromEnv({ ANTHROPIC_API_KEY: "k" })).not.toBeNull();
+    expect(llmFromEnv({ LLM_BASE_URL: "http://localhost:11434/v1" })).toBeNull(); // model wajib untuk penyedia OpenAI-compatible
+    expect(llmFromEnv({ LLM_BASE_URL: "http://localhost:11434/v1", LLM_MODEL: "llama3.1" })).not.toBeNull(); // Ollama: tanpa kunci
+    expect(llmFromEnv({ LLM_PROVIDER: "anthropic", ANTHROPIC_API_KEY: "" })).toBeNull();
+  });
+
+  it("variabel kosong di .env dianggap tidak diisi", () => {
+    const env = loadEnv({ DATABASE_URL: "postgres://x", LLM_BASE_URL: "", LLM_API_KEY: "", ANTHROPIC_API_KEY: "", LLM_MODEL: "", LLM_PROVIDER: "" });
+    expect(llmFromEnv(env)).toBeNull();
+  });
+});
+
+describe("openAiCompatClient", () => {
+  it("memanggil /chat/completions dengan pesan sistem dan kunci opsional", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const mk = (apiKey?: string) =>
+      openAiCompatClient({
+        baseUrl: "https://example.test/v1/",
+        apiKey,
+        model: "m2",
+        fetchImpl: (async (url: string, init: RequestInit) => {
+          calls.push({ url, init });
+          return res(200, { choices: [{ message: { content: " jawaban " } }] });
+        }) as unknown as typeof fetch,
+      });
+    expect(await mk("sk-x").complete("sys", [{ role: "user", content: "hi" }])).toBe("jawaban");
+    expect(calls[0].url).toBe("https://example.test/v1/chat/completions");
+    expect(JSON.parse(String(calls[0].init.body))).toMatchObject({ model: "m2", messages: [{ role: "system", content: "sys" }, { role: "user", content: "hi" }] });
+    expect((calls[0].init.headers as Record<string, string>).authorization).toBe("Bearer sk-x");
+    await mk().complete("s", []);
+    expect((calls[1].init.headers as Record<string, string>).authorization).toBeUndefined();
+  });
+
+  it("galat HTTP atau jawaban kosong menjadi LlmError", async () => {
+    const mk = (f: () => Promise<Response>) => openAiCompatClient({ baseUrl: "https://e.test", apiKey: "sk-secret", model: "m", fetchImpl: f as unknown as typeof fetch });
+    await expect(mk(async () => res(429, {})).complete("s", [])).rejects.toThrow("llm_http_429");
+    await expect(mk(async () => res(200, { choices: [] })).complete("s", [])).rejects.toThrow("llm_empty");
   });
 });

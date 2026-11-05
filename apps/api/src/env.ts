@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// Variabel kosong di .env (mis. `LLM_API_KEY=`) dianggap tidak diisi.
+const opt = <T extends z.ZodTypeAny>(t: T) => z.preprocess((v) => (v === "" ? undefined : v), t.optional());
+
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   PORT: z.coerce.number().int().default(8787),
@@ -9,9 +12,13 @@ const envSchema = z.object({
   SUPABASE_URL: z.string().url().optional(),
   /** Hanya untuk project lama dengan JWT HS256; project baru memakai JWKS. */
   SUPABASE_JWT_SECRET: z.string().optional(),
-  /** Kunci penyedia LLM untuk chat. Kosong = chat menjawab 503. */
-  ANTHROPIC_API_KEY: z.string().min(1).optional(),
-  LLM_MODEL: z.string().default("claude-haiku-5-5"),
+  /** Chat LLM: penyedia lewat env, tidak ada bawaan. Semua kosong = chat menjawab 503. Lihat docs/infrastructure.md. */
+  LLM_PROVIDER: opt(z.enum(["anthropic", "openai"])),
+  /** Penyedia kompatibel OpenAI (OpenRouter, Groq, Ollama lokal, dll.). */
+  LLM_BASE_URL: opt(z.string().url()),
+  LLM_API_KEY: opt(z.string().min(1)),
+  ANTHROPIC_API_KEY: opt(z.string().min(1)),
+  LLM_MODEL: opt(z.string().min(1)),
   TRADE_MODE: z.enum(["dry", "live"]).default("dry"),
 });
 export type Env = z.infer<typeof envSchema>;
