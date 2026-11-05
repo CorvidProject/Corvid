@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { ArrowSquareOut, Fire, Robot, Rocket, GraduationCap } from "@phosphor-icons/react";
+import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { useApi } from "@/lib/api";
 import { money } from "@/components/app/token-board";
 
@@ -176,10 +177,10 @@ function Column({
                 <Robot size={14} />
               </a>
               <a
-                href={`https://dexscreener.com/robinhood/${c.mint}`}
+                href={explorerAddress(getChain("mainnet"), c.mint)}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Open on DexScreener"
+                aria-label="Open in explorer" title="Open in explorer"
                 className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-white/10"
                 style={{ color: "var(--v2-t-3)" }}
               >
