@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { ArrowSquareOut, Fire, Robot, Rocket, GraduationCap } from "@phosphor-icons/react";
 import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { useApi } from "@/lib/api";
+import { TokenAvatar } from "@/components/app/token-avatar";
 import { money } from "@/components/app/token-board";
 
 // Memescope: peluncuran token di launchpad berkurva (Pons V2, Virtuals) di Robinhood Chain, dari kurva sampai DEX. Progres = aset yang
@@ -114,17 +115,7 @@ function Column({
           >
             <a className="flex gap-3" href={`/application/tokens/${c.mint}?chain=robinhood`}>
               <span className="relative shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt=""
-                  width={48}
-                  height={48}
-                  className="rounded-sm object-cover shrink-0"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                  src={c.image ?? ""}
-                  style={{ width: 48, height: 48, background: "var(--v2-bg-2)" }}
-                />
+                <TokenAvatar src={c.image} symbol={c.symbol} size={48} radius="6px" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-baseline gap-2">

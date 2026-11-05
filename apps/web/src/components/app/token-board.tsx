@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import { TokenAvatar } from "@/components/app/token-avatar";
 import { useApi } from "@/lib/api";
 
 // Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
@@ -184,17 +185,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
                 {i + 1}
               </span>
               <a className="flex items-center gap-3 min-w-0" href={`/application/tokens/${t.mint}?chain=robinhood`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt=""
-                  width={36}
-                  height={36}
-                  className="rounded-full object-cover shrink-0"
-                  referrerPolicy="no-referrer"
-                  loading="lazy"
-                  src={t.image ?? ""}
-                  style={{ width: 36, height: 36, background: "var(--v2-bg-2)" }}
-                />
+                <TokenAvatar src={t.image} symbol={t.symbol} size={36} />
                 <span className="min-w-0">
                   <span className="flex items-center gap-2">
                     <span className="text-[14px] font-semibold truncate" style={{ color: "var(--v2-t-1)" }}>
