@@ -1,3 +1,9 @@
 packages:
   - "apps/*"
   - "packages/*"
+# pnpm 12 gagalkan install di CI bila skrip build diabaikan tanpa keputusan eksplisit. Semua ditolak: esbuild hanya untuk alat dev,
+# embedded-postgres hanya untuk tes lokal; build web tidak membutuhkannya.
+allowBuilds:
+  '@embedded-postgres/linux-x64': false
+  '@embedded-postgres/windows-x64': false
+  esbuild: false
