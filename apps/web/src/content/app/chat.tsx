@@ -1,12 +1,24 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { DotBackdrop } from "@/components/app/dot-backdrop";
+import { useSigned } from "@/components/auth/signed";
+import { ApiError, USE_API, apiGet, apiSend } from "@/lib/api";
 
-// Chat Corvid. Balasan masih simulasi lokal (fixture) sampai /chats tersambung di Tahap 2/3.
-// Sesi disimpan di localStorage (per browser) dengan try/catch.
+// Chat Corvid. Mode API (NEXT_PUBLIC_USE_FIXTURES=false, sudah masuk): percakapan tersimpan di backend (/api/chats), jawaban dari LLM
+// dengan konteks data nyata Corvid, 1 kredit per jawaban. Mode fixture: balasan simulasi lokal, sesi di localStorage (try/catch).
 
 type Msg = { role: "user" | "agent"; text: string; at: number };
-type Session = { id: string; title: string; kind: "chat" | "token"; msgs: Msg[]; updated: number };
+type Session = { id: string; title: string; kind: "chat" | "token"; msgs: Msg[]; updated: number; loaded?: boolean };
+type ApiChat = { id: number; title: string; kind: "chat" | "token"; updatedAt: string };
+type ApiMsg = { role: "user" | "assistant"; content: string; createdAt: string };
+const fromApi = (m: ApiMsg): Msg => ({ role: m.role === "user" ? "user" : "agent", text: m.content, at: Date.parse(m.createdAt) });
+const ERRORS: Record<string, string> = {
+  no_credits: "You are out of credits. Each answer uses 1 credit.",
+  llm_unavailable: "Chat is not available yet. Try again later.",
+  llm_error: "The assistant could not answer right now. No credit was used. Try again.",
+  chat_full: "This chat is full. Start a new one.",
+  too_many_chats: "You have too many chats. Delete one to start a new one.",
+};
 
 const KEY = "corvid.chat.sessions.v1";
 
@@ -34,11 +46,10 @@ function Ic({ d, size = 14, style }: { d: string; size?: number; style?: React.C
   );
 }
 
-const CHIPS = [
-  { icon: PATHS.coins, label: "Analyze $CRVD", prompt: "Analyze $CRVD" },
-  { icon: PATHS.wallet, label: "Audit toly.sol", prompt: "Audit toly.sol" },
+const CHIPS: { icon: string; label: string; prompt?: string; href?: string }[] = [
   { icon: PATHS.trend, label: "Smart money today", prompt: "Smart money today" },
-  { icon: PATHS.bot, label: "Agent for new pairs", prompt: "Create an agent for new pairs" },
+  { icon: PATHS.coins, label: "How is risk scored?", prompt: "How does Corvid score token risk?" },
+  { icon: PATHS.bot, label: "Build an agent", href: "/application/agents/new" },
 ];
 
 const NOTE = "\n\n— Simulated reply (fixture). Live market data and agents connect when the backend is available.";
@@ -75,16 +86,47 @@ export function ApplicationChatContent() {
   const [ready, setReady] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const signed = useSigned();
+  const api = USE_API && signed;
+  const [notice, setNotice] = useState<string | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
 
   useEffect(() => {
+    if (USE_API) return;
     setSessions(load());
     setReady(true);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
   }, []);
+  // Mode API: daftar percakapan dan saldo kredit dari backend saat sudah masuk.
   useEffect(() => {
-    if (!ready) return;
+    if (!api) {
+      if (USE_API) setSessions([]);
+      return;
+    }
+    let alive = true;
+    apiGet<{ chats: ApiChat[] }>("/api/chats")
+      .then((r) => alive && setSessions(r.chats.map((c) => ({ id: String(c.id), title: c.title, kind: c.kind, msgs: [], updated: Date.parse(c.updatedAt), loaded: false }))))
+      .catch(() => alive && setNotice("Could not load your chats."));
+    apiGet<{ credits: number }>("/api/profile")
+      .then((p) => alive && setCredits(p.credits))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [api]);
+  const open_ = (id: string) => {
+    setActive(id);
+    setDrawer(false);
+    setNotice(null);
+    if (!api) return;
+    apiGet<{ messages: ApiMsg[] }>(`/api/chats/${id}`)
+      .then((r) => setSessions((p) => p.map((x) => (x.id === id ? { ...x, msgs: r.messages.map(fromApi), loaded: true } : x))))
+      .catch(() => setNotice("Could not load this chat."));
+  };
+  useEffect(() => {
+    if (!ready || USE_API) return;
     try {
       localStorage.setItem(KEY, JSON.stringify(sessions));
     } catch {}
@@ -95,9 +137,44 @@ export function ApplicationChatContent() {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [cur?.msgs.length, busy]);
 
+  const sendApi = async (q: string) => {
+    setBusy(true);
+    setNotice(null);
+    try {
+      let sid = active;
+      if (!sid) {
+        const c = await apiSend<ApiChat>("POST", "/api/chats");
+        sid = String(c.id);
+        setSessions((p) => [{ id: sid!, title: c.title, kind: c.kind, msgs: [], updated: Date.now(), loaded: true }, ...p]);
+        setActive(sid);
+      }
+      const r = await apiSend<{ messages: ApiMsg[]; credits: number }>("POST", `/api/chats/${sid}/messages`, { content: q });
+      const add = r.messages.map(fromApi);
+      setSessions((p) =>
+        p.map((x) =>
+          x.id === sid ? { ...x, msgs: [...x.msgs, ...add], updated: Date.now(), title: x.msgs.length === 0 && x.title === "New chat" ? q.slice(0, 40) : x.title } : x,
+        ),
+      );
+      setCredits(r.credits);
+      setText("");
+    } catch (e) {
+      setNotice(e instanceof ApiError ? (ERRORS[e.message] ?? "Something went wrong. Try again.") : "Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const send = (raw?: string) => {
     const q = (raw ?? text).trim();
     if (!q || busy) return;
+    if (USE_API) {
+      if (!api) {
+        setNotice("Sign in to chat with Corvid.");
+        return;
+      }
+      void sendApi(q);
+      return;
+    }
     const now = Date.now();
     const isToken = /\$[a-z]{2,10}|^[1-9A-HJ-NP-Za-km-z]{32,44}$/i.test(q);
     const sid = active ?? "s" + now;
@@ -124,6 +201,7 @@ export function ApplicationChatContent() {
     setDrawer(false);
   };
   const remove = (id: string) => {
+    if (api) void apiSend("DELETE", `/api/chats/${id}`).catch(() => setNotice("Could not delete this chat."));
     setSessions((p) => p.filter((x) => x.id !== id));
     if (active === id) setActive(null);
   };
@@ -157,10 +235,7 @@ export function ApplicationChatContent() {
             list.map((x) => (
               <div key={x.id} className="group flex items-center" style={{ background: x.id === active ? "var(--v2-bg-1)" : "transparent" }}>
                 <button
-                  onClick={() => {
-                    setActive(x.id);
-                    setDrawer(false);
-                  }}
+                  onClick={() => open_(x.id)}
                   className="flex-1 min-w-0 text-left text-[12px] pl-10 pr-2 py-2 truncate hover:bg-[var(--v2-bg-1)]"
                   style={{ color: x.id === active ? "var(--v2-t-1)" : "var(--v2-t-3)" }}
                 >
@@ -263,16 +338,21 @@ export function ApplicationChatContent() {
           <Ic d={PATHS.send} size={16} />
         </button>
       </div>
+      {notice && (
+        <p role="alert" className="text-[12px] mt-2" style={{ color: "var(--v2-neg)" }}>
+          {notice}
+        </p>
+      )}
       <div className="flex items-center justify-between gap-3 mt-2">
         <div className="flex-1 min-w-0">
           <p className="eyebrow" style={{ color: "var(--v2-t-3)" }}>
             Ctrl+Enter
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 shrink-0" title="0 credits · ~0 analyses available">
+        <span className="inline-flex items-center gap-1.5 shrink-0" title={credits === null ? "Credits" : `${credits} credits · 1 credit per answer`}>
           <Ic d={PATHS.spark} size={11} style={{ color: "var(--v2-accent-text)" }} />
           <span className="eyebrow num" style={{ color: "var(--v2-t-2)" }}>
-            0 cr
+            {credits === null ? "0" : credits} cr
           </span>
         </span>
       </div>
@@ -356,7 +436,7 @@ export function ApplicationChatContent() {
                     <button
                       key={c.label}
                       type="button"
-                      onClick={() => send(c.prompt)}
+                      onClick={() => (c.href ? (window.location.href = c.href) : send(c.prompt))}
                       className="hero-chip group relative inline-flex items-center gap-2 px-4 py-2.5 disabled:opacity-50"
                       style={{ borderRadius: "999px", color: "var(--v2-t-1)", fontSize: "13px" }}
                     >

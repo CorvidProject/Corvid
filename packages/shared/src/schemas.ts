@@ -448,3 +448,25 @@ export const watchlistsResponseSchema = z.object({
     }),
   ),
 });
+
+/* ---- chat (analisis token/wallet dengan LLM) ---- */
+
+export const CHAT_MESSAGE_MAX = 2000;
+export const chatSchema = z.object({
+  id: z.number().int(),
+  title: z.string(),
+  kind: z.enum(["chat", "token"]),
+  tokenMint: z.string().nullable(),
+  updatedAt: z.string(),
+});
+export const chatMessageSchema = z.object({
+  id: z.number().int(),
+  role: z.enum(["user", "assistant"]),
+  content: z.string(),
+  createdAt: z.string(),
+});
+export const chatIdParamSchema = z.object({ id: z.coerce.number().int().positive() });
+export const chatsResponseSchema = z.object({ chats: z.array(chatSchema) });
+export const chatDetailSchema = z.object({ chat: chatSchema, messages: z.array(chatMessageSchema) });
+export const chatSendBodySchema = z.object({ content: z.string().trim().min(1).max(CHAT_MESSAGE_MAX) });
+export const chatSendResponseSchema = z.object({ messages: z.array(chatMessageSchema).length(2), credits: z.number().int() });

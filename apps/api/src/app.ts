@@ -15,6 +15,8 @@ import { alphaRoutes } from "./routes/alpha";
 import { userRoutes } from "./routes/user";
 import { watchlistRoutes } from "./routes/watchlists";
 import { agentRoutes } from "./routes/agents";
+import { chatRoutes } from "./routes/chats";
+import type { LlmClient } from "./llm";
 import type { Verifier } from "./auth";
 import { coingeckoSolPrice, priceRoutes, type SolPriceSource } from "./routes/prices";
 
@@ -29,9 +31,11 @@ export interface AppOptions {
   /** Verifier JWT Supabase; null = endpoint ber-auth menjawab 503. */
   verifier?: Verifier | null;
   tradeMode?: "dry" | "live";
+  /** Klien LLM untuk chat; null = chat menjawab 503. */
+  llm?: LlmClient | null;
 }
 
-export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, solPrice = coingeckoSolPrice, verifier = null, tradeMode = "dry" }: AppOptions) {
+export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, solPrice = coingeckoSolPrice, verifier = null, tradeMode = "dry", llm = null }: AppOptions) {
   const app = Fastify({ logger }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -52,6 +56,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
   await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
   await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode }), { prefix: "/api" });
+  await app.register(chatRoutes({ db, requireAuth: requireAuth!, llm }), { prefix: "/api" });
   await app.register(watchlistRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
 
   // Rute yang belum ada: 404 bersih (tanpa proxy ke situs lain).
