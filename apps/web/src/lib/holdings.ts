@@ -2,7 +2,7 @@ import { getChain } from "@corvid/shared/chains";
 
 // Saldo wallet pengguna dibaca langsung dari RPC mainnet (hanya baca; data pasar selalu mainnet).
 // Cakupan: ETH + token yang diindeks Corvid. Token lain di wallet tidak terlihat. Tanpa basis biaya, jadi tanpa PnL.
-export type Holding = { mint: string; symbol: string | null; amount: number; priceUsd: number | null };
+export type Holding<T> = { token: T; amount: number };
 type Rpc = { jsonrpc: "2.0"; id: number; method: string; params: unknown[] };
 type RpcRes = { id: number; result?: string; error?: unknown };
 
@@ -25,10 +25,7 @@ async function batch(url: string, calls: Rpc[]): Promise<Map<number, string | nu
 const toBig = (hex: string | null | undefined) => (hex && hex !== "0x" ? BigInt(hex) : 0n);
 const scale = (v: bigint, dec: number) => Number(v) / 10 ** dec;
 
-export async function readHoldings(
-  owner: string,
-  tokens: { mint: string; symbol: string | null; price: number | null }[],
-): Promise<{ eth: number; holdings: Holding[] }> {
+export async function readHoldings<T extends { mint: string }>(owner: string, tokens: T[]): Promise<{ eth: number; holdings: Holding<T>[] }> {
   const rpc = getChain("mainnet").publicRpcUrl;
   const calls: Rpc[] = [{ jsonrpc: "2.0", id: 0, method: "eth_getBalance", params: [owner, "latest"] }];
   tokens.forEach((t, i) =>
@@ -45,7 +42,7 @@ export async function readHoldings(
   const holdings = held.map((x, i) => {
     const d = dRes.get(i);
     const dec = d && d !== "0x" ? Number(BigInt(d)) : 18;
-    return { mint: x.t.mint, symbol: x.t.symbol, amount: scale(x.raw, dec > 36 ? 18 : dec), priceUsd: x.t.price };
+    return { token: x.t, amount: scale(x.raw, dec > 36 ? 18 : dec) };
   });
   return { eth, holdings };
 }
