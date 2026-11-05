@@ -62,3 +62,5 @@
 
 ## Keputusan pemilik 2026-11-06: testnet = `main`
 27. **Tidak perlu lagi:** no. 24 (Ignored Build Step untuk branch testnet) dan no. 25 (proteksi preview). Frontend testnet cukup situs production dari `main` (https://corvid-tau.vercel.app, domain production tidak diminta login). Biarkan Ignored Build Step apa adanya. Branch `testnet` dan PR #1 dibiarkan (tidak dihapus), tidak dipakai deploy.
+
+- [x] **No. 19 selesai** (pemilik, 2026-11-06): Redirect URLs Supabase untuk https://corvid-tau.vercel.app sudah ditambahkan.
