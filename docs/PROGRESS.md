@@ -103,3 +103,8 @@
 ## 2026-11-05 — Runner agent (simulasi)
 - Runner lima langkah dengan pemutus berbasis aturan, swap `dry`, notifikasi, riwayat run; dijadwalkan di worker. 12 tes runner (semua jalur) + 12 tes agents lulus; diuji pada data nyata (token baru GeckoTerminal): scanner memblokir karena belum ada data keamanan, watcher berhenti di keputusan (likuiditas tipis). UI My agents menampilkan run terakhir.
 - Belum: Helius (data keamanan membuat scanner bisa lolos), penyedia LLM, portfolio + wallet kustodian, chat, marketplace, eksekusi live.
+
+## 2026-11-05 — My lists (watchlist wallet)
+- API: `GET /api/alpha/watchlists`, `PUT|DELETE /api/alpha/watchlists/wallets/:address` (daftar bawaan "Starred", maks 200, terisolasi per pengguna). 5 tes baru lulus, tsc bersih.
+- Web: tombol bintang di Live feed (hanya saat masuk + mode API), tab My lists menampilkan wallet berbintang dengan tier/PnL dari data worker. Belum diuji Playwright dengan sesi nyata (menunggu Supabase, BLOCKERS no. 13).
+- Berikut: portfolio (saldo on-chain wallet pengguna), chat via API, marketplace, `/application/admin`.

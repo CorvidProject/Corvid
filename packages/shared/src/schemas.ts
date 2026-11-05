@@ -426,3 +426,25 @@ export const agentRunsResponseSchema = z.object({
   ),
 });
 export const runsQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(50).default(20) });
+
+/* ---- watchlist wallet (My lists) ---- */
+
+export const watchlistWalletParamSchema = z.object({ address: evmAddress });
+export const watchlistsResponseSchema = z.object({
+  lists: z.array(
+    z.object({
+      id: z.number().int(),
+      name: z.string(),
+      wallets: z.array(
+        z.object({
+          address: evmAddress,
+          label: z.string().nullable(),
+          tier: z.enum(["S", "A", "B", "C"]).nullable(),
+          pnlEth: nullableNum,
+          winRate: nullableNum,
+          lastActive: nullableNum,
+        }),
+      ),
+    }),
+  ),
+});

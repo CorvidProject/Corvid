@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
-import { CaretDown, CaretLeft, Funnel, List, Rows } from "@phosphor-icons/react";
+import { CaretDown, CaretLeft, Funnel, List, Rows, Star } from "@phosphor-icons/react";
 import { explorerAddress, getChain } from "@corvid/shared/chains";
-import { apiGet } from "@/lib/api";
+import { USE_API, apiGet, apiSend } from "@/lib/api";
+import { useSigned } from "@/components/auth/signed";
 
 // Tab "Live feed" dan "My lists" di /application/alpha. Live feed: GET /api/alpha/activity (trade wallet bertier yang diindeks worker,
-// disegarkan tiap 8 dtk). My lists belum tersambung (daftar pantau butuh login dan API watchlist).
+// disegarkan tiap 8 dtk). My lists: GET/PUT/DELETE /api/alpha/watchlists (daftar bawaan "Starred", butuh login; hanya mode API).
 
 function Pill({ active, onClick, children, color }: { active: boolean; onClick: () => void; children: ReactNode; color?: string }) {
   return (
@@ -70,6 +71,43 @@ function EmptyState({ title, hint }: { title: string; hint: string }) {
   );
 }
 
+type WatchedWallet = { address: string; label: string | null; tier: "S" | "A" | "B" | "C" | null; pnlEth: number | null; winRate: number | null; lastActive: number | null };
+
+// Daftar wallet berbintang milik pengguna. Tanpa sesi atau tanpa backend: kosong dan `enabled` false.
+function useWatched() {
+  const signed = useSigned();
+  const enabled = signed && USE_API;
+  const [wallets, setWallets] = useState<WatchedWallet[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const reload = () =>
+    apiGet<{ lists: { wallets: WatchedWallet[] }[] }>("/api/alpha/watchlists")
+      .then((r) => setWallets(r.lists.flatMap((l) => l.wallets)))
+      .catch(() => setError("Could not load your lists"));
+  useEffect(() => {
+    if (enabled) void reload();
+    else setWallets(null);
+  }, [enabled]);
+  const toggle = async (address: string) => {
+    const on = wallets?.some((w) => w.address === address.toLowerCase());
+    setError(null);
+    try {
+      await apiSend(on ? "DELETE" : "PUT", `/api/alpha/watchlists/wallets/${address}`);
+      await reload();
+    } catch (e) {
+      setError(e instanceof Error && e.message === "watchlist_full" ? "Your list is full" : "Could not update your list");
+    }
+  };
+  return { enabled, wallets, error, toggle, has: (a: string) => !!wallets?.some((w) => w.address === a.toLowerCase()) };
+}
+
+function StarButton({ on, onClick }: { on: boolean; onClick: () => void }) {
+  return (
+    <button onClick={onClick} aria-pressed={on} aria-label={on ? "Remove wallet from list" : "Add wallet to list"} className="transition-colors hover:text-[var(--v2-t-1)]" style={{ color: on ? "var(--v2-accent)" : "var(--v2-t-4)" }}>
+      <Star size={15} weight={on ? "fill" : "regular"} />
+    </button>
+  );
+}
+
 type Since = "1h" | "6h" | "24h" | "all";
 type Activity = { wallet: string; side: "buy" | "sell"; symbol: string | null; mint: string; eth: number | null; at: number };
 const MAINNET = getChain("mainnet");
@@ -80,6 +118,7 @@ const ago = (ts: number, now: number) => {
 type Side = "all" | "buy" | "sell";
 
 export function AlphaLive() {
+  const watched = useWatched();
   const [open, setOpen] = useState(true);
   const [since, setSince] = useState<Since>("all");
   const [side, setSide] = useState<Side>("all");
@@ -222,6 +261,7 @@ export function AlphaLive() {
                 <a className="text-[14px] font-semibold hover:underline min-w-0 truncate" style={{ color: "var(--v2-t-1)" }} href={`/application/tokens/${a.mint}?chain=robinhood`}>
                   {a.symbol ?? `${a.mint.slice(0, 6)}…`}
                 </a>
+                {watched.enabled && <StarButton on={watched.has(a.wallet)} onClick={() => void watched.toggle(a.wallet)} />}
                 <a
                   className="num text-[12px] hover:underline"
                   style={{ color: "var(--v2-t-4)" }}
@@ -248,6 +288,8 @@ export function AlphaLive() {
 
 export function AlphaMyLists() {
   const [open, setOpen] = useState(true);
+  const watched = useWatched();
+  const list = watched.wallets ?? [];
   return (
     <div className="flex-1 min-h-0 lg:flex lg:gap-3">
       {open && (
@@ -257,7 +299,32 @@ export function AlphaMyLists() {
       )}
       <div className="flex-1 min-w-0 overflow-y-auto pr-5 sm:pr-8 lg:pr-0">
         <div className="pt-6">
-          <EmptyState title="No watchlists yet" hint="Star a wallet anywhere on the platform and a list is built for you automatically" />
+          {!watched.enabled ? (
+            <EmptyState title="Sign in to keep lists" hint="Your starred wallets are saved to your account once you sign in" />
+          ) : watched.error && watched.wallets === null ? (
+            <EmptyState title={watched.error} hint="Try again shortly." />
+          ) : watched.wallets === null ? (
+            <EmptyState title="Loading lists…" hint="" />
+          ) : list.length === 0 ? (
+            <EmptyState title="No watchlists yet" hint="Star a wallet in the Live feed and it is added to your Starred list" />
+          ) : (
+            <div style={{ borderTop: "1px solid var(--v2-line-1)" }}>
+              {watched.error && <p className="px-3 py-2 text-[12px]" style={{ color: "var(--v2-neg)" }}>{watched.error}</p>}
+              {list.map((w) => (
+                <div key={w.address} className="flex items-center gap-3 px-3 py-3" style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
+                  <StarButton on onClick={() => void watched.toggle(w.address)} />
+                  <a className="num text-[13px] hover:underline" style={{ color: "var(--v2-t-1)" }} href={explorerAddress(MAINNET, w.address)} target="_blank" rel="noopener noreferrer">
+                    {w.label ?? `${w.address.slice(0, 6)}…${w.address.slice(-4)}`}
+                  </a>
+                  {w.tier && <span className="num text-[11px] px-1.5 py-0.5 rounded-sm" style={{ background: "var(--v2-bg-2)", color: "var(--v2-t-2)" }}>Tier {w.tier}</span>}
+                  <span className="ml-auto num text-[12px]" style={{ color: "var(--v2-t-3)" }}>
+                    {w.pnlEth === null ? "No scored activity" : `${w.pnlEth >= 0 ? "+" : ""}${w.pnlEth.toFixed(2)} ETH`}
+                    {w.winRate !== null && ` · ${Math.round(w.winRate)}% win`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

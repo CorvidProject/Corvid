@@ -89,9 +89,10 @@
             "schema": {
               "type": "string",
               "enum": [
+                "robinhood",
                 "solana"
               ],
-              "default": "solana"
+              "default": "robinhood"
             },
             "in": "query",
             "name": "chain",
@@ -131,8 +132,16 @@
                             "nullable": true
                           },
                           "mint": {
-                            "type": "string",
-                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
                           },
                           "image": {
                             "type": "string",
@@ -270,6 +279,7 @@
                           "chain": {
                             "type": "string",
                             "enum": [
+                              "robinhood",
                               "solana"
                             ]
                           },
@@ -337,8 +347,16 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                }
+              ]
             },
             "in": "query",
             "name": "mint",
@@ -348,9 +366,10 @@
             "schema": {
               "type": "string",
               "enum": [
+                "robinhood",
                 "solana"
               ],
-              "default": "solana"
+              "default": "robinhood"
             },
             "in": "query",
             "name": "chain",
@@ -446,8 +465,16 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                }
+              ]
             },
             "in": "path",
             "name": "mint",
@@ -560,8 +587,16 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                }
+              ]
             },
             "in": "path",
             "name": "mint",
@@ -588,8 +623,16 @@
                           "nullable": true
                         },
                         "mint": {
-                          "type": "string",
-                          "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^0x[0-9a-fA-F]{40}$"
+                            },
+                            {
+                              "type": "string",
+                              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                            }
+                          ]
                         },
                         "image": {
                           "type": "string",
@@ -931,8 +974,16 @@
                         "type": "object",
                         "properties": {
                           "mint": {
-                            "type": "string",
-                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
                           },
                           "name": {
                             "type": "string",
@@ -1040,9 +1091,10 @@
             "schema": {
               "type": "string",
               "enum": [
+                "robinhood",
                 "solana"
               ],
-              "default": "solana"
+              "default": "robinhood"
             },
             "in": "query",
             "name": "chain",
@@ -1071,8 +1123,16 @@
                             "nullable": true
                           },
                           "mint": {
-                            "type": "string",
-                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
                           },
                           "image": {
                             "type": "string",
@@ -1210,6 +1270,7 @@
                           "chain": {
                             "type": "string",
                             "enum": [
+                              "robinhood",
                               "solana"
                             ]
                           },
@@ -1296,8 +1357,16 @@
                         "type": "object",
                         "properties": {
                           "address": {
-                            "type": "string",
-                            "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
                           },
                           "label": {
                             "type": "string",
@@ -1353,8 +1422,16 @@
                   "mints": {
                     "type": "array",
                     "items": {
-                      "type": "string",
-                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                        }
+                      ]
                     },
                     "minItems": 1,
                     "maxItems": 50
@@ -1373,9 +1450,10 @@
             "schema": {
               "type": "string",
               "enum": [
+                "robinhood",
                 "solana"
               ],
-              "default": "solana"
+              "default": "robinhood"
             },
             "in": "query",
             "name": "chain",
@@ -1481,8 +1559,16 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                }
+              ]
             },
             "in": "query",
             "name": "mint",
@@ -1509,9 +1595,10 @@
             "schema": {
               "type": "string",
               "enum": [
+                "robinhood",
                 "solana"
               ],
-              "default": "solana"
+              "default": "robinhood"
             },
             "in": "query",
             "name": "chain",
@@ -1538,8 +1625,16 @@
                   "type": "object",
                   "properties": {
                     "mint": {
-                      "type": "string",
-                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^0x[0-9a-fA-F]{40}$"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                        }
+                      ]
                     },
                     "type": {
                       "type": "string",
@@ -1620,6 +1715,281 @@
         }
       }
     },
+    "/api/alpha/curated": {
+      "get": {
+        "tags": [
+          "alpha"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "S",
+                "A",
+                "B",
+                "C"
+              ]
+            },
+            "in": "query",
+            "name": "tier",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "wallets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
+                          },
+                          "label": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "tier": {
+                            "type": "string",
+                            "enum": [
+                              "S",
+                              "A",
+                              "B",
+                              "C"
+                            ],
+                            "nullable": true
+                          },
+                          "winRate": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "pnlEth": {
+                            "type": "number"
+                          },
+                          "trades": {
+                            "type": "integer"
+                          },
+                          "closedTokens": {
+                            "type": "integer"
+                          },
+                          "tokensTraded": {
+                            "type": "integer"
+                          },
+                          "avgHoldHours": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "lastActive": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "address",
+                          "label",
+                          "tier",
+                          "winRate",
+                          "pnlEth",
+                          "trades",
+                          "closedTokens",
+                          "tokensTraded",
+                          "avgHoldHours",
+                          "lastActive"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "windowHours": {
+                      "type": "integer"
+                    },
+                    "at": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "wallets",
+                    "windowHours",
+                    "at"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alpha/activity": {
+      "get": {
+        "tags": [
+          "alpha"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "activity": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "wallet": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
+                          },
+                          "side": {
+                            "type": "string",
+                            "enum": [
+                              "buy",
+                              "sell"
+                            ]
+                          },
+                          "symbol": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "mint": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
+                          },
+                          "eth": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "at": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "wallet",
+                          "side",
+                          "symbol",
+                          "mint",
+                          "eth",
+                          "at"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "activity"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prices/native": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "usd": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "usd"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/prices/sol": {
       "get": {
         "tags": [
@@ -1639,6 +2009,2251 @@
                   },
                   "required": [
                     "usd"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "credits": {
+                      "type": "integer"
+                    },
+                    "plan": {
+                      "type": "string"
+                    },
+                    "wallet": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "bannerUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "twitterHandle": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "email",
+                    "displayName",
+                    "credits",
+                    "plan",
+                    "wallet",
+                    "avatarUrl",
+                    "bannerUrl",
+                    "twitterHandle"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 50
+                  },
+                  "twitterHandle": {
+                    "type": "string",
+                    "pattern": "^@?[A-Za-z0-9_]{1,15}$",
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "credits": {
+                      "type": "integer"
+                    },
+                    "plan": {
+                      "type": "string"
+                    },
+                    "wallet": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "bannerUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "twitterHandle": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "email",
+                    "displayName",
+                    "credits",
+                    "plan",
+                    "wallet",
+                    "avatarUrl",
+                    "bannerUrl",
+                    "twitterHandle"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/activity": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "at": {
+                            "type": "number"
+                          },
+                          "userAgent": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "at",
+                          "userAgent"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/log-login": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "logged": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "ok",
+                    "logged"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/trading-prefs": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "slippageBps": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 5000
+                    },
+                    "priorityFeeLamports": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "dry",
+                        "live"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "slippageBps",
+                    "priorityFeeLamports",
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "slippageBps": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5000
+                  },
+                  "priorityFeeLamports": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000000
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "dry",
+                      "live"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "slippageBps": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 5000
+                    },
+                    "priorityFeeLamports": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "dry",
+                        "live"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "slippageBps",
+                    "priorityFeeLamports",
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "agents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "auto_trader",
+                              "signal_bot",
+                              "wallet_monitor",
+                              "token_analyst",
+                              "copy_trader"
+                            ]
+                          },
+                          "chain": {
+                            "type": "string",
+                            "enum": [
+                              "robinhood",
+                              "solana"
+                            ]
+                          },
+                          "running": {
+                            "type": "boolean"
+                          },
+                          "tokenSymbol": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "winRate": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "runs": {
+                            "type": "integer"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "lastRun": {
+                            "type": "object",
+                            "properties": {
+                              "n": {
+                                "type": "integer"
+                              },
+                              "at": {
+                                "type": "number"
+                              },
+                              "ended": {
+                                "type": "string",
+                                "enum": [
+                                  "passed",
+                                  "blocked",
+                                  "stopped",
+                                  "failed"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "n",
+                              "at",
+                              "ended"
+                            ],
+                            "additionalProperties": false,
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "type",
+                          "chain",
+                          "running",
+                          "tokenSymbol",
+                          "winRate",
+                          "runs",
+                          "createdAt",
+                          "lastRun"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "agents"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "agents"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "pipeline": {
+                    "type": "string",
+                    "enum": [
+                      "follow_wallet",
+                      "new_tokens",
+                      "token_trading"
+                    ]
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "signal",
+                      "trading"
+                    ],
+                    "default": "signal"
+                  },
+                  "config": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 300
+                    }
+                  },
+                  "limits": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 300
+                    },
+                    "default": {}
+                  }
+                },
+                "required": [
+                  "name",
+                  "pipeline",
+                  "config"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "auto_trader",
+                        "signal_bot",
+                        "wallet_monitor",
+                        "token_analyst",
+                        "copy_trader"
+                      ]
+                    },
+                    "chain": {
+                      "type": "string",
+                      "enum": [
+                        "robinhood",
+                        "solana"
+                      ]
+                    },
+                    "running": {
+                      "type": "boolean"
+                    },
+                    "tokenSymbol": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "winRate": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "runs": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "lastRun": {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer"
+                        },
+                        "at": {
+                          "type": "number"
+                        },
+                        "ended": {
+                          "type": "string",
+                          "enum": [
+                            "passed",
+                            "blocked",
+                            "stopped",
+                            "failed"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "at",
+                        "ended"
+                      ],
+                      "additionalProperties": false,
+                      "nullable": true
+                    },
+                    "pipeline": {
+                      "type": "string",
+                      "enum": [
+                        "follow_wallet",
+                        "new_tokens",
+                        "token_trading"
+                      ],
+                      "nullable": true
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "signal",
+                        "trading"
+                      ]
+                    },
+                    "config": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "execution": {
+                      "type": "string",
+                      "enum": [
+                        "dry",
+                        "live"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "chain",
+                    "running",
+                    "tokenSymbol",
+                    "winRate",
+                    "runs",
+                    "createdAt",
+                    "lastRun",
+                    "pipeline",
+                    "mode",
+                    "config",
+                    "limits",
+                    "execution"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents/{id}": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": true,
+              "minimum": 0
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "auto_trader",
+                        "signal_bot",
+                        "wallet_monitor",
+                        "token_analyst",
+                        "copy_trader"
+                      ]
+                    },
+                    "chain": {
+                      "type": "string",
+                      "enum": [
+                        "robinhood",
+                        "solana"
+                      ]
+                    },
+                    "running": {
+                      "type": "boolean"
+                    },
+                    "tokenSymbol": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "winRate": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "runs": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "lastRun": {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer"
+                        },
+                        "at": {
+                          "type": "number"
+                        },
+                        "ended": {
+                          "type": "string",
+                          "enum": [
+                            "passed",
+                            "blocked",
+                            "stopped",
+                            "failed"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "at",
+                        "ended"
+                      ],
+                      "additionalProperties": false,
+                      "nullable": true
+                    },
+                    "pipeline": {
+                      "type": "string",
+                      "enum": [
+                        "follow_wallet",
+                        "new_tokens",
+                        "token_trading"
+                      ],
+                      "nullable": true
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "signal",
+                        "trading"
+                      ]
+                    },
+                    "config": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "execution": {
+                      "type": "string",
+                      "enum": [
+                        "dry",
+                        "live"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "chain",
+                    "running",
+                    "tokenSymbol",
+                    "winRate",
+                    "runs",
+                    "createdAt",
+                    "lastRun",
+                    "pipeline",
+                    "mode",
+                    "config",
+                    "limits",
+                    "execution"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "agents"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "running": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": true,
+              "minimum": 0
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "auto_trader",
+                        "signal_bot",
+                        "wallet_monitor",
+                        "token_analyst",
+                        "copy_trader"
+                      ]
+                    },
+                    "chain": {
+                      "type": "string",
+                      "enum": [
+                        "robinhood",
+                        "solana"
+                      ]
+                    },
+                    "running": {
+                      "type": "boolean"
+                    },
+                    "tokenSymbol": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "winRate": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "runs": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "lastRun": {
+                      "type": "object",
+                      "properties": {
+                        "n": {
+                          "type": "integer"
+                        },
+                        "at": {
+                          "type": "number"
+                        },
+                        "ended": {
+                          "type": "string",
+                          "enum": [
+                            "passed",
+                            "blocked",
+                            "stopped",
+                            "failed"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "n",
+                        "at",
+                        "ended"
+                      ],
+                      "additionalProperties": false,
+                      "nullable": true
+                    },
+                    "pipeline": {
+                      "type": "string",
+                      "enum": [
+                        "follow_wallet",
+                        "new_tokens",
+                        "token_trading"
+                      ],
+                      "nullable": true
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "signal",
+                        "trading"
+                      ]
+                    },
+                    "config": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "limits": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "execution": {
+                      "type": "string",
+                      "enum": [
+                        "dry",
+                        "live"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "chain",
+                    "running",
+                    "tokenSymbol",
+                    "winRate",
+                    "runs",
+                    "createdAt",
+                    "lastRun",
+                    "pipeline",
+                    "mode",
+                    "config",
+                    "limits",
+                    "execution"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "agents"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": true,
+              "minimum": 0
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents/{id}/runs": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": true,
+              "minimum": 0
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "runs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "n": {
+                            "type": "integer"
+                          },
+                          "at": {
+                            "type": "string"
+                          },
+                          "ended": {
+                            "type": "string",
+                            "enum": [
+                              "passed",
+                              "blocked",
+                              "stopped",
+                              "failed"
+                            ]
+                          },
+                          "steps": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "step": {
+                                  "type": "string"
+                                },
+                                "detail": {
+                                  "type": "string"
+                                },
+                                "outcome": {
+                                  "type": "string",
+                                  "enum": [
+                                    "passed",
+                                    "blocked",
+                                    "stopped",
+                                    "failed"
+                                  ]
+                                },
+                                "values": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                }
+                              },
+                              "required": [
+                                "step",
+                                "detail",
+                                "outcome",
+                                "values"
+                              ],
+                              "additionalProperties": false
+                            }
+                          }
+                        },
+                        "required": [
+                          "n",
+                          "at",
+                          "ended",
+                          "steps"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "runs"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox": {
+      "get": {
+        "tags": [
+          "inbox"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "kind": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "body": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "at": {
+                            "type": "number"
+                          },
+                          "read": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "kind",
+                          "title",
+                          "body",
+                          "at",
+                          "read"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inbox/read-all": {
+      "post": {
+        "tags": [
+          "inbox"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "updated": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "updated"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signals": {
+      "get": {
+        "tags": [
+          "inbox"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "signals": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "mint": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^0x[0-9a-fA-F]{40}$"
+                              },
+                              {
+                                "type": "string",
+                                "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                              }
+                            ]
+                          },
+                          "score": {
+                            "type": "integer"
+                          },
+                          "at": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "symbol",
+                          "mint",
+                          "score",
+                          "at"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "signals"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alpha/watchlists": {
+      "get": {
+        "tags": [
+          "alpha"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lists": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "wallets": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "address": {
+                                  "type": "string",
+                                  "pattern": "^0x[0-9a-fA-F]{40}$"
+                                },
+                                "label": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "tier": {
+                                  "type": "string",
+                                  "enum": [
+                                    "S",
+                                    "A",
+                                    "B",
+                                    "C"
+                                  ],
+                                  "nullable": true
+                                },
+                                "pnlEth": {
+                                  "type": "number",
+                                  "nullable": true
+                                },
+                                "winRate": {
+                                  "type": "number",
+                                  "nullable": true
+                                },
+                                "lastActive": {
+                                  "type": "number",
+                                  "nullable": true
+                                }
+                              },
+                              "required": [
+                                "address",
+                                "label",
+                                "tier",
+                                "pnlEth",
+                                "winRate",
+                                "lastActive"
+                              ],
+                              "additionalProperties": false
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "wallets"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "lists"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alpha/watchlists/wallets/{address}": {
+      "put": {
+        "tags": [
+          "alpha"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "in": "path",
+            "name": "address",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "alpha"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^0x[0-9a-fA-F]{40}$"
+            },
+            "in": "path",
+            "name": "address",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
                   ],
                   "additionalProperties": false
                 }
