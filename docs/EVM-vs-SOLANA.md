@@ -1,3 +1,5 @@
+> **USANG (2026-11-05):** dokumen ini ditulis saat Corvid hanya Solana. Arah baru: Robinhood Chain (EVM), lihat `docs/MIGRATION-ROBINHOOD.md`. Isinya dipertahankan sebagai riwayat.
+
 # EVM vs Solana — perbedaan konsep dan sisa konteks EVM di Corvid
 
 Corvid hanya mendukung **Solana** (devnet untuk testnet, mainnet-beta untuk mainnet). Referensi apevisor mendukung enam chain (Ethereum, Base, Arbitrum, BNB, Solana, Robinhood), sehingga banyak teks, data, dan skema masih berbau **EVM**. Dokumen ini mencatat perbedaannya agar penyesuaian nanti konsisten.
