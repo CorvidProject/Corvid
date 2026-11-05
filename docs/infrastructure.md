@@ -57,15 +57,21 @@ Cara pasang variabel rahasia (jangan lewat chat/repo): dashboard Railway > proje
 
 Cek cepat dari terminal (hanya nama variabel): `railway variables -s "@corvid/api" --kv` lalu hapus bagian nilai. Log: `railway logs -s "@corvid/worker" --lines 50`.
 
-## Testnet (aktif)
+## Testnet (aktif) dan jalur ke mainnet
 
-| Lapisan | Lokasi |
-| --- | --- |
-| Frontend | Vercel, branch `testnet` (preview, memakai env Preview) |
-| Backend | Railway `Corvid` (satu lingkungan, `CHAIN_ENV=testnet`) |
-| Database | Supabase `Corvid` |
-| Chain | Robinhood Chain testnet (46630) untuk wallet; data pasar dari mainnet (hanya baca) |
+Keputusan pemilik 2026-11-06: **tidak ada deploy terpisah untuk testnet**. Satu lingkungan berjalan dari branch `main`, dan chain ditentukan variabel env. Branch `testnet`/`mainnet` di GitHub tidak dipakai deploy.
 
-Alur: commit kecil ke `main`, PR `main` -> `testnet`. Catatan: Railway mengikuti `main`, bukan `testnet`, sehingga backend ter-deploy begitu `main` didorong; frontend testnet baru berubah setelah PR digabung. Untuk memisahkannya, ubah Source > Branch kedua service Railway ke `testnet` di dashboard (opsional).
+| Lapisan | Lokasi | Penentu chain |
+| --- | --- | --- |
+| Frontend | Vercel production, branch `main`: https://corvid-tau.vercel.app | `NEXT_PUBLIC_CHAIN_ENV` (dibaca saat build) |
+| Backend | Railway `Corvid` (`@corvid/api`, `@corvid/worker`), branch `main` | `CHAIN_ENV`, `RPC_URL` |
+| Database | Supabase `Corvid` | (data uji dibersihkan saat mainnet) |
+| Chain | Robinhood Chain testnet (46630) untuk wallet; data pasar dari mainnet (hanya baca) | |
 
-Setelah API hidup di Vercel, `NEXT_PUBLIC_*` tertanam saat build: ubah variabel lalu Redeploy.
+**Pindah ke mainnet = ganti env, bukan kode** (lalu testnet tidak dihidupkan lagi):
+1. Backup database ke `D:\.devackups`; **minta konfirmasi eksplisit pemilik**, lalu bersihkan data uji (user, wallet, sinyal, chat), skema dipertahankan.
+2. Railway, kedua service: `CHAIN_ENV=mainnet`, `RPC_URL` = RPC mainnet berkunci (Alchemy). `TRADE_MODE` tetap `dry`.
+3. Vercel Production: `NEXT_PUBLIC_CHAIN_ENV=mainnet` (tombol Testnet di Portfolio hilang otomatis), `NEXT_PUBLIC_RPC_URL` bila dipakai. Redeploy karena nilai `NEXT_PUBLIC_*` tertanam saat build.
+4. Rotasi semua kunci uji; verifikasi (beranda, 3 layar app, docs, legal, login wallet di chain 4663); catat di dokumen ini.
+
+Konsekuensi memilih satu lingkungan: tidak ada staging terpisah. Setiap push ke `main` langsung tampil di situs dan di backend; uji lewat `pnpm dev` dan hook `pre-push` sebelum push.
