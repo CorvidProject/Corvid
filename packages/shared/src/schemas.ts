@@ -512,3 +512,39 @@ export const marketAgentDetailSchema = z.object({
   tokenSymbol: z.string().nullable(),
 });
 export const marketFollowingResponseSchema = z.object({ ids: z.array(z.number().int()) });
+
+/* ---- Plan & Usage ---- */
+const usageLimitSchema = z.object({ chat: z.number().int(), deep: z.number().int() });
+export const planResponseSchema = z.object({
+  plan: z.enum(["free", "pro"]),
+  proUntil: z.string().nullable(),
+  limits: usageLimitSchema,
+  used: usageLimitSchema,
+  /** Awal periode berikutnya (reset kuota), ISO UTC. */
+  resetsAt: z.string(),
+  credits: z.number().int(),
+  /** Pembelian kredit/Pro aktif (PAID_FEATURES_ENABLED dan penerima/token terkonfigurasi). */
+  paymentsEnabled: z.boolean(),
+});
+
+/* ---- Pembayaran USDG ---- */
+export const orderCreateBodySchema = z.object({ product: z.enum(["credits_50", "credits_300", "pro_1m", "pro_3m", "pro_12m"]) });
+export const orderSchema = z.object({
+  id: z.number().int(),
+  product: z.string(),
+  label: z.string(),
+  status: z.enum(["pending", "paid", "expired"]),
+  /** Jumlah persis yang harus dikirim, unit terkecil token (USDG = 6 desimal). */
+  amountUnits: z.string(),
+  /** Jumlah yang sama sebagai desimal, untuk ditampilkan. */
+  amount: z.string(),
+  decimals: z.number().int(),
+  token: z.string(),
+  recipient: z.string(),
+  chainId: z.number().int(),
+  expiresAt: z.string(),
+  txHash: z.string().nullable(),
+});
+export const ordersResponseSchema = z.object({ orders: z.array(orderSchema) });
+export const orderVerifyBodySchema = z.object({ txHash: z.string().regex(/^0x[0-9a-fA-F]{64}$/, "txHash tidak valid") });
+export const orderIdParamSchema = z.object({ id: z.coerce.number().int().positive() });

@@ -26,6 +26,8 @@ export const profiles = pgTable("profiles", {
   displayName: text("display_name"),
   email: text("email"),
   plan: text("plan").notNull().default("free"),
+  /** Pro aktif selama waktu sekarang < pro_until (UTC). Null = tidak pernah Pro. */
+  proUntil: ts("pro_until"),
   avatarUrl: text("avatar_url"),
   bannerUrl: text("banner_url"),
   twitterHandle: text("twitter_handle"),
@@ -78,6 +80,52 @@ export const credits = pgTable(
     createdAt: ts("created_at").notNull().defaultNow(),
   },
   (t) => [index("credits_profile_idx").on(t.profileId, t.createdAt.desc())],
+);
+
+/** Satu baris per jawaban AI. source=quota: memakai kuota bulanan; credit: memakai 1 kredit. */
+export const usageEvents = pgTable(
+  "usage_events",
+  {
+    id: id(),
+    profileId: profileRef(),
+    /** chat = tanya jawab umum; deep = analisis token (konteks token terdeteksi). */
+    kind: text("kind").notNull(),
+    source: text("source").notNull(),
+    createdAt: ts("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("usage_events_profile_idx").on(t.profileId, t.createdAt.desc()),
+    index("usage_events_at_idx").on(t.createdAt.desc()),
+    check("usage_events_kind_chk", sql`${t.kind} in ('chat','deep')`),
+    check("usage_events_source_chk", sql`${t.source} in ('quota','credit')`),
+  ],
+);
+
+/** Pesanan pembayaran USDG. amount_units unik di antara pesanan pending agar tx tidak bisa diklaim akun lain. */
+export const paymentOrders = pgTable(
+  "payment_orders",
+  {
+    id: id(),
+    profileId: profileRef(),
+    product: text("product").notNull(),
+    /** Jumlah token dalam unit terkecil (USDG = 6 desimal), disimpan sebagai teks agar tanpa pembulatan. */
+    amountUnits: text("amount_units").notNull(),
+    tokenAddress: text("token_address").notNull(),
+    recipient: text("recipient").notNull(),
+    chainId: integer("chain_id").notNull(),
+    status: text("status").notNull().default("pending"),
+    txHash: text("tx_hash"),
+    payer: text("payer"),
+    createdAt: ts("created_at").notNull().defaultNow(),
+    expiresAt: ts("expires_at").notNull(),
+    paidAt: ts("paid_at"),
+  },
+  (t) => [
+    uniqueIndex("payment_orders_tx_uq").on(t.txHash),
+    uniqueIndex("payment_orders_pending_amount_uq").on(t.chainId, t.recipient, t.amountUnits).where(sql`${t.status} = 'pending'`),
+    index("payment_orders_profile_idx").on(t.profileId, t.createdAt.desc()),
+    check("payment_orders_status_chk", sql`${t.status} in ('pending','paid','expired')`),
+  ],
 );
 
 export const loginLog = pgTable(

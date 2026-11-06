@@ -10,6 +10,7 @@ import { LlmError, type LlmClient, type LlmMessage } from "../src/llm";
 import { RateLimiter } from "../src/ratelimit";
 import { ensureProfile, WELCOME_PER_IP_24H } from "../src/routes/user";
 
+const NO_QUOTA = { free: { chat: 0, deep: 0 }, pro: { chat: 0, deep: 0 } }; // tes kredit: tanpa kuota bulanan
 const dir = "D:/.dev/tmp/pgtest-chats";
 const port = 54338;
 const url = `postgres://corvid:corvid-dev@localhost:${port}/corvid`;
@@ -56,8 +57,8 @@ beforeAll(async () => {
   created = createDb(url);
   await created.db.insert(tokens).values({ mint: TOKEN, symbol: "TST", name: "Test Token", priceUsd: "0.0123", liquidityUsd: "50000", riskScore: 12 });
   const verifier = createVerifier({ issuer: ISS, key: kp.publicKey });
-  app = await buildApp({ db: created.db, verifier, llm, chatLimiter: new RateLimiter(1000, 60_000) });
-  appStrict = await buildApp({ db: created.db, verifier, llm, chatLimiter: new RateLimiter(2, 60_000) });
+  app = await buildApp({ db: created.db, verifier, llm, planLimits: NO_QUOTA, chatLimiter: new RateLimiter(1000, 60_000) });
+  appStrict = await buildApp({ db: created.db, verifier, llm, planLimits: NO_QUOTA, chatLimiter: new RateLimiter(2, 60_000) });
   appCapped = await buildApp({ db: created.db, verifier, llm, chatDailyCap: 0 });
   appNoLlm = await buildApp({ db: created.db, verifier, llm: null });
   await app.ready();

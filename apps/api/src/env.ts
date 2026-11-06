@@ -24,6 +24,19 @@ const envSchema = z.object({
   /** Pengaman tagihan: maksimal jawaban chat per 24 jam untuk semua pengguna. */
   CHAT_DAILY_CAP: z.coerce.number().int().min(0).default(3000),
   TRADE_MODE: z.enum(["dry", "live"]).default("dry"),
+  /** Pembelian kredit/Pro. Mati sampai pemilik menyalakannya (juga butuh PAYMENT_RECIPIENT). */
+  PAID_FEATURES_ENABLED: z.preprocess((v) => v === "true" || v === "1", z.boolean()).default(false),
+  /** Alamat publik penerima pembayaran (milik pemilik, bukan private key). */
+  PAYMENT_RECIPIENT: opt(z.string().regex(/^0x[0-9a-fA-F]{40}$/)),
+  /** Token pembayaran. Kosong = USDG resmi dari chains.ts (hanya ada di mainnet); testnet wajib mengisi alamat tUSDG. */
+  PAYMENT_TOKEN_ADDRESS: opt(z.string().regex(/^0x[0-9a-fA-F]{40}$/)),
+  PAYMENT_TOKEN_DECIMALS: z.coerce.number().int().min(0).max(18).default(6),
+  /** Konfirmasi blok sebelum pembayaran dianggap sah. */
+  PAYMENT_CONFIRMATIONS: z.coerce.number().int().min(1).max(100).default(2),
+  /** testnet (bawaan) atau mainnet; parameter chain ada di packages/shared/src/chains.ts. */
+  CHAIN_ENV: z.string().default("testnet"),
+  /** RPC berkunci (Alchemy). Kosong = RPC publik chain. */
+  RPC_URL: opt(z.string().url()),
 });
 export type Env = z.infer<typeof envSchema>;
 

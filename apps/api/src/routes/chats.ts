@@ -2,8 +2,10 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { chatMessages, chats, credits, profiles } from "@corvid/db";
+import { chatMessages, chats, profiles, usageEvents } from "@corvid/db";
 import {
+  PLAN_LIMITS,
+  type PlanLimitsByPlan,
   chatDetailSchema,
   chatIdParamSchema,
   chatSchema,
@@ -16,8 +18,8 @@ import type { Db } from "../app";
 import { buildContext, SYSTEM_PROMPT } from "../chat-context";
 import { LlmError, type LlmClient } from "../llm";
 import { RateLimiter } from "../ratelimit";
+import { consumeAnswer, loadAllowance, pickSource } from "../plan";
 
-export const CHAT_COST_CREDITS = 1;
 export const MAX_CHATS_PER_USER = 100;
 export const MAX_MESSAGES_PER_CHAT = 200;
 /** Pesan chat per pengguna per menit. */
@@ -42,6 +44,7 @@ export const chatRoutes =
     llm,
     dailyCap = 3000,
     limiter = new RateLimiter(CHAT_PER_MINUTE, 60_000),
+    limits = PLAN_LIMITS,
   }: {
     db: Db;
     requireAuth: (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
@@ -49,6 +52,8 @@ export const chatRoutes =
     /** Pengaman tagihan: jawaban chat per 24 jam untuk semua pengguna. 0 = chat dimatikan. */
     dailyCap?: number;
     limiter?: RateLimiter;
+    /** Kuota bulanan per paket; setelah habis dipakai kredit. */
+    limits?: PlanLimitsByPlan;
   }): FastifyPluginAsync =>
   async (instance) => {
     const app = instance.withTypeProvider<ZodTypeProvider>();
@@ -117,22 +122,19 @@ export const chatRoutes =
         }
 
         async function handle() {
-        const [{ n: today }] = await db.select({ n: sql<number>`coalesce(sum(-${credits.delta}), 0)::int` }).from(credits).where(sql`${credits.reason} = 'chat' and ${credits.createdAt} > now() - interval '24 hours'`);
+        const [{ n: today }] = await db.select({ n: sql<number>`count(*)::int` }).from(usageEvents).where(sql`${usageEvents.createdAt} > now() - interval '24 hours'`);
         if (today >= dailyCap) return reply.code(503).send({ error: "chat_busy" });
         const chat = await own(req, req.params.id);
         if (!chat) return reply.code(404).send({ error: "not_found" });
-        const balance = async (profileId: string) => {
-          const [b] = await db.select({ n: sql<number>`coalesce(sum(${credits.delta}), 0)::int` }).from(credits).where(eq(credits.profileId, profileId));
-          return b?.n ?? 0;
-        };
-        if ((await balance(me(req))) < CHAT_COST_CREDITS) return reply.code(402).send({ error: "no_credits" });
-
         const prior = await db.select().from(chatMessages).where(eq(chatMessages.chatId, chat.id)).orderBy(desc(chatMessages.id)).limit(HISTORY);
         const [{ n: count }] = await db.select({ n: sql<number>`count(*)::int` }).from(chatMessages).where(eq(chatMessages.chatId, chat.id));
         if (count >= MAX_MESSAGES_PER_CHAT) return reply.code(409).send({ error: "chat_full" });
 
         const content = req.body.content;
         const ctx = await buildContext(db, content, chat.tokenMint);
+        // Token terdeteksi = analisis mendalam (kuota "deep"); selain itu chat biasa.
+        const kind = ctx.mint ? ("deep" as const) : ("chat" as const);
+        if (!pickSource(await loadAllowance(db, uid, limits), kind)) return reply.code(402).send({ error: "no_credits" });
         let answer: string;
         try {
           answer = await model.complete(`${SYSTEM_PROMPT}\n\nDATA:\n${ctx.data}`, [
@@ -147,11 +149,10 @@ export const chatRoutes =
         // Kredit dipotong hanya setelah jawaban ada; saldo diperiksa ulang di dalam transaksi (kunci baris profil).
         const out = await db.transaction(async (tx) => {
           await tx.execute(sql`select 1 from ${profiles} where ${profiles.id} = ${me(req)} for update`);
-          const [b] = await tx.select({ n: sql<number>`coalesce(sum(${credits.delta}), 0)::int` }).from(credits).where(eq(credits.profileId, me(req)));
-          if ((b?.n ?? 0) < CHAT_COST_CREDITS) return null;
+          const spent = await consumeAnswer(tx, uid, kind, limits);
+          if (!spent) return null;
           const [u] = await tx.insert(chatMessages).values({ chatId: chat.id, role: "user", content }).returning();
           const [a] = await tx.insert(chatMessages).values({ chatId: chat.id, role: "assistant", content: answer }).returning();
-          await tx.insert(credits).values({ profileId: me(req), delta: -CHAT_COST_CREDITS, reason: "chat" });
           await tx
             .update(chats)
             .set({
@@ -160,7 +161,7 @@ export const chatRoutes =
               tokenMint: chat.tokenMint ?? ctx.mint,
             })
             .where(eq(chats.id, chat.id));
-          return { messages: [toMsg(u), toMsg(a)] as [ReturnType<typeof toMsg>, ReturnType<typeof toMsg>], credits: (b?.n ?? 0) - CHAT_COST_CREDITS };
+          return { messages: [toMsg(u), toMsg(a)] as [ReturnType<typeof toMsg>, ReturnType<typeof toMsg>], credits: spent.credits };
         });
         if (!out) return reply.code(402).send({ error: "no_credits" });
         return out;

@@ -36,6 +36,13 @@
       "when": 1793881111321,
       "tag": "0004_agent_marketplace",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793929418628,
+      "tag": "0005_plans_payments",
+      "breakpoints": true
     }
   ]
 }
