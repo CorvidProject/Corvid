@@ -428,6 +428,31 @@ function Avatar({ t, size, round = true }: { t: Tok; size: number; round?: boole
   );
 }
 const dotCls = (t: Tok) => (t.riskChecked === false ? "bg-[var(--v2-t-4)]" : t.riskScore <= 30 ? "bg-[var(--v2-pos)]" : t.riskScore <= 60 ? "bg-[var(--v2-warn)]" : "bg-[var(--v2-neg)]");
+/** Salin alamat kontrak token tanpa membuka halaman detail (baris tabel adalah tautan). */
+function CopyAddr({ address }: { address: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <button
+      type="button"
+      title={done ? "Copied" : `Copy address ${address}`}
+      aria-label="Copy token address"
+      onClick={async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          await navigator.clipboard.writeText(address);
+          setDone(true);
+          setTimeout(() => setDone(false), 1400);
+        } catch {}
+      }}
+      className="num shrink-0"
+      style={{ fontSize: 10, lineHeight: "16px", padding: "0 5px", borderRadius: 4, cursor: "pointer", color: done ? "var(--v2-pos)" : "var(--v2-t-4)", border: "1px solid var(--v2-line-1)", background: "transparent" }}
+    >
+      {done ? "Copied" : `${address.slice(0, 6)}…${address.slice(-4)}`}
+    </button>
+  );
+}
+
 const href = (t: Tok) => `/application/tokens/${t.mint}?chain=robinhood`;
 
 function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: Interval; now: number; watched: boolean; onWatch: () => void }) {
@@ -456,6 +481,7 @@ function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: 
             <span className="num text-[14px] font-semibold group-hover:text-[var(--v2-accent-text)] transition-colors truncate" style={{ color: "var(--v2-t-1)" }}>
               {t.symbol.trim()}
             </span>
+            <CopyAddr address={t.mint} />
           </div>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className="inline-flex items-center gap-1.5 shrink-0" title="Trades on Robinhood Chain">
@@ -503,7 +529,7 @@ function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: 
       <span className="relative z-[1] min-w-0"><Signals t={t} /></span>
       <span className="relative z-[1]">
         <div className="flex items-center gap-1.5 justify-end">
-          <a className="px-2.5 py-1.5 rounded-sm text-[11px] transition-colors hover:bg-[var(--v2-bg-2)]" href={`/application/agents/new?template=auto_trader&token_mint=${t.mint}`} style={{ color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }}>Watch</a>
+          <a className="px-2.5 py-1.5 rounded-sm text-[11px] transition-colors hover:bg-[var(--v2-bg-2)]" href={`/application/agents/new?template=token_trading&token_mint=${t.mint}&symbol=${encodeURIComponent(t.symbol.trim())}&start=1`} style={{ color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }}>Watch</a>
           <a className="px-2.5 py-1.5 rounded-sm text-[11px] transition-colors hover:bg-[var(--v2-bg-2)]" href={`/application/chat?q=${t.mint}`} style={{ color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }}>AI</a>
           <span className="w-px h-4 mx-0.5" style={{ background: "var(--v2-line-1)" }}></span>
           <a className="px-2.5 py-1.5 rounded-sm text-[11px] transition-colors hover:bg-[var(--v2-bg-2)]" href={href(t)} style={{ color: "var(--v2-t-1)", border: "1px solid var(--v2-line-2)" }}>Analyze →</a>

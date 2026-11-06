@@ -101,6 +101,14 @@ export function ApplicationChatContent() {
       if (timer.current) clearTimeout(timer.current);
     };
   }, []);
+  // Tombol "AI" di tabel token membuka /application/chat?q=<alamat 0x>: isi kotak pesan (tidak dikirim otomatis,
+  // karena tiap jawaban memakai kuota) lalu bersihkan parameter dari URL.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q")?.trim();
+    if (!q) return;
+    setText(/^0x[0-9a-fA-F]{40}$/.test(q) ? `Analyze ${q}: is it safe? Check holder concentration, dev holdings, and liquidity.` : q.slice(0, 500));
+    window.history.replaceState(null, "", window.location.pathname);
+  }, []);
   // Mode API: daftar percakapan dan saldo kredit dari backend saat sudah masuk.
   useEffect(() => {
     if (!api) {
