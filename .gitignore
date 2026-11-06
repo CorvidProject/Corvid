@@ -11,3 +11,4 @@ dist/
 
 # Acuan crawl lama (hanya lokal, jangan masuk GitHub)
 /legacy/
+packages/contracts/build/

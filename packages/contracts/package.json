@@ -1,0 +1,14 @@
+{
+  "name": "@corvid/contracts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "deploy:testnet": "node scripts/deploy.mjs"
+  },
+  "dependencies": {
+    "@corvid/shared": "workspace:*",
+    "solc": "0.8.28",
+    "viem": "^2.57.16"
+  }
+}
