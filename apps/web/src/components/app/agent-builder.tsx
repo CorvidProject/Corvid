@@ -483,7 +483,7 @@ export function AgentBuilder() {
             )}
             <div ref={wrapRef} className={mobile ? "hidden" : "flex-1 relative h-full overflow-hidden"} style={{ minHeight: 320, background: "var(--v2-bg-0)" }} onClick={() => setSelected(null)}>
               {/* Latar WebGL yang sama dengan halaman Rugcheck: titik menyala mengikuti sinar pindai dan cincin yang menjalar. */}
-              <DotBackdrop variant="scan" className="absolute inset-0 w-full h-full pointer-events-none" />
+              <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.78 }}><DotBackdrop variant="scan" className="absolute inset-0 w-full h-full" /></div>
               <div className="absolute left-0 top-0" style={{ transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.k})`, transformOrigin: "0 0" }}>
                 <svg style={{ position: "absolute", left: 0, top: 0, width: 1, height: 1, overflow: "visible" }} aria-hidden="true">
                   {edges.map((e) => {
@@ -511,7 +511,7 @@ export function AgentBuilder() {
                         className="relative flex items-center justify-center cursor-pointer transition-all duration-200"
                         style={{
                           width: n.size, height: n.size, borderRadius: 20,
-                          background: on ? "linear-gradient(145deg, rgba(var(--v2-accent-rgb),0.16), rgba(var(--v2-accent-rgb),0.04))" : "linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008))",
+                          background: on ? "linear-gradient(145deg, rgba(var(--v2-accent-rgb),0.16), rgba(var(--v2-accent-rgb),0.04)), var(--v2-bg-1)" : "linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008)), var(--v2-bg-1)",
                           border: `1px solid ${on ? "rgba(var(--v2-accent-rgb),0.6)" : "rgba(255, 255, 255, 0.06)"}`,
                           boxShadow: "rgba(12, 14, 17, 0.25) 0px 4px 20px, rgba(255, 255, 255, 0.03) 0px 1px 0px inset",
                           opacity: dim ? 0.85 : 1,
@@ -529,9 +529,9 @@ export function AgentBuilder() {
                           <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={44} height={44} className="shrink-0" style={{ width: 44, height: 44, borderRadius: 11 }} />
                         )}
                       </button>
-                      <span className="mt-2.5 text-center whitespace-nowrap" style={{ fontSize: 14, fontWeight: 600, color: on ? "var(--v2-t-1)" : "rgba(255,255,255,0.8)" }}>{n.label}</span>
-                      <span className="mt-0.5 text-center max-w-[160px] leading-snug" style={{ fontSize: 10.5, color: "rgba(255,255,255,0.35)" }}>{n.sub}</span>
-                      {n.sub2 && <span className="text-center max-w-[160px] leading-snug" style={{ fontSize: 10.5, color: "rgba(255,255,255,0.35)" }}>{n.sub2}</span>}
+                      <span className="mt-2.5 text-center whitespace-nowrap" style={{ textShadow: "0 0 6px var(--v2-bg-0), 0 0 12px var(--v2-bg-0), 0 1px 2px var(--v2-bg-0)", fontSize: 14, fontWeight: 600, color: on ? "var(--v2-t-1)" : "rgba(255,255,255,0.8)" }}>{n.label}</span>
+                      <span className="mt-0.5 text-center max-w-[160px] leading-snug" style={{ textShadow: "0 0 6px var(--v2-bg-0), 0 0 12px var(--v2-bg-0), 0 1px 2px var(--v2-bg-0)", fontSize: 10.5, color: "rgba(255,255,255,0.5)" }}>{n.sub}</span>
+                      {n.sub2 && <span className="text-center max-w-[160px] leading-snug" style={{ textShadow: "0 0 6px var(--v2-bg-0), 0 0 12px var(--v2-bg-0), 0 1px 2px var(--v2-bg-0)", fontSize: 10.5, color: "rgba(255,255,255,0.5)" }}>{n.sub2}</span>}
                     </div>
                   );
                 })}
