@@ -84,5 +84,5 @@ Railway `@corvid/api`: `PAID_FEATURES_ENABLED`, `PAYMENT_RECIPIENT` (alamat publ
 - Data uji pengguna dibersihkan (profil, agent, run, chat, signal, swap, wallet pengguna, kredit, pesanan bayar, log). Data ingest pasar dipertahankan (sudah dari mainnet). Akun uji di Supabase Auth tidak dihapus lewat SQL; hapus manual di dashboard bila perlu.
 - Railway `@corvid/api` dan `@corvid/worker`: `CHAIN_ENV=mainnet`, `RPC_URL` = Alchemy mainnet. `PAYMENT_TOKEN_ADDRESS` (tUSDG) dihapus, sehingga pembayaran memakai USDG resmi mainnet.
 - Vercel Production: `NEXT_PUBLIC_CHAIN_ENV=mainnet`, `NEXT_PUBLIC_RPC_URL` = Alchemy mainnet. Redeploy sudah dijalankan.
-- `TRADE_MODE=dry` dan `NEXT_PUBLIC_TRADE_MODE=dry` dipertahankan; `live` ditunda atas keputusan pemilik. Server tidak memegang private key.
+- `TRADE_MODE=live` (API) dan `NEXT_PUBLIC_TRADE_MODE=live` (web) diaktifkan atas perintah pemilik pada 2026-11-06. Live = swap Uniswap v3 lewat dompet pengguna sendiri (pengguna menandatangani); server tidak memegang private key. Worker/agent tetap simulasi (`dry`): belum ada penyimpanan kunci untuk transaksi otonom.
 - Harga ETH: CoinGecko, cadangan GeckoTerminal (CoinGecko menolak IP Railway).
