@@ -65,11 +65,11 @@ export function AboutContent() {
         <div className="max-w-[70ch]">
           <p>
             General and business enquiries:{" "}
-            <a href="mailto:contact@corvid.example">contact@corvid.example</a>
+            <a href="mailto:contact@corvidagent.com">contact@corvidagent.com</a>
           </p>
           <p>
             Account or trading support:{" "}
-            <a href="mailto:contact@corvid.example">contact@corvid.example</a>
+            <a href="mailto:contact@corvidagent.com">contact@corvidagent.com</a>
           </p>
           <p>
             We answer email. It is the fastest way to reach us about anything
@@ -121,7 +121,7 @@ export function AboutContent() {
             </li>
             <li>
               Email:{" "}
-              <a href="mailto:contact@corvid.example">contact@corvid.example</a>
+              <a href="mailto:contact@corvidagent.com">contact@corvidagent.com</a>
             </li>
           </ul>
           <div

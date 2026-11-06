@@ -439,7 +439,7 @@ export function TermsContent() {
           </p>
           <p>
             Questions about these Terms, or anything else:{" "}
-            <a href="mailto:contact@corvid.example">contact@corvid.example</a>
+            <a href="mailto:contact@corvidagent.com">contact@corvidagent.com</a>
           </p>
           <p>
             Our official accounts are listed on the <a href="/about">About</a>{" "}
