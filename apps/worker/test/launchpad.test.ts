@@ -146,6 +146,27 @@ describe("refreshLaunchpad", () => {
     expect(t).toBeTruthy();
   });
 
+  it("pool terbaru se-jaringan (new_pools) ikut masuk walau tidak ada di halaman per-DEX; DEX lain disaring", async () => {
+    const poolsFx = JSON.parse(fx("gt-pons-pools.json")) as { data: { id: string; type: string; attributes: Record<string, unknown>; relationships: Record<string, unknown> }[]; included?: unknown[] };
+    const tpl = poolsFx.data.find((p) => (p.attributes as { address: string }).address === BYTE_POOL)!;
+    const mk = (addr: string, name: string, dex: string) => ({
+      ...tpl,
+      id: `robinhood_${addr}`,
+      attributes: { ...tpl.attributes, address: addr, name: `${name} / WETH`, pool_created_at: new Date().toISOString() },
+      relationships: { ...tpl.relationships, dex: { data: { id: dex, type: "dex" } }, base_token: { data: { id: `robinhood_${addr.slice(0, 40).padEnd(42, "b")}`, type: "token" } } },
+    });
+    const FRESH = "0x" + "d".repeat(40);
+    const V4 = "0x" + "e".repeat(40);
+    const body = JSON.stringify({ data: [mk(FRESH, "FRESHCOIN", "pons-v2"), mk(V4, "V4COIN", "uniswap-v4-robinhood")], included: poolsFx.included ?? [] });
+    const customFetch = async (u: string) => (u.includes("/new_pools") ? json(body) : fakeFetch(u));
+    const d = { ...deps({ [BYTE_POOL]: 3.1123, [DWRK_POOL]: 0.3676, [TACKLE_POOL]: 0, [FRESH]: 0.05 }), gt: createGeckoTerminal({ fetch: customFetch, minIntervalMs: 0, sleep: noSleep }) };
+    await refreshLaunchpad(d, { pages: 1, launchpads: [PONS] });
+    const rows = await created.db.select().from(memescopeCoins);
+    expect(rows.some((r) => r.symbol === "FRESHCOIN" && r.stage === "new")).toBe(true);
+    expect(rows.some((r) => r.symbol === "V4COIN")).toBe(false); // bukan DEX launchpad ini
+    await created.db.delete(memescopeCoins).where(eq(memescopeCoins.symbol, "FRESHCOIN")); // jangan mengganggu tes berikutnya
+  });
+
   it("idempoten dan memindahkan tahap bila saldo berubah", async () => {
     await refreshLaunchpad(deps({ [BYTE_POOL]: 3.1123, [DWRK_POOL]: 0.3676, [TACKLE_POOL]: 0 }), { pages: 1, launchpads: [PONS] });
     expect((await created.db.select().from(memescopeCoins)).length).toBe(3);

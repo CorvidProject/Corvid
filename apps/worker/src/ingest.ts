@@ -160,9 +160,20 @@ export async function refreshLaunchpad(
   opts: { graduation?: Partial<Record<LaunchpadId, number>>; pages?: number; launchpads?: Launchpad[] } = {},
 ): Promise<Record<string, LaunchpadResult | { error: string }>> {
   const out: Record<string, LaunchpadResult | { error: string }> = {};
+  // GeckoTerminal mengurutkan pool per DEX menurut jumlah transaksi 24 jam (bukan waktu dibuat), jadi pool yang baru lahir tidak
+  // pernah masuk tiga halaman pertamanya. Pool terbaru se-jaringan diambil terpisah lalu disaring menurut DEX launchpad.
+  const newest: Pool[] = [];
+  for (let page = 1; page <= NEWEST_PAGES; page++) {
+    try {
+      newest.push(...(await deps.gt.newPools(page)));
+    } catch (e) {
+      logOf(deps)(`pool terbaru halaman ${page} gagal: ${(e as Error).message}`);
+      break;
+    }
+  }
   for (const lp of opts.launchpads ?? LAUNCHPADS) {
     try {
-      out[lp.id] = await refreshOneLaunchpad(deps, { ...lp, graduation: opts.graduation?.[lp.id] ?? lp.graduation }, opts.pages ?? 3);
+      out[lp.id] = await refreshOneLaunchpad(deps, { ...lp, graduation: opts.graduation?.[lp.id] ?? lp.graduation }, opts.pages ?? 3, newest);
     } catch (e) {
       out[lp.id] = { error: (e as Error).message };
       logOf(deps)(`launchpad ${lp.id} gagal: ${(e as Error).message}`);
@@ -171,9 +182,11 @@ export async function refreshLaunchpad(
   return out;
 }
 
-async function refreshOneLaunchpad(deps: Deps & { rpc: Rpc }, lp: Launchpad, pages: number): Promise<LaunchpadResult> {
+const NEWEST_PAGES = 3; // 20 pool per halaman, terbaru lebih dulu
+
+async function refreshOneLaunchpad(deps: Deps & { rpc: Rpc }, lp: Launchpad, pages: number, newest: Pool[] = []): Promise<LaunchpadResult> {
   const now = (deps.now ?? (() => new Date()))();
-  const all: Pool[] = [];
+  const all: Pool[] = newest.filter((p) => p.dex === lp.dex);
   for (let page = 1; page <= pages; page++) {
     const batch = await deps.gt.launchpadPools(lp.dex, page);
     if (batch.length === 0) break;

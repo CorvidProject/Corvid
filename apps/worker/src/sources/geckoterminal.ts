@@ -203,7 +203,7 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     async dexPools(dex: string): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/dexes/${dex}/pools?page=1&sort=h24_volume_usd_desc`));
     },
-    /** Pool per DEX tanpa pengurutan khusus (urutan bawaan GeckoTerminal, terbaru lebih dulu); dipakai untuk launchpad. */
+    /** Pool per DEX tanpa parameter urut: urutan bawaan GeckoTerminal = jumlah transaksi 24 jam (BUKAN terbaru; `sort=pool_created_at_desc` ditolak, HTTP 400). Pool baru lewat `newPools`. */
     async launchpadPools(dex: string, page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/dexes/${dex}/pools?page=${page}`));
     },
