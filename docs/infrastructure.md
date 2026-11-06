@@ -78,3 +78,11 @@ Konsekuensi memilih satu lingkungan: tidak ada staging terpisah. Setiap push ke 
 
 ## Pembayaran USDG (env, nilai tidak dicatat)
 Railway `@corvid/api`: `PAID_FEATURES_ENABLED`, `PAYMENT_RECIPIENT` (alamat publik), `PAYMENT_TOKEN_ADDRESS` (tUSDG di testnet; kosong di mainnet = USDG resmi), `PAYMENT_TOKEN_DECIMALS` (6), `PAYMENT_CONFIRMATIONS` (2), `CHAIN_ENV`, `RPC_URL`. Tidak ada private key di server: wallet pengguna menandatangani sendiri, server hanya membaca receipt lewat RPC.
+
+## Status mainnet (2026-11-06)
+- Backup DB sebelum pindah: `D:\.dev\backups\corvid-db-2026-11-06T14-15-47-779Z` (di luar repo).
+- Data uji pengguna dibersihkan (profil, agent, run, chat, signal, swap, wallet pengguna, kredit, pesanan bayar, log). Data ingest pasar dipertahankan (sudah dari mainnet). Akun uji di Supabase Auth tidak dihapus lewat SQL; hapus manual di dashboard bila perlu.
+- Railway `@corvid/api` dan `@corvid/worker`: `CHAIN_ENV=mainnet`, `RPC_URL` = Alchemy mainnet. `PAYMENT_TOKEN_ADDRESS` (tUSDG) dihapus, sehingga pembayaran memakai USDG resmi mainnet.
+- Vercel Production: `NEXT_PUBLIC_CHAIN_ENV=mainnet`, `NEXT_PUBLIC_RPC_URL` = Alchemy mainnet. Redeploy sudah dijalankan.
+- `TRADE_MODE=dry` dan `NEXT_PUBLIC_TRADE_MODE=dry` dipertahankan; `live` ditunda atas keputusan pemilik. Server tidak memegang private key.
+- Harga ETH: CoinGecko, cadangan GeckoTerminal (CoinGecko menolak IP Railway).

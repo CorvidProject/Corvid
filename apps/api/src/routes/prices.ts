@@ -1,12 +1,35 @@
 import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { errorSchema, solPriceSchema } from "@corvid/shared";
+import { getChain } from "@corvid/shared/chains";
 
 /** Mengembalikan harga ETH (native Robinhood Chain) dalam USD. Boleh melempar bila sumber gagal. */
 export type SolPriceSource = () => Promise<number>;
 
-/** CoinGecko (tanpa key, rate limit publik). Diganti/ditambah Jupiter bila perlu. */
+/** Cadangan: harga WETH di jaringan Robinhood Chain dari GeckoTerminal (dipakai bila CoinGecko menolak IP server, mis. 429). */
+const geckoTerminalEthPrice: SolPriceSource = async () => {
+  const weth = getChain("mainnet").wrappedNative;
+  const res = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/robinhood/token_price/${weth}`, {
+    headers: { accept: "application/json" },
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) throw new Error(`geckoterminal ${res.status}`);
+  const j = (await res.json()) as { data?: { attributes?: { token_prices?: Record<string, string> } } };
+  const usd = Number(j.data?.attributes?.token_prices?.[weth]);
+  if (!isFinite(usd) || usd <= 0) throw new Error("geckoterminal: bentuk tidak valid");
+  return usd;
+};
+
+/** CoinGecko (tanpa key, rate limit publik); gagal → GeckoTerminal. */
 export const coingeckoSolPrice: SolPriceSource = async () => {
+  try {
+    return await coingeckoEthPrice();
+  } catch {
+    return geckoTerminalEthPrice();
+  }
+};
+
+const coingeckoEthPrice: SolPriceSource = async () => {
   const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd", {
     headers: { accept: "application/json" },
     signal: AbortSignal.timeout(5000),
