@@ -221,7 +221,7 @@ export function SocialContent() {
               </div>
             </a>
             <a
-              href="https://x.com/PLACEHOLDER"
+              href="https://x.com/CorvidAgentX"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative block"
@@ -337,7 +337,7 @@ export function SocialContent() {
                     color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.65)",
                   }}
                 >
-                  @PLACEHOLDER
+                  @CorvidAgentX
                 </p>
                 <p
                   className="font-sans text-sm leading-relaxed mb-7"

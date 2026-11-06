@@ -15,7 +15,7 @@ export function PrivacyContent() {
         </div>
         <div className="max-w-[70ch]">
           <p>
-            Corvid operates the platform at corvid.example. This policy explains
+            Corvid operates the platform at corvidagent.com. This policy explains
             what we collect, why, and how it is handled.
           </p>
           <p>

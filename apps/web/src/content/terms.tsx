@@ -15,7 +15,7 @@ export function TermsContent() {
         </div>
         <div className="max-w-[70ch]">
           <p>
-            By accessing Corvid at corvid.example, you agree to be bound by
+            By accessing Corvid at corvidagent.com, you agree to be bound by
             these Terms. If you do not agree, stop using the platform.
           </p>
           <p>
@@ -435,7 +435,7 @@ export function TermsContent() {
         <div className="max-w-[70ch]">
           <p>
             Operated by the Corvid team. The service is operated at
-            corvid.example.
+            corvidagent.com.
           </p>
           <p>
             Questions about these Terms, or anything else:{" "}

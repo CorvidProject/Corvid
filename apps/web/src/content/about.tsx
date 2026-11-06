@@ -16,7 +16,7 @@ export function AboutContent() {
         <div className="max-w-[70ch]">
           <p>
             Corvid is a trading technology platform. Operated by the Corvid
-            team, which operates the service at corvid.example.
+            team, which operates the service at corvidagent.com.
           </p>
           <p>
             We are a small engineering team. The product is built and run by the
@@ -97,16 +97,16 @@ export function AboutContent() {
           </p>
           <ul>
             <li>
-              Website: <a href="https://corvid.example">corvid.example</a>
+              Website: <a href="https://corvidagent.com">corvidagent.com</a>
             </li>
             <li>
               X:{" "}
               <a
-                href="https://x.com/PLACEHOLDER"
+                href="https://x.com/CorvidAgentX"
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                @PLACEHOLDER
+                @CorvidAgentX
               </a>
             </li>
             <li>
