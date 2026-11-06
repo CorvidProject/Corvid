@@ -549,6 +549,7 @@ function MobileCard({ t, interval, now }: { t: Tok; interval: Interval; now: num
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-medium text-[var(--v2-t-1)] truncate">{t.symbol.trim()}</span>
             <span className={`dot shrink-0 ${t.riskScore <= 30 ? "dot-pos" : ""}`}></span>
+            <CopyAddr address={t.mint} />
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-[var(--v2-t-3)]">
             <span className="num">{t.name.trim()}</span>
