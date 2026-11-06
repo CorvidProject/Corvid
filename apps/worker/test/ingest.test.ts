@@ -4,7 +4,7 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
-import { errText, refreshBoard, refreshCandles, refreshSecurity, refreshTrades, runRetention } from "../src/ingest";
+import { errText, refreshBoard, refreshCandles, refreshMissingImages, refreshSecurity, refreshTrades, runRetention } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
 import { createGoPlus } from "../src/sources/goplus";
@@ -132,6 +132,20 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     expect(r1.trades).toBeGreaterThan(0);
     const r2 = await refreshTrades(deps(), 5);
     expect(r2.trades).toBe(0);
+  });
+
+  it("refreshMissingImages: mengisi logo token baru yang kosong, mengabaikan token lama", async () => {
+    const recent = new Date(Date.now() - 10 * 60_000);
+    await created.db.update(tokens).set({ imageUrl: null, createdAtChain: recent }).where(eq(tokens.mint, CASH));
+    const r = await refreshMissingImages(deps());
+    expect(r.filled).toBe(1);
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(t.imageUrl).toMatch(/dexscreener/);
+    // token lebih dari 24 jam tidak dicek lagi
+    await created.db.update(tokens).set({ imageUrl: null, createdAtChain: new Date(Date.now() - 48 * 3_600_000) }).where(eq(tokens.mint, CASH));
+    expect((await refreshMissingImages(deps())).filled).toBe(0);
+    const [old] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(old.imageUrl).toBeNull();
   });
 
   it("runRetention: membuang trade lama dan candle lama, snapshot terbaru tetap", async () => {

@@ -1,4 +1,4 @@
-import { and, gt as gtOp, isNotNull, sql } from "drizzle-orm";
+import { and, gt as gtOp, isNotNull, isNull, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   memescopeCoins,
@@ -110,6 +110,37 @@ export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 
     }
   }
   return { tokens: unique.length, withDexScreener: ds.length, newSignals };
+}
+
+/**
+ * Token baru biasanya belum punya logo di DexScreener saat pertama terlihat. Cari ulang logo untuk token yang dibuat
+ * dalam `maxAgeHours` terakhir dan masih kosong, walau sudah tergeser keluar dari papan "new". Satu permintaan batch.
+ */
+export async function refreshMissingImages(deps: Deps, opts: { maxAgeHours?: number; limit?: number } = {}): Promise<{ checked: number; filled: number }> {
+  const now = (deps.now ?? (() => new Date()))();
+  const since = new Date(now.getTime() - (opts.maxAgeHours ?? 24) * 3_600_000);
+  const rows = await deps.db
+    .select({ mint: tokens.mint })
+    .from(tokens)
+    .where(and(isNull(tokens.imageUrl), isNotNull(tokens.createdAtChain), gtOp(tokens.createdAtChain, since)))
+    .orderBy(sql`${tokens.createdAtChain} desc`)
+    .limit(opts.limit ?? 30);
+  if (rows.length === 0) return { checked: 0, filled: 0 };
+  let ds: DsToken[] = [];
+  try {
+    ds = await deps.ds.tokens(rows.map((r) => r.mint));
+  } catch (e) {
+    logOf(deps)(`dexscreener gagal (logo): ${(e as Error).message}`);
+    return { checked: rows.length, filled: 0 };
+  }
+  let filled = 0;
+  for (const t of ds) {
+    if (!t.image) continue;
+    await deps.db.update(tokens).set({ imageUrl: t.image, updatedAt: now }).where(and(eq(tokens.mint, t.mint), isNull(tokens.imageUrl)));
+    await deps.db.update(memescopeCoins).set({ imageUrl: t.image }).where(and(eq(memescopeCoins.mint, t.mint), isNull(memescopeCoins.imageUrl)));
+    filled++;
+  }
+  return { checked: rows.length, filled };
 }
 
 /**
