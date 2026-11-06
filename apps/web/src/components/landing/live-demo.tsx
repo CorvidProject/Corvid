@@ -4,6 +4,8 @@ import live from "@/data/live-agent.json";
 import trending from "@/data/tokens-trending.json";
 import security from "@/data/token-security.json";
 import freshTokens from "@/server/data/trending-robinhood-new.json";
+import { TokenAvatar } from "@/components/app/token-avatar";
+import { USE_API, useApi } from "@/lib/api";
 
 // Panel demo "Not a demo. This is the product, running." — data dari fixture (bentuk sama dengan API).
 const DOT = {
@@ -876,14 +878,7 @@ function RugPanel() {
     >
       <div className="p-3 font-sans text-[13px]">
         <div className="flex items-center gap-3 mb-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={tk.image ?? ""}
-            alt=""
-            width={32}
-            height={32}
-            className="rounded-full bg-[#161616]"
-          />
+          <TokenAvatar src={tk.image} symbol={tk.symbol} size={32} />
           <div className="min-w-0">
             <div className="font-semibold text-white">{tk.symbol}</div>
             <div className="font-mono text-[10px]" style={{ color: MUTE }}>
@@ -931,9 +926,21 @@ function RugPanel() {
   );
 }
 
+type FreshToken = { mint: string; image: string | null; symbol: string | null; marketCap: number | null; createdAt?: number | null };
+
+function ageLabel(createdAt: number | null | undefined) {
+  if (!createdAt) return "";
+  const s = Math.max(0, Math.floor(Date.now() / 1000) - createdAt);
+  if (s < 3600) return `${Math.max(1, Math.floor(s / 60))}m`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h`;
+  return `${Math.floor(s / 86400)}d`;
+}
+
 function MemePanel() {
-  // Token baru di Robinhood Chain (data nyata GeckoTerminal); bukan kurva bonding, jadi tanpa bar progres.
-  const items = freshTokens.tokens.slice(0, 6).map((t) => ({ mint: t.mint, image: t.image, symbol: t.symbol ?? "?", marketCapUsd: t.marketCap ?? 0 }));
+  // Token baru di Robinhood Chain. Mode API: data live dari /api/tokens/trending?tab=new; selain itu cuplikan fixture.
+  const live = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=new&limit=6" : null);
+  const source: FreshToken[] = live.data?.tokens ?? (USE_API ? [] : (freshTokens.tokens as FreshToken[]));
+  const items = source.slice(0, 6).map((t) => ({ mint: t.mint, image: t.image, symbol: t.symbol ?? "?", marketCapUsd: t.marketCap ?? 0, age: ageLabel(t.createdAt) }));
   return (
     <Panel
       title="memescope"
@@ -943,16 +950,14 @@ function MemePanel() {
       className="cv-meme-panel"
     >
       <div className="flex-1 min-h-0 overflow-hidden p-1.5">
+        {items.length === 0 && (
+          <div className="px-1.5 py-6 text-center font-mono text-[12px]" style={{ color: MUTE }}>
+            {live.loading ? "loading…" : "No new tokens right now."}
+          </div>
+        )}
         {items.map((m) => (
-          <div key={m.mint} className="flex items-center gap-3 px-1.5 py-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={m.image ?? ""}
-              alt=""
-              width={26}
-              height={26}
-              className="rounded-full bg-[#161616] shrink-0"
-            />
+          <a key={m.mint} href={`/application/tokens/${m.mint.toLowerCase()}`} className="flex items-center gap-3 px-1.5 py-2">
+            <TokenAvatar src={m.image} symbol={m.symbol} size={26} />
             <div className="min-w-0 flex-1">
               <div
                 className="uppercase truncate"
@@ -969,9 +974,9 @@ function MemePanel() {
               {m.marketCapUsd >= 1000
                 ? (m.marketCapUsd / 1000).toFixed(1) + "K"
                 : m.marketCapUsd.toFixed(2)}
-              <div style={{ color: MUTE, fontSize: 10 }}>1d</div>
+              {m.age && <div style={{ color: MUTE, fontSize: 10 }}>{m.age}</div>}
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </Panel>
