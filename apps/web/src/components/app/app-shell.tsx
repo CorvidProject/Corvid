@@ -25,7 +25,7 @@ const MOBILE_TABS = [
 
 function StatusBar() {
   // Harga ETH dari /api/prices/native (CoinGecko lewat API kita). Status Live/Offline = hasil pengambilan itu (API terjangkau atau tidak).
-  const [sol, setSol] = useState<string>("—");
+  const [ethPrice, setEthPrice] = useState<string>("—");
   const [online, setOnline] = useState<boolean | null>(null);
   const signed = useSigned();
   const { plan } = usePlan(signed);
@@ -36,7 +36,7 @@ function StatusBar() {
         .then((j) => {
           if (!alive) return;
           setOnline(true);
-          if (j && typeof j.usd === "number") setSol(`$${j.usd.toFixed(2)}`);
+          if (j && typeof j.usd === "number") setEthPrice(`$${j.usd.toFixed(2)}`);
         })
         .catch(() => {
           if (alive) setOnline(false);
@@ -97,7 +97,7 @@ function StatusBar() {
           className="flex items-center gap-1 tabular-nums rounded px-1 transition-colors"
           style={{ color: "var(--v2-t-3)" }}
         >
-          ETH {sol}
+          ETH price {ethPrice}
         </span>
         {site.socialLinks.telegram && (
           <>

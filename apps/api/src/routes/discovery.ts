@@ -74,7 +74,7 @@ export const discoveryRoutes =
             address: w.address,
             label: w.curatedLabel,
             tier: w.curatedTier,
-            pnlSol: num(w.totalPnlSol),
+            pnlEth: num(w.totalPnlEth),
           })),
           ...(notice ? { notice } : {}),
         };

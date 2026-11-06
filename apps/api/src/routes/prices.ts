@@ -1,13 +1,13 @@
 import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { errorSchema, solPriceSchema } from "@corvid/shared";
+import { errorSchema, ethPriceSchema } from "@corvid/shared";
 import { getChain } from "@corvid/shared/chains";
 
 /** Mengembalikan harga ETH (native Robinhood Chain) dalam USD. Boleh melempar bila sumber gagal. */
-export type SolPriceSource = () => Promise<number>;
+export type EthPriceSource = () => Promise<number>;
 
 /** Cadangan: harga WETH di jaringan Robinhood Chain dari GeckoTerminal (dipakai bila CoinGecko menolak IP server, mis. 429). */
-const geckoTerminalEthPrice: SolPriceSource = async () => {
+const geckoTerminalEthPrice: EthPriceSource = async () => {
   const weth = getChain("mainnet").wrappedNative;
   const res = await fetch(`https://api.geckoterminal.com/api/v2/simple/networks/robinhood/token_price/${weth}`, {
     headers: { accept: "application/json" },
@@ -21,7 +21,7 @@ const geckoTerminalEthPrice: SolPriceSource = async () => {
 };
 
 /** CoinGecko (tanpa key, rate limit publik); gagal → GeckoTerminal. */
-export const coingeckoSolPrice: SolPriceSource = async () => {
+export const ethPriceSource: EthPriceSource = async () => {
   try {
     return await coingeckoEthPrice();
   } catch {
@@ -29,7 +29,7 @@ export const coingeckoSolPrice: SolPriceSource = async () => {
   }
 };
 
-const coingeckoEthPrice: SolPriceSource = async () => {
+const coingeckoEthPrice: EthPriceSource = async () => {
   const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd", {
     headers: { accept: "application/json" },
     signal: AbortSignal.timeout(5000),
@@ -45,16 +45,15 @@ const TTL_MS = 30_000;
 const STALE_MS = 10 * 60_000;
 
 export const priceRoutes =
-  (source: SolPriceSource): FastifyPluginAsync =>
+  (source: EthPriceSource): FastifyPluginAsync =>
   async (instance) => {
     const app = instance.withTypeProvider<ZodTypeProvider>();
     let cache: { usd: number; at: number } | null = null;
     let inflight: Promise<number> | null = null;
 
-    // "/prices/native" = nama baru; "/prices/sol" dipertahankan sementara untuk klien lama (mengembalikan harga ETH).
-    for (const url of ["/prices/native", "/prices/sol"]) app.get(
-      url,
-      { schema: { tags: ["market"], response: { 200: solPriceSchema, 503: errorSchema } } },
+    app.get(
+      "/prices/native",
+      { schema: { tags: ["market"], response: { 200: ethPriceSchema, 503: errorSchema } } },
       async (_req, reply) => {
         const now = Date.now();
         if (cache && now - cache.at < TTL_MS) return { usd: cache.usd };

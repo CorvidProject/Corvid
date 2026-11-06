@@ -60,8 +60,8 @@ export const ruleDecider: Decider = async ({ agent, token }) => {
 
 export interface RunnerDeps extends Deps {
   decider?: Decider;
-  /** Harga SOL dalam USD untuk mencatat nilai swap simulasi; null bila tidak tersedia. */
-  solUsd?: () => Promise<number | null>;
+  /** Harga ETH dalam USD untuk mencatat nilai swap simulasi; null bila tidak tersedia. */
+  ethUsd?: () => Promise<number | null>;
 }
 
 const MAX_CANDIDATES = 3;
@@ -161,7 +161,7 @@ async function findCandidates(deps: Deps, a: AgentRow, now: Date): Promise<Candi
     if (!addr) return [];
     const seen = await evaluatedMints(deps, a.id, ago(24 * 3600_000));
     const onlyBuys = cfg.only_buys !== "false";
-    const minSol = cfgNum(cfg, "min_source_trade_sol") ?? 0;
+    const minEth = cfgNum(cfg, "min_source_trade_eth") ?? 0;
     const acts = await deps.db
       .select({ act: walletActivity })
       .from(walletActivity)
@@ -173,13 +173,13 @@ async function findCandidates(deps: Deps, a: AgentRow, now: Date): Promise<Candi
     for (const { act } of acts) {
       if (seen.has(act.mint) || (onlyBuys && act.side !== "buy")) continue;
       const [t] = await deps.db.select().from(tokens).where(eq(tokens.mint, act.mint)).limit(1);
-      const sol = num(act.amountSol) ?? 0;
+      const sol = num(act.amountEth) ?? 0;
       out.push({
         token: t ?? null,
         mint: act.mint,
         note: `wallet ${act.side} ${sol} SOL`,
-        notTriggered: !t ? "token is not indexed yet" : sol < minSol ? `source trade ${sol} SOL is below the ${minSol} SOL minimum` : undefined,
-        extra: { source_wallet: addr, source_sol: sol },
+        notTriggered: !t ? "token is not indexed yet" : sol < minEth ? `source trade ${sol} SOL is below the ${minEth} SOL minimum` : undefined,
+        extra: { source_wallet: addr, source_eth: sol },
       });
       if (out.length >= MAX_CANDIDATES) break;
     }
@@ -224,7 +224,7 @@ async function evaluate(deps: RunnerDeps, a: AgentRow, c: Candidate): Promise<{ 
   if (d.verdict !== "buy") return done("stopped", null, d);
 
   // 5. risk: ukuran posisi dibatasi batas per trade
-  const want = cfgNum(cfg, "max_sol_per_trade") ?? cfgNum(cfg, "max_sol_per_copy");
+  const want = cfgNum(cfg, "max_eth_per_trade") ?? cfgNum(cfg, "max_eth_per_copy");
   const cap = cfgNum(limits, "perTrade");
   if (a.mode === "trading") {
     if (!cap || cap <= 0) {
@@ -232,7 +232,7 @@ async function evaluate(deps: RunnerDeps, a: AgentRow, c: Candidate): Promise<{ 
       return done("blocked", null, d);
     }
     const sol = Math.min(want ?? cap, cap);
-    steps.push({ step: "risk", detail: "", values: { size_sol: sol, cap_sol: cap, mode: "dry" }, outcome: "passed" });
+    steps.push({ step: "risk", detail: "", values: { size_eth: sol, cap_eth: cap, mode: "dry" }, outcome: "passed" });
     return done("passed", sol, d);
   }
   steps.push({ step: "risk", detail: "signal mode: notify only", values: { mode: "signal" }, outcome: "passed" });
@@ -240,7 +240,7 @@ async function evaluate(deps: RunnerDeps, a: AgentRow, c: Candidate): Promise<{ 
 }
 
 async function recordRun(deps: RunnerDeps, a: AgentRow, c: Candidate, r: Awaited<ReturnType<typeof evaluate>>, now: Date) {
-  const solUsd = r.sol !== null && deps.solUsd ? await deps.solUsd() : null;
+  const ethUsd = r.sol !== null && deps.ethUsd ? await deps.ethUsd() : null;
   await deps.db.transaction(async (tx) => {
     const [last] = await tx.select({ n: sql<number>`coalesce(max(${agentRuns.runNumber}), 0)::int` }).from(agentRuns).where(eq(agentRuns.agentId, a.id));
     const [run] = await tx.insert(agentRuns).values({ agentId: a.id, runNumber: (last?.n ?? 0) + 1, ranAt: now, ended: r.ended }).returning({ id: agentRuns.id });
@@ -253,9 +253,9 @@ async function recordRun(deps: RunnerDeps, a: AgentRow, c: Candidate, r: Awaited
         agentId: a.id,
         tokenId: c.token.id,
         side: "buy",
-        amountUsd: solUsd !== null ? String(+(r.sol * solUsd).toFixed(2)) : null,
+        amountUsd: ethUsd !== null ? String(+(r.sol * ethUsd).toFixed(2)) : null,
         mode: "dry",
-        report: { simulated: true, sol: r.sol, token_price_usd: price, sol_usd: solUsd, conviction: r.decision?.conviction ?? null },
+        report: { simulated: true, sol: r.sol, token_price_usd: price, eth_usd: ethUsd, conviction: r.decision?.conviction ?? null },
         executedAt: now,
       });
       await tx.insert(notifications).values({ profileId: a.ownerId, kind: "trade", title: `${a.name}: simulated buy of ${sym}`, body: `Dry run, ${r.sol} SOL. ${r.decision?.for ?? ""}`.trim(), at: now });

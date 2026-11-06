@@ -150,7 +150,7 @@ export const tokenTrades = pgTable(
     walletAddress: text("wallet_address").notNull(),
     side: tradeSide("side").notNull(),
     tokenAmount: money("token_amount", 38, 6).notNull(),
-    solAmount: money("sol_amount", 38, 9),
+    ethAmount: money("eth_amount", 38, 9),
     priceUsd: money("price_usd"),
     marketCapUsd: money("market_cap_usd", 20, 2),
     tradedAt: ts("traded_at").notNull(),

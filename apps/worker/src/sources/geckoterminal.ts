@@ -86,8 +86,8 @@ export interface PoolTrade {
   wallet: string;
   side: "buy" | "sell";
   tokenAmount: string;
-  /** Jumlah ETH (native) hanya bila token kuotasi pool adalah WETH; selain itu null. (Nama field `solAmount` dipertahankan untuk kompatibilitas skema DB.) */
-  solAmount: string | null;
+  /** Jumlah ETH (native) hanya bila token kuotasi pool adalah WETH; selain itu null. (Nama field `ethAmount` dipertahankan untuk kompatibilitas skema DB.) */
+  ethAmount: string | null;
   priceUsd: string | null;
   at: Date;
 }
@@ -150,7 +150,7 @@ export function parseTrades(json: unknown, baseMint: string): PoolTrade[] {
       wallet: t.tx_from_address.toLowerCase(),
       side: t.kind,
       tokenAmount: baseAmount,
-      solAmount: quoteAddr.toLowerCase() === WETH ? quoteAmount : null,
+      ethAmount: quoteAddr.toLowerCase() === WETH ? quoteAmount : null,
       priceUsd: s(sell ? t.price_from_in_usd : t.price_to_in_usd),
       at: new Date(t.block_timestamp),
     });

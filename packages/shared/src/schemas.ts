@@ -172,7 +172,7 @@ export const tradesResponseSchema = z.object({
       wallet: z.string(),
       type: z.enum(["buy", "sell"]),
       tokenAmount: z.number(),
-      solAmount: nullableNum,
+      ethAmount: nullableNum,
       priceUsd: nullableNum,
       marketCapUsd: nullableNum,
       /** Milidetik (epoch). */
@@ -251,7 +251,7 @@ export const mintParamSchema = z.object({ mint: chainAddress });
 
 export const errorSchema = z.object({ error: z.string() });
 
-export const solPriceSchema = z.object({ usd: z.number() });
+export const ethPriceSchema = z.object({ usd: z.number() });
 
 /* ---- search, live-batch, chart ---- */
 
@@ -275,7 +275,7 @@ export const searchResponseSchema = z.object({
       address: chainAddress,
       label: z.string().nullable(),
       tier: z.string().nullable(),
-      pnlSol: z.number().nullable(),
+      pnlEth: z.number().nullable(),
     }),
   ),
   notice: z.string().optional(),

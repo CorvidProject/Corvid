@@ -23,7 +23,7 @@ const min = (m: number) => new Date(Date.now() - m * 60_000);
 let pgServer: EmbeddedPostgres;
 let created: ReturnType<typeof createDb>;
 const db = () => created.db;
-const deps = (over: Partial<RunnerDeps> = {}): RunnerDeps => ({ db: db(), gt: null as never, ds: null as never, solUsd: async () => 100, ...over });
+const deps = (over: Partial<RunnerDeps> = {}): RunnerDeps => ({ db: db(), gt: null as never, ds: null as never, ethUsd: async () => 100, ...over });
 
 async function mkAgent(v: Partial<typeof agents.$inferInsert>) {
   const [a] = await db()
@@ -133,16 +133,16 @@ describe("pipeline new_tokens (sinyal)", () => {
 
 describe("pipeline token_trading (trading, simulasi)", () => {
   it("memicu, menulis swap dry dengan nilai USD, lalu menolak beli lagi karena sudah memegang", async () => {
-    const a = await mkAgent({ name: "Trader", pipeline: "token_trading", mode: "trading", type: "auto_trader", config: { token_mint: M.good, trigger_threshold: "5", max_sol_per_trade: "0.2" }, limits: { perTrade: "0.05" } });
+    const a = await mkAgent({ name: "Trader", pipeline: "token_trading", mode: "trading", type: "auto_trader", config: { token_mint: M.good, trigger_threshold: "5", max_eth_per_trade: "0.2" }, limits: { perTrade: "0.05" } });
     const r = await runAgentCycle(deps());
     expect(r.passed).toBe(1);
     const [run] = await runsOf(a.id);
     expect(run.ended).toBe("passed");
-    expect(run.steps[4].stepValues).toMatchObject({ size_sol: 0.05, cap_sol: 0.05, mode: "dry" }); // dibatasi batas per trade
+    expect(run.steps[4].stepValues).toMatchObject({ size_eth: 0.05, cap_eth: 0.05, mode: "dry" }); // dibatasi batas per trade
     const sw = await db().select().from(swaps).where(eq(swaps.agentId, a.id));
     expect(sw).toHaveLength(1);
     expect(sw[0]).toMatchObject({ side: "buy", mode: "dry", amountUsd: "5.00" });
-    expect(sw[0].report).toMatchObject({ simulated: true, sol: 0.05, sol_usd: 100 });
+    expect(sw[0].report).toMatchObject({ simulated: true, sol: 0.05, eth_usd: 100 });
     expect(sw[0].txHash).toBeNull(); // tidak ada transaksi on-chain
     expect((await db().select().from(notifications).where(eq(notifications.kind, "trade")))[0].title).toMatch(/simulated buy of GOOD/);
 
@@ -190,17 +190,17 @@ describe("pipeline follow_wallet", () => {
   it("meniru beli wallet sumber; mengabaikan sell, aktivitas lama, dan trade di bawah minimum", async () => {
     const [w] = await db().insert(wallets).values({ address: WALLET, curatedTier: "A" }).returning();
     await db().insert(walletActivity).values([
-      { walletId: w.id, mint: M.good, side: "buy", amountSol: "0.5", txHash: "tx-buy", at: min(3) },
-      { walletId: w.id, mint: M.risky, side: "sell", amountSol: "2", txHash: "tx-sell", at: min(2) },
-      { walletId: w.id, mint: M.thin, side: "buy", amountSol: "0.5", txHash: "tx-old", at: min(60) },
+      { walletId: w.id, mint: M.good, side: "buy", amountEth: "0.5", txHash: "tx-buy", at: min(3) },
+      { walletId: w.id, mint: M.risky, side: "sell", amountEth: "2", txHash: "tx-sell", at: min(2) },
+      { walletId: w.id, mint: M.thin, side: "buy", amountEth: "0.5", txHash: "tx-old", at: min(60) },
     ]);
-    const ok = await mkAgent({ name: "Follower", pipeline: "follow_wallet", config: { wallet_address: WALLET, only_buys: "true", min_source_trade_sol: "0.1" } });
-    const big = await mkAgent({ name: "Picky", pipeline: "follow_wallet", config: { wallet_address: WALLET, only_buys: "true", min_source_trade_sol: "1" } });
+    const ok = await mkAgent({ name: "Follower", pipeline: "follow_wallet", config: { wallet_address: WALLET, only_buys: "true", min_source_trade_eth: "0.1" } });
+    const big = await mkAgent({ name: "Picky", pipeline: "follow_wallet", config: { wallet_address: WALLET, only_buys: "true", min_source_trade_eth: "1" } });
     await runAgentCycle(deps());
     const r1 = await runsOf(ok.id);
     expect(r1).toHaveLength(1); // hanya beli GOOD (sell dan aktivitas lama diabaikan)
     expect(r1[0].ended).toBe("passed");
-    expect(r1[0].steps[0].stepValues).toMatchObject({ mint: M.good, source_wallet: WALLET, source_sol: 0.5 });
+    expect(r1[0].steps[0].stepValues).toMatchObject({ mint: M.good, source_wallet: WALLET, source_eth: 0.5 });
     const r2 = await runsOf(big.id);
     expect(r2[0].ended).toBe("stopped");
     expect(r2[0].steps[0].detail).toMatch(/source trade 0.5 SOL is below the 1 SOL minimum/);

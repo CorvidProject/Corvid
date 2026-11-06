@@ -43,6 +43,13 @@
       "when": 1793929418628,
       "tag": "0005_plans_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793977340689,
+      "tag": "0006_rename_sol_to_eth",
+      "breakpoints": true
     }
   ]
 }

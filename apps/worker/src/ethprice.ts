@@ -1,5 +1,5 @@
 // Harga ETH (native Robinhood Chain)/USD dari CoinGecko (publik, tanpa key) dengan cache 60 detik. Gagal = null (nilai USD swap simulasi kosong).
-export function cachedSolUsd(fetchImpl: typeof fetch = fetch, ttlMs = 60_000) {
+export function cachedEthUsd(fetchImpl: typeof fetch = fetch, ttlMs = 60_000) {
   let cache: { usd: number; at: number } | null = null;
   return async (): Promise<number | null> => {
     if (cache && Date.now() - cache.at < ttlMs) return cache.usd;
@@ -18,5 +18,4 @@ export function cachedSolUsd(fetchImpl: typeof fetch = fetch, ttlMs = 60_000) {
   };
 }
 
-/** Nama lama dipertahankan sementara agar runner/tes tidak berubah; nilainya kini harga ETH. */
-export const cachedNativeUsd = cachedSolUsd;
+

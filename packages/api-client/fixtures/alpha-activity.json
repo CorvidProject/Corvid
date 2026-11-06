@@ -5,7 +5,7 @@
       "side": "buy",
       "symbol": "BIRB",
       "mint": "G7vQWurMkMMm2dU3iZpXYFTHT9Biio4F4gZCrwFpKNwG",
-      "sol": 1.2,
+      "eth": 1.2,
       "at": 1793600000
     },
     {
@@ -13,7 +13,7 @@
       "side": "sell",
       "symbol": "WASTED",
       "mint": "GexThZHgaswpAQ7Fi8QrHFubjPimUNSYhJiAA7XZpump",
-      "sol": 2,
+      "eth": 2,
       "at": 1793599580
     },
     {
@@ -21,7 +21,7 @@
       "side": "buy",
       "symbol": "ANTFUN",
       "mint": "CWZ6BsdnjkDVTGkmL6bGbJXXig6ceef12KvyGQW14cMt",
-      "sol": 2.8,
+      "eth": 2.8,
       "at": 1793599160
     }
   ]

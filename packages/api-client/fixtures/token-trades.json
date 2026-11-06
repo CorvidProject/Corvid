@@ -5,7 +5,7 @@
       "wallet": "9XeBxpUMTnpaJC5csiS4dkBTvXsChbaZ5ysTSp2ZeiuQ",
       "type": "sell",
       "tokenAmount": 34612903.225806,
-      "solAmount": 1,
+      "ethAmount": 1,
       "priceUsd": 0.000002738393936581553,
       "marketCapUsd": 2654.71,
       "timestamp": 1793588113000
@@ -15,7 +15,7 @@
       "wallet": "9su3UPQW3txjtKDZAkf2Kdimp5tEb9TM6hnJrGC1U7pY",
       "type": "sell",
       "tokenAmount": 11219257.687983,
-      "solAmount": 0.338598012,
+      "ethAmount": 0.338598012,
       "priceUsd": 0.000002862857288824543,
       "marketCapUsd": 2654.71,
       "timestamp": 1793588113000
@@ -25,7 +25,7 @@
       "wallet": "ViTjB3dRqXLkSEyHPnwjVS82Kr5bRkpDbxw7525QRyd",
       "type": "sell",
       "tokenAmount": 6433806.4281,
-      "solAmount": 0.197530862,
+      "ethAmount": 0.197530862,
       "priceUsd": 0.000002912411184815198,
       "marketCapUsd": 2654.71,
       "timestamp": 1793588093000
@@ -35,7 +35,7 @@
       "wallet": "ViTjB3dRqXLkSEyHPnwjVS82Kr5bRkpDbxw7525QRyd",
       "type": "buy",
       "tokenAmount": 6433806.4281,
-      "solAmount": 0.197530863,
+      "ethAmount": 0.197530863,
       "priceUsd": 0.0000029106619412076605,
       "marketCapUsd": 2654.71,
       "timestamp": 1793588093000
@@ -45,7 +45,7 @@
       "wallet": "9XeBxpUMTnpaJC5csiS4dkBTvXsChbaZ5ysTSp2ZeiuQ",
       "type": "buy",
       "tokenAmount": 34612903.225806,
-      "solAmount": 1,
+      "ethAmount": 1,
       "priceUsd": 0.00000273898061701317,
       "marketCapUsd": 2654.71,
       "timestamp": 1793588092000

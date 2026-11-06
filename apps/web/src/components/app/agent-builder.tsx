@@ -265,7 +265,7 @@ export function AgentBuilder() {
   const advanced = visible.filter((f) => f.advanced);
 
   const summary = summarize(pipe, mode, cfg);
-  const maxLive = limits.perTrade || cfg.max_sol_per_copy || cfg.max_sol_per_trade;
+  const maxLive = limits.perTrade || cfg.max_eth_per_copy || cfg.max_eth_per_trade;
 
   const deploy = () => {
     const req = pipeline.steps.flatMap((s) => s.fields).filter((f) => f.required);

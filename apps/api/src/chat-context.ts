@@ -49,14 +49,14 @@ async function tokenBlock(db: Db, t: TokenRow): Promise<string> {
 async function walletBlock(db: Db, address: string): Promise<string> {
   const [w] = await db.select().from(wallets).where(eq(wallets.address, address)).limit(1);
   if (!w) return `ADDRESS ${address}: not a token and no wallet data indexed by Corvid.`;
-  return `WALLET ${address}: tier ${w.curatedTier ?? "none"}, estimated PnL ${num(w.totalPnlSol)?.toFixed(2) ?? "unknown"} ETH over the indexed window, win rate ${pct(num(w.winRate30dPct))}, closed tokens ${w.closedTokens30d ?? 0}, trades ${w.txCount30d ?? 0}`;
+  return `WALLET ${address}: tier ${w.curatedTier ?? "none"}, estimated PnL ${num(w.totalPnlEth)?.toFixed(2) ?? "unknown"} ETH over the indexed window, win rate ${pct(num(w.winRate30dPct))}, closed tokens ${w.closedTokens30d ?? 0}, trades ${w.txCount30d ?? 0}`;
 }
 
 async function smartBlock(db: Db): Promise<string> {
-  const top = await db.select().from(wallets).where(isNotNull(wallets.curatedTier)).orderBy(sql`${wallets.totalPnlSol} desc nulls last`).limit(5);
+  const top = await db.select().from(wallets).where(isNotNull(wallets.curatedTier)).orderBy(sql`${wallets.totalPnlEth} desc nulls last`).limit(5);
   if (top.length === 0) return "SMART MONEY: no scored wallets yet.";
   const act = await db
-    .select({ wallet: wallets.address, side: walletActivity.side, symbol: tokens.symbol, mint: walletActivity.mint, eth: walletActivity.amountSol, at: walletActivity.at })
+    .select({ wallet: wallets.address, side: walletActivity.side, symbol: tokens.symbol, mint: walletActivity.mint, eth: walletActivity.amountEth, at: walletActivity.at })
     .from(walletActivity)
     .innerJoin(wallets, eq(wallets.id, walletActivity.walletId))
     .leftJoin(tokens, eq(tokens.id, walletActivity.tokenId))
@@ -65,7 +65,7 @@ async function smartBlock(db: Db): Promise<string> {
     .limit(8);
   return [
     "SMART MONEY (Corvid-scored wallets, estimates):",
-    ...top.map((w) => `- ${short(w.address)} tier ${w.curatedTier}, PnL ${num(w.totalPnlSol)?.toFixed(2)} ETH, win ${pct(num(w.winRate30dPct))}`),
+    ...top.map((w) => `- ${short(w.address)} tier ${w.curatedTier}, PnL ${num(w.totalPnlEth)?.toFixed(2)} ETH, win ${pct(num(w.winRate30dPct))}`),
     "Recent trades:",
     ...act.map((a) => `- ${short(a.wallet)} ${a.side} ${a.symbol ?? short(a.mint)} ${num(a.eth) === null ? "" : `${num(a.eth)!.toFixed(3)} ETH`} at ${a.at.toISOString()}`),
   ].join("\n");

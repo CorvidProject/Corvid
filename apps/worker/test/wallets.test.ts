@@ -80,7 +80,7 @@ describe("refreshWallets (Postgres)", () => {
       walletAddress: wallet,
       side,
       tokenAmount: String(amount),
-      solAmount: eth === null ? null : String(eth),
+      ethAmount: eth === null ? null : String(eth),
       tradedAt: at(h),
     });
     await created.db.insert(tokenTrades).values([
@@ -102,7 +102,7 @@ describe("refreshWallets (Postgres)", () => {
     const rows = await created.db.select().from(wallets);
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ address: W(1), curatedTier: "A", source: "trades-window", closedTokens30d: 1, txCount30d: 2 });
-    expect(Number(rows[0].totalPnlSol)).toBeCloseTo(2, 5);
+    expect(Number(rows[0].totalPnlEth)).toBeCloseTo(2, 5);
     expect(rows[0].curatedLabel).toBe("Discovered · +2.00 ETH / 48h");
     const again = await refreshWallets(created.db, { now: NOW, windowHours: 48 });
     expect(again.activity).toBe(0); // tx_hash unik: tidak digandakan
@@ -128,7 +128,7 @@ describe("refreshWallets (Postgres)", () => {
       walletAddress: wallet,
       side,
       tokenAmount: "1000",
-      solAmount: String(eth),
+      ethAmount: String(eth),
       tradedAt: when,
     });
     await created.db.insert(tokenTrades).values([

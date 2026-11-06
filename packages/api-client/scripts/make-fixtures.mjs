@@ -30,7 +30,7 @@ W("alpha-curated", {
   fixture: true,
   wallets: wallets.map((address, i) => ({
     address, category: ["whale", "sniper", "kol", "unknown"][i % 4], curated_tier: ["S", "A", "A", "B"][i % 4],
-    curated_label: `Fixture wallet ${i + 1}`, win_rate_30d: 38 + i * 4.5, pnl_sol: +(12.4 - i * 1.3).toFixed(2),
+    curated_label: `Fixture wallet ${i + 1}`, win_rate_30d: 38 + i * 4.5, pnl_eth: +(12.4 - i * 1.3).toFixed(2),
     tx_count_30d: 120 + i * 17, tokens_traded: 9 + i, avg_hold_hours: 6 + i * 3, last_active: new Date((now - i * 3600) * 1000).toISOString(),
   })),
 });

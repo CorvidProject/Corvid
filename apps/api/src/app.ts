@@ -23,7 +23,7 @@ import type { PlanLimitsByPlan } from "@corvid/shared";
 import type { LlmClient } from "./llm";
 import type { RateLimiter } from "./ratelimit";
 import type { Verifier } from "./auth";
-import { coingeckoSolPrice, priceRoutes, type SolPriceSource } from "./routes/prices";
+import { ethPriceSource, priceRoutes, type EthPriceSource } from "./routes/prices";
 
 export type Db = NodePgDatabase<typeof schema>;
 
@@ -31,8 +31,8 @@ export interface AppOptions {
   db: Db;
   webOrigin?: string;
   logger?: boolean;
-  /** Sumber harga SOL (default CoinGecko); diganti mock di test. */
-  solPrice?: SolPriceSource;
+  /** Sumber harga ETH (default CoinGecko); diganti mock di test. */
+  ethPrice?: EthPriceSource;
   /** Verifier JWT Supabase; null = endpoint ber-auth menjawab 503. */
   verifier?: Verifier | null;
   tradeMode?: "dry" | "live";
@@ -49,7 +49,7 @@ export interface AppOptions {
   payments?: PaymentsConfig | null;
 }
 
-export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, solPrice = coingeckoSolPrice, verifier = null, tradeMode = "dry", llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null }: AppOptions) {
+export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null }: AppOptions) {
   const app = Fastify({ logger, trustProxy: trustProxyHops > 0 ? (_addr: string, hop: number) => hop < trustProxyHops : false }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -66,7 +66,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   await app.register(marketRoutes(db), { prefix: "/api" });
   await app.register(discoveryRoutes(db), { prefix: "/api" });
   await app.register(alphaRoutes(db), { prefix: "/api" });
-  await app.register(priceRoutes(solPrice), { prefix: "/api" });
+  await app.register(priceRoutes(ethPrice), { prefix: "/api" });
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
   await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
   await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode, verifier }), { prefix: "/api" });

@@ -335,7 +335,7 @@ export async function refreshTrades(deps: Deps, topN = 10): Promise<{ trades: nu
       if (list.length === 0) continue;
       const res = await deps.db
         .insert(tokenTrades)
-        .values(list.map((x) => ({ tokenId: t.id, txHash: x.txHash, walletAddress: x.wallet, side: x.side, tokenAmount: x.tokenAmount, solAmount: x.solAmount, priceUsd: x.priceUsd, tradedAt: x.at })))
+        .values(list.map((x) => ({ tokenId: t.id, txHash: x.txHash, walletAddress: x.wallet, side: x.side, tokenAmount: x.tokenAmount, ethAmount: x.ethAmount, priceUsd: x.priceUsd, tradedAt: x.at })))
         .onConflictDoNothing()
         .returning({ id: tokenTrades.id });
       trades += res.length;

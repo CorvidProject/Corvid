@@ -4,7 +4,7 @@ import { refreshBoard, refreshCandles, refreshLaunchpad, refreshMissingImages, r
 import { createRpc, PONS, VIRTUALS } from "./sources/launchpads";
 import { pruneWallets, refreshWallets } from "./wallets";
 import { runAgentCycle } from "./runner";
-import { cachedSolUsd } from "./solprice";
+import { cachedEthUsd } from "./ethprice";
 import { createDexScreener } from "./sources/dexscreener";
 import { createGeckoTerminal } from "./sources/geckoterminal";
 import { createGoPlus } from "./sources/goplus";
@@ -68,7 +68,7 @@ const timers = [
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),
   every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
   every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS })), pruned: await pruneWallets(db) })),
-  every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, solUsd: cachedSolUsd() })),
+  every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd: cachedEthUsd() })),
   every("retention", env.WORKER_RETENTION_MS, () => runRetention(db)),
 ];
 

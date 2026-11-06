@@ -113,13 +113,13 @@ export async function refreshWallets(
       symbol: tokens.symbol,
       side: tokenTrades.side,
       tokenAmount: tokenTrades.tokenAmount,
-      eth: tokenTrades.solAmount,
+      eth: tokenTrades.ethAmount,
       txHash: tokenTrades.txHash,
       at: tokenTrades.tradedAt,
     })
     .from(tokenTrades)
     .innerJoin(tokens, eq(tokens.id, tokenTrades.tokenId))
-    .where(and(gte(tokenTrades.tradedAt, since), isNotNull(tokenTrades.solAmount)))
+    .where(and(gte(tokenTrades.tradedAt, since), isNotNull(tokenTrades.ethAmount)))
     .limit(100_000);
 
   const scores = scoreWallets(rows.map((r) => ({ wallet: r.wallet.toLowerCase(), mint: r.mint, side: r.side, tokenAmount: Number(r.tokenAmount), eth: r.eth === null ? null : Number(r.eth), at: r.at })));
@@ -135,7 +135,7 @@ export async function refreshWallets(
       curatedTier: s.tier,
       curatedLabel: `Discovered · ${fmtEth(s.pnlEth)} / ${windowHours}h`,
       winRate30dPct: s.winRate === null ? null : s.winRate.toFixed(2),
-      totalPnlSol: s.pnlEth.toFixed(6),
+      totalPnlEth: s.pnlEth.toFixed(6),
       txCount30d: s.trades,
       closedTokens30d: s.closedTokens,
       tokensTraded: s.tokensTraded,
@@ -162,7 +162,7 @@ export async function refreshWallets(
     if (!walletId) continue;
     const res = await db
       .insert(walletActivity)
-      .values({ walletId, tokenId: r.tokenId, mint: r.mint, side: r.side, amountSol: r.eth, txHash: r.txHash, at: r.at })
+      .values({ walletId, tokenId: r.tokenId, mint: r.mint, side: r.side, amountEth: r.eth, txHash: r.txHash, at: r.at })
       .onConflictDoNothing()
       .returning({ id: walletActivity.id });
     activity += res.length;

@@ -42,12 +42,12 @@ describe("GeckoTerminal parser (sampel respons asli, jaringan robinhood)", () =>
     expect(c[1]).toMatchObject({ open: "9", volumeUsd: "99" });
   });
 
-  it("parseTrades: sisi base benar, solAmount (ETH) hanya bila quote WETH", () => {
+  it("parseTrades: sisi base benar, ethAmount (ETH) hanya bila quote WETH", () => {
     const trades = parseTrades(fx("gt-trades.json"), CASH);
     expect(trades.length).toBeGreaterThan(0);
     for (const t of trades) {
       expect(["buy", "sell"]).toContain(t.side);
-      expect(Number(t.solAmount)).toBeGreaterThan(0); // pool CASHCAT/WETH: sisi quote = ETH
+      expect(Number(t.ethAmount)).toBeGreaterThan(0); // pool CASHCAT/WETH: sisi quote = ETH
       expect(t.wallet).toMatch(/^0x[0-9a-f]{40}$/);
     }
     // Pool berkuotasi token lain: tidak ada jumlah ETH.
@@ -56,7 +56,7 @@ describe("GeckoTerminal parser (sampel respons asli, jaringan robinhood)", () =>
       if (x.attributes.kind === "sell") x.attributes.to_token_address = "0x00000000000000000000000000000000000000aa";
       else x.attributes.from_token_address = "0x00000000000000000000000000000000000000aa";
     }
-    for (const t of parseTrades(other, CASH)) expect(t.solAmount).toBeNull();
+    for (const t of parseTrades(other, CASH)) expect(t.ethAmount).toBeNull();
     const syn = {
       data: [
         {
@@ -76,7 +76,7 @@ describe("GeckoTerminal parser (sampel respons asli, jaringan robinhood)", () =>
       ],
     };
     const [t] = parseTrades(syn, CASH);
-    expect(t).toMatchObject({ side: "buy", tokenAmount: "1000", solAmount: "2.5", priceUsd: "0.375", wallet: "0x00000000000000000000000000000000000000b1" });
+    expect(t).toMatchObject({ side: "buy", tokenAmount: "1000", ethAmount: "2.5", priceUsd: "0.375", wallet: "0x00000000000000000000000000000000000000b1" });
     expect(parseTrades(syn, "0x00000000000000000000000000000000000000cc")).toHaveLength(0);
   });
 

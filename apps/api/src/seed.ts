@@ -123,7 +123,7 @@ export async function seedAll(db: Db) {
           walletAddress: t.wallet,
           side: t.type,
           tokenAmount: String(t.tokenAmount),
-          solAmount: str(t.solAmount),
+          ethAmount: str(t.solAmount),
           priceUsd: str(t.priceUsd),
           marketCapUsd: str(t.marketCapUsd),
           tradedAt: new Date(t.timestamp),

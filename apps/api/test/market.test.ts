@@ -43,14 +43,14 @@ beforeAll(async () => {
   const WB = "0x" + "b".repeat(40);
   const [wa] = await created.db
     .insert(wallets)
-    .values({ address: WA, source: "trades-window", curatedTier: "A", curatedLabel: "Discovered · +2.00 ETH / 48h", winRate30dPct: "100", totalPnlSol: "2", txCount30d: 2, closedTokens30d: 1, tokensTraded: 1, avgHoldHours: "5", lastActiveAt: new Date(t0) })
+    .values({ address: WA, source: "trades-window", curatedTier: "A", curatedLabel: "Discovered · +2.00 ETH / 48h", winRate30dPct: "100", totalPnlEth: "2", txCount30d: 2, closedTokens30d: 1, tokensTraded: 1, avgHoldHours: "5", lastActiveAt: new Date(t0) })
     .returning({ id: wallets.id });
-  const [wb] = await created.db.insert(wallets).values({ address: WB, source: "trades-window", curatedTier: null, totalPnlSol: "-1" }).returning({ id: wallets.id });
+  const [wb] = await created.db.insert(wallets).values({ address: WB, source: "trades-window", curatedTier: null, totalPnlEth: "-1" }).returning({ id: wallets.id });
   await created.db.insert(walletActivity).values([
-    { walletId: wa.id, tokenId: tok.id, mint: "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump", side: "buy", amountSol: "1", txHash: "0x" + "1".repeat(64), at: new Date(t0 + 1000) },
-    { walletId: wb.id, tokenId: tok.id, mint: "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump", side: "sell", amountSol: "1", txHash: "0x" + "2".repeat(64), at: new Date(t0 + 2000) },
+    { walletId: wa.id, tokenId: tok.id, mint: "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump", side: "buy", amountEth: "1", txHash: "0x" + "1".repeat(64), at: new Date(t0 + 1000) },
+    { walletId: wb.id, tokenId: tok.id, mint: "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump", side: "sell", amountEth: "1", txHash: "0x" + "2".repeat(64), at: new Date(t0 + 2000) },
   ]);
-  app = await buildApp({ db: created.db, solPrice: async () => priceNow() });
+  app = await buildApp({ db: created.db, ethPrice: async () => priceNow() });
   await app.ready();
 }, 120_000);
 
@@ -127,12 +127,12 @@ describe("market API", () => {
     expect(r.json()).toEqual({ error: "not_found" });
   });
 
-  it("GET /api/prices/sol: cache, lalu 503 bila sumber gagal dan tidak ada cache", async () => {
-    const r = await get("/api/prices/sol");
+  it("GET /api/prices/native: cache, lalu 503 bila sumber gagal dan tidak ada cache", async () => {
+    const r = await get("/api/prices/native");
     expect(r.statusCode).toBe(200);
     expect(r.json()).toEqual({ usd: 150.25 });
     priceNow = () => 999; // di dalam TTL: tetap nilai cache
-    expect((await get("/api/prices/sol")).json()).toEqual({ usd: 150.25 });
+    expect((await get("/api/prices/native")).json()).toEqual({ usd: 150.25 });
   });
 
   it("GET /api/search: simbol, nama, mint, dan notice untuk mint tak dikenal", async () => {

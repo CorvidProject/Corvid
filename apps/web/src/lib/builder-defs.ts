@@ -39,7 +39,7 @@ export const PIPELINES: Pipeline[] = [
         prompt: "What trades should pass through?",
         fields: [
           { key: "only_buys", label: "Only Buys", hint: "Ignore sells from source wallet", type: "toggle" },
-          { key: "min_source_trade_sol", label: "Min Trade Size (ETH)", hint: "Skip dust trades below this amount", placeholder: "0.05", type: "number" },
+          { key: "min_source_trade_eth", label: "Min Trade Size (ETH)", hint: "Skip dust trades below this amount", placeholder: "0.05", type: "number" },
           { key: "min_source_win_rate", label: "Min Wallet Win Rate %", hint: "Only copy if wallet win rate is above this", placeholder: "0", type: "number", advanced: true },
         ],
       },
@@ -48,7 +48,7 @@ export const PIPELINES: Pipeline[] = [
         label: "Execute",
         prompt: "How should trades be executed?",
         fields: [
-          { key: "max_sol_per_copy", label: "Max ETH per Trade", hint: "Hard cap per mirrored trade", placeholder: "0.05", type: "number", showInMode: "trading" },
+          { key: "max_eth_per_copy", label: "Max ETH per Trade", hint: "Hard cap per mirrored trade", placeholder: "0.05", type: "number", showInMode: "trading" },
           { key: "slippage_bps", label: "Slippage (bps)", hint: "100 = 1%. Higher fills more, worse price", placeholder: "200", type: "number", showInMode: "trading" },
           { key: "cancel_if_quote_moved_pct", label: "Cancel if Price Moved %", hint: "Abort if price drifts more than this", placeholder: "3", type: "number", showInMode: "trading", advanced: true },
           { key: "take_profit_pct", label: "Take Profit %", hint: "Auto-sell copied position at this profit", placeholder: "30", type: "number", showInMode: "trading", advanced: true },
@@ -96,7 +96,7 @@ export const PIPELINES: Pipeline[] = [
         label: "Execute",
         prompt: "How should buys be executed?",
         fields: [
-          { key: "max_sol_per_trade", label: "Max ETH per Trade", hint: "Maximum ETH per auto-buy", placeholder: "0.1", type: "number", showInMode: "trading" },
+          { key: "max_eth_per_trade", label: "Max ETH per Trade", hint: "Maximum ETH per auto-buy", placeholder: "0.1", type: "number", showInMode: "trading" },
           { key: "slippage_bps", label: "Slippage (bps)", hint: "100 = 1%", placeholder: "300", type: "number", showInMode: "trading" },
           { key: "take_profit_pct", label: "Take Profit %", hint: "Auto-sell when token reaches this profit", placeholder: "50", type: "number", showInMode: "trading", advanced: true },
           { key: "stop_loss_pct", label: "Stop Loss %", hint: "Auto-sell to cut losses", placeholder: "20", type: "number", showInMode: "trading", advanced: true },
@@ -156,7 +156,7 @@ export const PIPELINES: Pipeline[] = [
         label: "Execute",
         prompt: "How should the trade work?",
         fields: [
-          { key: "max_sol_per_trade", label: "Max ETH per Trade", hint: "Maximum ETH per execution", placeholder: "0.1", type: "number", showInMode: "trading" },
+          { key: "max_eth_per_trade", label: "Max ETH per Trade", hint: "Maximum ETH per execution", placeholder: "0.1", type: "number", showInMode: "trading" },
           { key: "slippage_bps", label: "Slippage (bps)", hint: "100 = 1%. Higher fills more, worse price", placeholder: "200", type: "number", showInMode: "trading" },
           { key: "cancel_if_quote_moved_pct", label: "Cancel if Price Moved %", hint: "Abort if price drifts before execution", placeholder: "5", type: "number", showInMode: "trading", advanced: true },
           { key: "take_profit_pct", label: "Take Profit %", hint: "Auto-sell when profit reaches this", placeholder: "20", type: "number", showInMode: "trading", advanced: true },
@@ -170,19 +170,19 @@ export const PIPELINES: Pipeline[] = [
 
 const PRESET_VALUES: Record<PipelineKey, Record<Preset, Record<string, string>>> = {
   follow_wallet: {
-    degen: { max_sol_per_copy: "0.2", slippage_bps: "500", only_buys: "true", min_source_trade_sol: "0.02", min_source_win_rate: "0", cancel_if_quote_moved_pct: "8", take_profit_pct: "50", stop_loss_pct: "20" },
-    balanced: { max_sol_per_copy: "0.05", slippage_bps: "200", only_buys: "true", min_source_trade_sol: "0.05", min_source_win_rate: "0", cancel_if_quote_moved_pct: "3", take_profit_pct: "30", stop_loss_pct: "15" },
-    safety: { max_sol_per_copy: "0.02", slippage_bps: "100", only_buys: "true", min_source_trade_sol: "0.1", min_source_win_rate: "40", cancel_if_quote_moved_pct: "2", take_profit_pct: "20", stop_loss_pct: "10" },
+    degen: { max_eth_per_copy: "0.2", slippage_bps: "500", only_buys: "true", min_source_trade_eth: "0.02", min_source_win_rate: "0", cancel_if_quote_moved_pct: "8", take_profit_pct: "50", stop_loss_pct: "20" },
+    balanced: { max_eth_per_copy: "0.05", slippage_bps: "200", only_buys: "true", min_source_trade_eth: "0.05", min_source_win_rate: "0", cancel_if_quote_moved_pct: "3", take_profit_pct: "30", stop_loss_pct: "15" },
+    safety: { max_eth_per_copy: "0.02", slippage_bps: "100", only_buys: "true", min_source_trade_eth: "0.1", min_source_win_rate: "40", cancel_if_quote_moved_pct: "2", take_profit_pct: "20", stop_loss_pct: "10" },
   },
   new_tokens: {
-    degen: { min_lp_usd: "2000", no_mint_authority: "false", no_freeze_authority: "false", lp_locked: "false", lp_burn_pct_min: "0", max_dev_wallet_pct: "25", markets: "", max_sol_per_trade: "0.2", slippage_bps: "500", take_profit_pct: "100", stop_loss_pct: "30" },
-    balanced: { min_lp_usd: "5000", no_mint_authority: "true", no_freeze_authority: "true", lp_locked: "true", lp_burn_pct_min: "80", max_dev_wallet_pct: "10", markets: "", max_sol_per_trade: "0.1", slippage_bps: "300", take_profit_pct: "50", stop_loss_pct: "20" },
-    safety: { min_lp_usd: "20000", no_mint_authority: "true", no_freeze_authority: "true", lp_locked: "true", lp_burn_pct_min: "95", max_dev_wallet_pct: "5", markets: "", max_sol_per_trade: "0.05", slippage_bps: "200", take_profit_pct: "30", stop_loss_pct: "10" },
+    degen: { min_lp_usd: "2000", no_mint_authority: "false", no_freeze_authority: "false", lp_locked: "false", lp_burn_pct_min: "0", max_dev_wallet_pct: "25", markets: "", max_eth_per_trade: "0.2", slippage_bps: "500", take_profit_pct: "100", stop_loss_pct: "30" },
+    balanced: { min_lp_usd: "5000", no_mint_authority: "true", no_freeze_authority: "true", lp_locked: "true", lp_burn_pct_min: "80", max_dev_wallet_pct: "10", markets: "", max_eth_per_trade: "0.1", slippage_bps: "300", take_profit_pct: "50", stop_loss_pct: "20" },
+    safety: { min_lp_usd: "20000", no_mint_authority: "true", no_freeze_authority: "true", lp_locked: "true", lp_burn_pct_min: "95", max_dev_wallet_pct: "5", markets: "", max_eth_per_trade: "0.05", slippage_bps: "200", take_profit_pct: "30", stop_loss_pct: "10" },
   },
   token_trading: {
-    degen: { trigger_threshold: "3", volume_multiplier: "3", max_sol_per_trade: "0.25", slippage_bps: "300", cancel_if_quote_moved_pct: "8", take_profit_pct: "50", stop_loss_pct: "20" },
-    balanced: { trigger_threshold: "5", volume_multiplier: "5", max_sol_per_trade: "0.1", slippage_bps: "200", cancel_if_quote_moved_pct: "5", take_profit_pct: "30", stop_loss_pct: "10" },
-    safety: { trigger_threshold: "10", volume_multiplier: "10", max_sol_per_trade: "0.05", slippage_bps: "100", cancel_if_quote_moved_pct: "3", take_profit_pct: "20", stop_loss_pct: "7" },
+    degen: { trigger_threshold: "3", volume_multiplier: "3", max_eth_per_trade: "0.25", slippage_bps: "300", cancel_if_quote_moved_pct: "8", take_profit_pct: "50", stop_loss_pct: "20" },
+    balanced: { trigger_threshold: "5", volume_multiplier: "5", max_eth_per_trade: "0.1", slippage_bps: "200", cancel_if_quote_moved_pct: "5", take_profit_pct: "30", stop_loss_pct: "10" },
+    safety: { trigger_threshold: "10", volume_multiplier: "10", max_eth_per_trade: "0.05", slippage_bps: "100", cancel_if_quote_moved_pct: "3", take_profit_pct: "20", stop_loss_pct: "7" },
   },
 };
 
@@ -211,7 +211,7 @@ export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: str
   if (key === "follow_wallet") {
     title = c.wallet_address ? `Following ${short(c.wallet_address)}` : "No wallet selected";
     lines.push(c.only_buys === "true" ? "Copies only buy trades" : "Copies buys and sells");
-    if (c.min_source_trade_sol) lines.push(`Skips trades under ${c.min_source_trade_sol} ETH`);
+    if (c.min_source_trade_eth) lines.push(`Skips trades under ${c.min_source_trade_eth} ETH`);
     if (Number(c.min_source_win_rate) > 0) lines.push(`Only wallets above ${c.min_source_win_rate}% win rate`);
   } else if (key === "new_tokens") {
     title = "Scanning every new pool";
@@ -229,7 +229,7 @@ export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: str
   }
   if (mode === "signal") lines.push("Sends signal alerts, no trades");
   else {
-    const max = c.max_sol_per_copy || c.max_sol_per_trade;
+    const max = c.max_eth_per_copy || c.max_eth_per_trade;
     if (max) lines.push(`Each trade uses up to ${max} ETH`);
     if (c.slippage_bps) lines.push(`Slippage tolerance ${(Number(c.slippage_bps) / 100).toFixed(1)}%`);
     if (c.take_profit_pct || c.stop_loss_pct) lines.push(`TP ${c.take_profit_pct || "—"}% · SL ${c.stop_loss_pct || "—"}%`);
@@ -242,10 +242,10 @@ export function nodeSubtitle(step: string, key: PipelineKey, mode: Mode, c: Conf
   if (step === "monitor") return key === "follow_wallet" ? (c.wallet_address ? short(c.wallet_address) : "No wallet set") : c.token_mint ? short(c.token_mint) : "No token set";
   if (step === "scan") return "Fresh pools";
   if (step === "filter") {
-    if (key === "follow_wallet") return `${c.only_buys === "true" ? "Buys only" : "Buys + sells"}, ≥${c.min_source_trade_sol || "0"} native`;
+    if (key === "follow_wallet") return `${c.only_buys === "true" ? "Buys only" : "Buys + sells"}, ≥${c.min_source_trade_eth || "0"} native`;
     if (key === "new_tokens") return `LP ≥ $${Number(c.min_lp_usd || 0).toLocaleString("en-US")}${c.no_mint_authority === "true" ? " · mint off" : ""}`;
     return `${(c.trigger_type || "price_drop").replace(/_/g, " ")} ${c.trigger_threshold || ""}%`.trim();
   }
-  if (step === "execute") return mode === "signal" ? "Signal mode" : `Up to ${c.max_sol_per_copy || c.max_sol_per_trade || "?"} ETH`;
+  if (step === "execute") return mode === "signal" ? "Signal mode" : `Up to ${c.max_eth_per_copy || c.max_eth_per_trade || "?"} ETH`;
   return "";
 }

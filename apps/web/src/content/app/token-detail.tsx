@@ -42,7 +42,7 @@ type Security = {
 };
 type Candle = { time: number; open: number; high: number; low: number; close: number; volume: number };
 type Chart = { candles: Candle[] };
-type Trades = { trades: { txHash: string; wallet: string; type: "buy" | "sell"; tokenAmount: number; solAmount: number | null; priceUsd: number | null; timestamp: number }[] };
+type Trades = { trades: { txHash: string; wallet: string; type: "buy" | "sell"; tokenAmount: number; ethAmount: number | null; priceUsd: number | null; timestamp: number }[] };
 
 const INTERVALS = ["5m", "15m", "1h", "4h", "1d"] as const;
 const PERIODS = [
@@ -306,7 +306,7 @@ export function TokenDetailContent({ mint }: { mint: string }) {
                     {tr.type}
                   </span>
                   <span className="num" style={{ color: "var(--v2-t-2)" }}>
-                    {tr.solAmount != null ? `${tr.solAmount} ETH` : "·"}
+                    {tr.ethAmount != null ? `${tr.ethAmount} ETH` : "·"}
                   </span>
                   <span className="font-mono" style={{ color: "var(--v2-t-4)" }}>
                     {short(tr.wallet)}

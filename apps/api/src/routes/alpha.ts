@@ -25,7 +25,7 @@ export const alphaRoutes =
           .select()
           .from(wallets)
           .where(and(isNotNull(wallets.curatedTier), tier ? eq(wallets.curatedTier, tier) : undefined))
-          .orderBy(sql`${wallets.totalPnlSol} desc nulls last`)
+          .orderBy(sql`${wallets.totalPnlEth} desc nulls last`)
           .limit(limit);
         return {
           wallets: rows.map((w) => ({
@@ -33,7 +33,7 @@ export const alphaRoutes =
             label: w.curatedLabel,
             tier: w.curatedTier as "S" | "A" | "B" | "C" | null,
             winRate: num(w.winRate30dPct),
-            pnlEth: num(w.totalPnlSol) ?? 0,
+            pnlEth: num(w.totalPnlEth) ?? 0,
             trades: w.txCount30d ?? 0,
             closedTokens: w.closedTokens30d ?? 0,
             tokensTraded: w.tokensTraded ?? 0,
@@ -51,7 +51,7 @@ export const alphaRoutes =
       { schema: { tags: ["alpha"], querystring: alphaActivityQuerySchema, response: { 200: alphaActivityResponseSchema } } },
       async (req) => {
         const rows = await db
-          .select({ wallet: wallets.address, side: walletActivity.side, mint: walletActivity.mint, symbol: tokens.symbol, eth: walletActivity.amountSol, at: walletActivity.at })
+          .select({ wallet: wallets.address, side: walletActivity.side, mint: walletActivity.mint, symbol: tokens.symbol, eth: walletActivity.amountEth, at: walletActivity.at })
           .from(walletActivity)
           .innerJoin(wallets, eq(wallets.id, walletActivity.walletId))
           .leftJoin(tokens, eq(tokens.id, walletActivity.tokenId))

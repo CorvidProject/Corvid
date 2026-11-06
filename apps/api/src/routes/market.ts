@@ -86,7 +86,7 @@ export const marketRoutes =
             wallet: t.walletAddress,
             type: t.side,
             tokenAmount: Number(t.tokenAmount),
-            solAmount: num(t.solAmount),
+            ethAmount: num(t.ethAmount),
             priceUsd: num(t.priceUsd),
             marketCapUsd: num(t.marketCapUsd),
             timestamp: t.tradedAt.getTime(),

@@ -39,7 +39,7 @@ export const watchlistRoutes =
                 address: m.address,
                 label: w?.curatedLabel ?? null,
                 tier: (w?.curatedTier as "S" | "A" | "B" | "C" | null | undefined) ?? null,
-                pnlEth: num(w?.totalPnlSol),
+                pnlEth: num(w?.totalPnlEth),
                 winRate: num(w?.winRate30dPct),
                 lastActive: w?.lastActiveAt ? Math.floor(w.lastActiveAt.getTime() / 1000) : null,
               };
