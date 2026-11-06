@@ -65,8 +65,9 @@ export function DocsShell({ children }: { children: ReactNode }) {
               fontStyle: "normal",
             }}
           >
-            <span>
-              <span style={{ color: "var(--v2-accent-text)" }}>●</span>{" "}
+            <span className="inline-flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/corvid-logo-512.png" alt="" width={16} height={16} style={{ width: 16, height: 16 }} />
               {site.name.toUpperCase()} DOCS · v2026.04
             </span>
             <div className="flex gap-5">

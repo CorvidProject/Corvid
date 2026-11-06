@@ -51,6 +51,12 @@ function StatusBar() {
       }}
     >
       <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/corvid-logo-512.png" alt="Corvid" width={16} height={16} style={{ width: 16, height: 16 }} />
+        <span
+          className="w-px h-3.5"
+          style={{ background: "var(--v2-line-1)" }}
+        />
         <span className="flex items-center gap-1.5">
           <span
             className="inline-block w-1.5 h-1.5 rounded-full animate-pulse"

@@ -93,6 +93,8 @@ export function Footer() {
       >
         <div className="pr-4">
           <div className="flex items-center gap-3 mb-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/corvid-logo-512.png" alt="" width={34} height={34} style={{ width: 34, height: 34 }} />
             <span className="font-heading text-xl lg:text-2xl font-bold tracking-tight" style={{ color: "rgba(255,255,255,0.95)" }}>
               {site.name}
             </span>
