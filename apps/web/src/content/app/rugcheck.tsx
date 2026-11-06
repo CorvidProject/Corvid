@@ -162,7 +162,7 @@ export function ApplicationRugcheckContent() {
             <ul className="mt-6 m-0 p-0 list-none flex flex-col gap-2 text-left">
               {hits.map((h) => (
                 <li key={h.mint}>
-                  <button type="button" onClick={() => router.push(open(h.mint))} className="w-full flex items-center justify-between gap-3 h-11 px-4 rounded-[12px] text-[14px]" style={{ background: "rgb(26, 32, 37)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "var(--v2-t-1)" }}>
+                  <button type="button" onClick={() => router.push(open(h.mint))} className="w-full flex items-center justify-between gap-3 h-11 px-4 text-[14px]" style={{ background: "rgb(26, 32, 37)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "var(--v2-t-1)", borderRadius: 12 }}>
                     <span className="font-semibold">{h.symbol ?? "?"} <span style={{ color: "var(--v2-t-4)", fontWeight: 400 }}>{h.name}</span></span>
                     <span className="font-mono text-[12px]" style={{ color: "var(--v2-t-4)" }}>{h.mint.slice(0, 6)}…{h.mint.slice(-4)}</span>
                   </button>

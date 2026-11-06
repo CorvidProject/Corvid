@@ -44,6 +44,8 @@ import { apiSend, ApiError, USE_API } from "@/lib/api";
 const PIPE_ICON: Record<PipelineKey, typeof Eye> = { follow_wallet: Eye, new_tokens: Crosshair, token_trading: ChartLineUp };
 const STEP_ICON: Record<string, typeof Eye> = { monitor: Eye, scan: Crosshair, filter: Funnel, execute: Lightning, notify: Bell, persona: UserCircle, knowledge: BookOpen };
 const TOKEN_PIPE = "token_trading" as const;
+// Eksekusi nyata hanya bila diizinkan pemilik (NEXT_PUBLIC_TRADE_MODE=live). Selain itu agent hanya mensimulasikan swap.
+const LIVE = process.env.NEXT_PUBLIC_TRADE_MODE === "live";
 
 type NodeDef = { id: string; label: string; sub: string; sub2?: string; x: number; y: number; w: number; size: number; kind: "config" | "network" | "trigger" | "step" };
 
@@ -293,7 +295,7 @@ export function AgentBuilder() {
       );
   };
   const share = () => {
-    const t = `I'm building a ${pipeline.name} agent on Corvid: ${summary.title}. ${mode === "signal" ? "Signal mode" : "Live trading"} on Robinhood Chain.`;
+    const t = `I'm building a ${pipeline.name} agent on Corvid: ${summary.title}. ${mode === "signal" ? "Signal mode" : LIVE ? "Live trading" : "Simulated trading"} on Robinhood Chain.`;
     window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}&url=${encodeURIComponent(window.location.origin)}`, "_blank", "noopener,noreferrer");
   };
 
@@ -385,7 +387,7 @@ export function AgentBuilder() {
             </button>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-[13px] leading-relaxed whitespace-nowrap opacity-0 pointer-events-none group-hover/mode:opacity-100 transition-opacity z-50" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
               {isTrading ? (
-                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong> — executes real trades with ETH<br />Click to switch to signal-only</span>
+                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong> — {LIVE ? "executes real trades with ETH" : "simulated trades only (live trading is locked)"}<br />Click to switch to signal-only</span>
               ) : (
                 <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-t-1)" }}>Signal mode</strong> — alerts only, no trades executed<br />Click to switch to auto-trading</span>
               )}
@@ -617,7 +619,7 @@ export function AgentBuilder() {
                       {isTrading && (
                         <div className="flex items-center gap-1.5 text-[12px] pt-1" style={{ color: "var(--v2-accent-text)" }}>
                           <Warning size={12} weight="fill" />
-                          {maxLive ? `Live trading — up to ${maxLive} ETH per trade from your wallet` : "Live trading — set a per-trade limit before you deploy"}
+                          {LIVE ? "Live trading" : "Simulated trading (live is locked)"} — {maxLive ? `up to ${maxLive} ETH per trade${LIVE ? " from your wallet" : ""}` : "set a per-trade limit before you deploy"}
                         </div>
                       )}
                     </div>

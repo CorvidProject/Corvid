@@ -110,7 +110,7 @@ export function ApplicationProContent() {
           <h1 className="font-heading font-semibold text-[30px] tracking-[-0.02em] m-0" style={{ color: "var(--v2-t-0)" }}>
             Plan &amp; Usage
           </h1>
-          <p className="text-[15px] mt-2 mb-0 max-w-[560px]" style={{ color: "var(--v2-t-3)" }}>
+          <p className="text-[15px] mt-2 mb-0" style={{ color: "var(--v2-t-3)", maxWidth: 560 }}>
             Your plan, monthly AI quota and credits in one place.
           </p>
         </div>
@@ -169,7 +169,7 @@ export function ApplicationProContent() {
                 disabled={disabled}
                 onClick={() => void buy(p.id)}
                 title={!canBuy && USE_API && signed ? "Payments are not enabled yet" : undefined}
-                className="rounded-[10px] px-2 py-2.5 text-center leading-tight transition-colors border border-[var(--v2-line-2,var(--v2-line-1))] hover:border-[var(--v2-accent)] hover:bg-[rgba(var(--v2-accent-rgb),0.08)] focus-visible:border-[var(--v2-accent)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[var(--v2-line-1)] disabled:hover:bg-transparent"
+                className="crv-pack px-2 py-2.5 text-center leading-tight"
                 style={{ color: "var(--v2-t-1)" }}
               >
                 <span className="block font-heading font-bold text-[16px]">{usd(p.usd)}</span>
@@ -204,9 +204,9 @@ export function ApplicationProContent() {
             return (
               <div
                 key={p.id}
-                className="group flex flex-col rounded-[14px] p-6 border border-[var(--v2-line-1)] bg-[var(--v2-bg-1)] transition-all duration-200 hover:border-[var(--v2-accent)] focus-within:border-[var(--v2-accent)] hover:bg-[var(--v2-bg-2)] motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(var(--v2-accent-rgb),0.14)]"
+                className="crv-plan-card flex flex-col p-6"
               >
-                <div className="flex items-center justify-between mb-4 min-h-[24px]">
+                <div className="flex items-center justify-between mb-4" style={{ minHeight: 24 }}>
                   <span className="font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: "var(--v2-t-3)" }}>
                     {months(p)} {months(p) === 1 ? "month" : "months"}
                   </span>
@@ -226,7 +226,7 @@ export function ApplicationProContent() {
                   type="button"
                   disabled={disabled}
                   onClick={() => void buy(p.id)}
-                  className="mt-auto w-full h-11 rounded-[10px] font-mono text-[12px] tracking-[0.1em] uppercase font-semibold transition-[filter,opacity] hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                  className="crv-buy mt-auto w-full h-11 font-mono text-[12px] tracking-[0.1em] uppercase font-semibold"
                   style={FILL}
                 >
                   {buyLabel(p.id)}
@@ -329,7 +329,7 @@ function Status({ phase, explorer, onRetry }: { phase: Phase; explorer: string; 
   const tone = phase.kind === "error" ? "var(--v2-neg)" : phase.kind === "done" ? "var(--v2-pos)" : "var(--v2-t-2)";
   const text = phase.kind === "done" ? `Payment confirmed: ${phase.order.label}.` : phase.msg;
   return (
-    <div role="status" className="mt-5 rounded-[10px] px-4 py-3 text-[13px] flex flex-wrap items-center gap-x-4 gap-y-1" style={{ border: `1px solid ${tone}`, color: tone, background: "var(--v2-bg-1)" }}>
+    <div role="status" className="mt-5 px-4 py-3 text-[13px] flex flex-wrap items-center gap-x-4 gap-y-1" style={{ border: `1px solid ${tone}`, color: tone, background: "var(--v2-bg-1)", borderRadius: 10 }}>
       <span>{text}</span>
       {phase.kind === "error" && phase.retry && (
         <button type="button" className="underline" onClick={() => onRetry(phase.retry!)}>

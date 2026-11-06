@@ -132,7 +132,7 @@ export function ApplicationSettingsContent() {
 
       <section className="rounded-2xl p-5 mb-4" style={card}>
         <div className="eyebrow mb-3">Account</div>
-        <dl className="grid grid-cols-[110px_1fr] gap-y-4 text-[13px] items-start">
+        <dl className="grid gap-y-4 text-[13px] items-start" style={{ gridTemplateColumns: "110px 1fr" }}>
           <dt className="pt-1" style={{ color: "var(--v2-t-4)" }}>Email</dt>
           <dd className="m-0 min-w-0">
             {!editing && (

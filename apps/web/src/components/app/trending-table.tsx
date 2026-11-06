@@ -542,14 +542,15 @@ function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: 
 function MobileCard({ t, interval, now }: { t: Tok; interval: Interval; now: number }) {
   const c = chg(t, interval);
   return (
-    <a className="block panel p-3 hover:bg-[var(--v2-bg-2)] transition-colors" href={href(t)}>
-      <div className="flex items-center gap-2.5">
+    <div className="relative block panel p-3 hover:bg-[var(--v2-bg-2)] transition-colors">
+      <a aria-label={`Open ${t.symbol.trim()}`} tabIndex={-1} className="absolute inset-0" href={href(t)}></a>
+      <div className="flex items-center gap-2.5 pointer-events-none">
         <Avatar t={t} size={36} round={false} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-medium text-[var(--v2-t-1)] truncate">{t.symbol.trim()}</span>
             <span className={`dot shrink-0 ${t.riskScore <= 30 ? "dot-pos" : ""}`}></span>
-            <CopyAddr address={t.mint} />
+            <span className="relative z-[1] pointer-events-auto"><CopyAddr address={t.mint} /></span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-[var(--v2-t-3)]">
             <span className="num">{t.name.trim()}</span>
@@ -566,7 +567,7 @@ function MobileCard({ t, interval, now }: { t: Tok; interval: Interval; now: num
           </span>
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-4 gap-2 text-center border-t hairline pt-2.5">
+      <div className="mt-3 grid grid-cols-4 gap-2 text-center border-t hairline pt-2.5 pointer-events-none">
         <div><p className="eyebrow">MCap</p><p className="num text-[11px] text-[var(--v2-t-2)] mt-0.5">{money(t.marketCap)}</p></div>
         <div><p className="eyebrow">Liq</p><p className="num text-[11px] text-[var(--v2-t-2)] mt-0.5">{money(t.liquidity)}</p></div>
         <div><p className="eyebrow">Vol</p><p className="num text-[11px] text-[var(--v2-t-2)] mt-0.5">{money(t.volume)}</p></div>
@@ -579,13 +580,19 @@ function MobileCard({ t, interval, now }: { t: Tok; interval: Interval; now: num
           </p>
         </div>
       </div>
-      <div className="mt-2.5 flex items-center gap-x-3 gap-y-1 flex-wrap border-t hairline pt-2.5 text-[11px]" style={{ color: "var(--v2-t-3)" }}>
+      <div className="mt-2.5 flex items-center gap-x-3 gap-y-1 flex-wrap border-t hairline pt-2.5 text-[11px] pointer-events-none" style={{ color: "var(--v2-t-3)" }}>
         <Signals t={t} />
         <span className="num">Top 10 {t.top10 == null ? "—" : `${Math.round(t.top10)}%`}</span>
         <span className="num">Tax {t.buyTax}/{t.sellTax}</span>
         <span className="num">{t.holders ? t.holders.toLocaleString("en-US") : "—"} holders</span>
       </div>
-    </a>
+      <div className="relative z-[1] mt-2.5 flex items-center gap-1.5 border-t hairline pt-2.5">
+        <a className="px-2.5 py-1.5 rounded-sm text-[11px]" href={`/application/agents/new?template=token_trading&token_mint=${t.mint}&symbol=${encodeURIComponent(t.symbol.trim())}&start=1`} style={{ color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }}>Watch</a>
+        <a className="px-2.5 py-1.5 rounded-sm text-[11px]" href={`/application/chat?q=${t.mint}`} style={{ color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }}>AI</a>
+        <span className="flex-1"></span>
+        <a className="px-2.5 py-1.5 rounded-sm text-[11px]" href={href(t)} style={{ color: "var(--v2-t-1)", border: "1px solid var(--v2-line-2)" }}>Analyze →</a>
+      </div>
+    </div>
   );
 }
 

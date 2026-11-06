@@ -191,7 +191,7 @@ const PRO_BADGE = {
 } as const;
 function ProBadge({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center rounded-[5px] px-1.5 h-[18px] font-mono text-[10px] font-semibold tracking-[0.08em] ${className}`} style={PRO_BADGE} aria-label="Pro subscriber">
+    <span className={`inline-flex items-center px-1.5 h-[18px] font-mono text-[10px] font-semibold tracking-[0.08em] ${className}`} style={{ ...PRO_BADGE, borderRadius: 5 }} aria-label="Pro subscriber">
       PRO
     </span>
   );
