@@ -122,7 +122,7 @@ export function ApplicationSettingsContent() {
   const card = { background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)" } as const;
 
   return (
-    <div className="max-w-[720px] mx-auto">
+    <div className="max-w-[720px] mx-auto" style={{ paddingBottom: 96 }}>
       <h1 className="text-[22px] font-semibold leading-tight mb-1" style={{ color: "var(--v2-t-1)" }}>
         Settings
       </h1>
@@ -252,7 +252,7 @@ export function ApplicationSettingsContent() {
       <section className="rounded-2xl p-5" style={card}>
         <div className="eyebrow mb-3">Session</div>
         <button
-          className="btn-v2 btn-v2-ghost transition-colors hover:!border-[var(--v2-neg)] hover:!text-[var(--v2-neg)] hover:!bg-[color-mix(in_srgb,var(--v2-neg)_12%,transparent)] focus-visible:!border-[var(--v2-neg)] focus-visible:!text-[var(--v2-neg)]"
+          className="btn-v2 btn-v2-ghost crv-signout"
           onClick={() => void signOut()}
         >
           Sign out

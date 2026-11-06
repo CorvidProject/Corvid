@@ -229,3 +229,15 @@ a.pf-row:hover { background: var(--v2-bg-2); }
   .pf-mob { display: none; }
   .pf-total { font-size: 48px; }
 }
+
+/* Tombol Sign out: netral, berubah merah saat kursor di atas atau fokus keyboard.
+   !important karena CSS referensi memaksa border .btn-v2-ghost. */
+.crv-signout {
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+}
+.crv-signout:hover,
+.crv-signout:focus-visible {
+  color: var(--v2-neg) !important;
+  border-color: var(--v2-neg) !important;
+  background: color-mix(in srgb, var(--v2-neg) 12%, transparent) !important;
+}
