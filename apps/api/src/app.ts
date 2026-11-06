@@ -69,7 +69,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   await app.register(priceRoutes(solPrice), { prefix: "/api" });
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
   await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
-  await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode }), { prefix: "/api" });
+  await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode, verifier }), { prefix: "/api" });
   await app.register(marketplaceRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
   await app.register(chatRoutes({ db, requireAuth: requireAuth!, llm, dailyCap: chatDailyCap, limiter: chatLimiter, limits: planLimits }), { prefix: "/api" });
   await app.register(planRoutes({ db, requireAuth: requireAuth!, limits: planLimits, paymentsEnabled: !!payments }), { prefix: "/api" });

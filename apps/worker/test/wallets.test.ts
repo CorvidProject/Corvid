@@ -2,9 +2,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq } from "drizzle-orm";
-import { applyMigrations, createDb, tokenTrades, walletActivity, wallets } from "@corvid/db";
+import { applyMigrations, createDb, signals, tokenTrades, walletActivity, wallets } from "@corvid/db";
 import { upsertToken } from "../src/ingest";
-import { pruneWallets, refreshWallets, scoreWallets, tierOf, type TradeRow } from "../src/wallets";
+import { pruneWallets, refreshWallets, scoreWallets, SIGNAL_WINDOW_MS, tierOf, type TradeRow } from "../src/wallets";
 
 const T0 = Date.UTC(2026, 10, 4, 0, 0, 0);
 const at = (h: number) => new Date(T0 + h * 3_600_000);
@@ -115,5 +115,37 @@ describe("refreshWallets (Postgres)", () => {
     expect(w.curatedTier).toBeNull();
     const pr = await pruneWallets(created.db, new Date(T0 + 24 * 3_600_000 + 100 * 3_600_000));
     expect(pr.activity).toBe(2);
+  });
+
+  it("sinyal premium wallet_buy: hanya pembelian BARU wallet tier S/A dalam 30 menit; tanpa duplikat", async () => {
+    const NOW2 = new Date(T0 + 400 * 3_600_000);
+    const m = (min: number) => new Date(NOW2.getTime() - min * 60_000);
+    const { id: t1 } = await upsertToken(created.db, { mint: MINT(7), symbol: "AAA", name: "A" }, NOW2);
+    const { id: t2 } = await upsertToken(created.db, { mint: MINT(8), symbol: "BBB", name: "B" }, NOW2);
+    const row = (n: number, tokenId: number, wallet: string, side: "buy" | "sell", eth: number, when: Date) => ({
+      tokenId,
+      txHash: "0x" + (1000 + n).toString(16).padStart(64, "0"),
+      walletAddress: wallet,
+      side,
+      tokenAmount: "1000",
+      solAmount: String(eth),
+      tradedAt: when,
+    });
+    await created.db.insert(tokenTrades).values([
+      row(1, t1, W(4), "buy", 1, m(180)), // W4 menutup token AAA dengan untung → tier A
+      row(2, t1, W(4), "sell", 4, m(120)),
+      row(3, t2, W(4), "buy", 1.5, m(10)), // pembelian baru → sinyal
+      row(4, t2, W(4), "buy", 1, m(60)), // lebih tua dari 30 menit → bukan sinyal
+      row(5, t2, W(5), "buy", 2, m(5)), // W5 tanpa tier (belum ada token tertutup) → bukan sinyal
+      row(6, t2, W(4), "sell", 1, m(3)), // penjualan → bukan sinyal
+    ]);
+    const res = await refreshWallets(created.db, { now: NOW2, windowHours: 48 });
+    expect(res.tiered).toBe(1);
+    const sigs = await created.db.select().from(signals).where(eq(signals.type, "wallet_buy"));
+    expect(sigs).toHaveLength(1);
+    expect(sigs[0]).toMatchObject({ mint: MINT(8), symbol: "BBB", score: 75 });
+    expect(NOW2.getTime() - sigs[0].at.getTime()).toBeLessThanOrEqual(SIGNAL_WINDOW_MS);
+    await refreshWallets(created.db, { now: NOW2, windowHours: 48 });
+    expect(await created.db.select().from(signals).where(eq(signals.type, "wallet_buy"))).toHaveLength(1); // idempoten
   });
 });

@@ -1,8 +1,8 @@
 import type { FastifyPluginAsync, FastifyRequest } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, lte, sql } from "drizzle-orm";
 import { z } from "zod";
-import { agentRunSteps, agentRuns, agents, notifications, signals, tokens } from "@corvid/db";
+import { agentRunSteps, agentRuns, agents, notifications, profiles, signals, tokens } from "@corvid/db";
 import {
   agentCreateSchema,
   agentDetailSchema,
@@ -17,8 +17,12 @@ import {
   signalsResponseSchema,
 } from "@corvid/shared";
 import type { Db } from "../app";
+import type { Verifier } from "../auth";
+import { isPro } from "../plan";
 
 export const MAX_AGENTS_PER_USER = 20;
+/** Free melihat sinyal token baru dengan jeda ini; Pro real-time. */
+export const FREE_SIGNAL_DELAY_MIN = 15;
 
 type AgentRow = typeof agents.$inferSelect;
 type Pipeline = z.infer<typeof pipelineSchema>;
@@ -35,12 +39,14 @@ export interface AgentRouteOptions {
   /** PreHandler dari userRoutes: mengisi req.user atau menolak 401/503. */
   requireAuth: (req: FastifyRequest, reply: import("fastify").FastifyReply) => Promise<unknown>;
   tradeMode: "dry" | "live";
+  /** Untuk auth OPSIONAL pada /signals (pengguna Pro mendapat sinyal real-time + smart money). */
+  verifier?: Verifier | null;
 }
 
 const authErrors = { 401: errorSchema, 503: errorSchema };
 
 export const agentRoutes =
-  ({ db, requireAuth, tradeMode }: AgentRouteOptions): FastifyPluginAsync =>
+  ({ db, requireAuth, tradeMode, verifier = null }: AgentRouteOptions): FastifyPluginAsync =>
   async (instance) => {
     const app = instance.withTypeProvider<ZodTypeProvider>();
     const auth = { preHandler: requireAuth };
@@ -210,8 +216,26 @@ export const agentRoutes =
     );
 
     /* ---- signals publik ---- */
-    app.get("/signals", { schema: { tags: ["inbox"], response: { 200: signalsResponseSchema } } }, async () => {
-      const rows = await db.select().from(signals).orderBy(desc(signals.at)).limit(50);
-      return { signals: rows.map((s) => ({ id: s.id, type: s.type, symbol: s.symbol, mint: s.mint, score: s.score, at: Math.floor(s.at.getTime() / 1000) })) };
+    // Publik, tetapi bila ada token Bearer yang sah dan Pro aktif: real-time dan termasuk sinyal smart money.
+    app.get("/signals", { schema: { tags: ["inbox"], response: { 200: signalsResponseSchema } } }, async (req) => {
+      let pro = false;
+      const h = req.headers.authorization;
+      if (verifier && h?.startsWith("Bearer ")) {
+        try {
+          const u = await verifier(h.slice(7).trim());
+          const [p] = await db.select({ proUntil: profiles.proUntil }).from(profiles).where(eq(profiles.id, u.id)).limit(1);
+          pro = isPro(p?.proUntil ?? null);
+        } catch {
+          /* token tidak sah: perlakukan sebagai anonim */
+        }
+      }
+      const cutoff = new Date(Date.now() - FREE_SIGNAL_DELAY_MIN * 60_000);
+      const rows = await db
+        .select()
+        .from(signals)
+        .where(pro ? undefined : and(eq(signals.type, "new_token"), lte(signals.at, cutoff)))
+        .orderBy(desc(signals.at))
+        .limit(50);
+      return { access: pro ? ("pro" as const) : ("free" as const), delayMinutes: pro ? 0 : FREE_SIGNAL_DELAY_MIN, signals: rows.map((s) => ({ id: s.id, type: s.type, symbol: s.symbol, mint: s.mint, score: s.score, at: Math.floor(s.at.getTime() / 1000) })) };
     });
   };

@@ -127,3 +127,9 @@
 - Suite penuh lulus: 66 tes API (termasuk 12 tes chat/pembatasan), 57 tes worker, tsc bersih. Blocker 24c selesai.
 - Tes `log-login` disesuaikan: pembuatan profil sudah mencatat login pertama (untuk pembatas kredit per IP).
 - `apps/api/vitest.config.ts`: 2 worker dan timeout hook lebih panjang. Kegagalan sebelumnya disebabkan proses postgres uji yatim yang menahan port, bukan kode.
+
+## 2026-11-06 — Kuota bulanan, Pro, pembayaran USDG, sinyal premium (testnet)
+- DB: migrasi 0005 (`profiles.pro_until`, `usage_events`, `payment_orders`, RLS baca-saja untuk pemilik). API: kuota bulanan lalu kredit pada chat (analisis = token terdeteksi), `GET /api/plan`, `POST /api/payments/orders`, `POST /api/payments/orders/:id/verify`, `GET /api/payments/orders` (verifikasi Transfer ERC-20 lewat RPC, jumlah unik per pesanan, tx_hash unik), `/api/signals` Free tertunda 15 menit vs Pro real-time + `wallet_buy` (worker membuat sinyal saat wallet tier S/A membeli).
+- Web: halaman Plan & Usage nyata (kuota, kredit, paket $1/$5, Pro 1/3/12 bulan, bayar USDG dari wallet). Kontrak uji tUSDG + skrip deploy di `packages/contracts` (dikompilasi; belum dideploy, itu langkah pemilik).
+- Tes: 87 API (termasuk 12 pembayaran, 8 plan), 58 worker; typecheck dan lint bersih. Belum diuji end-to-end dengan wallet dan chain nyata, dan kontrak tUSDG belum dieksekusi di EVM.
+- Menunggu pemilik: BLOCKERS no. 28-33 (migrasi dulu, baru deploy).

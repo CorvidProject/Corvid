@@ -69,3 +69,18 @@
 24c. **Tes lengkap perlu dijalankan ulang** saat memori Windows lega: pada 2026-11-06 RAM bebas hanya 0,2 GB sehingga vitest gagal (spawn UNKNOWN, heap out of memory). Tes pembatas tanpa DB lulus; tes chat/pembatasan (apps/api/test/chats.test.ts) belum terbukti.
 - [x] **No. 24b selesai** (2026-11-06): `TRUST_PROXY_HOPS=1` terpasang di Railway `@corvid/api`, deploy Online, /health 200.
 - [x] **No. 21 selesai** (pemilik, 2026-11-06): `RPC_URL` (testnet) terpasang di Railway `@corvid/api` dan `@corvid/worker`, `MAINNET_RPC_URL` (mainnet) di `@corvid/worker`, semuanya Alchemy. Siklus launchpad 01:21 UTC normal (Pons 60 pool, Virtuals 60 pool); belum ada 429 sejak deploy. `NEXT_PUBLIC_RPC_URL` di Vercel sengaja kosong (nilai tertanam di bundle publik).
+
+## Kuota, Pro, dan pembayaran USDG (2026-11-06): yang menunggu pemilik
+28. **Migrasi `0005_plans_payments` ke Supabase SEBELUM deploy kode baru** (pemilik): `pnpm --filter @corvid/db migrate` di ROOT (`DATABASE_URL` di `ROOT/.env`). Menambah `profiles.pro_until`, tabel `usage_events` dan `payment_orders`. Kode API baru menulis ke `usage_events` setiap jawaban chat; bila di-deploy sebelum migrasi, chat gagal. Karena itu perubahan ini belum di-push.
+29. **Deploy tUSDG (token uji testnet) dengan wallet Anda sendiri** (pemilik). Butuh ETH testnet untuk gas (no. 23). Di PowerShell, di ROOT, isi kunci hanya untuk sesi itu (jangan simpan ke file):
+    ```powershell
+    $env:DEPLOYER_PRIVATE_KEY = "0x..."   # wallet uji, BUKAN wallet berisi dana asli
+    $env:MINT_TO = "0x<alamat wallet uji Anda>"; $env:MINT_AMOUNT = "1000"
+    pnpm --filter @corvid/contracts deploy:testnet
+    Remove-Item Env:DEPLOYER_PRIVATE_KEY
+    ```
+    Skrip mengunci ke testnet (chain 46630), menolak bila RPC bukan chain itu, dan mencetak alamat tUSDG. Kontrak (`packages/contracts/src/TestUSDG.sol`) belum diaudit dan hanya untuk testnet: `mint` terbuka. Tidak pernah dipakai di mainnet.
+30. **Variabel Railway `@corvid/api`** (setelah no. 28 dan 29): `PAYMENT_RECIPIENT` (alamat PUBLIK penerima, milik Anda), `PAYMENT_TOKEN_ADDRESS` (alamat tUSDG dari no. 29), `PAID_FEATURES_ENABLED=true`. `CHAIN_ENV=testnet` dan `RPC_URL` sudah ada. Tanpa `PAID_FEATURES_ENABLED=true` dan penerima, tombol beli menampilkan "Payments are not enabled yet".
+31. **Uji alur bayar di testnet** setelah no. 30: login, buka Plan & Usage, beli paket $1 (wallet uji perlu tUSDG dan sedikit ETH). Kredit bertambah 50 setelah 2 konfirmasi.
+32. **Keputusan Bimo:** (a) harga paket 3 dan 12 bulan: kode memakai usulan $24 dan $90 (screenshot acuan $27 dan $108); ubah di `packages/shared/src/plans.ts` bila berbeda. (b) "Premium signals": diimplementasikan sebagai sinyal `wallet_buy` (wallet tier S/A membeli, dalam 30 menit) real-time untuk Pro; Free melihat hanya sinyal token baru yang tertunda 15 menit.
+33. **Mainnet nanti:** `CHAIN_ENV=mainnet` memakai USDG resmi (`0x5fc5360d…d168`, 6 desimal) tanpa `PAYMENT_TOKEN_ADDRESS`; ganti `PAYMENT_RECIPIENT` ke alamat penerima mainnet. Jangan mengaktifkan sebelum aspek hukum dibaca (dilewati atas arahan pemilik untuk testnet).

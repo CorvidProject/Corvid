@@ -2,7 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import { generateKeyPair, SignJWT, type KeyLike } from "jose";
 import EmbeddedPostgres from "embedded-postgres";
-import { agentRunSteps, agentRuns, applyMigrations, createDb, signals } from "@corvid/db";
+import { agentRunSteps, agentRuns, applyMigrations, createDb, profiles, signals } from "@corvid/db";
+import { eq } from "drizzle-orm";
 import { buildApp } from "../src/app";
 import { createVerifier } from "../src/auth";
 import { MAX_AGENTS_PER_USER } from "../src/routes/agents";
@@ -194,5 +195,32 @@ describe("inbox dan signals", () => {
     const s = r.json().signals;
     expect(s.map((x: { symbol: string }) => x.symbol)).toEqual(["NEW", "BIRB"]);
     expect(s[0]).toMatchObject({ type: "new_token", mint: WALLET, score: 0 });
+  });
+
+  it("GET /api/signals: Free hanya token baru yang sudah lewat 15 menit; Pro real-time + smart money", async () => {
+    await created.db.insert(signals).values([
+      { type: "new_token", mint: MINT, symbol: "FRESH", score: 0, at: new Date(Date.now() - 2 * 60_000) },
+      { type: "wallet_buy", mint: MINT, symbol: "SMART", score: 90, at: new Date(Date.now() - 20 * 60_000) },
+    ]);
+    const anon = (await call("GET", "/api/signals")).json();
+    expect(anon).toMatchObject({ access: "free", delayMinutes: 15 });
+    const anonSyms = anon.signals.map((x: { symbol: string }) => x.symbol);
+    expect(anonSyms).not.toContain("FRESH");
+    expect(anonSyms).not.toContain("SMART");
+    expect(anonSyms).toContain("NEW");
+    // pengguna login tanpa Pro = sama dengan anonim
+    expect((await call("GET", "/api/signals", B)).json().access).toBe("free");
+    await created.db.update(profiles).set({ proUntil: new Date(Date.now() + 86_400_000) }).where(eq(profiles.id, B));
+    const pro = (await call("GET", "/api/signals", B)).json();
+    expect(pro).toMatchObject({ access: "pro", delayMinutes: 0 });
+    const proSyms = pro.signals.map((x: { symbol: string }) => x.symbol);
+    expect(proSyms).toEqual(expect.arrayContaining(["FRESH", "SMART", "NEW"]));
+    expect(pro.signals[0].symbol).toBe("FRESH"); // terbaru dulu
+    // Pro kedaluwarsa kembali ke Free
+    await created.db.update(profiles).set({ proUntil: new Date(Date.now() - 1000) }).where(eq(profiles.id, B));
+    expect((await call("GET", "/api/signals", B)).json().access).toBe("free");
+    // token tidak sah = anonim
+    const bad = await app.inject({ method: "GET", url: "/api/signals", headers: { authorization: "Bearer nope" } });
+    expect(bad.json().access).toBe("free");
   });
 });

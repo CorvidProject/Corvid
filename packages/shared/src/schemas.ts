@@ -399,6 +399,9 @@ export const inboxResponseSchema = z.object({
   ),
 });
 export const signalsResponseSchema = z.object({
+  /** free: hanya token baru dan tertunda; pro: real-time + sinyal smart money (wallet_buy). */
+  access: z.enum(["free", "pro"]),
+  delayMinutes: z.number().int(),
   signals: z.array(
     z.object({
       id: z.number().int(),

@@ -3954,6 +3954,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "access": {
+                      "type": "string",
+                      "enum": [
+                        "free",
+                        "pro"
+                      ]
+                    },
+                    "delayMinutes": {
+                      "type": "integer"
+                    },
                     "signals": {
                       "type": "array",
                       "items": {
@@ -4001,6 +4011,8 @@
                     }
                   },
                   "required": [
+                    "access",
+                    "delayMinutes",
                     "signals"
                   ],
                   "additionalProperties": false

@@ -1,5 +1,5 @@
 import { and, eq, gte, isNotNull, lt, notInArray, sql } from "drizzle-orm";
-import { platformStats, tokens, tokenTrades, walletActivity, wallets } from "@corvid/db";
+import { platformStats, signals, tokens, tokenTrades, walletActivity, wallets } from "@corvid/db";
 import type { Db } from "./ingest";
 
 // Penemuan "smart wallet" dari trade yang sudah dikumpulkan worker (token_trades, jendela pendek).
@@ -93,6 +93,8 @@ export function scoreWallets(rows: TradeRow[]): WalletScore[] {
 }
 
 export const WALLET_SOURCE = "trades-window";
+/** Pembelian wallet bertier yang lebih tua dari ini tidak menjadi sinyal (mencegah banjir saat worker baru menyala). */
+export const SIGNAL_WINDOW_MS = 30 * 60_000;
 const fmtEth = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(2)} ETH`;
 
 /** Hitung ulang skor dari trade dalam jendela, simpan wallet bertier, dan isi aktivitas terbarunya. */
@@ -108,6 +110,7 @@ export async function refreshWallets(
       wallet: tokenTrades.walletAddress,
       tokenId: tokenTrades.tokenId,
       mint: tokens.mint,
+      symbol: tokens.symbol,
       side: tokenTrades.side,
       tokenAmount: tokenTrades.tokenAmount,
       eth: tokenTrades.solAmount,
@@ -123,6 +126,7 @@ export async function refreshWallets(
   const tiered = scores.filter((s) => s.tier !== null);
 
   const idByAddr = new Map<string, number>();
+  const tierByAddr = new Map(tiered.map((s) => [s.address, s.tier]));
   for (const s of tiered) {
     const v = {
       address: s.address,
@@ -162,6 +166,11 @@ export async function refreshWallets(
       .onConflictDoNothing()
       .returning({ id: walletActivity.id });
     activity += res.length;
+    // Sinyal premium: pembelian BARU oleh wallet tier S/A dalam SIGNAL_WINDOW_MS terakhir (riwayat lama tidak memicu sinyal).
+    const tier = tierByAddr.get(r.wallet.toLowerCase());
+    if (res.length && r.side === "buy" && r.eth !== null && (tier === "S" || tier === "A") && now.getTime() - r.at.getTime() <= SIGNAL_WINDOW_MS) {
+      await db.insert(signals).values({ type: "wallet_buy", mint: r.mint, symbol: r.symbol ?? null, score: tier === "S" ? 90 : 75, at: r.at });
+    }
   }
   return { trades: rows.length, wallets: scores.length, tiered: tiered.length, activity };
 }

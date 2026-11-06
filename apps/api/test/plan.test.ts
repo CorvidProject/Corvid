@@ -10,7 +10,7 @@ import type { LlmClient } from "../src/llm";
 import { RateLimiter } from "../src/ratelimit";
 
 const dir = "D:/.dev/tmp/pgtest-plan";
-const port = 54340;
+const port = 54342;
 const url = `postgres://corvid:corvid-dev@localhost:${port}/corvid`;
 const ISS = "https://example-ref.supabase.co/auth/v1";
 const U1 = "11111111-1111-4111-8111-111111111111";

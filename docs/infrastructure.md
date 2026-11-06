@@ -75,3 +75,6 @@ Keputusan pemilik 2026-11-06: **tidak ada deploy terpisah untuk testnet**. Satu 
 4. Rotasi semua kunci uji; verifikasi (beranda, 3 layar app, docs, legal, login wallet di chain 4663); catat di dokumen ini.
 
 Konsekuensi memilih satu lingkungan: tidak ada staging terpisah. Setiap push ke `main` langsung tampil di situs dan di backend; uji lewat `pnpm dev` dan hook `pre-push` sebelum push.
+
+## Pembayaran USDG (env, nilai tidak dicatat)
+Railway `@corvid/api`: `PAID_FEATURES_ENABLED`, `PAYMENT_RECIPIENT` (alamat publik), `PAYMENT_TOKEN_ADDRESS` (tUSDG di testnet; kosong di mainnet = USDG resmi), `PAYMENT_TOKEN_DECIMALS` (6), `PAYMENT_CONFIRMATIONS` (2), `CHAIN_ENV`, `RPC_URL`. Tidak ada private key di server: wallet pengguna menandatangani sendiri, server hanya membaca receipt lewat RPC.
