@@ -84,3 +84,6 @@
 31. **Uji alur bayar di testnet** setelah no. 30: login, buka Plan & Usage, beli paket $1 (wallet uji perlu tUSDG dan sedikit ETH). Kredit bertambah 50 setelah 2 konfirmasi.
 32. **Keputusan Bimo:** (a) harga paket 3 dan 12 bulan: kode memakai usulan $24 dan $90 (screenshot acuan $27 dan $108); ubah di `packages/shared/src/plans.ts` bila berbeda. (b) "Premium signals": diimplementasikan sebagai sinyal `wallet_buy` (wallet tier S/A membeli, dalam 30 menit) real-time untuk Pro; Free melihat hanya sinyal token baru yang tertunda 15 menit.
 33. **Mainnet nanti:** `CHAIN_ENV=mainnet` memakai USDG resmi (`0x5fc5360d…d168`, 6 desimal) tanpa `PAYMENT_TOKEN_ADDRESS`; ganti `PAYMENT_RECIPIENT` ke alamat penerima mainnet. Jangan mengaktifkan sebelum aspek hukum dibaca (dilewati atas arahan pemilik untuk testnet).
+
+- [x] **No. 28-31 selesai** (2026-11-06): migrasi 0005 diterapkan ke Supabase; tUSDG dideploy di testnet (`0xF94311B3589eFC519f82eAD68d265b40353Ec087`, 6 desimal); `PAYMENT_RECIPIENT`, `PAYMENT_TOKEN_ADDRESS`, `PAID_FEATURES_ENABLED=true` terpasang di Railway `@corvid/api`. Uji beli pertama berhasil: pesanan #1 (`credits_50`) berstatus paid, penerima +1,007685 tUSDG, pembeli -1,007685.
+- Menunggu Bimo (no. 32): harga paket 3 dan 12 bulan, dan arti "premium signals".
