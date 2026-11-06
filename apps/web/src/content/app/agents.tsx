@@ -24,7 +24,7 @@ function ago(ts: number) {
   return Math.floor(s / 86400) + "d ago";
 }
 const KEY = "corvid.agents.v1";
-const TYPE: Record<string, string> = { auto_trader: "Auto trader", wallet_monitor: "Wallet monitor", signal_bot: "Signal bot", token_analyst: "Token analyst" };
+const TYPE: Record<string, string> = { auto_trader: "Auto trader", wallet_monitor: "Wallet monitor", signal_bot: "Signal bot", token_analyst: "Token analyst", copy_trader: "Copy trader" };
 
 export function ApplicationAgentsContent() {
   const signed = useSigned();
