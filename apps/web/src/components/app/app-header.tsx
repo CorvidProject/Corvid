@@ -361,10 +361,12 @@ export function AppHeader() {
           <div className="flex-1 flex justify-center">
             <Link
               href="/"
-              data-placeholder="logo"
-              className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
+              aria-label={site.name}
+              className="flex items-center gap-2 font-heading font-extrabold tracking-[-0.03em] text-[16px]"
               style={{ color: "var(--v2-t-1)" }}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/corvid-logo-512.png" alt="" width={22} height={22} style={{ width: 22, height: 22 }} />
               {site.name.toUpperCase()}
             </Link>
           </div>
@@ -379,8 +381,10 @@ export function AppHeader() {
           <Link
             href="/"
             className="flex items-center gap-2 shrink-0 mr-4"
-            data-placeholder="logo"
+            aria-label={site.name}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/corvid-logo-512.png" alt="" width={24} height={24} style={{ width: 24, height: 24 }} />
             <span
               className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
               style={{ color: "var(--v2-t-1)" }}

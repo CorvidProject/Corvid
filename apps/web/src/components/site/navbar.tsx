@@ -72,8 +72,9 @@ export function Navbar() {
       >
         <div className="mx-auto px-6 lg:px-16" style={{ maxWidth: 1440 }}>
           <div className="flex h-[72px] items-center">
-            {/* Logo gambar belum diberikan: wordmark teks sebagai placeholder */}
-            <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-70 shrink-0 mr-3" data-placeholder="logo">
+            <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-70 shrink-0 mr-3" aria-label={site.name}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/corvid-logo-512.png" alt="" width={28} height={28} style={{ width: 28, height: 28 }} />
               <span
                 className="font-heading font-extrabold tracking-[-0.04em] leading-none"
                 style={{ fontSize: "1.25rem", color: "#fff" }}
