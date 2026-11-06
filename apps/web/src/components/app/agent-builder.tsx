@@ -481,15 +481,28 @@ export function AgentBuilder() {
               </div>
             )}
             <div ref={wrapRef} className={mobile ? "hidden" : "flex-1 relative h-full overflow-hidden"} style={{ minHeight: 320, background: "var(--v2-bg-0)" }} onClick={() => setSelected(null)}>
+              <div className="crv-bg" aria-hidden="true">
+                <span className="crv-bg-glow crv-bg-g1" />
+                <span className="crv-bg-glow crv-bg-g2" />
+                <span className="crv-bg-sweep" />
+              </div>
               <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
                 <pattern id="bld-dots" width="13.6" height="13.6" patternUnits="userSpaceOnUse"><circle cx="0.34" cy="0.34" r="0.34" fill="var(--v2-line-2)" /></pattern>
                 <rect width="100%" height="100%" fill="url(#bld-dots)" />
               </svg>
               <div className="absolute left-0 top-0" style={{ transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.k})`, transformOrigin: "0 0" }}>
                 <svg style={{ position: "absolute", left: 0, top: 0, width: 1, height: 1, overflow: "visible" }} aria-hidden="true">
-                  {edges.map((e) => (
-                    <path key={`${e.a}-${e.b}`} d={edgePath(e.a, e.b)} fill="none" stroke={e.on ? "var(--v2-accent)" : "rgba(255,255,255,0.18)"} strokeWidth={e.on ? 1.6 : 1.2} strokeDasharray={e.on ? undefined : "5 5"} />
-                  ))}
+                  {edges.map((e) => {
+                    const d = edgePath(e.a, e.b);
+                    return (
+                      <g key={`${e.a}-${e.b}`}>
+                        <path d={d} fill="none" stroke={e.on ? "var(--v2-accent)" : "rgba(255,255,255,0.18)"} strokeWidth={e.on ? 1.6 : 1.2} strokeDasharray={e.on ? undefined : "5 5"} />
+                        {/* Animasi aliran biru: titik-titik mengalir di semua garis, "komet" di garis aktif. */}
+                        <path d={d} className="crv-flow" />
+                        {e.on && <path d={d} pathLength={100} className="crv-comet" />}
+                      </g>
+                    );
+                  })}
                 </svg>
                 {nodes.map((n) => {
                   const Icon = n.id === "network" ? null : stepIcon(n.id);
@@ -519,7 +532,7 @@ export function AgentBuilder() {
                           <Icon size={n.size === 76 ? 26 : 32} weight="duotone" style={{ color: on ? "var(--v2-accent-text)" : "rgba(255,255,255,0.45)", transition: "0.2s" }} />
                         ) : (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 36, height: 36, background: "var(--v2-accent)" }} />
+                          <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={44} height={44} className="shrink-0" style={{ width: 44, height: 44, borderRadius: 11 }} />
                         )}
                       </button>
                       <span className="mt-2.5 text-center whitespace-nowrap" style={{ fontSize: 14, fontWeight: 600, color: on ? "var(--v2-t-1)" : "rgba(255,255,255,0.8)" }}>{n.label}</span>
@@ -581,7 +594,7 @@ export function AgentBuilder() {
                     <Panel title="Network" prompt="Where the agent runs" onClose={() => setSelected(null)}>
                       <div className="flex items-center gap-3 py-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 32, height: 32, background: "var(--v2-accent)" }} />
+                        <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={32} height={32} className="shrink-0" style={{ width: 32, height: 32, borderRadius: 8 }} />
                         <div>
                           <p className="text-[14px] font-semibold" style={{ color: "var(--v2-t-1)" }}>Robinhood Chain</p>
                           <p className="text-[12px]" style={{ color: "var(--v2-t-4)" }}>Corvid agents run on Robinhood Chain only</p>
