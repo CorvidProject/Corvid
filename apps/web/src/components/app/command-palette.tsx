@@ -25,6 +25,7 @@ import trending from "@/server/data/trending-robinhood-trending.json";
 import fresh from "@/server/data/trending-robinhood-new.json";
 import memescope from "@/data/memescope.json";
 import market from "@/data/marketplace-feed.json";
+import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { useAuthModal } from "@/components/auth/auth-modal";
 import { isChainAddress } from "@/lib/builder-defs";
 import { loadSession, signOut } from "@/lib/auth";
@@ -332,8 +333,7 @@ function Palette({ onClose }: { onClose: () => void }) {
     } else {
       remember({ label: shortAddr(r.address), kind: "wallet", query: r.address });
       onClose();
-      if (!signed) return openAuthModal("signin");
-      router.push(`/application/alpha/wallet/${r.address}?chain=robinhood`);
+      window.open(explorerAddress(getChain("mainnet"), r.address), "_blank", "noopener,noreferrer");
     }
   };
 
