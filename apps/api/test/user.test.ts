@@ -106,13 +106,14 @@ describe("profil", () => {
 
   it("log-login dibatasi satu per menit dan tampil di activity", async () => {
     const t = await token(USER_A, "alice@example.com");
-    const l1 = await call("POST", "/api/auth/log-login", t);
-    expect(l1.json()).toEqual({ ok: true, logged: true });
+    // Pembuatan profil sudah mencatat login pertama (dipakai pembatas kredit per IP),
+    // jadi log-login dalam semenit berikutnya tidak menambah entri.
+    expect((await call("POST", "/api/auth/log-login", t)).json()).toEqual({ ok: true, logged: false });
     expect((await call("POST", "/api/auth/log-login", t)).json()).toEqual({ ok: true, logged: false });
     const act = await call("GET", "/api/profile/activity", t);
     expect(act.json().items).toHaveLength(1);
     const otherAct = await call("GET", "/api/profile/activity", await token(USER_B, "bob@example.com"));
-    expect(otherAct.json().items).toHaveLength(0);
+    expect(otherAct.json().items).toHaveLength(1); // hanya entri pembuatan profil Bob sendiri
   });
 });
 
