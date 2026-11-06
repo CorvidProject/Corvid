@@ -485,6 +485,14 @@ export function AgentBuilder() {
                 <span className="crv-bg-glow crv-bg-g1" />
                 <span className="crv-bg-glow crv-bg-g2" />
                 <span className="crv-bg-sweep" />
+                <span className="crv-bg-scan" />
+                {Array.from({ length: 22 }, (_, i) => (
+                  <span
+                    key={i}
+                    className="crv-bg-dot"
+                    style={{ left: `${(i * 37 + 11) % 97}%`, width: 2 + (i % 3), height: 2 + (i % 3), animationDelay: `${-((i * 1.7) % 14)}s`, animationDuration: `${9 + (i % 5) * 2.2}s` }}
+                  />
+                ))}
               </div>
               <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
                 <pattern id="bld-dots" width="13.6" height="13.6" patternUnits="userSpaceOnUse"><circle cx="0.34" cy="0.34" r="0.34" fill="var(--v2-line-2)" /></pattern>
