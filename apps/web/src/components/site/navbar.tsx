@@ -95,9 +95,11 @@ export function Navbar() {
                 <IconLink href={site.socialLinks.twitter} label="X" plain>
                   <XLogo size={17} weight="bold" />
                 </IconLink>
-                <IconLink href={site.socialLinks.telegram} label="Telegram" plain>
-                  <TelegramLogo size={18} weight="fill" />
-                </IconLink>
+                {site.socialLinks.telegram && (
+                  <IconLink href={site.socialLinks.telegram} label="Telegram" plain>
+                    <TelegramLogo size={18} weight="fill" />
+                  </IconLink>
+                )}
                 <IconLink href="/application/portfolio" label="Wallet">
                   <Wallet size={18} weight="bold" />
                 </IconLink>

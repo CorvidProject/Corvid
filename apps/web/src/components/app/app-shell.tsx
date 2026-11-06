@@ -4,6 +4,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { apiGet } from "@/lib/api";
+import { usePlan } from "@/lib/plan-store";
+import { useSigned } from "@/components/auth/signed";
 import {
   ChartLineUp,
   Fire,
@@ -22,16 +24,23 @@ const MOBILE_TABS = [
 ];
 
 function StatusBar() {
+  // Harga ETH dari /api/prices/native (CoinGecko lewat API kita). Status Live/Offline = hasil pengambilan itu (API terjangkau atau tidak).
   const [sol, setSol] = useState<string>("—");
+  const [online, setOnline] = useState<boolean | null>(null);
+  const signed = useSigned();
+  const { plan } = usePlan(signed);
   useEffect(() => {
     let alive = true;
     const load = () =>
       apiGet<{ usd?: number }>("/api/prices/native")
         .then((j) => {
-          if (alive && j && typeof j.usd === "number")
-            setSol(`$${j.usd.toFixed(2)}`);
+          if (!alive) return;
+          setOnline(true);
+          if (j && typeof j.usd === "number") setSol(`$${j.usd.toFixed(2)}`);
         })
-        .catch(() => {});
+        .catch(() => {
+          if (alive) setOnline(false);
+        });
     load();
     const t = setInterval(load, 30000);
     return () => {
@@ -59,10 +68,10 @@ function StatusBar() {
         />
         <span className="flex items-center gap-1.5">
           <span
-            className="inline-block w-1.5 h-1.5 rounded-full animate-pulse"
-            style={{ background: "var(--v2-pos)" }}
+            className={`inline-block w-1.5 h-1.5 rounded-full ${online === false ? "" : "animate-pulse"}`}
+            style={{ background: online === false ? "var(--v2-neg)" : "var(--v2-pos)" }}
           />
-          Live
+          <span style={online === false ? { color: "var(--v2-neg)" } : undefined}>{online === false ? "Offline" : "Live"}</span>
         </span>
         <span
           className="w-px h-3.5"
@@ -90,41 +99,39 @@ function StatusBar() {
         >
           ETH {sol}
         </span>
-        <span
-          className="w-px h-3.5"
-          style={{ background: "var(--v2-line-1)" }}
-        />
-        <span className="flex items-center gap-1.5">
-          <span
-            className="inline-block w-1.5 h-1.5 rounded-full"
-            style={{ background: "var(--v2-neg)" }}
-          />
-          <span style={{ color: "var(--v2-neg)" }}>Offline</span>
-        </span>
-        <span
-          className="w-px h-3.5"
-          style={{ background: "var(--v2-line-1)" }}
-        />
-        <a
-          className="transition-colors hover:brightness-125"
-          href={site.socialLinks.telegram}
-          rel="noopener noreferrer"
-          style={{ color: "var(--v2-t-4)" }}
-          target="_blank"
-        >
-          Support
-        </a>
-        <span
-          className="w-px h-3.5"
-          style={{ background: "var(--v2-line-1)" }}
-        />
-        <a
-          className="flex items-center gap-1 tabular-nums transition-colors hover:brightness-125"
-          href="/application/credits"
-          style={{ color: "var(--v2-warn)" }}
-        >
-          <Lightning size={12} weight="fill" />0 credits
-        </a>
+        {site.socialLinks.telegram && (
+          <>
+            <span
+              className="w-px h-3.5"
+              style={{ background: "var(--v2-line-1)" }}
+            />
+            <a
+              className="transition-colors hover:brightness-125"
+              href={site.socialLinks.telegram}
+              rel="noopener noreferrer"
+              style={{ color: "var(--v2-t-4)" }}
+              target="_blank"
+            >
+              Support
+            </a>
+          </>
+        )}
+        {signed && plan && (
+          <>
+            <span
+              className="w-px h-3.5"
+              style={{ background: "var(--v2-line-1)" }}
+            />
+            <a
+              className="flex items-center gap-1 tabular-nums transition-colors hover:brightness-125"
+              href="/application/credits"
+              style={{ color: "var(--v2-warn)" }}
+            >
+              <Lightning size={12} weight="fill" />
+              {plan.credits} credits
+            </a>
+          </>
+        )}
       </div>
     </footer>
   );

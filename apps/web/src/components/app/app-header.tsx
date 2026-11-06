@@ -435,16 +435,18 @@ export function AppHeader() {
             >
               <XLogo size={14} weight="bold" />
             </a>
-            <a
-              aria-label="Telegram"
-              className={`${ICON_BTN} ml-1`}
-              href={site.socialLinks.telegram}
-              rel="noopener noreferrer"
-              target="_blank"
-              title="Telegram"
-            >
-              <TelegramLogo size={14} weight="fill" />
-            </a>
+            {site.socialLinks.telegram && (
+              <a
+                aria-label="Telegram"
+                className={`${ICON_BTN} ml-1`}
+                href={site.socialLinks.telegram}
+                rel="noopener noreferrer"
+                target="_blank"
+                title="Telegram"
+              >
+                <TelegramLogo size={14} weight="fill" />
+              </a>
+            )}
             <div
               className="mx-1.5 h-5 w-px shrink-0"
               style={{ background: "var(--v2-line-1)" }}

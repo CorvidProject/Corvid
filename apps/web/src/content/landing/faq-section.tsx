@@ -1,3 +1,4 @@
+import { site } from "@/lib/site";
 import { AccordionList } from "@/components/landing/accordion-list";
 import { faqItems } from "./accordion-data";
 
@@ -114,17 +115,19 @@ export function FaqSection() {
                   QUESTIONS ANSWERED
                 </p>
               </div>
-              <a
-                href="https://t.me/PLACEHOLDER"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-xs font-semibold tracking-[0.12em] uppercase inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-white hover:brightness-110 crv-chrome-btn"
-                tabIndex={0}
-                data-reveal
-                style={{ "--rv-t": "translateY(8px)" }}
-              >
-                ASK IN TELEGRAM<span aria-hidden="true">▶</span>
-              </a>
+              {site.socialLinks.telegram && (
+                <a
+                  href={site.socialLinks.telegram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-xs font-semibold tracking-[0.12em] uppercase inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-white hover:brightness-110 crv-chrome-btn"
+                  tabIndex={0}
+                  data-reveal
+                  style={{ "--rv-t": "translateY(8px)" }}
+                >
+                  ASK IN TELEGRAM<span aria-hidden="true">▶</span>
+                </a>
+              )}
             </div>
             <div>
               <AccordionList items={faqItems} variant="faq" initialOpen={0} />

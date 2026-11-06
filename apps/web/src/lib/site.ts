@@ -8,7 +8,7 @@ export const site = {
   twitterHandle: "@CorvidAgentX",
   socialLinks: {
     twitter: "https://x.com/CorvidAgentX",
-    telegram: "https://t.me/PLACEHOLDER",
+    telegram: "" as string, // belum ada akun resmi: kosong, tautan Telegram disembunyikan
     github: "",
   },
 } as const;

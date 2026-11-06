@@ -1,3 +1,4 @@
+import { site } from "@/lib/site";
 export function AboutContent() {
   return (
     <>
@@ -109,16 +110,14 @@ export function AboutContent() {
                 @CorvidAgentX
               </a>
             </li>
-            <li>
-              Telegram:{" "}
-              <a
-                href="https://t.me/PLACEHOLDER"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                t.me/PLACEHOLDER
-              </a>
-            </li>
+            {site.socialLinks.telegram && (
+              <li>
+                Telegram:{" "}
+                <a href={site.socialLinks.telegram} rel="noopener noreferrer" target="_blank">
+                  {site.socialLinks.telegram.replace(/^https?:\/\//, "")}
+                </a>
+              </li>
+            )}
             <li>
               Email:{" "}
               <a href="mailto:contact@corvidagent.com">contact@corvidagent.com</a>

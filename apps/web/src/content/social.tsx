@@ -1,3 +1,5 @@
+import { site } from "@/lib/site";
+
 export function SocialContent() {
   return (
     <>
@@ -58,168 +60,170 @@ export function SocialContent() {
         </div>
         <div className="px-6 lg:px-12 py-10 lg:py-14">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
-            <a
-              href="https://t.me/PLACEHOLDER"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative block"
-              data-reveal
-              style={{
-                background: "rgba(255,255,255,0.55)",
-                border:
-                  "1px solid rgba(var(--v2-section-fg-rgb, 10,10,15), 0.12)",
-                "--rv-t": "translateY(18px)",
-              }}
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="absolute top-0 left-0 pointer-events-none z-10"
+            {site.socialLinks.telegram && (
+              <a
+                href={site.socialLinks.telegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block"
+                data-reveal
+                style={{
+                  background: "rgba(255,255,255,0.55)",
+                  border:
+                    "1px solid rgba(var(--v2-section-fg-rgb, 10,10,15), 0.12)",
+                  "--rv-t": "translateY(18px)",
+                }}
               >
-                <path
-                  d="M 12 2 L 2 2 L 2 12"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="absolute top-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 12 2 L 12 12"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="absolute bottom-0 left-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 2 2 L 2 12 L 12 12"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="absolute bottom-0 right-0 pointer-events-none z-10"
-              >
-                <path
-                  d="M 12 2 L 12 12 L 2 12"
-                  stroke="var(--v2-accent)"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                ></path>
-              </svg>
-              <div
-                className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"
-                style={{ background: "var(--v2-accent)" }}
-              ></div>
-              <div className="relative z-[1] p-7 lg:p-8 flex flex-col h-full">
-                <div className="flex items-center justify-between mb-6">
-                  <span
-                    className="font-mono text-[11px] tracking-[0.12em]"
-                    style={{
-                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.30)",
-                    }}
-                  >
-                    [ 01 ]
-                  </span>
-                  <span
-                    className="font-mono text-[11px] tracking-[0.12em] px-2 py-1"
-                    style={{
-                      color: "var(--v2-accent-text)",
-                      border: "1px solid rgba(var(--v2-accent-rgb),0.45)",
-                    }}
-                  >
-                    PRIMARY
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 mb-3">
-                  <div
-                    className="shrink-0 transition-colors duration-200"
-                    style={{
-                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.55)",
-                    }}
-                  >
-                    <svg
-                      width="22"
-                      height="22"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"></path>
-                    </svg>
-                  </div>
-                  <h3
-                    className="font-heading font-extrabold tracking-[-0.02em] transition-colors duration-200"
-                    style={{
-                      fontSize: "clamp(1.25rem, 1.8vw, 1.6rem)",
-                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.92)",
-                      lineHeight: "1",
-                    }}
-                  >
-                    TELEGRAM
-                  </h3>
-                </div>
-                <p
-                  className="font-mono text-[11px] tracking-[0.10em] mb-4"
-                  style={{
-                    color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.65)",
-                  }}
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  className="absolute top-0 left-0 pointer-events-none z-10"
                 >
-                  t.me/PLACEHOLDER
-                </p>
-                <p
-                  className="font-sans text-sm leading-relaxed mb-7"
-                  style={{
-                    color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.62)",
-                  }}
+                  <path
+                    d="M 12 2 L 2 2 L 2 12"
+                    stroke="var(--v2-accent)"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                  ></path>
+                </svg>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  className="absolute top-0 right-0 pointer-events-none z-10"
                 >
-                  Community chat, questions and announcements
-                </p>
+                  <path
+                    d="M 2 2 L 12 2 L 12 12"
+                    stroke="var(--v2-accent)"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                  ></path>
+                </svg>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  className="absolute bottom-0 left-0 pointer-events-none z-10"
+                >
+                  <path
+                    d="M 2 2 L 2 12 L 12 12"
+                    stroke="var(--v2-accent)"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                  ></path>
+                </svg>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  className="absolute bottom-0 right-0 pointer-events-none z-10"
+                >
+                  <path
+                    d="M 12 2 L 12 12 L 2 12"
+                    stroke="var(--v2-accent)"
+                    strokeWidth="1.5"
+                    strokeLinecap="square"
+                  ></path>
+                </svg>
                 <div
-                  className="mt-auto pt-5 flex items-center justify-between"
-                  style={{
-                    borderTop:
-                      "1px dashed rgba(var(--v2-section-fg-rgb, 10,10,15), 0.10)",
-                  }}
-                >
-                  <span
-                    className="font-mono text-[11px] tracking-[0.12em] uppercase transition-colors duration-200"
+                  className="absolute left-0 top-0 bottom-0 w-[3px] pointer-events-none"
+                  style={{ background: "var(--v2-accent)" }}
+                ></div>
+                <div className="relative z-[1] p-7 lg:p-8 flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-6">
+                    <span
+                      className="font-mono text-[11px] tracking-[0.12em]"
+                      style={{
+                        color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.30)",
+                      }}
+                    >
+                      [ 01 ]
+                    </span>
+                    <span
+                      className="font-mono text-[11px] tracking-[0.12em] px-2 py-1"
+                      style={{
+                        color: "var(--v2-accent-text)",
+                        border: "1px solid rgba(var(--v2-accent-rgb),0.45)",
+                      }}
+                    >
+                      PRIMARY
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 mb-3">
+                    <div
+                      className="shrink-0 transition-colors duration-200"
+                      style={{
+                        color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.55)",
+                      }}
+                    >
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"></path>
+                      </svg>
+                    </div>
+                    <h3
+                      className="font-heading font-extrabold tracking-[-0.02em] transition-colors duration-200"
+                      style={{
+                        fontSize: "clamp(1.25rem, 1.8vw, 1.6rem)",
+                        color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.92)",
+                        lineHeight: "1",
+                      }}
+                    >
+                      TELEGRAM
+                    </h3>
+                  </div>
+                  <p
+                    className="font-mono text-[11px] tracking-[0.10em] mb-4"
                     style={{
-                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.40)",
+                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.65)",
                     }}
                   >
-                    Open external
-                  </span>
-                  <span
-                    className="font-mono text-base"
+                    {site.socialLinks.telegram.replace(/^https?:\/\//, "")}
+                  </p>
+                  <p
+                    className="font-sans text-sm leading-relaxed mb-7"
                     style={{
-                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.40)",
+                      color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.62)",
                     }}
                   >
-                    ▶
-                  </span>
+                    Community chat, questions and announcements
+                  </p>
+                  <div
+                    className="mt-auto pt-5 flex items-center justify-between"
+                    style={{
+                      borderTop:
+                        "1px dashed rgba(var(--v2-section-fg-rgb, 10,10,15), 0.10)",
+                    }}
+                  >
+                    <span
+                      className="font-mono text-[11px] tracking-[0.12em] uppercase transition-colors duration-200"
+                      style={{
+                        color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.40)",
+                      }}
+                    >
+                      Open external
+                    </span>
+                    <span
+                      className="font-mono text-base"
+                      style={{
+                        color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.40)",
+                      }}
+                    >
+                      ▶
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
+            )}
             <a
               href="https://x.com/CorvidAgentX"
               target="_blank"
