@@ -6,6 +6,7 @@ import { useSigned } from "@/components/auth/signed";
 import { loadSession, signOut, updateEmail } from "@/lib/auth";
 import { connectWallet, shortAddress, switchToAppChain, useWallet } from "@/lib/wallet";
 import { apiGet, apiSend, ApiError, USE_API } from "@/lib/api";
+import { tradeMode } from "@/lib/swap";
 
 // Settings: profil dan preferensi trading. Mode fixture: localStorage. Mode API: GET/PUT /api/profile dan
 // /api/user/trading-prefs (butuh login Supabase).
@@ -229,7 +230,7 @@ export function ApplicationSettingsContent() {
         <div className="mt-4 flex items-center justify-between rounded-sm px-3 py-2.5 text-[12px]" style={{ border: "1px solid var(--v2-line-1)", color: "var(--v2-t-3)" }}>
           <span>Trade mode</span>
           <span className="font-mono uppercase tracking-wider" style={{ color: "var(--v2-t-1)" }}>
-            dry (simulation) · live locked
+            {tradeMode() === "live" ? "live (manual swaps) · agents simulated" : "dry (simulation) · live locked"}
           </span>
         </div>
         <div className="mt-4 flex items-center gap-3">
