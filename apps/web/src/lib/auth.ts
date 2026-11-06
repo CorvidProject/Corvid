@@ -147,3 +147,26 @@ export async function resetPassword(email: string): Promise<AuthResult> {
     return { error: "Network error. Try again" };
   }
 }
+
+/** Tambah/ganti email akun yang sedang login (mis. akun yang masuk lewat wallet). Supabase mengirim tautan konfirmasi ke email baru;
+ * email baru berlaku setelah tautan dibuka. */
+export async function updateEmail(email: string): Promise<AuthResult> {
+  const e = email.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) return { error: "Enter a valid email address" };
+  if (isDisposable(e)) return { error: "We don't accept disposable email providers. Please use a real inbox you can check." };
+  if (!authConfigured()) return { error: NOT_CONFIGURED };
+  const token = await getAccessToken();
+  if (!token) return { error: "Your session expired. Sign in again" };
+  try {
+    const redirect = encodeURIComponent(`${window.location.origin}/application/settings`);
+    const res = await fetch(`${url()}/auth/v1/user?redirect_to=${redirect}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", apikey: anon(), Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ email: e }),
+    });
+    const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+    return res.ok ? { error: null, code: "confirm_email" } : { error: msg(data, "Could not update email") };
+  } catch {
+    return { error: "Network error. Try again" };
+  }
+}

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { credits, loginLog, notifications, profiles, tradingPrefs, userWallets } from "@corvid/db";
 import { errorSchema } from "@corvid/shared";
@@ -129,7 +129,12 @@ export const userRoutes =
     const auth = { preHandler: requireAuth };
     const authErrors = { 401: errorSchema, 503: errorSchema };
 
-    app.get("/profile", { ...auth, schema: { tags: ["user"], response: { 200: profileSchema, ...authErrors } } }, async (req) => loadProfile(me(req)));
+    app.get("/profile", { ...auth, schema: { tags: ["user"], response: { 200: profileSchema, ...authErrors } } }, async (req) => {
+      // Email yang baru dikonfirmasi (akun wallet yang menambah email) ada di token; samakan ke profil.
+      const tokenEmail = req.user!.email;
+      if (tokenEmail) await db.update(profiles).set({ email: tokenEmail }).where(and(eq(profiles.id, me(req)), sql`${profiles.email} is distinct from ${tokenEmail}`));
+      return loadProfile(me(req));
+    });
 
     app.put(
       "/profile",
