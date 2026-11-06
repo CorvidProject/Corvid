@@ -1,24 +1,30 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useState, type ReactNode } from "react";
+import { Check, Lightning, ShieldStar } from "@phosphor-icons/react";
 import { PLAN_LIMITS, PRODUCTS, type Product, type ProductId } from "@corvid/shared";
 import { useAuthModal } from "@/components/auth/auth-modal";
 import { useSigned } from "@/components/auth/signed";
 import { USE_API } from "@/lib/api";
-import { createOrder, getPlan, payError, sendToken, waitForPayment, type Order, type Plan } from "@/lib/pay";
+import { createOrder, payError, sendToken, waitForPayment, type Order, type Plan } from "@/lib/pay";
+import { refreshPlan, usePlan } from "@/lib/plan-store";
 import { connectWallet, errMsg, switchToAppChain, useWallet } from "@/lib/wallet";
 
 // Plan & Usage: kuota bulanan, saldo kredit, paket kredit ($1, $5) dan Pro (1/3/12 bulan), dibayar USDG dari wallet
 // pengguna sendiri. Mode fixture (tanpa API) menampilkan paket Free dan tombol beli nonaktif.
 const FIXTURE_PLAN: Plan = { plan: "free", proUntil: null, limits: PLAN_LIMITS.free, used: { chat: 0, deep: 0 }, resetsAt: "", credits: 0, paymentsEnabled: false };
 
-const BTN = { background: "var(--v2-accent)", color: "var(--v2-btn-text, var(--v2-bg-1))" } as const;
+const FILL = { background: "var(--v2-accent)", color: "var(--v2-btn-text, var(--v2-bg-1))" } as const;
+const TINT = { background: "rgba(var(--v2-accent-rgb), 0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb), 0.35)" } as const;
 const usd = (n: number) => `$${n}`;
+const fmtDate = (iso: string) => (iso ? new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }) : "");
+const months = (p: Extract<Product, { type: "pro" }>) => Math.round(p.days / 30);
 const perMonth = (p: Extract<Product, { type: "pro" }>) => {
-  const m = Math.round(p.days / 30);
-  const v = p.usd / m;
+  const v = p.usd / months(p);
   return `${usd(Number.isInteger(v) ? v : Number(v.toFixed(2)))} / month`;
 };
-const fmtDate = (iso: string) => (iso ? new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }) : "");
+const monthly = PRODUCTS.pro_1m as Extract<Product, { type: "pro" }>;
+/** Hemat dibanding membayar bulanan, dalam persen bulat (0 = tidak ada diskon). */
+const savePct = (p: Extract<Product, { type: "pro" }>) => Math.max(0, Math.round((1 - p.usd / (monthly.usd * months(p))) * 100));
 
 type Phase = { kind: "idle" } | { kind: "busy"; msg: string } | { kind: "done"; order: Order } | { kind: "error"; msg: string; retry?: { order: Order; tx: string } };
 
@@ -26,33 +32,21 @@ export function ApplicationProContent() {
   const signed = useSigned();
   const { openAuthModal } = useAuthModal();
   const w = useWallet();
-  const [plan, setPlan] = useState<Plan>(FIXTURE_PLAN);
-  const [loadErr, setLoadErr] = useState<string | null>(null);
+  const { plan: livePlan, error: loadFailed } = usePlan(signed);
+  const plan = livePlan ?? FIXTURE_PLAN;
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [active, setActive] = useState<ProductId | null>(null);
-
-  const reload = useCallback(async () => {
-    if (!USE_API || !signed) return;
-    try {
-      setPlan(await getPlan());
-      setLoadErr(null);
-    } catch {
-      setLoadErr("Could not load your plan.");
-    }
-  }, [signed]);
-  useEffect(() => {
-    void reload();
-  }, [reload]);
 
   const canBuy = USE_API && plan.paymentsEnabled;
   const provider = w.wallets.find((x) => x.id === w.walletId)?.provider ?? null;
   const busy = phase.kind === "busy";
+  const isPro = plan.plan === "pro";
 
   async function finish(order: Order, tx: string) {
     try {
       const paid = await waitForPayment(order, tx, { onTick: (msg) => setPhase({ kind: "busy", msg }) });
       setPhase({ kind: "done", order: paid });
-      await reload();
+      await refreshPlan();
     } catch (e) {
       const timeout = (e as { status?: number }).status === 408;
       setPhase({
@@ -94,178 +88,259 @@ export function ApplicationProContent() {
   const proProducts = (["pro_1m", "pro_3m", "pro_12m"] as const).map((k) => PRODUCTS[k] as Extract<Product, { type: "pro" }>);
   const packs = (["credits_50", "credits_300"] as const).map((k) => PRODUCTS[k] as Extract<Product, { type: "credits" }>);
   const L = plan.limits;
-  const isPro = plan.plan === "pro";
+  const disabled = busy || !USE_API || (signed && !canBuy);
 
-  const statusLine = () => {
-    if (phase.kind === "idle") return null;
-    const tone = phase.kind === "error" ? "var(--v2-neg)" : phase.kind === "done" ? "var(--v2-pos)" : "var(--v2-t-2)";
-    const text = phase.kind === "done" ? `Payment confirmed: ${phase.order.label}.` : phase.msg;
-    return (
-      <div role="status" className="mt-4 px-4 py-3 rounded-sm text-[13px] flex flex-wrap items-center gap-3" style={{ border: `1px solid ${tone}`, color: tone }}>
-        <span>{text}</span>
-        {phase.kind === "error" && phase.retry && (
-          <button className="underline" onClick={() => void (setPhase({ kind: "busy", msg: "Checking…" }), finish(phase.retry!.order, phase.retry!.tx))}>
-            Check again
-          </button>
-        )}
-        {phase.kind === "done" && phase.order.txHash && (
-          <a className="underline" href={`${w.appChain.explorerUrl.replace(/\/$/, "")}/tx/${phase.order.txHash}`} target="_blank" rel="noreferrer">
-            View transaction
-          </a>
-        )}
-      </div>
-    );
+  const buyLabel = (id: ProductId) => {
+    if (busy && active === id) return "Working…";
+    if (!USE_API) return "Unavailable";
+    if (!signed) return "Sign in to continue";
+    if (!w.address) return "Connect wallet";
+    if (w.wrongChain) return "Switch network";
+    return isPro ? "Extend with USDG" : "Pay with USDG";
   };
 
-  const buyLabel = (id: ProductId) => (busy && active === id ? "Working…" : !signed ? "Sign in" : !w.address ? "Connect wallet" : w.wrongChain ? "Switch network" : "Pay with USDG");
-
   return (
-    <div className="mx-auto px-6 lg:px-12 pt-24 pb-16" style={{ maxWidth: "1200px" }}>
-      <div className="mb-10">
-        <h1 className="font-heading font-semibold text-[24px] tracking-[-0.02em] m-0 mb-3" style={{ color: "var(--v2-t-0)" }}>
-          Plan &amp; Usage
-        </h1>
-        <p className="text-[15px] m-0" style={{ color: "var(--v2-t-3)" }}>
-          Subscription, credits balance, and AI quota for the current period in one place
-        </p>
-      </div>
-
-      <div className="py-5 px-1 flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div className="font-mono text-[11px] tracking-[0.06em] uppercase" style={{ color: "var(--v2-t-3)" }}>
-          {isPro ? "Pro" : "Free tier"}
+    <div className="mx-auto px-6 lg:px-12 pt-24 pb-24" style={{ maxWidth: "1080px" }}>
+      {/* Judul */}
+      <header className="flex flex-wrap items-end justify-between gap-4 mb-10">
+        <div>
+          <div className="font-mono text-[11px] tracking-[0.22em] uppercase mb-3" style={{ color: "var(--v2-t-4)" }}>
+            Account
+          </div>
+          <h1 className="font-heading font-semibold text-[30px] tracking-[-0.02em] m-0" style={{ color: "var(--v2-t-0)" }}>
+            Plan &amp; Usage
+          </h1>
+          <p className="text-[15px] mt-2 mb-0 max-w-[560px]" style={{ color: "var(--v2-t-3)" }}>
+            Your plan, monthly AI quota and credits in one place.
+          </p>
         </div>
-        <Stat value={`${plan.used.deep} / ${L.deep}`} label="Analyses this month" />
-        <Stat value={`${plan.used.chat} / ${L.chat}`} label="Chat this month" />
-        {plan.resetsAt && <Stat value={fmtDate(plan.resetsAt)} label="Quota resets (UTC)" />}
-        {isPro && plan.proUntil && <Stat value={fmtDate(plan.proUntil)} label="Pro active until" />}
-      </div>
-      {loadErr && (
-        <p className="text-[13px] px-1" style={{ color: "var(--v2-neg)" }}>
-          {loadErr}
-        </p>
-      )}
+        <div className="flex items-center gap-3">
+          <span
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full font-mono text-[11px] font-semibold tracking-[0.1em] uppercase"
+            style={isPro ? TINT : { background: "var(--v2-bg-1)", color: "var(--v2-t-2)", border: "1px solid var(--v2-line-1)" }}
+          >
+            {isPro && <ShieldStar size={14} weight="fill" />}
+            {isPro ? "Pro" : "Free plan"}
+          </span>
+          {isPro && plan.proUntil && (
+            <span className="text-[12px]" style={{ color: "var(--v2-t-3)" }}>
+              Active until <span style={{ color: "var(--v2-t-1)" }}>{fmtDate(plan.proUntil)}</span>
+            </span>
+          )}
+        </div>
+      </header>
+
       {USE_API && !signed && (
-        <p className="text-[13px] px-1" style={{ color: "var(--v2-t-3)" }}>
+        <p className="text-[13px] mb-6" style={{ color: "var(--v2-t-3)" }}>
           Sign in to see your usage and buy credits.
         </p>
       )}
+      {loadFailed && (
+        <p className="text-[13px] mb-6" style={{ color: "var(--v2-neg)" }}>
+          Could not load your plan. Refresh the page to try again.
+        </p>
+      )}
 
-      <div id="credit-packs" className="py-5 px-1 flex items-center justify-between flex-wrap gap-4" style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
-        <div>
-          <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: "var(--v2-t-4)" }}>
-            Credits balance
+      {/* Pemakaian + kredit */}
+      <section aria-label="Usage" className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Meter label="Analyses" sub="this month" used={plan.used.deep} limit={L.deep} />
+        <Meter label="Chat messages" sub="this month" used={plan.used.chat} limit={L.chat} />
+        <div className="rounded-[14px] p-5 flex flex-col" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)" }}>
+          <div className="flex items-center gap-2 font-mono text-[11px] tracking-[0.16em] uppercase mb-3" style={{ color: "var(--v2-t-4)" }}>
+            <Lightning size={14} weight="fill" style={{ color: "var(--v2-accent-text)" }} />
+            Credits
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-heading font-bold text-[28px] num tabular-nums" style={{ color: "var(--v2-t-0)" }}>
+            <span className="font-heading font-bold text-[34px] leading-none num tabular-nums" style={{ color: "var(--v2-t-0)" }}>
               {plan.credits}
             </span>
             <span className="text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-              cr
+              credits
             </span>
           </div>
-          <div className="text-[12px] mt-1" style={{ color: "var(--v2-t-4)" }}>
-            Used when your monthly quota runs out. 1 credit per AI answer.
+          <p className="text-[12px] leading-relaxed mt-2 mb-4" style={{ color: "var(--v2-t-4)" }}>
+            Used after your monthly quota runs out. 1 credit per AI answer.
+          </p>
+          <div className="mt-auto grid grid-cols-2 gap-2">
+            {packs.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                disabled={disabled}
+                onClick={() => void buy(p.id)}
+                title={!canBuy && USE_API && signed ? "Payments are not enabled yet" : undefined}
+                className="rounded-[10px] px-2 py-2.5 text-center leading-tight transition-colors border border-[var(--v2-line-2,var(--v2-line-1))] hover:border-[var(--v2-accent)] hover:bg-[rgba(var(--v2-accent-rgb),0.08)] focus-visible:border-[var(--v2-accent)] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-[var(--v2-line-1)] disabled:hover:bg-transparent"
+                style={{ color: "var(--v2-t-1)" }}
+              >
+                <span className="block font-heading font-bold text-[16px]">{usd(p.usd)}</span>
+                <span className="block text-[11px]" style={{ color: "var(--v2-t-3)" }}>
+                  {p.credits} credits
+                </span>
+              </button>
+            ))}
           </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          {packs.map((p) => (
-            <button
-              key={p.id}
-              disabled={busy || (USE_API && signed && !canBuy)}
-              onClick={() => void buy(p.id)}
-              className="px-4 py-2 rounded-sm font-mono text-[12px] tracking-[0.1em] uppercase font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110"
-              style={BTN}
-              title={!canBuy && USE_API ? "Payments are not enabled yet" : undefined}
-            >
-              {usd(p.usd)} · {p.credits} credits
-            </button>
-          ))}
-        </div>
-      </div>
-      {USE_API && signed && !canBuy && (
-        <p className="text-[12px] px-1 pt-3" style={{ color: "var(--v2-t-4)" }}>
-          Payments are not enabled yet.
-        </p>
-      )}
-      {statusLine()}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-12">
-        {proProducts.map((p) => {
-          const def = p.id === "pro_3m";
-          return (
-            <div
-              key={p.id}
-              className="relative p-6 flex flex-col rounded-lg"
-              style={{ background: def ? "var(--v2-bg-2)" : "var(--v2-bg-1)", border: `1px solid ${def ? "var(--v2-accent)" : "var(--v2-line-1)"}` }}
-            >
-              {def && (
-                <span className="absolute -top-2.5 left-6 font-mono text-[10px] uppercase tracking-[0.06em] px-2 py-0.5 rounded-sm" style={BTN}>
-                  Default
-                </span>
-              )}
-              <div className="font-mono text-[12px] tracking-[0.06em] uppercase mb-2" style={{ color: "var(--v2-t-3)" }}>
-                {Math.round(p.days / 30)} {p.days <= 30 ? "month" : "months"}
-              </div>
-              <div className="font-heading font-black text-[36px] tracking-tight mb-1" style={{ color: "var(--v2-t-0)" }}>
-                {usd(p.usd)}
-              </div>
-              <div className="text-[14px] mb-5" style={{ color: "var(--v2-t-2)" }}>
-                {perMonth(p)}
-                <span className="ml-2" style={{ color: "var(--v2-t-3)" }}>
-                  · {p.days <= 30 ? "Try it" : p.days <= 90 ? "One payment per quarter" : "One payment per year"}
-                </span>
-              </div>
-              <button
-                disabled={busy || (USE_API && signed && !canBuy) || !USE_API}
-                onClick={() => void buy(p.id)}
-                className="w-full py-3 px-4 font-mono text-[12px] tracking-[0.1em] uppercase font-semibold rounded-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={BTN}
-              >
-                {USE_API ? buyLabel(p.id) : "Activate"}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      <p className="text-[12px] -mt-8 mb-10 px-1" style={{ color: "var(--v2-t-4)" }}>
-        Paid in USDG from your own wallet on {w.appChain.name}. One payment per period, no auto-renewal. You need a little ETH for network fees.
-        {w.appChain.env === "testnet" ? " This is a test network: payments use test tokens with no real value." : ""}
+      </section>
+      <p className="text-[12px] mt-3 mb-0" style={{ color: "var(--v2-t-4)" }}>
+        {plan.resetsAt ? `Monthly quota resets ${fmtDate(plan.resetsAt)} (UTC).` : "Monthly quota resets on the 1st (UTC)."}
+        {USE_API && signed && !canBuy ? " Payments are not enabled yet." : ""}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px" style={{ background: "var(--v2-line-1)" }}>
-        <Tier title="Free" items={[`25 starter analyses (one-time)`, `${PLAN_LIMITS.free.deep} deep analyses / month`, `${PLAN_LIMITS.free.chat} chat messages / month`, "Standard agent execution", "New-token signals, 15 min delayed"]} />
-        <Tier title="Pro" accent items={[`${PLAN_LIMITS.pro.deep} deep analyses / month`, `${PLAN_LIMITS.pro.chat.toLocaleString("en-US")} chat messages / month`, "Priority agent execution", "Premium signals access"]} />
-      </div>
+      <Status phase={phase} explorer={w.appChain.explorerUrl} onRetry={(r) => { setPhase({ kind: "busy", msg: "Checking…" }); void finish(r.order, r.tx); }} />
+
+      {/* Paket Pro */}
+      <section aria-label="Pro plans" className="mt-14">
+        <div className="mb-6">
+          <h2 className="font-heading font-semibold text-[20px] tracking-[-0.01em] m-0" style={{ color: "var(--v2-t-0)" }}>
+            Go Pro
+          </h2>
+          <p className="text-[14px] mt-1.5 mb-0" style={{ color: "var(--v2-t-3)" }}>
+            More analyses and chat, real-time signals including smart money. One payment per period, no auto-renewal.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {proProducts.map((p) => {
+            const save = savePct(p);
+            return (
+              <div
+                key={p.id}
+                className="group flex flex-col rounded-[14px] p-6 border border-[var(--v2-line-1)] bg-[var(--v2-bg-1)] transition-all duration-200 hover:border-[var(--v2-accent)] focus-within:border-[var(--v2-accent)] hover:bg-[var(--v2-bg-2)] motion-safe:hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(var(--v2-accent-rgb),0.14)]"
+              >
+                <div className="flex items-center justify-between mb-4 min-h-[24px]">
+                  <span className="font-mono text-[11px] tracking-[0.16em] uppercase" style={{ color: "var(--v2-t-3)" }}>
+                    {months(p)} {months(p) === 1 ? "month" : "months"}
+                  </span>
+                  {save > 0 && (
+                    <span className="rounded-full px-2 h-[22px] inline-flex items-center font-mono text-[10px] font-semibold tracking-[0.06em] uppercase" style={TINT}>
+                      Save {save}%
+                    </span>
+                  )}
+                </div>
+                <div className="font-heading font-bold text-[44px] leading-none tracking-tight" style={{ color: "var(--v2-t-0)" }}>
+                  {usd(p.usd)}
+                </div>
+                <div className="text-[14px] mt-2 mb-6" style={{ color: "var(--v2-t-3)" }}>
+                  {perMonth(p)}
+                </div>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => void buy(p.id)}
+                  className="mt-auto w-full h-11 rounded-[10px] font-mono text-[12px] tracking-[0.1em] uppercase font-semibold transition-[filter,opacity] hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100"
+                  style={FILL}
+                >
+                  {buyLabel(p.id)}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        <p className="text-[12px] leading-relaxed mt-4 mb-0" style={{ color: "var(--v2-t-4)" }}>
+          Paid in USDG from your own wallet on {w.appChain.name}. You need a little ETH for network fees.
+          {w.appChain.env === "testnet" ? " This is a test network: payments use test tokens with no real value." : ""}
+        </p>
+      </section>
+
+      {/* Perbandingan */}
+      <section aria-label="Free vs Pro" className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Tier
+          title="Free"
+          current={!isPro}
+          items={["25 starter analyses (one-time)", `${PLAN_LIMITS.free.deep} deep analyses / month`, `${PLAN_LIMITS.free.chat} chat messages / month`, "Standard agent execution", "New-token signals, 15 min delayed"]}
+        />
+        <Tier
+          title="Pro"
+          accent
+          current={isPro}
+          items={[`${PLAN_LIMITS.pro.deep} deep analyses / month`, `${PLAN_LIMITS.pro.chat.toLocaleString("en-US")} chat messages / month`, "Priority agent execution", "Real-time signals", "Smart money signals (tier S and A)"]}
+        />
+      </section>
     </div>
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Meter({ label, sub, used, limit }: { label: string; sub: string; used: number; limit: number }) {
+  const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+  const hot = pct >= 90;
   return (
-    <div className="flex items-baseline gap-2">
-      <span className="num text-[15px] font-semibold" style={{ color: "var(--v2-t-1)" }}>
-        {value}
-      </span>
-      <span className="text-[12px]" style={{ color: "var(--v2-t-3)" }}>
+    <div className="rounded-[14px] p-5" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)" }}>
+      <div className="font-mono text-[11px] tracking-[0.16em] uppercase mb-3" style={{ color: "var(--v2-t-4)" }}>
         {label}
-      </span>
+      </div>
+      <div className="flex items-baseline gap-1.5">
+        <span className="font-heading font-bold text-[34px] leading-none num tabular-nums" style={{ color: "var(--v2-t-0)" }}>
+          {used.toLocaleString("en-US")}
+        </span>
+        <span className="text-[14px] num tabular-nums" style={{ color: "var(--v2-t-3)" }}>
+          / {limit.toLocaleString("en-US")}
+        </span>
+      </div>
+      <div className="text-[12px] mt-1" style={{ color: "var(--v2-t-4)" }}>
+        {sub}
+      </div>
+      <div
+        role="progressbar"
+        aria-label={`${label} used`}
+        aria-valuemin={0}
+        aria-valuemax={limit}
+        aria-valuenow={Math.min(used, limit)}
+        className="mt-4 h-1.5 rounded-full overflow-hidden"
+        style={{ background: "var(--v2-bg-3)" }}
+      >
+        <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${pct}%`, background: hot ? "var(--v2-neg)" : "var(--v2-accent)" }} />
+      </div>
     </div>
   );
 }
 
-function Tier({ title, items, accent }: { title: string; items: string[]; accent?: boolean }) {
+function Tier({ title, items, accent, current }: { title: string; items: string[]; accent?: boolean; current?: boolean }) {
   return (
-    <div className="p-6" style={{ background: "var(--v2-bg-1)", borderLeft: accent ? "2px solid var(--v2-accent)" : undefined }}>
-      <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-4" style={{ color: accent ? "var(--v2-accent-text)" : "var(--v2-t-3)" }}>
-        {title}
+    <div
+      className="rounded-[14px] p-6"
+      style={{
+        background: accent ? "linear-gradient(180deg, rgba(var(--v2-accent-rgb), 0.07), var(--v2-bg-1) 60%)" : "var(--v2-bg-1)",
+        border: `1px solid ${accent ? "rgba(var(--v2-accent-rgb), 0.4)" : "var(--v2-line-1)"}`,
+      }}
+    >
+      <div className="flex items-center justify-between mb-5">
+        <span className="font-mono text-[11px] tracking-[0.2em] uppercase" style={{ color: accent ? "var(--v2-accent-text)" : "var(--v2-t-3)" }}>
+          {title}
+        </span>
+        {current && (
+          <span className="font-mono text-[10px] tracking-[0.08em] uppercase rounded-full px-2 h-[20px] inline-flex items-center" style={{ border: "1px solid var(--v2-line-2, var(--v2-line-1))", color: "var(--v2-t-2)" }}>
+            Current plan
+          </span>
+        )}
       </div>
-      <ul className="m-0 p-0 list-none flex flex-col gap-2.5">
+      <ul className="m-0 p-0 list-none flex flex-col gap-3">
         {items.map((t) => (
-          <li key={t} className="text-[14px]" style={{ color: "var(--v2-t-2)" }}>
-            ✓ {t}
+          <li key={t} className="flex items-start gap-2.5 text-[14px]" style={{ color: "var(--v2-t-2)" }}>
+            <Check size={16} weight="bold" className="mt-0.5 shrink-0" style={{ color: accent ? "var(--v2-accent-text)" : "var(--v2-t-3)" }} />
+            {t}
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function Status({ phase, explorer, onRetry }: { phase: Phase; explorer: string; onRetry: (r: { order: Order; tx: string }) => void }): ReactNode {
+  if (phase.kind === "idle") return null;
+  const tone = phase.kind === "error" ? "var(--v2-neg)" : phase.kind === "done" ? "var(--v2-pos)" : "var(--v2-t-2)";
+  const text = phase.kind === "done" ? `Payment confirmed: ${phase.order.label}.` : phase.msg;
+  return (
+    <div role="status" className="mt-5 rounded-[10px] px-4 py-3 text-[13px] flex flex-wrap items-center gap-x-4 gap-y-1" style={{ border: `1px solid ${tone}`, color: tone, background: "var(--v2-bg-1)" }}>
+      <span>{text}</span>
+      {phase.kind === "error" && phase.retry && (
+        <button type="button" className="underline" onClick={() => onRetry(phase.retry!)}>
+          Check again
+        </button>
+      )}
+      {phase.kind === "done" && phase.order.txHash && (
+        <a className="underline" href={`${explorer.replace(/\/$/, "")}/tx/${phase.order.txHash}`} target="_blank" rel="noreferrer">
+          View transaction
+        </a>
+      )}
     </div>
   );
 }

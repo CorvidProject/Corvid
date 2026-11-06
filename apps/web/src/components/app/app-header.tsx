@@ -20,6 +20,7 @@ import { NavDropdown } from "@/components/site/nav-dropdown";
 import { useSigned } from "@/components/auth/signed";
 import { loadSession, signOut } from "@/lib/auth";
 import { connectWallet, disconnectWallet, shortAddress, switchToAppChain, useWallet } from "@/lib/wallet";
+import { usePlan } from "@/lib/plan-store";
 import { getChain } from "@corvid/shared/chains";
 import { MobileDrawer } from "./mobile-drawer";
 
@@ -183,8 +184,24 @@ function ConnectButton() {
 }
 
 // Setelah login tombol Connect diganti menu akun (email, Settings, Sign out).
+const PRO_BADGE = {
+  background: "rgba(var(--v2-accent-rgb), 0.16)",
+  color: "var(--v2-accent-text)",
+  border: "1px solid rgba(var(--v2-accent-rgb), 0.45)",
+} as const;
+function ProBadge({ className = "" }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-center rounded-[5px] px-1.5 h-[18px] font-mono text-[10px] font-semibold tracking-[0.08em] ${className}`} style={PRO_BADGE} aria-label="Pro subscriber">
+      PRO
+    </span>
+  );
+}
+
 function AccountMenu() {
   const signed = useSigned();
+  const { plan } = usePlan(signed);
+  const isPro = plan?.plan === "pro";
+  const proUntil = isPro && plan?.proUntil ? new Date(plan.proUntil).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }) : null;
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -239,6 +256,7 @@ function AccountMenu() {
         <span className="hidden xl:block truncate" style={{ maxWidth: 140 }}>
           {label}
         </span>
+        {isPro && <ProBadge />}
         <CaretDown size={12} />
       </button>
       {open && (
@@ -247,8 +265,18 @@ function AccountMenu() {
           className="absolute right-0 rounded-xl overflow-hidden z-50"
           style={{ top: "calc(100% + 8px)", width: 224, background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 12px 40px rgba(0,0,0,0.55)" }}
         >
-          <div className="px-3 py-2.5 text-[12px] truncate" style={{ color: "var(--v2-t-3)", borderBottom: "1px solid var(--v2-line-1)" }}>
-            {label}
+          <div className="px-3 py-2.5" style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-[12px] truncate" style={{ color: "var(--v2-t-3)" }}>
+                {label}
+              </span>
+              {isPro && <ProBadge className="shrink-0" />}
+            </div>
+            {isPro && proUntil && (
+              <div className="text-[11px] mt-1" style={{ color: "var(--v2-t-4)" }}>
+                Pro active until {proUntil}
+              </div>
+            )}
           </div>
           {w.address ? (
             <div style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
@@ -285,6 +313,9 @@ function AccountMenu() {
           {walletErr && (
             <div className="px-3 py-2 text-[11px]" style={{ color: "var(--v2-neg)", borderBottom: "1px solid var(--v2-line-1)" }}>{walletErr}</div>
           )}
+          <Link role="menuitem" href="/application/pro" onClick={() => setOpen(false)} className={item} style={{ color: "var(--v2-t-1)" }}>
+            Plan &amp; usage
+          </Link>
           <Link role="menuitem" href="/application/settings" onClick={() => setOpen(false)} className={item} style={{ color: "var(--v2-t-1)" }}>
             Settings
           </Link>
