@@ -157,10 +157,7 @@ export const marketRoutes =
       },
     );
 
-    app.get(
-      "/solana/memescope",
-      { schema: { tags: ["market"], querystring: memescopeQuerySchema, response: { 200: memescopeResponseSchema } } },
-      async (req) => {
+    const memescopeHandler = async (req: { query: { stage: "new" | "stretch" | "migrated" } }) => {
         const rows = await db
           .select()
           .from(memescopeCoins)
@@ -192,8 +189,11 @@ export const marketRoutes =
           at: Math.floor(Date.now() / 1000),
           stale: false,
         };
-      },
-    );
+    };
+    const memescopeSchema = { tags: ["market"], querystring: memescopeQuerySchema, response: { 200: memescopeResponseSchema } };
+    app.get("/memescope", { schema: memescopeSchema }, memescopeHandler);
+    // Nama lama dipertahankan sementara agar frontend yang belum diperbarui tetap jalan; hapus setelah semua deploy memakai /memescope.
+    app.get("/solana/memescope", { schema: { ...memescopeSchema, hide: true } }, memescopeHandler);
 
     void z; // z dipakai oleh skema yang diimpor
   };

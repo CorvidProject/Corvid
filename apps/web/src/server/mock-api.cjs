@@ -135,7 +135,7 @@ function handleMockApi(req, res, pathname, searchParams) {
     return true;
   }
 
-  if (pathname === '/api/solana/memescope') {
+  if (pathname === '/api/memescope') {
     const stage = searchParams.get('stage') || 'new';
     const base =
       stage === 'stretch' ? seed.memescopeStretch : stage === 'migrated' ? seed.memescopeMigrated : seed.memescopeNew;

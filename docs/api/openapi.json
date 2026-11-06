@@ -939,7 +939,7 @@
         }
       }
     },
-    "/api/solana/memescope": {
+    "/api/memescope": {
       "get": {
         "tags": [
           "market"

@@ -5,7 +5,10 @@ import { getAccessToken } from "./auth";
 // Mode fixture (default): panggilan ke /api/* dilayani rute Next lokal (src/app/api, data contoh).
 // NEXT_PUBLIC_USE_FIXTURES=false: panggilan diarahkan ke backend Fastify di NEXT_PUBLIC_API_URL.
 export const USE_API = process.env.NEXT_PUBLIC_USE_FIXTURES === "false";
-const BASE = USE_API ? (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "") : "";
+// NEXT_PUBLIC_API_PROXY=true: panggilan memakai alamat situs sendiri (/api/*) dan diteruskan ke backend oleh Next (API_PROXY_TARGET),
+// supaya tidak bergantung pada browser yang bisa menjangkau domain Railway.
+const PROXIED = process.env.NEXT_PUBLIC_API_PROXY === "true";
+const BASE = USE_API && !PROXIED ? (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "") : "";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {

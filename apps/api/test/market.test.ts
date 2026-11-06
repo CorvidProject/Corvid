@@ -113,9 +113,9 @@ describe("market API", () => {
     expect(bad.statusCode).toBe(400);
   });
 
-  it("GET /api/solana/memescope per stage", async () => {
+  it("GET /api/memescope per stage", async () => {
     for (const stage of ["new", "stretch", "migrated"]) {
-      const r = await get(`/api/solana/memescope?stage=${stage}`);
+      const r = await get(`/api/memescope?stage=${stage}`);
       expect(r.statusCode).toBe(200);
       expect(r.json().coins.length).toBeGreaterThan(0);
     }

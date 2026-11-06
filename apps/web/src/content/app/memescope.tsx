@@ -7,8 +7,8 @@ import { TokenAvatar } from "@/components/app/token-avatar";
 import { money } from "@/components/app/token-board";
 
 // Memescope: peluncuran token di launchpad berkurva (Pons V2, Virtuals) di Robinhood Chain, dari kurva sampai DEX. Progres = aset yang
-// terkumpul di kurva / ambang kelulusan (perkiraan, lihat apps/worker/src/sources/launchpads.ts). Data dari GET /api/solana/memescope (nama rute lama dipertahankan;
-// fixture atau backend, lihat src/lib/api.ts).
+// terkumpul di kurva / ambang kelulusan (perkiraan, lihat apps/worker/src/sources/launchpads.ts). Data dari GET /api/memescope
+// (fixture atau backend, lihat src/lib/api.ts).
 type Coin = {
   mint: string;
   name: string;
@@ -189,9 +189,9 @@ export function ApplicationMemescopeContent() {
   const [q, setQ] = useState("");
   const [now] = useState(() => Date.now());
   // Sumber: kurva launchpad Pons V2 (worker membaca saldo ETH kontrak kurva). Tahap lain dari API apa adanya.
-  const n = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=new");
-  const st = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=stretch");
-  const mg = useApi<{ coins: RawCoin[] }>("/api/solana/memescope?stage=migrated");
+  const n = useApi<{ coins: RawCoin[] }>("/api/memescope?stage=new");
+  const st = useApi<{ coins: RawCoin[] }>("/api/memescope?stage=stretch");
+  const mg = useApi<{ coins: RawCoin[] }>("/api/memescope?stage=migrated");
   const cols = useMemo(() => ({ n: pick(n.data), s: pick(st.data), m: pick(mg.data) }), [n.data, st.data, mg.data]);
 
   return (
