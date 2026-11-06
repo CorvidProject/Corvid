@@ -1,4 +1,5 @@
 "use client";
+import { DotBackdrop } from "@/components/app/dot-backdrop";
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
@@ -481,23 +482,8 @@ export function AgentBuilder() {
               </div>
             )}
             <div ref={wrapRef} className={mobile ? "hidden" : "flex-1 relative h-full overflow-hidden"} style={{ minHeight: 320, background: "var(--v2-bg-0)" }} onClick={() => setSelected(null)}>
-              <div className="crv-bg" aria-hidden="true">
-                <span className="crv-bg-glow crv-bg-g1" />
-                <span className="crv-bg-glow crv-bg-g2" />
-                <span className="crv-bg-sweep" />
-                <span className="crv-bg-scan" />
-                {Array.from({ length: 22 }, (_, i) => (
-                  <span
-                    key={i}
-                    className="crv-bg-dot"
-                    style={{ left: `${(i * 37 + 11) % 97}%`, width: 2 + (i % 3), height: 2 + (i % 3), animationDelay: `${-((i * 1.7) % 14)}s`, animationDuration: `${9 + (i % 5) * 2.2}s` }}
-                  />
-                ))}
-              </div>
-              <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
-                <pattern id="bld-dots" width="13.6" height="13.6" patternUnits="userSpaceOnUse"><circle cx="0.34" cy="0.34" r="0.34" fill="var(--v2-line-2)" /></pattern>
-                <rect width="100%" height="100%" fill="url(#bld-dots)" />
-              </svg>
+              {/* Latar WebGL yang sama dengan halaman Rugcheck: titik menyala mengikuti sinar pindai dan cincin yang menjalar. */}
+              <DotBackdrop variant="scan" className="absolute inset-0 w-full h-full pointer-events-none" />
               <div className="absolute left-0 top-0" style={{ transform: `translate(${view.tx}px, ${view.ty}px) scale(${view.k})`, transformOrigin: "0 0" }}>
                 <svg style={{ position: "absolute", left: 0, top: 0, width: 1, height: 1, overflow: "visible" }} aria-hidden="true">
                   {edges.map((e) => {
