@@ -50,7 +50,7 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
         if (m) mint = m[1];
       }
       const sym = /\$(.+)$/.exec(deploy.getAttribute("title") ?? "")?.[1] ?? "";
-      const q = new URLSearchParams({ template: "token_trading", start: "1", chain: "solana" });
+      const q = new URLSearchParams({ template: "token_trading", start: "1", chain: "robinhood" });
       if (mint) q.set("token_mint", mint);
       if (sym) q.set("symbol", sym);
       window.location.href = `/application/agents/new?${q.toString()}`;

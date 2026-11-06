@@ -117,7 +117,7 @@ function WalletRow({ w, now }: { w: ApiWallet; now: number }) {
         <div className="flex gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
           <a
             className="px-2.5 py-1 rounded-sm inline-flex items-center gap-1 whitespace-nowrap text-[12px] font-semibold uppercase tracking-wide"
-            href={`/application/agents/new?type=copy_trader&wallet=${w.address}&chain=robinhood`}
+            href={`/application/agents/new?template=follow_wallet&wallet=${w.address}&start=1`}
             style={{ border: "1px solid var(--v2-accent)", background: "transparent", color: "var(--v2-accent-text)" }}
           >
             Copy

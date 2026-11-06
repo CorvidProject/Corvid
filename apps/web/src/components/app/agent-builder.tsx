@@ -168,18 +168,19 @@ export function AgentBuilder() {
   // Parameter URL dari tombol "Deploy an agent on $X": ?template=&token_mint=&wallet=&symbol=&start=1
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
-    const t = q.get("template");
+    // Alias tautan lama: type=copy_trader (wallet) dan ?token= (token) tetap dikenali.
+    const t = q.get("template") ?? (q.get("type") === "copy_trader" ? "follow_wallet" : q.get("token") ? "token_trading" : null);
     const key: PipelineKey | null = t === "follow_wallet" || t === "new_tokens" || t === "token_trading" ? t : null;
     if (!key) return;
     const c = buildConfig(key, "balanced");
-    const mint = q.get("token_mint");
+    const mint = q.get("token_mint") || q.get("token");
     const wallet = q.get("wallet") || q.get("wallet_address");
     if (key === "token_trading" && mint) c.token_mint = mint;
     if (key === "follow_wallet" && wallet) c.wallet_address = wallet;
     setPipe(key);
     setCfg(c);
     if (q.get("symbol")) setName(`${q.get("symbol")} Trader`);
-    if (q.get("start") === "1") setSelected(key === "new_tokens" ? "scan" : "monitor");
+    if (q.get("start") === "1" || (!q.get("template") && (mint || wallet))) setSelected(key === "new_tokens" ? "scan" : "monitor");
   }, []);
 
   const pickPipeline = (key: PipelineKey, p: Preset) => {
