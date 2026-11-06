@@ -16,6 +16,8 @@ export type ChainConfig = {
   nativeDecimals: 18;
   /** Alamat WETH (lowercase), diverifikasi on-chain via eth_call symbol(). Kosong = belum diverifikasi. */
   wrappedNative: string;
+  /** Stablecoin pembayaran USDG (Global Dollar, Paxos). null = belum diverifikasi di chain ini → bayar USDG dimatikan. */
+  usdg: { address: string; decimals: number } | null;
   /** Kontrak Uniswap v3 (lowercase). null = belum diverifikasi di chain ini → swap dimatikan. */
   uniswapV3: { factory: string; quoterV2: string; swapRouter02: string } | null;
 };
@@ -30,6 +32,7 @@ export const CHAINS: Record<ChainEnv, ChainConfig> = {
     nativeSymbol: "ETH",
     nativeDecimals: 18,
     wrappedNative: "", // belum diverifikasi di testnet
+    usdg: null, // belum diverifikasi di testnet; uji alur bayar dengan ETH testnet
     uniswapV3: null, // Uniswap belum tercantum/diverifikasi di testnet
   },
   mainnet: {
@@ -41,6 +44,9 @@ export const CHAINS: Record<ChainEnv, ChainConfig> = {
     nativeSymbol: "ETH",
     nativeDecimals: 18,
     wrappedNative: "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    // Sumber: docs.paxos.com/stablecoin/usdg/mainnet (bagian "Robinhood Mainnet"). Diverifikasi 2026-11-06 lewat RPC mainnet:
+    // chainId 4663, ada bytecode, symbol() = USDG, name() = Global Dollar, decimals() = 6.
+    usdg: { address: "0x5fc5360d0400a0fd4f2af552add042d716f1d168", decimals: 6 },
     // Sumber: developers.uniswap.org/docs/protocols/v3/deployments/v3-robinhood-chain-deployments. Diverifikasi 2026-11-05 lewat RPC:
     // semua berisi bytecode, factory.getPool(WETH, CASHCAT, 3000) = pool GeckoTerminal, dan QuoterV2 memberi kuotasi yang cocok dengan harga pasar.
     uniswapV3: {
