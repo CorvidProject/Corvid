@@ -86,3 +86,11 @@ Railway `@corvid/api`: `PAID_FEATURES_ENABLED`, `PAYMENT_RECIPIENT` (alamat publ
 - Vercel Production: `NEXT_PUBLIC_CHAIN_ENV=mainnet`, `NEXT_PUBLIC_RPC_URL` = Alchemy mainnet. Redeploy sudah dijalankan.
 - `TRADE_MODE=live` (API) dan `NEXT_PUBLIC_TRADE_MODE=live` (web) diaktifkan atas perintah pemilik pada 2026-11-06. Live = swap Uniswap v3 lewat dompet pengguna sendiri (pengguna menandatangani); server tidak memegang private key. Worker/agent tetap simulasi (`dry`): belum ada penyimpanan kunci untuk transaksi otonom.
 - Harga ETH: CoinGecko, cadangan GeckoTerminal (CoinGecko menolak IP Railway).
+
+## Notifikasi Telegram (ditambahkan 2026-11-07)
+- Pemilik membuat bot lewat `@BotFather`. **Token bot hanya di service worker** (`TELEGRAM_BOT_TOKEN`, Railway); jangan masuk repo/log/API.
+- Service API: `TELEGRAM_BOT_USERNAME` (username bot tanpa `@`, bukan rahasia) untuk tautan "Connect Telegram". Kosong = Settings menampilkan "not available" dan `POST /api/user/telegram/link` menjawab 503.
+- Worker memakai polling `getUpdates` (tanpa webhook). Jalankan **satu** instance worker dengan token yang sama (dua proses polling bot yang sama saling berebut pesan).
+- Migrasi `0007_telegram_link` (tabel `telegram_link_codes`, indeks unik `profiles.telegram_chat_id`) harus diterapkan sebelum worker/API baru.
+- Alur: Settings → Connect Telegram → kode 8 karakter (10 menit, hanya hash tersimpan) → kirim ke bot / tombol "Open Telegram" → chat id tersimpan. `/stop` di bot atau "Disconnect" memutus.
+- Pengiriman: agent dengan `config.telegram = "true"` (toggle builder) mengirim ringkasan ke pemilik saat run lolos; maksimal 20 pesan/jam/pengguna; teks polos. Persetujuan trade lewat Telegram belum ada.

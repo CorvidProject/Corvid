@@ -2,7 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import { generateKeyPair, SignJWT, type KeyLike } from "jose";
 import EmbeddedPostgres from "embedded-postgres";
-import { applyMigrations, createDb } from "@corvid/db";
+import { eq } from "drizzle-orm";
+import { applyMigrations, createDb, profiles, telegramLinkCodes } from "@corvid/db";
 import { buildApp } from "../src/app";
 import { createVerifier } from "../src/auth";
 
@@ -17,6 +18,8 @@ let pgServer: EmbeddedPostgres;
 let pool: ReturnType<typeof createDb>["pool"];
 let app: Awaited<ReturnType<typeof buildApp>>;
 let appNoAuth: Awaited<ReturnType<typeof buildApp>>;
+let appTg: Awaited<ReturnType<typeof buildApp>>;
+let dbh: ReturnType<typeof createDb>["db"];
 let privateKey: KeyLike;
 let otherKey: KeyLike;
 
@@ -49,6 +52,9 @@ beforeAll(async () => {
   const verifier = createVerifier({ issuer: ISS, key: kp.publicKey });
   app = await buildApp({ db: created.db, verifier });
   appNoAuth = await buildApp({ db: created.db, verifier: null });
+  dbh = created.db;
+  appTg = await buildApp({ db: created.db, verifier, telegramBot: "corvid_test_bot" });
+  await appTg.ready();
   await app.ready();
   await appNoAuth.ready();
 }, 120_000);
@@ -56,6 +62,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await app?.close();
   await appNoAuth?.close();
+  await appTg?.close();
   await pool?.end();
   await pgServer?.stop();
 });
@@ -138,5 +145,37 @@ describe("preferensi trading", () => {
     expect(r.statusCode).toBe(403);
     expect(r.json()).toEqual({ error: "live_trading_disabled" });
     expect((await call("GET", "/api/user/trading-prefs", await A())).json().mode).toBe("dry");
+  });
+});
+
+describe("telegram", () => {
+  it("butuh login", async () => {
+    expect((await call("GET", "/api/user/telegram")).statusCode).toBe(401);
+  });
+  it("tanpa bot terkonfigurasi: status tidak aktif dan link 503", async () => {
+    const t = await token(USER_A, "a@x.io");
+    const s = await call("GET", "/api/user/telegram", t);
+    expect(s.json()).toEqual({ configured: false, linked: false, bot: null });
+    expect((await call("POST", "/api/user/telegram/link", t, {})).statusCode).toBe(503);
+  });
+  it("dengan bot: kode 8 karakter, hanya hash tersimpan, kode baru menggantikan lama, putuskan", async () => {
+    const t = await token(USER_A, "a@x.io");
+    const go = (method: "GET" | "POST" | "DELETE", u: string) => appTg.inject({ method, url: u, headers: { authorization: `Bearer ${t}` }, payload: method === "POST" ? {} : undefined });
+    const r1 = (await go("POST", "/api/user/telegram/link")).json() as { code: string; url: string; expiresInSec: number };
+    expect(r1.code).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
+    expect(r1.url).toBe(`https://t.me/corvid_test_bot?start=${r1.code}`);
+    expect(r1.expiresInSec).toBe(600);
+    let rows = await dbh.select().from(telegramLinkCodes).where(eq(telegramLinkCodes.profileId, USER_A));
+    expect(rows).toHaveLength(1);
+    expect(rows[0].codeHash).not.toContain(r1.code);
+    const r2 = (await go("POST", "/api/user/telegram/link")).json() as { code: string };
+    rows = await dbh.select().from(telegramLinkCodes).where(eq(telegramLinkCodes.profileId, USER_A));
+    expect(rows).toHaveLength(1);
+    expect(r2.code).not.toBe(r1.code);
+    await dbh.update(profiles).set({ telegramChatId: "123" }).where(eq(profiles.id, USER_A));
+    expect((await go("GET", "/api/user/telegram")).json()).toEqual({ configured: true, linked: true, bot: "corvid_test_bot" });
+    expect((await go("DELETE", "/api/user/telegram")).json()).toEqual({ ok: true });
+    expect((await go("GET", "/api/user/telegram")).json()).toMatchObject({ linked: false });
+    expect(await dbh.select().from(telegramLinkCodes).where(eq(telegramLinkCodes.profileId, USER_A))).toHaveLength(0);
   });
 });

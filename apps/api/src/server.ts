@@ -8,7 +8,7 @@ import { paymentsFromEnv } from "./payments-config";
 const env = loadEnv();
 const { db, pool } = createDb(env.DATABASE_URL);
 const verifier = env.SUPABASE_URL ? supabaseVerifier(env.SUPABASE_URL, env.SUPABASE_JWT_SECRET) : null;
-const app = await buildApp({ db, webOrigin: env.WEB_ORIGIN, logger: true, verifier, tradeMode: env.TRADE_MODE, llm: llmFromEnv(env), trustProxyHops: env.TRUST_PROXY_HOPS, chatDailyCap: env.CHAT_DAILY_CAP, payments: paymentsFromEnv(env) });
+const app = await buildApp({ db, webOrigin: env.WEB_ORIGIN, logger: true, verifier, tradeMode: env.TRADE_MODE, telegramBot: env.TELEGRAM_BOT_USERNAME ?? null, llm: llmFromEnv(env), trustProxyHops: env.TRUST_PROXY_HOPS, chatDailyCap: env.CHAT_DAILY_CAP, payments: paymentsFromEnv(env) });
 
 const close = async () => {
   await app.close();

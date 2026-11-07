@@ -1,9 +1,9 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { credits, loginLog, notifications, profiles, tradingPrefs, userWallets } from "@corvid/db";
+import { credits, loginLog, notifications, profiles, telegramLinkCodes, tradingPrefs, userWallets } from "@corvid/db";
 import { errorSchema } from "@corvid/shared";
 import type { AuthUser, Verifier } from "../auth";
 import type { Db } from "../app";
@@ -15,6 +15,11 @@ declare module "fastify" {
 }
 
 const WELCOME_CREDITS = 25;
+const LINK_TTL_MS = 10 * 60_000;
+// Tanpa 0/O/1/I agar mudah diketik; 8 karakter dari 32 simbol.
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const newLinkCode = () => Array.from(randomBytes(8), (b) => CODE_ALPHABET[b % 32]).join("");
+const hashLinkCode = (c: string) => createHash("sha256").update(c.trim().toUpperCase()).digest("hex");
 /** Kredit selamat datang hanya untuk sekian akun baru per IP (hash) per 24 jam; sisanya tetap dibuat tanpa kredit gratis. */
 export const WELCOME_PER_IP_24H = 5;
 export const hashIp = (salt: string, ip: string) => createHash("sha256").update(`${salt}:${ip}`).digest("hex").slice(0, 32);
@@ -80,10 +85,12 @@ export interface UserRouteOptions {
   /** TRADE_MODE server: `live` hanya bisa dipilih pengguna bila server memang `live`. */
   tradeMode: "dry" | "live";
   ipSalt?: string;
+  /** Username bot Telegram. null = tautan Telegram belum dikonfigurasi. */
+  telegramBot?: string | null;
 }
 
 export const userRoutes =
-  ({ db, verifier, tradeMode, ipSalt = "corvid", onAuth }: UserRouteOptions): FastifyPluginAsync =>
+  ({ db, verifier, tradeMode, telegramBot = null, ipSalt = "corvid", onAuth }: UserRouteOptions): FastifyPluginAsync =>
   async (instance) => {
     const app = instance.withTypeProvider<ZodTypeProvider>();
     app.decorateRequest("user", null);
@@ -196,4 +203,29 @@ export const userRoutes =
         return loadPrefs(me(req));
       },
     );
+  
+    // Tautan Telegram: status, kode sekali pakai (10 menit, hanya hash disimpan), dan putuskan.
+    const telegramStatus = z.object({ configured: z.boolean(), linked: z.boolean(), bot: z.string().nullable() });
+    app.get("/user/telegram", { ...auth, schema: { tags: ["user"], response: { 200: telegramStatus, ...authErrors } } }, async (req) => {
+      const [p] = await db.select({ chat: profiles.telegramChatId }).from(profiles).where(eq(profiles.id, me(req))).limit(1);
+      return { configured: !!telegramBot, linked: !!p?.chat, bot: telegramBot };
+    });
+
+    app.post(
+      "/user/telegram/link",
+      { ...auth, schema: { tags: ["user"], response: { 200: z.object({ code: z.string(), url: z.string(), expiresInSec: z.number().int() }), ...authErrors } } },
+      async (req, reply) => {
+        if (!telegramBot) return reply.code(503).send({ error: "telegram_not_configured" });
+        const code = newLinkCode();
+        const row = { codeHash: hashLinkCode(code), expiresAt: new Date(Date.now() + LINK_TTL_MS) };
+        await db.insert(telegramLinkCodes).values({ profileId: me(req), ...row }).onConflictDoUpdate({ target: telegramLinkCodes.profileId, set: row });
+        return { code, url: `https://t.me/${telegramBot}?start=${code}`, expiresInSec: LINK_TTL_MS / 1000 };
+      },
+    );
+
+    app.delete("/user/telegram", { ...auth, schema: { tags: ["user"], response: { 200: z.object({ ok: z.literal(true) }), ...authErrors } } }, async (req) => {
+      await db.update(profiles).set({ telegramChatId: null }).where(eq(profiles.id, me(req)));
+      await db.delete(telegramLinkCodes).where(eq(telegramLinkCodes.profileId, me(req)));
+      return { ok: true as const };
+    });
   };

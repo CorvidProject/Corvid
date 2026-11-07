@@ -50,6 +50,13 @@
       "when": 1793977340689,
       "tag": "0006_rename_sol_to_eth",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794000000000,
+      "tag": "0007_telegram_link",
+      "breakpoints": true
     }
   ]
 }

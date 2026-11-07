@@ -29,6 +29,10 @@ export function ApplicationSettingsContent() {
   const [mailMsg, setMailMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [walletErr, setWalletErr] = useState<string | null>(null);
+  const [tgs, setTgs] = useState<{ configured: boolean; linked: boolean; bot: string | null } | null>(null);
+  const [tgLink, setTgLink] = useState<{ code: string; url: string } | null>(null);
+  const [tgBusy, setTgBusy] = useState(false);
+  const [tgMsg, setTgMsg] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -44,6 +48,7 @@ export function ApplicationSettingsContent() {
           setAcct({ plan: d.plan, credits: d.credits });
         })
         .catch(() => setErr("Could not load your profile."));
+      apiGet<{ configured: boolean; linked: boolean; bot: string | null }>("/api/user/telegram").then(setTgs).catch(() => {});
       apiGet<Prefs>("/api/user/trading-prefs")
         .then((d) => setP({ slippageBps: d.slippageBps, priorityFeeLamports: d.priorityFeeLamports }))
         .catch(() => {});
@@ -119,6 +124,35 @@ export function ApplicationSettingsContent() {
     if (!first) return setWalletErr("No browser wallet found. Install MetaMask or another EVM wallet.");
     const r = await connectWallet(first.id);
     if (r.error) setWalletErr(r.error);
+  }
+  async function tgConnect() {
+    setTgMsg(null);
+    setTgBusy(true);
+    try {
+      const r = await apiSend<{ code: string; url: string }>("POST", "/api/user/telegram/link", {});
+      setTgLink({ code: r.code, url: r.url });
+    } catch {
+      setTgMsg("Could not create a link code. Try again.");
+    }
+    setTgBusy(false);
+  }
+  async function tgRefresh() {
+    try {
+      const s = await apiGet<{ configured: boolean; linked: boolean; bot: string | null }>("/api/user/telegram");
+      setTgs(s);
+      if (s.linked) setTgLink(null);
+      else setTgMsg("Not linked yet. Send the code to the bot, then check again.");
+    } catch {}
+  }
+  async function tgDisconnect() {
+    setTgMsg(null);
+    try {
+      await apiSend("DELETE", "/api/user/telegram");
+      setTgLink(null);
+      setTgs((s) => (s ? { ...s, linked: false } : s));
+    } catch {
+      setTgMsg("Could not disconnect. Try again.");
+    }
   }
   const card = { background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)" } as const;
 
@@ -249,6 +283,42 @@ export function ApplicationSettingsContent() {
           )}
         </div>
       </section>
+
+      {USE_API && tgs && (
+        <section className="rounded-2xl p-5 mb-4" style={card}>
+          <div className="eyebrow mb-3">Telegram alerts</div>
+          {!tgs.configured ? (
+            <p className="text-[13px] m-0" style={{ color: "var(--v2-t-3)" }}>Telegram alerts are not available yet.</p>
+          ) : tgs.linked ? (
+            <div className="flex flex-wrap items-center gap-3 text-[13px]">
+              <span style={{ color: "var(--v2-pos)" }}>Connected</span>
+              <span style={{ color: "var(--v2-t-3)" }}>Agents with Telegram alerts turned on will message you.</span>
+              <button type="button" className="btn-v2 btn-v2-ghost" onClick={() => void tgDisconnect()}>Disconnect</button>
+            </div>
+          ) : tgLink ? (
+            <div className="text-[13px]" style={{ color: "var(--v2-t-2)" }}>
+              <p className="mt-0 mb-2">
+                Open the bot and press Start, or send it this code. It expires in 10 minutes.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="num font-mono text-[18px] tracking-[0.12em]" style={{ color: "var(--v2-t-1)" }}>{tgLink.code}</span>
+                <a className="btn-v2 btn-v2-primary" href={tgLink.url} target="_blank" rel="noopener noreferrer">Open Telegram</a>
+                <button type="button" className="btn-v2 btn-v2-ghost" onClick={() => void tgRefresh()}>I sent it</button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-3 text-[13px]">
+              <span style={{ color: "var(--v2-t-3)" }}>Not connected</span>
+              <button type="button" disabled={tgBusy} className="btn-v2 btn-v2-primary disabled:opacity-60" onClick={() => void tgConnect()}>
+                Connect Telegram
+              </button>
+            </div>
+          )}
+          {tgMsg && (
+            <p role="alert" className="text-[12px] mt-2 mb-0" style={{ color: "var(--v2-neg)" }}>{tgMsg}</p>
+          )}
+        </section>
+      )}
 
       <section className="rounded-2xl p-5" style={card}>
         <div className="eyebrow mb-3">Session</div>

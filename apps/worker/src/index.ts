@@ -8,6 +8,7 @@ import { cachedEthUsd } from "./ethprice";
 import { createDexScreener } from "./sources/dexscreener";
 import { createGeckoTerminal } from "./sources/geckoterminal";
 import { createGoPlus } from "./sources/goplus";
+import { createNotifier, createTelegramApi, pollOnce } from "./telegram";
 
 const env = z
   .object({
@@ -31,6 +32,8 @@ const env = z
     WORKER_RETENTION_MS: z.coerce.number().int().min(60_000).default(3_600_000),
     /** Jeda antar request GeckoTerminal; batas publik ketat (observasi: 429 pada ~2,2 dtk). */
     WORKER_GT_INTERVAL_MS: z.coerce.number().int().min(1000).default(6500),
+    /** Token bot Telegram (dari @BotFather). Kosong = notifikasi Telegram mati. Jangan dicatat. */
+    TELEGRAM_BOT_TOKEN: z.preprocess((v) => (v === "" ? undefined : v), z.string().min(10).optional()),
     WORKER_TOP_N: z.coerce.number().int().min(1).max(50).default(10),
   })
   .parse(process.env);
@@ -38,6 +41,10 @@ const env = z
 const log = (m: string) => console.log(`${new Date().toISOString()} ${m}`);
 const { db, pool } = createDb(env.DATABASE_URL);
 const deps: Deps = { db, gt: createGeckoTerminal({ minIntervalMs: env.WORKER_GT_INTERVAL_MS }), ds: createDexScreener(), sec: createGoPlus(), log };
+
+const tg = env.TELEGRAM_BOT_TOKEN ? createTelegramApi(env.TELEGRAM_BOT_TOKEN) : null;
+const notify = tg ? createNotifier(deps, tg) : undefined;
+let tgOffset: number | undefined;
 
 const rpc = createRpc({ url: env.MAINNET_RPC_URL });
 
@@ -48,7 +55,8 @@ function every(name: string, ms: number, fn: () => Promise<unknown>) {
     if (running) return;
     running = true;
     try {
-      log(`${name}: ${JSON.stringify(await fn())}`);
+      const out = await fn();
+      if (out !== undefined) log(`${name}: ${JSON.stringify(out)}`);
     } catch (e) {
       log(`${name} gagal: ${(e as Error).message}`);
     } finally {
@@ -68,7 +76,16 @@ const timers = [
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),
   every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
   every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS })), pruned: await pruneWallets(db) })),
-  every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd: cachedEthUsd() })),
+  every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd: cachedEthUsd(), notify })),
+  ...(tg
+    ? [
+        every("telegram", 3_000, async () => {
+          const r = await pollOnce(deps, tg, tgOffset);
+          tgOffset = r.next;
+          return r.handled > 0 ? r : undefined;
+        }),
+      ]
+    : []),
   every("retention", env.WORKER_RETENTION_MS, () => runRetention(db)),
 ];
 

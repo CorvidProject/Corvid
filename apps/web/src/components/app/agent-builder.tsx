@@ -285,7 +285,7 @@ export function AgentBuilder() {
       return say("Set a per-trade limit before trading");
     }
     if (!USE_API) return say("Agent service is not connected yet. Your pipeline is ready to deploy once it is live.");
-    const body = { name: name.trim() || pipeline.name, pipeline: pipe, mode, config: cfg, limits: { ...limits } };
+    const body = { name: name.trim() || pipeline.name, pipeline: pipe, mode, config: { ...cfg, telegram: telegram ? "true" : "false" }, limits: { ...limits } };
     apiSend<{ id: number }>("POST", "/api/agents", body)
       .then(() => {
         say("Agent created. Open My agents to manage it.");
@@ -548,7 +548,7 @@ export function AgentBuilder() {
                       {step.id === "notify" && (
                         <div className="py-2">
                           <div className="flex items-center justify-between py-2.5"><span className="text-[13px]" style={{ color: "var(--v2-t-1)" }}>In-App inbox</span><span className="text-[11px]" style={{ color: "var(--v2-t-4)" }}>Always on</span></div>
-                          <FieldInput f={{ key: "tg", label: "Telegram alerts", hint: "Send every signal to your Telegram", type: "toggle" }} value={telegram ? "true" : "false"} onChange={(v) => { setTelegram(v === "true"); touch(); }} />
+                          <FieldInput f={{ key: "tg", label: "Telegram alerts", hint: "Send each signal to your Telegram (link it in Settings)", type: "toggle" }} value={telegram ? "true" : "false"} onChange={(v) => { setTelegram(v === "true"); touch(); }} />
                         </div>
                       )}
                       {main.map((f) => <FieldInput key={f.key} f={f} value={cfg[f.key] ?? ""} onChange={(v) => edit(f.key, v)} />)}

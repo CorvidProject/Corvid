@@ -23,6 +23,8 @@ const envSchema = z.object({
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   /** Pengaman tagihan: maksimal jawaban chat per 24 jam untuk semua pengguna. */
   CHAT_DAILY_CAP: z.coerce.number().int().min(0).default(3000),
+  /** Username bot Telegram tanpa @ (untuk tautan Connect). Kosong = tombol Connect menjawab 503. Token bot hanya di worker. */
+  TELEGRAM_BOT_USERNAME: opt(z.string().regex(/^[A-Za-z0-9_]{5,32}$/)),
   TRADE_MODE: z.enum(["dry", "live"]).default("dry"),
   /** Pembelian kredit/Pro. Mati sampai pemilik menyalakannya (juga butuh PAYMENT_RECIPIENT). */
   PAID_FEATURES_ENABLED: z.preprocess((v) => v === "true" || v === "1", z.boolean()).default(false),

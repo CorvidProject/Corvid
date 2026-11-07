@@ -33,7 +33,18 @@ export const profiles = pgTable("profiles", {
   twitterHandle: text("twitter_handle"),
   telegramChatId: text("telegram_chat_id"),
   createdAt: ts("created_at").notNull().defaultNow(),
-});
+}, (t) => [uniqueIndex("profiles_telegram_chat_uq").on(t.telegramChatId).where(sql`${t.telegramChatId} is not null`)]);
+
+/** Kode tautan Telegram sekali pakai (hanya hash). Satu kode aktif per pengguna. */
+export const telegramLinkCodes = pgTable(
+  "telegram_link_codes",
+  {
+    profileId: uuid("profile_id").primaryKey().references(() => profiles.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull(),
+    expiresAt: ts("expires_at").notNull(),
+  },
+  (t) => [uniqueIndex("telegram_link_codes_hash_uq").on(t.codeHash)],
+);
 
 export const userWallets = pgTable(
   "user_wallets",

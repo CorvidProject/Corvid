@@ -36,6 +36,8 @@ export interface AppOptions {
   /** Verifier JWT Supabase; null = endpoint ber-auth menjawab 503. */
   verifier?: Verifier | null;
   tradeMode?: "dry" | "live";
+  /** Username bot Telegram (tanpa @). null = fitur tautan Telegram mati (503). */
+  telegramBot?: string | null;
   /** Klien LLM untuk chat; null = chat menjawab 503. */
   llm?: LlmClient | null;
   /** Jumlah proxy tepercaya di depan API (Railway = 1) agar req.ip memakai IP klien asli; 0 = langsung. */
@@ -49,7 +51,7 @@ export interface AppOptions {
   payments?: PaymentsConfig | null;
 }
 
-export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null }: AppOptions) {
+export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", telegramBot = null, llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null }: AppOptions) {
   const app = Fastify({ logger, trustProxy: trustProxyHops > 0 ? (_addr: string, hop: number) => hop < trustProxyHops : false }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -68,7 +70,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
   await app.register(alphaRoutes(db), { prefix: "/api" });
   await app.register(priceRoutes(ethPrice), { prefix: "/api" });
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;
-  await app.register(userRoutes({ db, verifier, tradeMode, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
+  await app.register(userRoutes({ db, verifier, tradeMode, telegramBot, onAuth: (fn) => (requireAuth = fn) }), { prefix: "/api" });
   await app.register(agentRoutes({ db, requireAuth: requireAuth!, tradeMode, verifier }), { prefix: "/api" });
   await app.register(marketplaceRoutes({ db, requireAuth: requireAuth! }), { prefix: "/api" });
   await app.register(chatRoutes({ db, requireAuth: requireAuth!, llm, dailyCap: chatDailyCap, limiter: chatLimiter, limits: planLimits }), { prefix: "/api" });

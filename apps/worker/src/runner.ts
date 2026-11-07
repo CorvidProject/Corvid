@@ -62,6 +62,8 @@ export interface RunnerDeps extends Deps {
   decider?: Decider;
   /** Harga ETH dalam USD untuk mencatat nilai swap simulasi; null bila tidak tersedia. */
   ethUsd?: () => Promise<number | null>;
+  /** Kirim ringkasan ke Telegram pemilik. Tidak ada = notifikasi Telegram mati. Kegagalan tidak boleh melempar. */
+  notify?: (profileId: string, text: string) => Promise<boolean>;
 }
 
 const MAX_CANDIDATES = 3;
@@ -269,6 +271,13 @@ async function recordRun(deps: RunnerDeps, a: AgentRow, c: Candidate, r: Awaited
       if (rows.length) await tx.insert(notifications).values(rows);
     }
   });
+  // Telegram: hanya pemilik, hanya bila agent menyalakannya (config.telegram === "true"). Di luar transaksi; gagal kirim tidak mempengaruhi run.
+  if (deps.notify && r.ended === "passed" && (a.config as Record<string, string>).telegram === "true") {
+    const sym = c.token?.symbol?.trim() || c.mint.slice(0, 6);
+    const why = r.decision?.for ?? c.note;
+    const text = r.sol !== null ? `${a.name}: simulated buy of ${sym} (${r.sol} ETH, dry run). ${why}` : `${a.name}: ${sym} matches your pipeline. ${why}`;
+    await deps.notify(a.ownerId, text.trim());
+  }
 }
 
 export interface CycleResult {
