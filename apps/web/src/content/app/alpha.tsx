@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import { Star } from "@phosphor-icons/react";
 import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { useApi } from "@/lib/api";
+import { WalletAvatar } from "@/components/app/wallet-avatar";
 import { AlphaLive, AlphaMyLists } from "@/components/app/alpha-views";
 
 const TIERS = ["all", "S", "A", "B", "C"] as const;
@@ -76,6 +77,7 @@ function WalletRow({ w, now }: { w: ApiWallet; now: number }) {
             >
               {tier}
             </span>
+            <WalletAvatar address={w.address} size={28} />
             <div className="min-w-0 flex flex-col">
               <span className="truncate text-[15px] font-medium num" style={{ color: "var(--v2-t-1)" }}>
                 {short(w.address)}

@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { useApi } from "@/lib/api";
+import { WalletAvatar } from "@/components/app/wallet-avatar";
 
 // PnL Leaderboard. Data dari GET /api/alpha/curated (sama dengan Alpha Feed): ESTIMASI dari trade yang diindeks pada jendela windowHours.
 type ApiWallet = {
@@ -133,7 +134,9 @@ export function ApplicationLeaderboardContent() {
             >
               {i + 1}
             </span>
-            <span className="min-w-0">
+            <span className="min-w-0 flex items-center gap-3">
+              <WalletAvatar address={r.w} size={32} />
+              <span className="min-w-0">
               <span className="flex items-center gap-2">
                 <span className="num text-[14px]" style={{ color: "var(--v2-t-1)" }}>
                   {short(r.w)}
@@ -149,6 +152,7 @@ export function ApplicationLeaderboardContent() {
                   {r.kind}
                 </span>
               )}
+              </span>
             </span>
             <span className="text-right num text-[14px] font-semibold" style={{ color: (r.pnl ?? 0) >= 0 ? "var(--v2-pos)" : "var(--v2-neg)" }}>
               {r.pnl == null ? "·" : `${r.pnl >= 0 ? "+" : ""}${r.pnl.toFixed(2)} ETH`}

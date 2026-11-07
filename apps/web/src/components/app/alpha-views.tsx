@@ -4,6 +4,7 @@ import { CaretDown, CaretLeft, Funnel, List, Rows, Star } from "@phosphor-icons/
 import { explorerAddress, getChain } from "@corvid/shared/chains";
 import { USE_API, apiGet, apiSend } from "@/lib/api";
 import { useSigned } from "@/components/auth/signed";
+import { WalletAvatar } from "@/components/app/wallet-avatar";
 
 // Tab "Live feed" dan "My lists" di /application/alpha. Live feed: GET /api/alpha/activity (trade wallet bertier yang diindeks worker,
 // disegarkan tiap 8 dtk). My lists: GET/PUT/DELETE /api/alpha/watchlists (daftar bawaan "Starred", butuh login; hanya mode API).
@@ -313,6 +314,7 @@ export function AlphaMyLists() {
               {list.map((w) => (
                 <div key={w.address} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px", borderBottom: "1px solid var(--v2-line-1)" }}>
                   <StarButton on onClick={() => void watched.toggle(w.address)} />
+                  <WalletAvatar address={w.address} size={24} />
                   <a className="num text-[13px] hover:underline" style={{ color: "var(--v2-t-1)" }} href={explorerAddress(MAINNET, w.address)} target="_blank" rel="noopener noreferrer">
                     {w.label ?? `${w.address.slice(0, 6)}…${w.address.slice(-4)}`}
                   </a>
