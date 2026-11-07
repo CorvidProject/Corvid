@@ -4,7 +4,7 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenCandles, tokenPricePoints, tokenTrades, tokenTrending, tokenWatch, tokens } from "@corvid/db";
-import { errText, refreshBoard, refreshCandles, refreshHot, refreshHotCharts, refreshMissingImages, sane, refreshSecurity, refreshStale, refreshTrades, runRetention, snapshotPrices } from "../src/ingest";
+import { errText, refreshBoard, refreshCandles, refreshHot, refreshHotCharts, refreshImagesGt, refreshMissingImages, sane, refreshSecurity, refreshStale, refreshTrades, runRetention, snapshotPrices } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
 import { createGoPlus } from "../src/sources/goplus";
@@ -16,6 +16,15 @@ const json = (body: string) => new Response(body, { status: 200, headers: { "con
 const fakeFetch = async (url: string) => {
   if (url.includes("/trending_pools")) return json(fx("gt-trending.json"));
   if (url.includes("/new_pools")) return json(fx("gt-new.json"));
+  if (url.includes("/tokens/multi/"))
+    return json(
+      JSON.stringify({
+        data: [
+          { attributes: { address: CASH, image_url: "https://assets.geckoterminal.com/cashcat.png" } },
+          { attributes: { address: "0x" + "9".repeat(40), image_url: "https://assets.geckoterminal.com/missing.png" } },
+        ],
+      }),
+    );
   if (url.includes("/ohlcv/")) return json(fx("gt-ohlcv.json"));
   if (url.includes("/trades")) return json(fx("gt-trades.json"));
   if (url.includes("api.gopluslabs.io/api/v1/token_security/4663")) return json(fx("goplus-cashcat.json"));
@@ -279,5 +288,22 @@ describe("errText", () => {
     expect(Number(t.change6hPct)).toBe(1); // nilai absurd tidak menimpa
     expect(Number(t.change24hPct)).toBe(-12.5); // nilai wajar dari respons yang sama tersimpan
     expect(t.updatedAt.getTime()).toBeGreaterThan(old.getTime());
+  });
+  it("refreshImagesGt: mengisi logo yang kosong dari GeckoTerminal, mengabaikan gambar placeholder, dan tidak mengulang yang sudah dicoba", async () => {
+    await created.db.update(tokens).set({ imageUrl: null, liquidityUsd: "50000" }).where(eq(tokens.mint, CASH));
+    const tried = new Map<string, number>();
+    const r1 = await refreshImagesGt(deps(), { tried });
+    expect(r1.filled).toBe(1);
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(t.imageUrl).toBe("https://assets.geckoterminal.com/cashcat.png");
+    // yang sudah dicoba tidak dicari lagi dalam jendela ulang
+    await created.db.update(tokens).set({ imageUrl: null }).where(eq(tokens.mint, CASH));
+    const r2 = await refreshImagesGt(deps(), { tried });
+    expect(r2.checked).toBe(0);
+    // logo yang sudah terisi tidak ditimpa
+    await created.db.update(tokens).set({ imageUrl: "https://example.com/own.png" }).where(eq(tokens.mint, CASH));
+    await refreshImagesGt(deps(), { tried: new Map(), retryHours: 0 });
+    const [t2] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(t2.imageUrl).toBe("https://example.com/own.png");
   });
 });

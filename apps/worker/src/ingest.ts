@@ -297,6 +297,41 @@ export async function snapshotPrices(db: Db, now = new Date(), opts: { everyMin?
   return res.rowCount ?? 0;
 }
 
+/** Waktu terakhir logo token dicari di GeckoTerminal (memori worker), supaya yang memang tak punya logo tidak dicari terus. */
+const imageTried = new Map<string, number>();
+
+/**
+ * Isi logo token yang masih kosong dari GeckoTerminal (batch 30 alamat per request). Token di papan dan yang bervolume tinggi
+ * didahulukan; yang sudah dicoba dalam `retryHours` jam terakhir dilewati.
+ */
+export async function refreshImagesGt(deps: Deps, opts: { limit?: number; retryHours?: number; tried?: Map<string, number> } = {}): Promise<{ checked: number; filled: number }> {
+  const now = (deps.now ?? (() => new Date()))();
+  const tried = opts.tried ?? imageTried;
+  const retryBefore = now.getTime() - (opts.retryHours ?? 6) * 3_600_000;
+  const boardSince = new Date(now.getTime() - 15 * 60_000);
+  const cands = await deps.db
+    .select({ mint: tokens.mint })
+    .from(tokens)
+    .where(and(isNull(tokens.imageUrl), isNotNull(tokens.poolId), sql`${tokens.liquidityUsd} > 1000`))
+    .orderBy(sql`(${tokens.id} in (select token_id from token_trending where snapshot_at > ${boardSince})) desc`, sql`${tokens.volumeUsd} desc nulls last`)
+    .limit(300);
+  const mints = cands.map((c) => c.mint).filter((m) => (tried.get(m) ?? 0) < retryBefore).slice(0, opts.limit ?? 60);
+  if (mints.length === 0) return { checked: 0, filled: 0 };
+  let found: Map<string, string>;
+  try {
+    found = await deps.gt.tokenImages(mints);
+  } catch (e) {
+    logOf(deps)(`logo GeckoTerminal gagal: ${errText(e)}`);
+    return { checked: mints.length, filled: 0 };
+  }
+  for (const m of mints) tried.set(m, now.getTime());
+  for (const [mint, url] of found) {
+    await deps.db.update(tokens).set({ imageUrl: url, updatedAt: now }).where(and(eq(tokens.mint, mint), isNull(tokens.imageUrl)));
+    await deps.db.update(memescopeCoins).set({ imageUrl: url }).where(and(eq(memescopeCoins.mint, mint), isNull(memescopeCoins.imageUrl)));
+  }
+  return { checked: mints.length, filled: found.size };
+}
+
 /**
  * Memescope Robinhood Chain: kurva launchpad (lihat sources/launchpads.ts). Progres = aset kuotasi yang terkumpul di kontrak
  * kurva (RPC mainnet) / ambang kelulusan; tahap menurut classifyCurve. Token ikut disimpan di tabel tokens supaya halaman

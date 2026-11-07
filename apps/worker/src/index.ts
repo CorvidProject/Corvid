@@ -1,6 +1,6 @@
 import { createDb } from "@corvid/db";
 import { z } from "zod";
-import { refreshBoard, refreshCandles, refreshLaunchpad, refreshHot, refreshHotCharts, refreshMissingImages, refreshSecurity, refreshStale, snapshotPrices, refreshTrades, runRetention, type Deps } from "./ingest";
+import { refreshBoard, refreshCandles, refreshLaunchpad, refreshHot, refreshHotCharts, refreshImagesGt, refreshMissingImages, refreshSecurity, refreshStale, snapshotPrices, refreshTrades, runRetention, type Deps } from "./ingest";
 import { createRpc, PONS, VIRTUALS } from "./sources/launchpads";
 import { pruneWallets, refreshWallets } from "./wallets";
 import { runAgentCycle } from "./runner";
@@ -15,6 +15,8 @@ const env = z
     DATABASE_URL: z.string().min(1),
     WORKER_BOARD_MS: z.coerce.number().int().min(10_000).default(180_000),
     /** Cari ulang logo token baru yang masih kosong (DexScreener belakangan memprosesnya). */
+    /** Logo dari GeckoTerminal untuk token yang kosong di DexScreener (30 token per request). */
+    WORKER_IMAGES_GT_MS: z.coerce.number().int().min(60_000).default(300_000),
     WORKER_IMAGES_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Segarkan harga/market cap token yang tidak lagi di papan trending/new. */
     WORKER_STALE_MS: z.coerce.number().int().min(30_000).default(60_000),
@@ -82,6 +84,7 @@ const timers = [
   every("board:trending", env.WORKER_BOARD_MS, () => refreshBoard(deps, "trending")),
   every("board:new", env.WORKER_BOARD_MS, () => refreshBoard(deps, "new")),
   every("images", env.WORKER_IMAGES_MS, () => refreshMissingImages(deps)),
+  every("images:gt", env.WORKER_IMAGES_GT_MS, () => refreshImagesGt(deps)),
   every("stale", env.WORKER_STALE_MS, () => refreshStale(deps, { olderThanMin: 1, limit: env.WORKER_STALE_LIMIT })),
   every("hot", env.WORKER_HOT_MS, () => refreshHot(deps)),
   every("hotcharts", env.WORKER_HOT_CHARTS_MS, () => refreshHotCharts(deps, ["15m"], { limit: 1 })),

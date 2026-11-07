@@ -175,6 +175,10 @@ export function parseOhlcv(json: unknown): Candle[] {
     .filter((c, i, all) => i === all.length - 1 || all[i + 1].bucketStart.getTime() !== c.bucketStart.getTime());
 }
 
+const tokenMultiSchema = z.object({
+  data: z.array(z.object({ attributes: z.object({ address: z.string(), image_url: z.string().nullable().optional() }).passthrough() }).passthrough()).optional(),
+});
+
 export type ChartInterval = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
 const TF: Record<ChartInterval, [string, number]> = {
   "1m": ["minute", 1],
@@ -199,6 +203,22 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     /** Pool se-jaringan menurut volume 24 jam (20 per halaman). */
     async topPools(page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/pools?page=${page}&sort=h24_volume_usd_desc`));
+    },
+    /**
+     * Logo token (batas 30 alamat per request) dari info token GeckoTerminal. DexScreener hanya punya logo untuk token
+     * berprofil; GeckoTerminal mencakup jauh lebih banyak. Gambar placeholder ("missing") dianggap tidak ada.
+     */
+    async tokenImages(addresses: string[]): Promise<Map<string, string>> {
+      const valid = [...new Set(addresses.map((a) => a.toLowerCase()))].filter((a) => evmAddress.safeParse(a).success);
+      const out = new Map<string, string>();
+      for (let i = 0; i < valid.length; i += 30) {
+        const json = await http.getJson(`${BASE}/tokens/multi/${valid.slice(i, i + 30).join(",")}`);
+        for (const row of tokenMultiSchema.parse(json).data ?? []) {
+          const url = row.attributes.image_url;
+          if (url && /^https:\/\//.test(url) && !/missing/i.test(url)) out.set(row.attributes.address.toLowerCase(), url);
+        }
+      }
+      return out;
     },
     async newPools(page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/new_pools?page=${page}`));

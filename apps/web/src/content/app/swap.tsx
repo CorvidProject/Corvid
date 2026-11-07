@@ -17,6 +17,8 @@ type SwapToken = {
   symbol: string;
   name: string;
   image: string | null;
+  /** Id pool utama dari API. 66 karakter (32 byte) = pool Uniswap v4; 42 karakter = pool v2/v3. */
+  poolId?: string | null;
   price?: number;
   marketCap?: number;
   change24h?: number;
@@ -27,7 +29,7 @@ const NATIVE: SwapToken = {
   mint: "0x0000000000000000000000000000000000000000",
   symbol: "ETH",
   name: "Ether",
-  image: null,
+  image: "/brand/eth.svg",
 };
 
 function allTokens(): SwapToken[] {
@@ -197,6 +199,15 @@ export function ApplicationSwapContent() {
     }
   }, []);
   const isEvm = !!token && EVM.test(token.mint);
+  // Token dari tautan/alamat bebas belum punya nama, simbol, dan logo: ambil dari API (token yang sudah terindeks).
+  const meta = useApi<{ token: { mint: string; symbol: string | null; name: string | null; image: string | null; poolId: string | null } }>(token && isEvm ? `/api/tokens/${token.mint}` : null);
+  useEffect(() => {
+    const d = meta.data?.token;
+    if (!d) return;
+    setToken((t) => (t && t.poolId === undefined && t.mint === d.mint.toLowerCase() ? { ...t, symbol: d.symbol?.trim() || t.symbol, name: d.name?.trim() || t.name, image: d.image ?? t.image, poolId: d.poolId } : t));
+  }, [meta.data]);
+  const v4Only = !!token?.poolId && token.poolId.length === 66;
+  const V4_MSG = "This token trades only on Uniswap v4. Corvid swaps support Uniswap v3 pools for now.";
   const sellAddr = (flipped ? token?.mint : NATIVE_ADDR) as Address;
   const buyAddr = (flipped ? NATIVE_ADDR : token?.mint) as Address;
 
@@ -450,7 +461,7 @@ export function ApplicationSwapContent() {
             </p>
           )}
           {err && (
-            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-neg)" }}>{err}</p>
+            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-neg)" }}>{v4Only && err.startsWith("No Uniswap v3 pool") ? V4_MSG : err}</p>
           )}
           {msg && (
             <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-pos)" }}>{msg}</p>

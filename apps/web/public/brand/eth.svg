@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="ETH">
+  <circle cx="16" cy="16" r="16" fill="#2b2d31"/>
+  <g transform="translate(0 0.5)">
+    <polygon points="16,5 9.2,16.2 16,13" fill="#c8cbd2"/>
+    <polygon points="16,5 22.8,16.2 16,13" fill="#ffffff"/>
+    <polygon points="9.2,17.4 16,21.4 16,14.2" fill="#9aa0ab"/>
+    <polygon points="22.8,17.4 16,21.4 16,14.2" fill="#c8cbd2"/>
+    <polygon points="9.2,18.9 16,27 16,22.9" fill="#9aa0ab"/>
+    <polygon points="22.8,18.9 16,27 16,22.9" fill="#c8cbd2"/>
+  </g>
+</svg>
