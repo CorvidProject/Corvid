@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppShell } from "@/components/app/app-shell";
 import { ApplicationAlphaContent } from "@/content/app/alpha";
 
-export const metadata: Metadata = { title: "Alpha Feed — Corvid" };
+export const metadata: Metadata = { title: "Alpha Feed | Corvid" };
 
 export default function Page() {
   return (

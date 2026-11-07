@@ -7,7 +7,7 @@ import freshTokens from "@/server/data/trending-robinhood-new.json";
 import { TokenAvatar } from "@/components/app/token-avatar";
 import { USE_API, useApi } from "@/lib/api";
 
-// Panel demo "Not a demo. This is the product, running." — data dari fixture (bentuk sama dengan API).
+// Panel demo "Not a demo. This is the product, running.". Data dari fixture (bentuk sama dengan API).
 const DOT = {
   fontFamily: "var(--font-dotmatrix), ui-monospace, monospace",
   letterSpacing: "0.02em",

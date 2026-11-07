@@ -273,7 +273,7 @@ export function AlphaLive() {
                   {a.wallet.slice(0, 6)}…{a.wallet.slice(-4)}
                 </a>
                 <span className="ml-auto num text-[13px]" style={{ color: "var(--v2-t-2)" }}>
-                  {a.eth === null ? "—" : `${a.eth.toFixed(a.eth >= 1 ? 2 : 3)} ETH`}
+                  {a.eth === null ? "-" : `${a.eth.toFixed(a.eth >= 1 ? 2 : 3)} ETH`}
                 </span>
                 <span className="num text-[12px] w-10 text-right" style={{ color: "var(--v2-t-4)" }}>
                   {ago(a.at, now)}

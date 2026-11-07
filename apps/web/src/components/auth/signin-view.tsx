@@ -134,7 +134,7 @@ export function SigninView() {
             className="mt-6 text-sm max-w-sm leading-relaxed"
             style={{ color: "rgba(255,255,255,0.55)" }}
           >
-            AI-powered trading intelligence — autonomous agents, real-time
+            AI-powered trading intelligence: autonomous agents, real-time
             signals, on-chain execution
           </p>
           <div className="mt-10 grid grid-cols-3 gap-3 w-full max-w-md">
@@ -261,7 +261,7 @@ export function SigninView() {
                 />
                 <span className="text-xs text-[rgba(10,10,15,0.45)] leading-relaxed group-hover:text-[rgba(10,10,15,0.60)] transition-colors">
                   I understand that all trading activities on {site.name} are at
-                  my own risk. The platform and its AI agents are tools — not
+                  my own risk. The platform and its AI agents are tools, not
                   financial advice.
                 </span>
               </label>

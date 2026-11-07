@@ -249,13 +249,13 @@ export function ApplicationPortfolioContent() {
                     </span>
                   </span>
                   <span className="pf-hide pf-r num" style={{ fontSize: 13, color: "var(--v2-t-2)" }}>
-                    {r.priceUsd === null ? "—" : usdPrice(r.priceUsd)}
+                    {r.priceUsd === null ? "-" : usdPrice(r.priceUsd)}
                   </span>
                   <span className={`pf-hide pf-r num ${toneCls(r.change24h)}`} style={{ fontSize: 13 }}>
-                    {r.change24h === null ? "—" : pct(r.change24h)}
+                    {r.change24h === null ? "-" : pct(r.change24h)}
                   </span>
                   <span className="pf-r">
-                    <span className="pf-val num">{r.valueUsd === null ? "—" : usd(r.valueUsd)}</span>
+                    <span className="pf-val num">{r.valueUsd === null ? "-" : usd(r.valueUsd)}</span>
                     {r.change24h !== null && (
                       <span className={`pf-mob num ${toneCls(r.change24h)}`} style={{ display: "block", fontSize: 12 }}>
                         {pct(r.change24h)}
@@ -288,5 +288,5 @@ export function ApplicationPortfolioContent() {
 }
 
 export function ApplicationPortfolioContentExtra() {
-  return <SignInGate title="Your Portfolio — one step away" sub="Sign in to see balances, agents and PnL across your wallet" />;
+  return <SignInGate title="Your Portfolio is one step away" sub="Sign in to see balances, agents and PnL across your wallet" />;
 }

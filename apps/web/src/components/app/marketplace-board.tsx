@@ -204,7 +204,7 @@ function Row({ a, rank, last, followed, onFollow, now }: { a: MarketAgent; rank:
       <div className="text-right num text-[13px]" style={{ color: "var(--v2-t-1)" }}>{compact(a.signals_count)}</div>
       <div className="text-right num text-[13px]" style={{ color: "var(--v2-t-1)" }}>{compact(a.trades_count)}</div>
       <div className="text-right num text-[13px] font-semibold" style={{ color: has ? (pnl >= 0 ? "var(--v2-pos)" : "var(--v2-neg)") : "var(--v2-t-4)" }}>
-        {has ? `${pnl >= 0 ? "+" : ""}${pnl.toFixed(2)}%` : "—"}
+        {has ? `${pnl >= 0 ? "+" : ""}${pnl.toFixed(2)}%` : "-"}
       </div>
       <div className="text-right num text-[13px]" style={{ color: "var(--v2-t-3)" }}>{compact(a.runs_count)}</div>
       <div className="text-right num text-[13px]" style={{ color: "var(--v2-t-3)" }}>{compact(a.clones_count ?? 0)}</div>
@@ -374,7 +374,7 @@ export function MarketplaceBoard() {
               {following ? "You're not following any agents yet" : agents.length && (q || type || mode || win !== "all") ? "No agents match these filters" : "No agents published yet"}
             </h3>
             <p className="text-[13px] mt-1 max-w-md mx-auto" style={{ color: "var(--v2-t-3)" }}>
-              {following ? "Follow agents from the Top or Trending tabs to see them here" : agents.length && (q || type || mode || win !== "all") ? "Try clearing the search or a filter" : "Be the first — build an agent, run it, then publish to the marketplace"}
+              {following ? "Follow agents from the Top or Trending tabs to see them here" : agents.length && (q || type || mode || win !== "all") ? "Try clearing the search or a filter" : "Be the first: build an agent, run it, then publish to the marketplace"}
             </p>
             {!following && !agents.length && (
               <Link href="/application/agents/new" className="btn-v2 btn-v2-primary btn-v2-sm inline-block mt-4">Create an agent</Link>

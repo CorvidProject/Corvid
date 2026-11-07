@@ -15,13 +15,13 @@ export const BUILDER_TOUR: TourStep[] = [
   {
     targetSelector: '[data-tour="pipeline-select"]',
     title: "Choose your pipeline",
-    description: "Select the type of agent — wallet tracker, token scanner, or AI trader",
+    description: "Select the type of agent: wallet tracker, token scanner, or AI trader",
     position: "right",
   },
   {
     targetSelector: '[data-tour="canvas"]',
     title: "Visual pipeline",
-    description: "Your agent's logic flow — from data source to notifications. Click any node to configure it",
+    description: "Your agent's logic flow, from data source to notifications. Click any node to configure it",
     position: "bottom",
   },
   {

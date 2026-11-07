@@ -136,7 +136,7 @@ export function ApplicationInboxContent() {
           <div className="flex items-center gap-2 shrink-0">
             <span
               className="inline-flex items-center gap-2 px-2.5 h-7 rounded-sm shrink-0"
-              title={signed ? "Fixture feed" : "Listening for activity — signals appear when sources are connected"}
+              title={signed ? "Fixture feed" : "Listening for activity. Signals appear when sources are connected"}
               style={{ border: "1px solid var(--v2-line-1)", background: "var(--v2-bg-0)" }}
             >
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: signed ? "var(--v2-pos)" : "var(--v2-t-4)" }}></span>
@@ -248,5 +248,5 @@ export function ApplicationInboxContent() {
 }
 
 export function ApplicationInboxContentExtra() {
-  return <SignInGate title="Your Inbox — one step away" sub="Sign in to stream signals, watch tokens and track smart wallets in real time" />;
+  return <SignInGate title="Your Inbox is one step away" sub="Sign in to stream signals, watch tokens and track smart wallets in real time" />;
 }

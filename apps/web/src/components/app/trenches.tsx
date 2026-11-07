@@ -52,7 +52,7 @@ const clean = (list: Raw[] | undefined): Tok[] =>
 
 const money = (n: number) =>
   !n
-    ? "—"
+    ? "-"
     : n >= 1e9
       ? `$${(n / 1e9).toFixed(2)}B`
       : n >= 1e6
@@ -62,7 +62,7 @@ const money = (n: number) =>
           : `$${n.toFixed(2)}`;
 
 function ago(ts: number, now: number) {
-  if (!ts || !now) return "—";
+  if (!ts || !now) return "-";
   const s = Math.max(0, now / 1000 - ts);
   if (s < 60) return `${Math.floor(s)}s ago`;
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
@@ -178,7 +178,7 @@ function Row({ t, kind, now }: { t: Tok; kind: "new" | "trending" | "volume"; no
                 <span>
                   <Label>LP </Label>
                   <span style={{ color: t.lpBurn >= 95 ? POS : t.lpBurn >= 50 ? "var(--v2-t-3)" : NEG }}>
-                    {t.lpBurn ? `${Math.round(t.lpBurn)}%` : "—"}
+                    {t.lpBurn ? `${Math.round(t.lpBurn)}%` : "-"}
                   </span>
                 </span>
                 <span>
@@ -215,7 +215,7 @@ function Row({ t, kind, now }: { t: Tok; kind: "new" | "trending" | "volume"; no
             )}
             <span>
               <Label>HOLD </Label>
-              <span style={{ color: "var(--v2-t-3)" }}>{t.holders || "—"}</span>
+              <span style={{ color: "var(--v2-t-3)" }}>{t.holders || "-"}</span>
             </span>
           </div>
         </div>

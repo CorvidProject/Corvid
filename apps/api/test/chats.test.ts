@@ -30,12 +30,18 @@ let appCapped: Awaited<ReturnType<typeof buildApp>>;
 let key: KeyLike;
 const seen: { system: string; messages: LlmMessage[] }[] = [];
 let failNext = false;
+let dashNext = false; // jawaban model memuat em dash (U+2014)
+const EM = String.fromCharCode(0x2014);
 const llm: LlmClient = {
   async complete(system, messages) {
     seen.push({ system, messages });
     if (failNext) {
       failNext = false;
       throw new LlmError("llm_http_500");
+    }
+    if (dashNext) {
+      dashNext = false;
+      return `Risk looks low ${EM} liquidity is deep${EM}but check holders`;
     }
     return "mock answer";
   },
@@ -122,6 +128,18 @@ describe("chat", () => {
     const id = await newChat(A);
     await send(id, A, "smart money today");
     expect(seen.at(-1)!.system).toContain("SMART MONEY");
+  });
+
+  it("aturan proyek tanpa em dash: prompt melarangnya dan jawaban model dibersihkan", async () => {
+    const id = await newChat(B);
+    expect(seen.at(-1)?.system ?? "").not.toContain(EM);
+    dashNext = true;
+    const r = await send(id, B, "any message");
+    expect(r.statusCode).toBe(200);
+    const answer = r.json().messages.at(-1).content as string;
+    expect(answer).not.toContain(EM);
+    expect(answer).toBe("Risk looks low, liquidity is deep, but check holders");
+    expect(seen.at(-1)!.system).toMatch(/Never use em dashes/);
   });
 
   it("riwayat percakapan ikut dikirim ke model", async () => {

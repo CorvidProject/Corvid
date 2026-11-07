@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppShell } from "@/components/app/app-shell";
 import { ApplicationMarketplaceContent } from "@/content/app/marketplace";
 
-export const metadata: Metadata = { title: "Agent Marketplace — Corvid" };
+export const metadata: Metadata = { title: "Agent Marketplace | Corvid" };
 
 export default function Page() {
   return (

@@ -5,7 +5,7 @@ import {
   ApplicationPortfolioContentExtra,
 } from "@/content/app/portfolio";
 
-export const metadata: Metadata = { title: "Portfolio — Corvid" };
+export const metadata: Metadata = { title: "Portfolio | Corvid" };
 
 export default function Page() {
   return (

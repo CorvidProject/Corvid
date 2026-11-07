@@ -112,7 +112,7 @@ export function DocsShell({ children }: { children: ReactNode }) {
         .docs-prose pre code { background: transparent; padding: 0; color: rgba(255,255,255,0.85); }
         .docs-prose ul { margin: 0.5rem 0 1.25rem 0; padding: 0; list-style: none; }
         .docs-prose ul li { position: relative; padding: 0.2rem 0 0.2rem 1.5rem; }
-        .docs-prose ul li::before { content: "—"; position: absolute; left: 0; color: var(--v2-accent-text); font-family: var(--font-jetbrains-mono), ui-monospace, monospace; }
+        .docs-prose ul li::before { content: "-"; position: absolute; left: 0; color: var(--v2-accent-text); font-family: var(--font-jetbrains-mono), ui-monospace, monospace; }
       `}</style>
     </div>
   );

@@ -48,7 +48,7 @@ const MAINNET = getChain("mainnet"); // data pasar selalu dari mainnet
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const eth = (n: number) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n).toFixed(Math.abs(n) >= 10 ? 1 : 2)} ETH`;
 function agoText(ts: number | null, now: number) {
-  if (!ts) return "—";
+  if (!ts) return "-";
   const s = Math.max(0, Math.floor(now / 1000 - ts));
   if (s < 60) return `${s}s`;
   if (s < 3600) return `${Math.floor(s / 60)}m`;
@@ -91,7 +91,7 @@ function WalletRow({ w, now }: { w: ApiWallet; now: number }) {
       </td>
       <td className="canvas-td num tabular-nums" style={{ textAlign: "right" }}>
         {w.winRate === null ? (
-          <span style={{ color: "var(--v2-t-4)" }}>—</span>
+          <span style={{ color: "var(--v2-t-4)" }}>-</span>
         ) : (
           <span className="font-semibold" style={{ color: w.winRate >= 50 ? "var(--v2-pos)" : "var(--v2-neg)" }}>
             {Math.round(w.winRate)}%
@@ -110,7 +110,7 @@ function WalletRow({ w, now }: { w: ApiWallet; now: number }) {
         {w.tokensTraded}
       </td>
       <td className="canvas-td num tabular-nums hidden lg:table-cell" style={{ textAlign: "right", color: "var(--v2-t-3)" }}>
-        {w.avgHoldHours === null ? "—" : w.avgHoldHours < 1 ? `${Math.round(w.avgHoldHours * 60)}m` : `${w.avgHoldHours.toFixed(1)}h`}
+        {w.avgHoldHours === null ? "-" : w.avgHoldHours < 1 ? `${Math.round(w.avgHoldHours * 60)}m` : `${w.avgHoldHours.toFixed(1)}h`}
       </td>
       <td className="canvas-td num tabular-nums hidden sm:table-cell" style={{ textAlign: "right", color: "var(--v2-t-4)" }}>
         {agoText(w.lastActive, now)}

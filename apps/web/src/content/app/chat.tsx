@@ -54,7 +54,7 @@ const CHIPS: { icon: string; label: string; prompt?: string; href?: string }[] =
   { icon: PATHS.bot, label: "Build an agent", href: "/application/agents/new" },
 ];
 
-const NOTE = "\n\n— Simulated reply (fixture). Live market data and agents connect when the backend is available.";
+const NOTE = "\n\nSimulated reply (fixture). Live market data and agents connect when the backend is available.";
 
 function reply(q: string): string {
   const s = q.toLowerCase();

@@ -25,7 +25,7 @@ const MOBILE_TABS = [
 
 function StatusBar() {
   // Harga ETH dari /api/prices/native (CoinGecko lewat API kita). Status Live/Offline = hasil pengambilan itu (API terjangkau atau tidak).
-  const [ethPrice, setEthPrice] = useState<string>("—");
+  const [ethPrice, setEthPrice] = useState<string>("-");
   const [online, setOnline] = useState<boolean | null>(null);
   const signed = useSigned();
   const { plan } = usePlan(signed);

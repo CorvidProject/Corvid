@@ -15,7 +15,7 @@ import {
   errorSchema,
 } from "@corvid/shared";
 import type { Db } from "../app";
-import { buildContext, SYSTEM_PROMPT } from "../chat-context";
+import { buildContext, stripEmDash, SYSTEM_PROMPT } from "../chat-context";
 import { LlmError, type LlmClient } from "../llm";
 import { RateLimiter } from "../ratelimit";
 import { consumeAnswer, loadAllowance, pickSource } from "../plan";
@@ -137,10 +137,12 @@ export const chatRoutes =
         if (!pickSource(await loadAllowance(db, uid, limits), kind)) return reply.code(402).send({ error: "no_credits" });
         let answer: string;
         try {
-          answer = await model.complete(`${SYSTEM_PROMPT}\n\nDATA:\n${ctx.data}`, [
-            ...prior.reverse().map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
-            { role: "user", content },
-          ]);
+          answer = stripEmDash(
+            await model.complete(`${SYSTEM_PROMPT}\n\nDATA:\n${ctx.data}`, [
+              ...prior.reverse().map((m) => ({ role: m.role as "user" | "assistant", content: m.content })),
+              { role: "user", content },
+            ]),
+          );
         } catch (e) {
           req.log.warn({ err: e instanceof LlmError ? e.message : "llm_failed" }, "chat llm error");
           return reply.code(502).send({ error: "llm_error" });

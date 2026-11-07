@@ -232,7 +232,7 @@ export function summarize(key: PipelineKey, mode: Mode, c: Config): { title: str
     const max = c.max_eth_per_copy || c.max_eth_per_trade;
     if (max) lines.push(`Each trade uses up to ${max} ETH`);
     if (c.slippage_bps) lines.push(`Slippage tolerance ${(Number(c.slippage_bps) / 100).toFixed(1)}%`);
-    if (c.take_profit_pct || c.stop_loss_pct) lines.push(`TP ${c.take_profit_pct || "—"}% · SL ${c.stop_loss_pct || "—"}%`);
+    if (c.take_profit_pct || c.stop_loss_pct) lines.push(`TP ${c.take_profit_pct || "-"}% · SL ${c.stop_loss_pct || "-"}%`);
   }
   return { title, lines };
 }

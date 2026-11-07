@@ -14,8 +14,14 @@ export const SYSTEM_PROMPT = [
   "Answer ONLY from the DATA block below. If something is not in DATA, say you do not have it. Never invent prices, holders, wallets, or scores.",
   "Corvid's risk score (0-100, higher = riskier) and smart-wallet tiers are Corvid's own estimates from indexed data, not official figures. Smart-wallet stats cover a short indexed window, not full history.",
   "Be concise (under 180 words), plain text, no markdown tables. Reply in the user's language.",
+  "Never use em dashes (the long dash character). Use a comma, colon, or period instead.",
   "You cannot trade or move funds. Never give financial advice; end token assessments with a one-line reminder that this is not financial advice.",
 ].join("\n");
+
+/** Aturan proyek: tanpa em dash. Prompt sudah melarangnya; ini pengaman bila model tetap menulisnya. */
+export function stripEmDash(text: string): string {
+  return text.replace(/\s*\u2014\s*/g, ", ").replace(/,\s*,/g, ",");
+}
 
 const usd = (n: number | null) => (n === null ? "unknown" : n >= 1 ? `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}` : `$${n.toPrecision(3)}`);
 const pct = (n: number | null) => (n === null ? "unknown" : `${n.toFixed(1)}%`);

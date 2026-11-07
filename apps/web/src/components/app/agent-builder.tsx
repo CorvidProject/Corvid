@@ -253,7 +253,7 @@ export function AgentBuilder() {
       { id: "network", label: "Robinhood Chain", sub: "tap to change", x: 300, y: 200, w: 92, size: 92, kind: "network" },
       { id: first, label: first === "scan" ? "Scan" : "Watch", sub: nodeSubtitle(first, pipe, mode, cfg), x: 560, y: 200, w: 92, size: 92, kind: "trigger" },
       { id: "filter", label: pipe === TOKEN_PIPE ? "Trigger" : "Filter", sub: nodeSubtitle("filter", pipe, mode, cfg), x: 780, y: 200, w: 116, size: 92, kind: "step" },
-      { id: "execute", label: "Execute", sub: nodeSubtitle("execute", pipe, mode, cfg), sub2: mode === "signal" ? "No trades executed" : cfg.take_profit_pct ? `TP ${cfg.take_profit_pct}% · SL ${cfg.stop_loss_pct || "—"}%` : undefined, x: 1000, y: 200, w: 99, size: 92, kind: "step" },
+      { id: "execute", label: "Execute", sub: nodeSubtitle("execute", pipe, mode, cfg), sub2: mode === "signal" ? "No trades executed" : cfg.take_profit_pct ? `TP ${cfg.take_profit_pct}% · SL ${cfg.stop_loss_pct || "-"}%` : undefined, x: 1000, y: 200, w: 99, size: 92, kind: "step" },
       { id: "notify", label: "Notify", sub: telegram ? "In-App + Telegram" : "In-App", x: 1220, y: 200, w: 92, size: 92, kind: "step" },
     ];
     return n;
@@ -374,7 +374,7 @@ export function AgentBuilder() {
           </div>
           <div className="flex-1 overflow-y-auto">
             <div className="px-3 pt-3">
-              <p className="text-[13px] px-2 py-3" style={{ color: "var(--v2-t-3)" }}>No pipelines yet — pick a quick start below</p>
+              <p className="text-[13px] px-2 py-3" style={{ color: "var(--v2-t-3)" }}>No pipelines yet. Pick a quick start below</p>
             </div>
             <div className="mx-4 my-3 h-px" style={{ background: "var(--v2-line-1)" }}></div>
             <div className="px-3 pb-4">
@@ -437,9 +437,9 @@ export function AgentBuilder() {
             </button>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-[13px] leading-relaxed whitespace-nowrap opacity-0 pointer-events-none group-hover/mode:opacity-100 transition-opacity z-50" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
               {isTrading ? (
-                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong> — {LIVE ? "executes real trades with ETH" : "simulated trades only (live trading is locked)"}<br />Click to switch to signal-only</span>
+                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong>: {LIVE ? "executes real trades with ETH" : "simulated trades only (live trading is locked)"}<br />Click to switch to signal-only</span>
               ) : (
-                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-t-1)" }}>Signal mode</strong> — alerts only, no trades executed<br />Click to switch to auto-trading</span>
+                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-t-1)" }}>Signal mode</strong>: alerts only, no trades executed<br />Click to switch to auto-trading</span>
               )}
             </div>
           </div>
@@ -670,7 +670,7 @@ export function AgentBuilder() {
                       {isTrading && (
                         <div className="flex items-center gap-1.5 text-[12px] pt-1" style={{ color: "var(--v2-accent-text)" }}>
                           <Warning size={12} weight="fill" />
-                          {LIVE ? "Live trading" : "Simulated trading (live is locked)"} — {maxLive ? `up to ${maxLive} ETH per trade${LIVE ? " from your wallet" : ""}` : "set a per-trade limit before you deploy"}
+                          {LIVE ? "Live trading" : "Simulated trading (live is locked)"}: {maxLive ? `up to ${maxLive} ETH per trade${LIVE ? " from your wallet" : ""}` : "set a per-trade limit before you deploy"}
                         </div>
                       )}
                     </div>

@@ -7,7 +7,7 @@ import { cleanTokens, EMPTY_FILTERS, FilterBar, IntervalControls, TrendingRows, 
 
 // Data pasar diambil ulang tiap 20 detik (worker memperbarui sumbernya tiap menit).
 const REFRESH_MS = 20_000;
-const fmtMcap = (n: number | null) => (n === null ? "—" : n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(2)}K` : `${n.toFixed(0)}`);
+const fmtMcap = (n: number | null) => (n === null ? "-" : n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(2)}K` : `${n.toFixed(0)}`);
 
 function TerminalInner() {
   const params = useSearchParams();

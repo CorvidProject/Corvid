@@ -71,7 +71,7 @@ export function ApplicationSettingsContent() {
             Unlock this feature
           </h3>
           <p className="text-[14px] leading-relaxed mb-8 max-w-[340px]" style={{ color: "var(--v2-t-3)" }}>
-            Free account — 25 credits included
+            Free account: 25 credits included
           </p>
           <button data-auth-open="signup" className="btn-v2 btn-v2-primary h-11 px-7 text-[14px] font-semibold">
             Create account

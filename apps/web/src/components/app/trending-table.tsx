@@ -185,10 +185,10 @@ export function applyFilters(list: Tok[], f: Filters, now: number) {
 
 /* ---------- format ---------- */
 const money = (n: number) =>
-  !n ? "—" : n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `$${(n / 1e3).toFixed(2)}K` : `$${n.toFixed(2)}`;
+  !n ? "-" : n >= 1e9 ? `$${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `$${(n / 1e3).toFixed(2)}K` : `$${n.toFixed(2)}`;
 const price = (n: number) => (n >= 1 ? `$${n.toFixed(2)}` : n >= 0.01 ? `$${n.toFixed(4)}` : `$${Number(n.toPrecision(4)).toString().includes("e") ? n.toFixed(8) : Number(n.toPrecision(4))}`);
 function ago(ts: number, now: number) {
-  if (!ts || !now) return "—";
+  if (!ts || !now) return "-";
   const s = Math.max(0, now / 1000 - ts);
   if (s < 60) return `${Math.floor(s)}s ago`;
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
@@ -557,13 +557,13 @@ function DesktopRow({ t, interval, now, watched, onWatch }: { t: Tok; interval: 
         </div>
       </div>
       <div className="num text-right text-[12px]" style={{ color: (t.top10 ?? 0) >= 50 ? "var(--v2-neg)" : (t.top10 ?? 0) >= 30 ? "var(--v2-warn)" : "var(--v2-t-2)" }}>
-        {t.top10 == null ? "—" : `${Math.round(t.top10)}%`}
+        {t.top10 == null ? "-" : `${Math.round(t.top10)}%`}
       </div>
       <div className="num text-right text-[12px]" style={{ color: (t.devPct ?? 0) >= 10 ? "var(--v2-neg)" : "var(--v2-t-2)" }}>
-        {t.devPct == null ? "—" : `${Math.round(t.devPct)}%`}
+        {t.devPct == null ? "-" : `${Math.round(t.devPct)}%`}
       </div>
       <div className="num text-right text-[12px]" style={{ color: "var(--v2-t-2)" }}>{t.buyTax}/{t.sellTax}</div>
-      <span className="num text-right text-[13px]" style={{ color: "var(--v2-t-2)" }}>{t.holders ? t.holders.toLocaleString("en-US") : "—"}</span>
+      <span className="num text-right text-[13px]" style={{ color: "var(--v2-t-2)" }}>{t.holders ? t.holders.toLocaleString("en-US") : "-"}</span>
       <span className="relative z-[1] min-w-0"><Signals t={t} /></span>
       <span className="relative z-[1]">
         <div className="flex items-center gap-1.5 justify-end">
@@ -620,9 +620,9 @@ function MobileCard({ t, interval, now }: { t: Tok; interval: Interval; now: num
       </div>
       <div className="mt-2.5 flex items-center gap-x-3 gap-y-1 flex-wrap border-t hairline pt-2.5 text-[11px] pointer-events-none" style={{ color: "var(--v2-t-3)" }}>
         <Signals t={t} />
-        <span className="num">Top 10 {t.top10 == null ? "—" : `${Math.round(t.top10)}%`}</span>
+        <span className="num">Top 10 {t.top10 == null ? "-" : `${Math.round(t.top10)}%`}</span>
         <span className="num">Tax {t.buyTax}/{t.sellTax}</span>
-        <span className="num">{t.holders ? t.holders.toLocaleString("en-US") : "—"} holders</span>
+        <span className="num">{t.holders ? t.holders.toLocaleString("en-US") : "-"} holders</span>
       </div>
       <div className="relative z-[1] mt-2.5 flex items-center gap-1.5 border-t hairline pt-2.5">
         <a className="px-2.5 py-1.5 rounded-sm text-[11px]" href={`/application/agents/new?template=token_trading&token_mint=${t.mint}&symbol=${encodeURIComponent(t.symbol.trim())}&start=1`} style={{ color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }}>Watch</a>

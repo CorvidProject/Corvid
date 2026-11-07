@@ -384,7 +384,7 @@ export function Agents() {
                           className="font-mono text-[12.5px] font-semibold tabular-nums mt-0.5"
                           style={{ color: "#ffffff" }}
                         >
-                          —
+                          -
                         </div>
                       </div>
                       <div>
@@ -398,7 +398,7 @@ export function Agents() {
                           className="font-mono text-[12.5px] font-semibold tabular-nums mt-0.5"
                           style={{ color: "#ffffff" }}
                         >
-                          —
+                          -
                         </div>
                       </div>
                       <div>
@@ -412,7 +412,7 @@ export function Agents() {
                           className="font-mono text-[12.5px] font-semibold tabular-nums mt-0.5"
                           style={{ color: "#ffffff" }}
                         >
-                          —
+                          -
                         </div>
                       </div>
                     </div>

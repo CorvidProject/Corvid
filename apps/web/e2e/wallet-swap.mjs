@@ -68,7 +68,7 @@ const browser = await chromium.launch();
 const results = [];
 const check = (label, ok, extra = "") => {
   results.push({ label, ok });
-  log(`${ok ? "PASS" : "FAIL"}  ${label}${extra ? "  — " + extra : ""}`);
+  log(`${ok ? "PASS" : "FAIL"}  ${label}${extra ? "  | " + extra : ""}`);
 };
 
 // ===== Sesi A: kunci acak sungguhan, uji connect + login SIWE + swap =====

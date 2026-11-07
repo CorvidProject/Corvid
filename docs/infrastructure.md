@@ -2,7 +2,7 @@
 
 Env vars (tanpa nilai): lihat `.env.example`.
 
-## Vercel (frontend) — dibuat 2026-11-04
+## Vercel (frontend), dibuat 2026-11-04
 
 | Item | Nilai |
 | --- | --- |
@@ -24,7 +24,7 @@ vercel deploy --prod --yes
 
 `.vercelignore` di ROOT membuang `/legacy`, `/docs`, `/.claude`, `/.githooks` dari upload. Pola wajib diawali `/`; tanpa itu `docs` ikut membuang `apps/web/src/app/docs`.
 
-## Supabase — dibuat 2026-11-05 (oleh pemilik, lewat dashboard)
+## Supabase, dibuat 2026-11-05 (oleh pemilik, lewat dashboard)
 
 | Item | Nilai |
 | --- | --- |
@@ -37,7 +37,7 @@ vercel deploy --prod --yes
 
 Nama env (tanpa nilai): backend `SUPABASE_URL`, `DATABASE_URL` (direct/session, bukan transaction pooler), opsional `SUPABASE_JWT_SECRET` (hanya project lama dengan HS256); frontend `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Service role key tidak dipakai di mana pun.
 
-## Railway — dibuat oleh pemilik 2026-11-05
+## Railway, dibuat oleh pemilik 2026-11-05
 
 | Item | Nilai |
 | --- | --- |
