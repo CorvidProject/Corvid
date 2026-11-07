@@ -122,6 +122,46 @@ async function evaluatedMints(deps: Deps, agentId: number, since: Date): Promise
   return new Set(rows.map((r) => r.mint).filter(Boolean));
 }
 
+/** Pemicu pipeline token_trading menurut `trigger_type` builder. Tanpa trigger_type (agent lama/API) = lonjakan harga, perilaku awal. */
+async function evalTrigger(deps: Deps, a: AgentRow, t: TokenRow, cfg: Record<string, string>): Promise<{ hit: boolean; note: string }> {
+  const type = cfg.trigger_type || "price_surge";
+  const threshold = cfgNum(cfg, "trigger_threshold") ?? 5;
+  const move = num(t.change1hPct) ?? 0;
+  switch (type) {
+    case "price_drop":
+      return move <= -threshold ? { hit: true, note: `1h move ${move}%` } : { hit: false, note: `1h move ${move}% has not dropped ${threshold}%` };
+    case "percent_change":
+      return Math.abs(move) >= threshold ? { hit: true, note: `1h move ${move}%` } : { hit: false, note: `1h move ${move}% is within the ${threshold}% band` };
+    case "volume_spike": {
+      const mult = cfgNum(cfg, "volume_multiplier") ?? 5;
+      const v1h = num(t.volume1hUsd);
+      const v24 = num(t.volumeUsd);
+      if (v1h === null || !v24) return { hit: false, note: "no volume data yet" };
+      const ratio = v1h / (v24 / 24);
+      const r = Math.round(ratio * 10) / 10;
+      return ratio >= mult ? { hit: true, note: `1h volume ${r}× the hourly average` } : { hit: false, note: `1h volume ${r}× the hourly average is below the ${mult}× trigger` };
+    }
+    case "lp_drop": {
+      const limit = cfgNum(cfg, "lp_drop_threshold") ?? 30;
+      const cur = num(t.liquidityUsd);
+      // Pembanding = likuiditas yang dicatat run sebelumnya milik agent ini (belum ada riwayat likuiditas global).
+      const [prev] = await deps.db
+        .select({ liq: sql<string | null>`${agentRunSteps.stepValues}->>'liquidity'` })
+        .from(agentRunSteps)
+        .innerJoin(agentRuns, eq(agentRuns.id, agentRunSteps.runId))
+        .where(and(eq(agentRuns.agentId, a.id), eq(agentRunSteps.stepName, "market"), sql`${agentRunSteps.stepValues}->>'mint' = ${t.mint}`, sql`${agentRunSteps.stepValues}->>'liquidity' is not null`))
+        .orderBy(desc(agentRuns.ranAt))
+        .limit(1);
+      const before = num(prev?.liq);
+      if (cur === null || !before) return { hit: false, note: "no earlier liquidity reading yet, watching" };
+      const drop = Math.round(((before - cur) / before) * 1000) / 10;
+      return drop >= limit ? { hit: true, note: `liquidity down ${drop}% since the last check` } : { hit: false, note: `liquidity change ${-drop}% is within the ${limit}% limit` };
+    }
+    default:
+      return move >= threshold ? { hit: true, note: `1h move ${move}%` } : { hit: false, note: `1h move ${move}% is below the ${threshold}% trigger` };
+  }
+}
+
 async function findCandidates(deps: Deps, a: AgentRow, now: Date): Promise<Candidate[]> {
   const cfg = a.config as Record<string, string>;
   const ago = (ms: number) => new Date(now.getTime() - ms);
@@ -153,9 +193,8 @@ async function findCandidates(deps: Deps, a: AgentRow, now: Date): Promise<Candi
     if (seen.has(mint)) return [];
     const [t] = await deps.db.select().from(tokens).where(eq(tokens.mint, mint)).limit(1);
     if (!t) return [{ token: null, mint, note: "token not indexed yet", notTriggered: "token is not indexed yet" }];
-    const threshold = cfgNum(cfg, "trigger_threshold") ?? 5;
-    const move = num(t.change1hPct) ?? 0;
-    return [{ token: t, mint, note: `1h move ${move}%`, notTriggered: move >= threshold ? undefined : `1h move ${move}% is below the ${threshold}% trigger` }];
+    const ev = await evalTrigger(deps, a, t, cfg);
+    return [{ token: t, mint, note: ev.note, notTriggered: ev.hit ? undefined : ev.note }];
   }
 
   if (a.pipeline === "follow_wallet") {

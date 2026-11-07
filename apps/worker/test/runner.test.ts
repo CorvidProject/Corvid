@@ -289,3 +289,65 @@ describe("pengikut agent marketplace", () => {
     expect(await db().select().from(notifications).where(eq(notifications.profileId, GONE))).toHaveLength(0);
   });
 });
+
+describe("trigger_type token_trading", () => {
+  const T = { drop: "0x00000000000000000000000000000000000000d1", spike: "0x00000000000000000000000000000000000000d2", lp: "0x00000000000000000000000000000000000000d3" };
+  const mk = (cfg: Record<string, string>) => mkAgent({ name: "Trig", pipeline: "token_trading", mode: "signal", config: cfg });
+  const first = async (id: number) => (await runsOf(id))[0];
+
+  beforeAll(async () => {
+    const base = { lastSeenAt: new Date(), decimals: 18, dex: "uniswap", priceUsd: "1", riskScore: 5 };
+    await db().insert(tokens).values([
+      { ...base, mint: T.drop, symbol: "DROP", liquidityUsd: "50000", volumeUsd: "24000", volume1hUsd: "1000", change1hPct: "-8" },
+      { ...base, mint: T.spike, symbol: "SPIKE", liquidityUsd: "50000", volumeUsd: "24000", volume1hUsd: "6000", change1hPct: "0.5" },
+      { ...base, mint: T.lp, symbol: "LPD", liquidityUsd: "200000", volumeUsd: "24000", volume1hUsd: "1000", change1hPct: "0" },
+    ]);
+  });
+
+  it("price_drop memicu pada penurunan, bukan pada kenaikan", async () => {
+    const hit = await mk({ token_mint: T.drop, trigger_type: "price_drop", trigger_threshold: "5" });
+    const miss = await mk({ token_mint: M.good, trigger_type: "price_drop", trigger_threshold: "5" }); // GOOD naik 12%
+    await runAgentCycle(deps());
+    expect((await first(hit.id)).ended).toBe("passed");
+    const r = await first(miss.id);
+    expect(r.ended).toBe("stopped");
+    expect(r.steps[0].detail).toMatch(/has not dropped 5%/);
+    await stop(hit.id);
+    await stop(miss.id);
+  });
+
+  it("price_surge tidak memicu pada penurunan; percent_change memicu pada keduanya", async () => {
+    const surge = await mk({ token_mint: T.drop, trigger_type: "price_surge", trigger_threshold: "5" });
+    const pct = await mk({ token_mint: T.drop, trigger_type: "percent_change", trigger_threshold: "5" });
+    await runAgentCycle(deps({ now: () => new Date(Date.now() + 3 * 3600_000) }));
+    expect((await first(surge.id)).ended).toBe("stopped");
+    expect((await first(pct.id)).ended).toBe("passed");
+    await stop(surge.id);
+    await stop(pct.id);
+  });
+
+  it("volume_spike membandingkan volume 1 jam dengan rata-rata per jam", async () => {
+    const hit = await mk({ token_mint: T.spike, trigger_type: "volume_spike", volume_multiplier: "5" }); // 6000 / (24000/24) = 6x
+    const miss = await mk({ token_mint: T.spike, trigger_type: "volume_spike", volume_multiplier: "10" });
+    await runAgentCycle(deps({ now: () => new Date(Date.now() + 6 * 3600_000) }));
+    expect((await first(hit.id)).ended).toBe("passed");
+    const r = await first(miss.id);
+    expect(r.ended).toBe("stopped");
+    expect(r.steps[0].detail).toMatch(/below the 10× trigger/);
+    await stop(hit.id);
+    await stop(miss.id);
+  });
+
+  it("lp_drop: run pertama hanya mencatat pembanding; run berikutnya memicu bila likuiditas turun cukup", async () => {
+    const a = await mk({ token_mint: T.lp, trigger_type: "lp_drop", lp_drop_threshold: "30" });
+    await runAgentCycle(deps({ now: () => new Date(Date.now() + 9 * 3600_000) }));
+    expect((await first(a.id)).steps[0].detail).toMatch(/no earlier liquidity reading/);
+    await db().update(tokens).set({ liquidityUsd: "100000" }).where(eq(tokens.mint, T.lp)); // turun 50%
+    await runAgentCycle(deps({ now: () => new Date(Date.now() + 11 * 3600_000) }));
+    const runs = await runsOf(a.id);
+    expect(runs).toHaveLength(2);
+    expect(runs[1].ended).toBe("passed");
+    expect(runs[1].steps[0].detail).toMatch(/liquidity down 50%/);
+    await stop(a.id);
+  });
+});
