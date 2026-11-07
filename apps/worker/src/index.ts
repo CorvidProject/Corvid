@@ -1,6 +1,6 @@
 import { createDb } from "@corvid/db";
 import { z } from "zod";
-import { refreshBoard, refreshCandles, refreshLaunchpad, refreshMissingImages, refreshSecurity, refreshTrades, runRetention, type Deps } from "./ingest";
+import { refreshBoard, refreshCandles, refreshLaunchpad, refreshMissingImages, refreshSecurity, refreshStale, refreshTrades, runRetention, type Deps } from "./ingest";
 import { createRpc, PONS, VIRTUALS } from "./sources/launchpads";
 import { pruneWallets, refreshWallets } from "./wallets";
 import { runAgentCycle } from "./runner";
@@ -16,6 +16,8 @@ const env = z
     WORKER_BOARD_MS: z.coerce.number().int().min(10_000).default(120_000),
     /** Cari ulang logo token baru yang masih kosong (DexScreener belakangan memprosesnya). */
     WORKER_IMAGES_MS: z.coerce.number().int().min(60_000).default(300_000),
+    /** Segarkan harga/market cap token yang tidak lagi di papan trending/new. */
+    WORKER_STALE_MS: z.coerce.number().int().min(30_000).default(120_000),
     WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(600_000),
@@ -71,6 +73,7 @@ const timers = [
   every("board:trending", env.WORKER_BOARD_MS, () => refreshBoard(deps, "trending")),
   every("board:new", env.WORKER_BOARD_MS, () => refreshBoard(deps, "new")),
   every("images", env.WORKER_IMAGES_MS, () => refreshMissingImages(deps)),
+  every("stale", env.WORKER_STALE_MS, () => refreshStale(deps)),
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),

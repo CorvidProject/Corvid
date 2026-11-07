@@ -144,6 +144,54 @@ export async function refreshMissingImages(deps: Deps, opts: { maxAgeHours?: num
 }
 
 /**
+ * Token yang sudah keluar dari papan trending/new tidak lagi disentuh refreshBoard, jadi harga, market cap, dan likuiditasnya
+ * membeku. Segarkan yang paling lama tidak diperbarui lewat DexScreener (batch). `lastSeenAt` tidak diubah supaya retensi
+ * tetap membersihkan token yang sudah mati.
+ */
+export async function refreshStale(deps: Deps, opts: { olderThanMin?: number; limit?: number } = {}): Promise<{ checked: number; updated: number }> {
+  const now = (deps.now ?? (() => new Date()))();
+  const before = new Date(now.getTime() - (opts.olderThanMin ?? 5) * 60_000);
+  const rows = await deps.db
+    .select({ mint: tokens.mint })
+    .from(tokens)
+    .where(and(isNotNull(tokens.poolId), sql`${tokens.updatedAt} < ${before}`))
+    .orderBy(sql`${tokens.updatedAt} asc`)
+    .limit(opts.limit ?? 90);
+  if (rows.length === 0) return { checked: 0, updated: 0 };
+  let ds: DsToken[] = [];
+  try {
+    ds = await deps.ds.tokens(rows.map((r) => r.mint));
+  } catch (e) {
+    logOf(deps)(`dexscreener gagal (stale): ${(e as Error).message}`);
+    return { checked: rows.length, updated: 0 };
+  }
+  for (const t of ds) {
+    const set: Record<string, unknown> = { updatedAt: now };
+    const put = (k: string, v: unknown) => {
+      if (v !== null && v !== undefined) set[k] = v;
+    };
+    put("priceUsd", t.priceUsd);
+    put("marketCapUsd", t.marketCapUsd);
+    put("liquidityUsd", t.liquidityUsd);
+    put("volumeUsd", t.volume24hUsd);
+    put("volume1hUsd", t.volume1hUsd);
+    put("change5mPct", t.change5m);
+    put("change1hPct", t.change1h);
+    put("change6hPct", t.change6h);
+    put("change24hPct", t.change24h);
+    put("buys", t.buys24h);
+    put("sells", t.sells24h);
+    if (t.buys24h != null && t.sells24h != null) set.txns = t.buys24h + t.sells24h;
+    await deps.db.update(tokens).set(set).where(eq(tokens.mint, t.mint));
+  }
+  // Token yang tidak ditemukan DexScreener tetap dicap agar tidak menyumbat antrean setiap putaran.
+  const found = new Set(ds.map((t) => t.mint));
+  const missing = rows.map((r) => r.mint).filter((m) => !found.has(m));
+  for (const m of missing) await deps.db.update(tokens).set({ updatedAt: now }).where(eq(tokens.mint, m));
+  return { checked: rows.length, updated: ds.length };
+}
+
+/**
  * Memescope Robinhood Chain: kurva launchpad (lihat sources/launchpads.ts). Progres = aset kuotasi yang terkumpul di kontrak
  * kurva (RPC mainnet) / ambang kelulusan; tahap menurut classifyCurve. Token ikut disimpan di tabel tokens supaya halaman
  * detailnya ada. Kegagalan satu launchpad tidak menghentikan yang lain.

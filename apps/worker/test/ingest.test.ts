@@ -4,7 +4,7 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
-import { errText, refreshBoard, refreshCandles, refreshMissingImages, refreshSecurity, refreshTrades, runRetention } from "../src/ingest";
+import { errText, refreshBoard, refreshCandles, refreshMissingImages, refreshSecurity, refreshStale, refreshTrades, runRetention } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
 import { createGoPlus } from "../src/sources/goplus";
@@ -146,6 +146,23 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     expect((await refreshMissingImages(deps())).filled).toBe(0);
     const [old] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
     expect(old.imageUrl).toBeNull();
+  });
+
+  it("refreshStale: token lama yang beku disegarkan dari DexScreener tanpa mengubah lastSeenAt", async () => {
+    const old = new Date(Date.now() - 3_600_000);
+    await created.db.update(tokens).set({ marketCapUsd: "1", updatedAt: old, lastSeenAt: old }).where(eq(tokens.mint, CASH));
+    const r = await refreshStale(deps());
+    expect(r.updated).toBe(1);
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(Number(t.marketCapUsd)).toBeGreaterThan(1);
+    expect(t.lastSeenAt.getTime()).toBe(old.getTime());
+    expect(t.updatedAt.getTime()).toBeGreaterThan(old.getTime());
+    // token yang tidak ada di DexScreener tidak menyumbat antrean: updatedAt dicap sehingga tidak dipilih lagi
+    const other = (await created.db.select().from(tokens)).find((x) => x.mint !== CASH)!;
+    await created.db.update(tokens).set({ updatedAt: old }).where(eq(tokens.mint, other.mint));
+    await refreshStale(deps());
+    const [after] = await created.db.select().from(tokens).where(eq(tokens.mint, other.mint));
+    expect(after.updatedAt.getTime()).toBeGreaterThan(old.getTime());
   });
 
   it("runRetention: membuang trade lama dan candle lama, snapshot terbaru tetap", async () => {
