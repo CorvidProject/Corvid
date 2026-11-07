@@ -1,12 +1,12 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Trenches } from "@/components/app/trenches";
-import tickerData from "@/server/data/trending-robinhood-trending.json";
-import { EMPTY_FILTERS, FilterBar, IntervalControls, TrendingRows, useFiltered, useNow, type Filters, type Interval } from "@/components/app/trending-table";
+import { useApi } from "@/lib/api";
+import { cleanTokens, EMPTY_FILTERS, FilterBar, IntervalControls, TrendingRows, useFiltered, useNow, type Filters, type Interval } from "@/components/app/trending-table";
 
-// Ticker "Trending": 10 token teratas dari data pasar Robinhood Chain.
-const TICKER = tickerData.tokens.slice(0, 10);
+// Data pasar diambil ulang tiap 20 detik (worker memperbarui sumbernya tiap menit).
+const REFRESH_MS = 20_000;
 const fmtMcap = (n: number | null) => (n === null ? "—" : n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(2)}K` : `${n.toFixed(0)}`);
 
 function TerminalInner() {
@@ -17,7 +17,10 @@ function TerminalInner() {
   const [filters, setFilters] = useState<Filters>({ ...EMPTY_FILTERS, signals: { ...EMPTY_FILTERS.signals } });
   const [spinning, setSpinning] = useState(false);
   const [now, bump] = useNow();
-  const rows = useFiltered(filters, now);
+  const { data } = useApi<{ tokens: Parameters<typeof cleanTokens>[0] }>("/api/tokens/trending?tab=trending&limit=200", REFRESH_MS);
+  const tokens = useMemo(() => cleanTokens(data?.tokens), [data]);
+  const TICKER = useMemo(() => tokens.slice(0, 10), [tokens]);
+  const rows = useFiltered(tokens, filters, now);
   const refresh = () => {
     setSpinning(true);
     bump();

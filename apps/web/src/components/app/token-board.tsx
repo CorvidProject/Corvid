@@ -86,6 +86,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
   const cfg = CFG[mode];
   const { data, loading, error } = useApi<{ tokens: Raw[] }>(
     `/api/tokens/trending?tab=${mode === "latest" ? "new" : "trending"}&limit=200`,
+    30_000,
   );
   const base = useMemo(() => clean(data?.tokens ?? []), [data]);
   const [q, setQ] = useState("");

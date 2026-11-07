@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowsClockwise, CaretDown, Check, Funnel, Star, X } from "@phosphor-icons/react";
-import trending from "@/server/data/trending-robinhood-trending.json";
 
-// Tab "Trending" di /application/terminal: interval, filter, dan tabel berbasis data fixture
-// (bentuk sama dengan /tokens/trending). Logika filter mengikuti referensi; diganti API di Tahap 2.
+// Tab "Trending" di /application/terminal: interval, filter, dan tabel. Data dari GET /api/tokens/trending
+// (diambil di terminal.tsx dan diperbarui berkala). Logika filter mengikuti referensi.
 export type Interval = "5m" | "1h" | "6h" | "24h";
 export type Risk = { name: string; level: string; score: number };
 export type Tok = {
@@ -36,7 +35,41 @@ export type Tok = {
   holders: number;
 };
 
-export const TOKENS = trending.tokens as unknown as Tok[];
+const EVM_ADDR = /^0x[0-9a-fA-F]{40}$/;
+type RawTok = { [K in keyof Tok]: Tok[K] | null };
+/** Respons API boleh berisi null; tabel butuh angka. Hanya alamat EVM yang ditampilkan. */
+export function cleanTokens(list: RawTok[] | undefined | null): Tok[] {
+  return (list ?? [])
+    .filter((t) => t.mint && EVM_ADDR.test(t.mint))
+    .map((t) => ({
+      ...t,
+      name: t.name ?? "",
+      symbol: t.symbol ?? "",
+      mint: t.mint as string,
+      dex: t.dex ?? "",
+      risks: t.risks ?? null,
+      riskChecked: !!t.riskChecked,
+      top10: t.top10 ?? null,
+      devPct: t.devPct ?? null,
+      price: t.price ?? 0,
+      marketCap: t.marketCap ?? 0,
+      liquidity: t.liquidity ?? 0,
+      volume: t.volume ?? 0,
+      change5m: t.change5m ?? 0,
+      change1h: t.change1h ?? 0,
+      change6h: t.change6h ?? 0,
+      change24h: t.change24h ?? 0,
+      buys: t.buys ?? 0,
+      sells: t.sells ?? 0,
+      txns: t.txns ?? 0,
+      riskScore: t.riskScore ?? 0,
+      buyTax: t.buyTax ?? 0,
+      sellTax: t.sellTax ?? 0,
+      lpBurn: t.lpBurn ?? 0,
+      createdAt: t.createdAt ?? 0,
+      holders: t.holders ?? 0,
+    }));
+}
 
 export type Filters = {
   marketCap: [number, number] | null;
@@ -663,6 +696,6 @@ export function useNow() {
   return [now, () => setNow(Date.now())] as const;
 }
 
-export function useFiltered(filters: Filters, now: number) {
-  return useMemo(() => applyFilters(TOKENS, filters, now || Date.now()), [filters, now]);
+export function useFiltered(tokens: Tok[], filters: Filters, now: number) {
+  return useMemo(() => applyFilters(tokens, filters, now || Date.now()), [tokens, filters, now]);
 }

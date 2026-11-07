@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import newPools from "@/server/data/trending-robinhood-new.json";
-import trending from "@/server/data/trending-robinhood-trending.json";
+import { useApi } from "@/lib/api";
 
 // Mode "Trenches" di /application/terminal: tiga kolom (New / Trending / High Volume).
-// Data dari fixture (bentuk sama dengan /tokens/trending); diganti API di Tahap 2.
+// Data dari GET /api/tokens/trending, diambil ulang berkala.
 type Risk = { name: string; level: string; score: number };
 type Tok = {
   name: string;
@@ -25,6 +24,30 @@ type Tok = {
   lpBurn: number;
   createdAt: number;
 };
+
+const EVM_ADDR = /^0x[0-9a-fA-F]{40}$/;
+type Raw = { [K in keyof Tok]: Tok[K] | null };
+const clean = (list: Raw[] | undefined): Tok[] =>
+  (list ?? [])
+    .filter((t) => t.mint && EVM_ADDR.test(t.mint))
+    .map((t) => ({
+      ...t,
+      name: t.name ?? "",
+      symbol: t.symbol ?? "",
+      mint: t.mint as string,
+      risks: t.risks ?? null,
+      riskChecked: !!t.riskChecked,
+      marketCap: t.marketCap ?? 0,
+      liquidity: t.liquidity ?? 0,
+      volume: t.volume ?? 0,
+      change24h: t.change24h ?? 0,
+      buys: t.buys ?? 0,
+      sells: t.sells ?? 0,
+      holders: t.holders ?? 0,
+      riskScore: t.riskScore ?? 0,
+      lpBurn: t.lpBurn ?? 0,
+      createdAt: t.createdAt ?? 0,
+    }));
 
 const money = (n: number) =>
   !n
@@ -236,12 +259,15 @@ export function Trenches() {
     const id = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(id);
   }, []);
+  const newData = useApi<{ tokens: Raw[] }>("/api/tokens/trending?tab=new&limit=200", 20_000).data;
+  const trendData = useApi<{ tokens: Raw[] }>("/api/tokens/trending?tab=trending&limit=200", 20_000).data;
   const cols = useMemo(() => {
-    const fresh = [...(newPools.tokens as unknown as Tok[])].sort((a, b) => b.createdAt - a.createdAt).slice(0, 12);
-    const trend = (trending.tokens as unknown as Tok[]).slice(0, 12);
-    const vol = [...(trending.tokens as unknown as Tok[])].sort((a, b) => b.volume - a.volume).slice(0, 12);
+    const fresh = clean(newData?.tokens).sort((a, b) => b.createdAt - a.createdAt).slice(0, 12);
+    const all = clean(trendData?.tokens);
+    const trend = all.slice(0, 12);
+    const vol = [...all].sort((a, b) => b.volume - a.volume).slice(0, 12);
     return { fresh, trend, vol };
-  }, []);
+  }, [newData, trendData]);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8" style={{ paddingBottom: 40 }}>
       <Column title="New" hint="Fresh pools · Robinhood Chain" kind="new" tokens={cols.fresh} now={now} />

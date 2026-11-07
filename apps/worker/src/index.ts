@@ -17,7 +17,9 @@ const env = z
     /** Cari ulang logo token baru yang masih kosong (DexScreener belakangan memprosesnya). */
     WORKER_IMAGES_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Segarkan harga/market cap token yang tidak lagi di papan trending/new. */
-    WORKER_STALE_MS: z.coerce.number().int().min(30_000).default(120_000),
+    WORKER_STALE_MS: z.coerce.number().int().min(30_000).default(60_000),
+    /** Jumlah token maksimal per putaran (30 token per request DexScreener, batas 300 request/menit). */
+    WORKER_STALE_LIMIT: z.coerce.number().int().min(30).max(600).default(300),
     WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(600_000),
@@ -73,7 +75,7 @@ const timers = [
   every("board:trending", env.WORKER_BOARD_MS, () => refreshBoard(deps, "trending")),
   every("board:new", env.WORKER_BOARD_MS, () => refreshBoard(deps, "new")),
   every("images", env.WORKER_IMAGES_MS, () => refreshMissingImages(deps)),
-  every("stale", env.WORKER_STALE_MS, () => refreshStale(deps)),
+  every("stale", env.WORKER_STALE_MS, () => refreshStale(deps, { olderThanMin: 1, limit: env.WORKER_STALE_LIMIT })),
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),
