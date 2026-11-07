@@ -13,7 +13,7 @@ import { createNotifier, createTelegramApi, pollOnce } from "./telegram";
 const env = z
   .object({
     DATABASE_URL: z.string().min(1),
-    WORKER_BOARD_MS: z.coerce.number().int().min(10_000).default(120_000),
+    WORKER_BOARD_MS: z.coerce.number().int().min(10_000).default(180_000),
     /** Cari ulang logo token baru yang masih kosong (DexScreener belakangan memprosesnya). */
     WORKER_IMAGES_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Segarkan harga/market cap token yang tidak lagi di papan trending/new. */
@@ -22,14 +22,14 @@ const env = z
     WORKER_STALE_LIMIT: z.coerce.number().int().min(30).max(600).default(300),
     /** Token yang sedang dibuka pengguna: harga tiap beberapa detik, candle/trade lebih jarang (GeckoTerminal ketat). */
     WORKER_HOT_MS: z.coerce.number().int().min(3_000).default(10_000),
-    WORKER_HOT_CHARTS_MS: z.coerce.number().int().min(10_000).default(30_000),
+    WORKER_HOT_CHARTS_MS: z.coerce.number().int().min(10_000).default(60_000),
     /** Titik harga untuk sparkline. */
     WORKER_PRICES_MS: z.coerce.number().int().min(30_000).default(60_000),
-    WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(600_000),
-    WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
+    WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(900_000),
+    WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(900_000),
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(300_000),
-    /** Token per putaran pengecekan keamanan (30 per request GoPlus). */
-    WORKER_SECURITY_N: z.coerce.number().int().min(30).max(300).default(110),
+    /** Token per putaran pengecekan keamanan (satu request GoPlus per token, jeda 4 dtk). */
+    WORKER_SECURITY_N: z.coerce.number().int().min(10).max(300).default(70),
     WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(600_000),
     /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
     WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(48),
@@ -84,7 +84,7 @@ const timers = [
   every("images", env.WORKER_IMAGES_MS, () => refreshMissingImages(deps)),
   every("stale", env.WORKER_STALE_MS, () => refreshStale(deps, { olderThanMin: 1, limit: env.WORKER_STALE_LIMIT })),
   every("hot", env.WORKER_HOT_MS, () => refreshHot(deps)),
-  every("hotcharts", env.WORKER_HOT_CHARTS_MS, () => refreshHotCharts(deps, ["15m", "1h"])),
+  every("hotcharts", env.WORKER_HOT_CHARTS_MS, () => refreshHotCharts(deps, ["15m"], { limit: 1 })),
   every("prices", env.WORKER_PRICES_MS, async () => ({ points: await snapshotPrices(db) })),
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),

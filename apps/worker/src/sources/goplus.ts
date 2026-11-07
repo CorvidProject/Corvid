@@ -180,7 +180,7 @@ export function parseSecurity(json: unknown): SecurityInfo[] {
 const respCode = z.object({ code: z.number() }).passthrough();
 
 export function createGoPlus(opts: { fetch?: FetchLike; minIntervalMs?: number; sleep?: (ms: number) => Promise<void>; throttleWaitMs?: number } = {}) {
-  const http = createHttp({ fetch: opts.fetch, sleep: opts.sleep, minIntervalMs: opts.minIntervalMs ?? 2500 });
+  const http = createHttp({ fetch: opts.fetch, sleep: opts.sleep, minIntervalMs: opts.minIntervalMs ?? 4000 });
   const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const throttleWaitMs = opts.throttleWaitMs ?? 20_000;
   return {

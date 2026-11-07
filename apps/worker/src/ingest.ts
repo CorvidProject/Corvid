@@ -43,6 +43,19 @@ export function errText(e: unknown): string {
 
 type TokenValues = typeof tokens.$inferInsert;
 
+/**
+ * Nilai pasar dari sumber luar kadang absurd (mis. perubahan 6 jam 2,5e34 pada token yang baru lahir) dan meluapi kolom
+ * numeric sehingga seluruh pembaruan gagal. Nilai di luar batas kolom dibuang (null = jangan timpa), bukan dipotong.
+ */
+export function sane(v: string | number | null | undefined, maxAbs: number): string | null {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) && Math.abs(n) < maxAbs ? String(v) : null;
+}
+const CHANGE_MAX = 1e9; // numeric(12,2)
+const USD_MAX = 1e17; // numeric(20,2)
+const PRICE_MAX = 1e19; // numeric(38,18)
+
 const symbolFromPoolName = (name: string | null) => (name ? name.split(" / ")[0].trim() || null : null);
 
 /** Gabungkan data pool (GeckoTerminal) dengan DexScreener; DexScreener diutamakan bila ada. */
@@ -57,15 +70,15 @@ export function mergeToken(pool: Pool, ds: DsToken | undefined): TokenValues {
     imageUrl: ds?.image ?? null,
     dex: ds?.dex ?? pool.dex,
     poolId: ds?.poolAddress ?? pool.poolAddress,
-    priceUsd: ds?.priceUsd ?? pool.priceUsd,
-    marketCapUsd: ds?.marketCapUsd ?? pool.marketCapUsd,
-    liquidityUsd: ds?.liquidityUsd ?? pool.liquidityUsd,
-    volumeUsd: ds?.volume24hUsd ?? pool.volume24hUsd,
-    volume1hUsd: ds?.volume1hUsd ?? pool.volume1hUsd,
-    change5mPct: ds?.change5m ?? pool.change5m,
-    change1hPct: ds?.change1h ?? pool.change1h,
-    change6hPct: ds?.change6h ?? pool.change6h,
-    change24hPct: ds?.change24h ?? pool.change24h,
+    priceUsd: sane(ds?.priceUsd ?? pool.priceUsd, PRICE_MAX),
+    marketCapUsd: sane(ds?.marketCapUsd ?? pool.marketCapUsd, USD_MAX),
+    liquidityUsd: sane(ds?.liquidityUsd ?? pool.liquidityUsd, USD_MAX),
+    volumeUsd: sane(ds?.volume24hUsd ?? pool.volume24hUsd, USD_MAX),
+    volume1hUsd: sane(ds?.volume1hUsd ?? pool.volume1hUsd, USD_MAX),
+    change5mPct: sane(ds?.change5m ?? pool.change5m, CHANGE_MAX),
+    change1hPct: sane(ds?.change1h ?? pool.change1h, CHANGE_MAX),
+    change6hPct: sane(ds?.change6h ?? pool.change6h, CHANGE_MAX),
+    change24hPct: sane(ds?.change24h ?? pool.change24h, CHANGE_MAX),
     buys,
     sells,
     txns: buys != null && sells != null ? buys + sells : null,
@@ -85,10 +98,10 @@ export async function upsertToken(db: Db, v: TokenValues, now: Date): Promise<{ 
 }
 
 // Jumlah halaman GeckoTerminal per papan (20 pool per halaman); makin banyak makin lama satu putaran karena batas laju ketat.
-const TRENDING_PAGES = 3;
-const TOP_VOLUME_PAGES = 5;
+const TRENDING_PAGES = 1;
+const TOP_VOLUME_PAGES = 4;
 const BASE_ASSETS = [CHAINS.mainnet.wrappedNative, CHAINS.mainnet.usdg?.address].filter((a): a is string => !!a).map((a) => a.toLowerCase());
-const NEW_PAGES = 2;
+const NEW_PAGES = 1;
 
 /** Perbarui papan token (tab trending/new) dan simpan snapshot peringkat. */
 export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 160): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {
@@ -204,19 +217,25 @@ async function applyDs(db: Db, mints: string[], ds: DsToken[], now: Date): Promi
     const put = (k: string, v: unknown) => {
       if (v !== null && v !== undefined) set[k] = v;
     };
-    put("priceUsd", t.priceUsd);
-    put("marketCapUsd", t.marketCapUsd);
-    put("liquidityUsd", t.liquidityUsd);
-    put("volumeUsd", t.volume24hUsd);
-    put("volume1hUsd", t.volume1hUsd);
-    put("change5mPct", t.change5m);
-    put("change1hPct", t.change1h);
-    put("change6hPct", t.change6h);
-    put("change24hPct", t.change24h);
+    put("priceUsd", sane(t.priceUsd, PRICE_MAX));
+    put("marketCapUsd", sane(t.marketCapUsd, USD_MAX));
+    put("liquidityUsd", sane(t.liquidityUsd, USD_MAX));
+    put("volumeUsd", sane(t.volume24hUsd, USD_MAX));
+    put("volume1hUsd", sane(t.volume1hUsd, USD_MAX));
+    put("change5mPct", sane(t.change5m, CHANGE_MAX));
+    put("change1hPct", sane(t.change1h, CHANGE_MAX));
+    put("change6hPct", sane(t.change6h, CHANGE_MAX));
+    put("change24hPct", sane(t.change24h, CHANGE_MAX));
     put("buys", t.buys24h);
     put("sells", t.sells24h);
     if (t.buys24h != null && t.sells24h != null) set.txns = t.buys24h + t.sells24h;
-    await db.update(tokens).set(set).where(eq(tokens.mint, t.mint));
+    // Satu token bermasalah tidak boleh menghentikan yang lain; cap waktu tetap diberi agar tidak terus di depan antrean.
+    try {
+      await db.update(tokens).set(set).where(eq(tokens.mint, t.mint));
+    } catch (e) {
+      await db.update(tokens).set({ updatedAt: now }).where(eq(tokens.mint, t.mint));
+      console.error(`update token ${t.mint} gagal: ${errText(e)}`);
+    }
   }
   const found = new Set(ds.map((t) => t.mint));
   for (const m of mints) if (!found.has(m)) await db.update(tokens).set({ updatedAt: now }).where(eq(tokens.mint, m));

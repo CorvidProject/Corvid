@@ -4,7 +4,7 @@ import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenCandles, tokenPricePoints, tokenTrades, tokenTrending, tokenWatch, tokens } from "@corvid/db";
-import { errText, refreshBoard, refreshCandles, refreshHot, refreshHotCharts, refreshMissingImages, refreshSecurity, refreshStale, refreshTrades, runRetention, snapshotPrices } from "../src/ingest";
+import { errText, refreshBoard, refreshCandles, refreshHot, refreshHotCharts, refreshMissingImages, sane, refreshSecurity, refreshStale, refreshTrades, runRetention, snapshotPrices } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
 import { createGoPlus } from "../src/sources/goplus";
@@ -254,5 +254,30 @@ describe("errText", () => {
     // tidak ada token ganda di snapshot terbaru
     const latest = await created.db.execute(sql`select token_id from token_trending where tab = 'trending' and snapshot_at = (select max(snapshot_at) from token_trending where tab = 'trending')`);
     expect(new Set(latest.rows.map((x) => x.token_id)).size).toBe(latest.rows.length);
+  });
+  it("sane: nilai absurd dibuang, nilai wajar lolos", () => {
+    expect(sane("2.4750017685523957e+34", 1e9)).toBeNull();
+    expect(sane("-1e12", 1e9)).toBeNull();
+    expect(sane("NaN", 1e9)).toBeNull();
+    expect(sane(null, 1e9)).toBeNull();
+    expect(sane("-74.16", 1e9)).toBe("-74.16");
+    expect(sane(0.5, 1e9)).toBe("0.5");
+  });
+
+  it("refreshStale: nilai pasar yang meluapi kolom tidak menghentikan pembaruan (nilai itu dibuang, sisanya tersimpan)", async () => {
+    const body = JSON.parse(fx("ds-tokens.json"));
+    const pair = Array.isArray(body) ? body[0] : body.pairs[0];
+    pair.priceChange.h6 = 2.4750017685523957e34; // seperti token 0x5eb6… di produksi
+    pair.priceChange.h24 = -12.5;
+    const overflowFetch = async (u: string) => (u.includes("dexscreener.com/tokens/v1/robinhood/") ? json(JSON.stringify(body)) : fakeFetch(u));
+    const d = { ...deps(), ds: createDexScreener({ fetch: overflowFetch, minIntervalMs: 0, sleep: noSleep }) };
+    const old = new Date(Date.now() - 3_600_000);
+    await created.db.update(tokens).set({ updatedAt: old, change6hPct: "1.00", change24hPct: "1.00" }).where(eq(tokens.mint, CASH));
+    const r = await refreshStale(d, { olderThanMin: 1 });
+    expect(r.updated).toBeGreaterThanOrEqual(1);
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    expect(Number(t.change6hPct)).toBe(1); // nilai absurd tidak menimpa
+    expect(Number(t.change24hPct)).toBe(-12.5); // nilai wajar dari respons yang sama tersimpan
+    expect(t.updatedAt.getTime()).toBeGreaterThan(old.getTime());
   });
 });
