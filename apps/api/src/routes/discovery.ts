@@ -16,6 +16,7 @@ import {
 } from "@corvid/shared";
 import type { Db } from "../app";
 import { num, toTrending } from "../mappers";
+import { markWatched } from "../live";
 
 const escapeLike = (s: string) => s.replace(/[\%_]/g, (c) => "\\" + c);
 
@@ -92,6 +93,7 @@ export const discoveryRoutes =
         },
       },
       async (req) => {
+        markWatched(db, req.body.mints);
         const rows = await db.select().from(tokens).where(inArray(tokens.mint, req.body.mints));
         const data: Record<string, ReturnType<typeof pick>> = {};
         for (const t of rows) data[t.mint] = pick(t);
@@ -110,6 +112,7 @@ export const discoveryRoutes =
       },
       async (req, reply) => {
         const { mint, type, limit } = req.query;
+        markWatched(db, [mint]);
         const [tok] = await db.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, mint)).limit(1);
         if (!tok) return reply.code(404).send({ error: "token_not_found" });
         const rows = await db

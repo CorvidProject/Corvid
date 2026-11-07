@@ -28,6 +28,7 @@ import {
 } from "@corvid/shared";
 import type { Db } from "../app";
 import { num, toDetail, toTrending } from "../mappers";
+import { loadSparks, markWatched } from "../live";
 
 const secs = (d: Date | null) => (d ? Math.floor(d.getTime() / 1000) : null);
 
@@ -64,7 +65,15 @@ export const marketRoutes =
           .where(eq(tokenTrending.tab, tab))
           .orderBy(tokenTrending.rank)
           .limit(limit);
-        return { tokens: rows.map((r) => toTrending(r.token)) };
+        const sparks = await loadSparks(db, rows.map((r) => r.token.id));
+        return {
+          tokens: rows.map((r) => {
+            const spark = sparks.get(r.token.id);
+            const price = Number(r.token.priceUsd);
+            // Titik terakhir = harga terkini, supaya ujung garis selalu sama dengan angka di tabel.
+            return { ...toTrending(r.token), ...(spark ? { spark: price > 0 ? [...spark, price] : spark } : {}) };
+          }),
+        };
       },
     );
 
@@ -73,6 +82,7 @@ export const marketRoutes =
       { schema: { tags: ["market"], querystring: tradesQuerySchema, response: { 200: tradesResponseSchema } } },
       async (req) => {
         const { mint, limit } = req.query;
+        markWatched(db, [mint]);
         const rows = await db
           .select({ t: tokenTrades })
           .from(tokenTrades)
@@ -152,6 +162,7 @@ export const marketRoutes =
       async (req, reply) => {
         const [tok] = await db.select().from(tokens).where(eq(tokens.mint, req.params.mint)).limit(1);
         if (!tok) return reply.code(404).send({ error: "token_not_found" });
+        markWatched(db, [tok.mint]);
         const [m] = await db.select().from(tokenSecurityMetrics).where(eq(tokenSecurityMetrics.tokenId, tok.id)).limit(1);
         return toDetail(tok, m ?? null);
       },

@@ -33,6 +33,8 @@ export type Tok = {
   lpBurn: number;
   createdAt: number;
   holders: number;
+  /** Harga 24 jam terakhir dari titik harga yang dicatat worker (lama ke baru); kosong bila belum cukup data. */
+  spark?: number[];
 };
 
 const EVM_ADDR = /^0x[0-9a-fA-F]{40}$/;
@@ -49,6 +51,7 @@ export function cleanTokens(list: RawTok[] | undefined | null): Tok[] {
       dex: t.dex ?? "",
       risks: t.risks ?? null,
       riskChecked: !!t.riskChecked,
+      spark: t.spark ?? undefined,
       top10: t.top10 ?? null,
       devPct: t.devPct ?? null,
       price: t.price ?? 0,
@@ -212,7 +215,8 @@ function ChgText({ v }: { v: number }) {
 
 function Spark({ t, id }: { t: Tok; id: string }) {
   const p = t.price || 1;
-  const pts = [t.change24h, t.change6h, t.change1h, t.change5m].map((c) => p / (1 + (c ?? 0) / 100)).concat([p]);
+  // Titik harga asli bila ada; selain itu perkiraan kasar dari perubahan 24j/6j/1j/5m.
+  const pts = t.spark && t.spark.length >= 3 ? t.spark : [t.change24h, t.change6h, t.change1h, t.change5m].map((c) => p / (1 + (c ?? 0) / 100)).concat([p]);
   const lo = Math.min(...pts), hi = Math.max(...pts), sp = hi - lo || 1;
   const xy = pts.map((v, i) => [(i / (pts.length - 1)) * 72, 24 - ((v - lo) / sp) * 20] as const);
   const line = xy.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");

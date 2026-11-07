@@ -182,6 +182,31 @@ export const tokenCandles = pgTable(
   ],
 );
 
+/** Titik harga berkala (worker), sumber sparkline asli. Retensi 24 jam. */
+export const tokenPricePoints = pgTable(
+  "token_price_points",
+  {
+    tokenId: bigint("token_id", { mode: "number" })
+      .notNull()
+      .references(() => tokens.id, { onDelete: "cascade" }),
+    at: ts("at").notNull(),
+    priceUsd: money("price_usd").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.tokenId, t.at] })],
+);
+
+/** Token yang baru dibuka pengguna; worker menyegarkannya lebih sering. */
+export const tokenWatch = pgTable(
+  "token_watch",
+  {
+    tokenId: bigint("token_id", { mode: "number" })
+      .primaryKey()
+      .references(() => tokens.id, { onDelete: "cascade" }),
+    lastViewedAt: ts("last_viewed_at").notNull(),
+  },
+  (t) => [index("token_watch_viewed_idx").on(t.lastViewedAt)],
+);
+
 export const memescopeCoins = pgTable(
   "memescope_coins",
   {

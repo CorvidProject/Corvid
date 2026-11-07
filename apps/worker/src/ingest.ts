@@ -10,6 +10,7 @@ import {
   tokenSecurityReports,
   tokenTrades,
   tokenTrending,
+  tokenWatch,
   tokens,
   type schema,
 } from "@corvid/db";
@@ -165,6 +166,12 @@ export async function refreshStale(deps: Deps, opts: { olderThanMin?: number; li
     logOf(deps)(`dexscreener gagal (stale): ${(e as Error).message}`);
     return { checked: rows.length, updated: 0 };
   }
+  await applyDs(deps.db, rows.map((r) => r.mint), ds, now);
+  return { checked: rows.length, updated: ds.length };
+}
+
+/** Tulis data pasar DexScreener ke tabel tokens. Token yang tidak ditemukan tetap dicap agar tidak menyumbat antrean. */
+async function applyDs(db: Db, mints: string[], ds: DsToken[], now: Date): Promise<void> {
   for (const t of ds) {
     const set: Record<string, unknown> = { updatedAt: now };
     const put = (k: string, v: unknown) => {
@@ -182,13 +189,66 @@ export async function refreshStale(deps: Deps, opts: { olderThanMin?: number; li
     put("buys", t.buys24h);
     put("sells", t.sells24h);
     if (t.buys24h != null && t.sells24h != null) set.txns = t.buys24h + t.sells24h;
-    await deps.db.update(tokens).set(set).where(eq(tokens.mint, t.mint));
+    await db.update(tokens).set(set).where(eq(tokens.mint, t.mint));
   }
-  // Token yang tidak ditemukan DexScreener tetap dicap agar tidak menyumbat antrean setiap putaran.
   const found = new Set(ds.map((t) => t.mint));
-  const missing = rows.map((r) => r.mint).filter((m) => !found.has(m));
-  for (const m of missing) await deps.db.update(tokens).set({ updatedAt: now }).where(eq(tokens.mint, m));
+  for (const m of mints) if (!found.has(m)) await db.update(tokens).set({ updatedAt: now }).where(eq(tokens.mint, m));
+}
+
+/** Token yang dibuka pengguna dalam `withinMin` menit terakhir, yang terbaru dulu. */
+async function watchedTokens(deps: Deps, withinMin: number, limit: number) {
+  const now = (deps.now ?? (() => new Date()))();
+  return deps.db
+    .select({ id: tokens.id, mint: tokens.mint, poolId: tokens.poolId })
+    .from(tokenWatch)
+    .innerJoin(tokens, eq(tokens.id, tokenWatch.tokenId))
+    .where(and(isNotNull(tokens.poolId), gtOp(tokenWatch.lastViewedAt, new Date(now.getTime() - withinMin * 60_000))))
+    .orderBy(sql`${tokenWatch.lastViewedAt} desc`)
+    .limit(limit);
+}
+
+/** Segarkan harga token yang sedang dibuka pengguna (jalan tiap beberapa detik; satu request DexScreener per 30 token). */
+export async function refreshHot(deps: Deps, opts: { withinMin?: number; limit?: number } = {}): Promise<{ checked: number; updated: number }> {
+  const now = (deps.now ?? (() => new Date()))();
+  const rows = await watchedTokens(deps, opts.withinMin ?? 3, opts.limit ?? 30);
+  if (rows.length === 0) return { checked: 0, updated: 0 };
+  let ds: DsToken[] = [];
+  try {
+    ds = await deps.ds.tokens(rows.map((r) => r.mint));
+  } catch (e) {
+    logOf(deps)(`dexscreener gagal (hot): ${(e as Error).message}`);
+    return { checked: rows.length, updated: 0 };
+  }
+  await applyDs(deps.db, rows.map((r) => r.mint), ds, now);
   return { checked: rows.length, updated: ds.length };
+}
+
+/** Candle dan trade baru untuk token yang sedang dibuka (paling baru dulu, dibatasi karena GeckoTerminal ketat). */
+export async function refreshHotCharts(deps: Deps, intervals: ChartInterval[], opts: { withinMin?: number; limit?: number } = {}): Promise<{ tokens: number; candles: number; trades: number }> {
+  const rows = await watchedTokens(deps, opts.withinMin ?? 3, opts.limit ?? 2);
+  let candles = 0;
+  let trades = 0;
+  for (const t of rows) {
+    candles += (await storeCandles(deps, t, intervals)).candles;
+    trades += (await storeTrades(deps, t)).trades;
+  }
+  return { tokens: rows.length, candles, trades };
+}
+
+/**
+ * Catat harga terkini sebagai titik sparkline. Satu titik per token paling sering tiap `everyMin` menit, hanya untuk token yang
+ * datanya baru diperbarui (`freshMin`). Memakai satu pernyataan SQL.
+ */
+export async function snapshotPrices(db: Db, now = new Date(), opts: { everyMin?: number; freshMin?: number } = {}): Promise<number> {
+  const everyAgo = new Date(now.getTime() - (opts.everyMin ?? 3) * 60_000 + 5_000);
+  const freshAgo = new Date(now.getTime() - (opts.freshMin ?? 10) * 60_000);
+  const res = await db.execute(sql`
+    insert into token_price_points (token_id, at, price_usd)
+    select t.id, ${now}, t.price_usd from tokens t
+    where t.price_usd is not null and t.price_usd > 0 and t.updated_at > ${freshAgo}
+      and not exists (select 1 from token_price_points p where p.token_id = t.id and p.at > ${everyAgo})
+    on conflict do nothing`);
+  return res.rowCount ?? 0;
 }
 
 /**
@@ -349,27 +409,54 @@ export async function refreshSecurity(deps: Deps, topN = 30): Promise<{ checked:
   return { checked, unknown: rows.length - checked };
 }
 
+type PoolToken = { id: number; mint: string; poolId: string | null };
+
+async function storeCandles(deps: Deps, t: PoolToken, intervals: ChartInterval[]): Promise<{ candles: number; errors: number }> {
+  let candles = 0;
+  let errors = 0;
+  for (const interval of intervals) {
+    try {
+      const list = await deps.gt.ohlcv(t.poolId!, interval, 100);
+      if (list.length === 0) continue;
+      await deps.db
+        .insert(tokenCandles)
+        .values(list.map((c) => ({ tokenId: t.id, interval, bucketStart: c.bucketStart, open: c.open, high: c.high, low: c.low, close: c.close, volumeUsd: c.volumeUsd })))
+        .onConflictDoUpdate({
+          target: [tokenCandles.tokenId, tokenCandles.interval, tokenCandles.bucketStart],
+          set: { open: sql`excluded.open`, high: sql`excluded.high`, low: sql`excluded.low`, close: sql`excluded.close`, volumeUsd: sql`excluded.volume_usd` },
+        });
+      candles += list.length;
+    } catch (e) {
+      errors++;
+      logOf(deps)(`candle ${t.mint} ${interval}: ${errText(e)}`);
+    }
+  }
+  return { candles, errors };
+}
+
+async function storeTrades(deps: Deps, t: PoolToken): Promise<{ trades: number; errors: number }> {
+  try {
+    const list = await deps.gt.poolTrades(t.poolId!, t.mint);
+    if (list.length === 0) return { trades: 0, errors: 0 };
+    const res = await deps.db
+      .insert(tokenTrades)
+      .values(list.map((x) => ({ tokenId: t.id, txHash: x.txHash, walletAddress: x.wallet, side: x.side, tokenAmount: x.tokenAmount, ethAmount: x.ethAmount, priceUsd: x.priceUsd, tradedAt: x.at })))
+      .onConflictDoNothing()
+      .returning({ id: tokenTrades.id });
+    return { trades: res.length, errors: 0 };
+  } catch (e) {
+    logOf(deps)(`trades ${t.mint}: ${(e as Error).message}`);
+    return { trades: 0, errors: 1 };
+  }
+}
+
 export async function refreshCandles(deps: Deps, intervals: ChartInterval[], topN = 10): Promise<{ candles: number; errors: number }> {
   let candles = 0;
   let errors = 0;
   for (const t of await activeTokens(deps, topN)) {
-    for (const interval of intervals) {
-      try {
-        const list = await deps.gt.ohlcv(t.poolId!, interval, 100);
-        if (list.length === 0) continue;
-        await deps.db
-          .insert(tokenCandles)
-          .values(list.map((c) => ({ tokenId: t.id, interval, bucketStart: c.bucketStart, open: c.open, high: c.high, low: c.low, close: c.close, volumeUsd: c.volumeUsd })))
-          .onConflictDoUpdate({
-            target: [tokenCandles.tokenId, tokenCandles.interval, tokenCandles.bucketStart],
-            set: { open: sql`excluded.open`, high: sql`excluded.high`, low: sql`excluded.low`, close: sql`excluded.close`, volumeUsd: sql`excluded.volume_usd` },
-          });
-        candles += list.length;
-      } catch (e) {
-        errors++;
-        logOf(deps)(`candle ${t.mint} ${interval}: ${errText(e)}`);
-      }
-    }
+    const r = await storeCandles(deps, t, intervals);
+    candles += r.candles;
+    errors += r.errors;
   }
   return { candles, errors };
 }
@@ -378,19 +465,9 @@ export async function refreshTrades(deps: Deps, topN = 10): Promise<{ trades: nu
   let trades = 0;
   let errors = 0;
   for (const t of await activeTokens(deps, topN)) {
-    try {
-      const list = await deps.gt.poolTrades(t.poolId!, t.mint);
-      if (list.length === 0) continue;
-      const res = await deps.db
-        .insert(tokenTrades)
-        .values(list.map((x) => ({ tokenId: t.id, txHash: x.txHash, walletAddress: x.wallet, side: x.side, tokenAmount: x.tokenAmount, ethAmount: x.ethAmount, priceUsd: x.priceUsd, tradedAt: x.at })))
-        .onConflictDoNothing()
-        .returning({ id: tokenTrades.id });
-      trades += res.length;
-    } catch (e) {
-      errors++;
-      logOf(deps)(`trades ${t.mint}: ${(e as Error).message}`);
-    }
+    const r = await storeTrades(deps, t);
+    trades += r.trades;
+    errors += r.errors;
   }
   return { trades, errors };
 }
@@ -408,6 +485,8 @@ export async function runRetention(db: Db, now = new Date()): Promise<Record<str
     candles5m15m: await del(sql`delete from token_candles where interval in ('5m','15m') and bucket_start < ${ago(7 * D)}`),
     candles1h4h: await del(sql`delete from token_candles where interval in ('1h','4h') and bucket_start < ${ago(30 * D)}`),
     candles1d: await del(sql`delete from token_candles where interval = '1d' and bucket_start < ${ago(180 * D)}`),
+    pricePoints: await del(sql`delete from token_price_points where at < ${ago(D)}`),
+    watch: await del(sql`delete from token_watch where last_viewed_at < ${ago(D)}`),
     memescope: await del(sql`delete from memescope_coins where coalesce(last_trade_at, created_at_chain, now()) < ${ago(7 * D)}`),
     // snapshot lama dibuang, snapshot terbaru per tab selalu dipertahankan
     trending: await del(sql`delete from token_trending t where snapshot_at < ${ago(24 * H)} and snapshot_at < (select max(snapshot_at) from token_trending x where x.tab = t.tab)`),

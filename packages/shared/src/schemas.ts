@@ -70,6 +70,8 @@ export const trendingTokenSchema = z.object({
   holders: z.number().nullable(),
   chain: z.enum(["robinhood", "solana"]),
   volume1h: z.number().nullable(),
+  /** Harga 24 jam terakhir (rata-rata per 30 menit, lama ke baru) dari titik harga yang dicatat worker. Kosong bila belum cukup data. */
+  spark: z.array(z.number()).optional(),
 });
 export type TrendingToken = z.infer<typeof trendingTokenSchema>;
 

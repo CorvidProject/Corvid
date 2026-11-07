@@ -3,8 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import EmbeddedPostgres from "embedded-postgres";
 import { eq, sql } from "drizzle-orm";
-import { applyMigrations, createDb, signals, tokenCandles, tokenTrades, tokenTrending, tokens } from "@corvid/db";
-import { errText, refreshBoard, refreshCandles, refreshMissingImages, refreshSecurity, refreshStale, refreshTrades, runRetention } from "../src/ingest";
+import { applyMigrations, createDb, signals, tokenCandles, tokenPricePoints, tokenTrades, tokenTrending, tokenWatch, tokens } from "@corvid/db";
+import { errText, refreshBoard, refreshCandles, refreshHot, refreshHotCharts, refreshMissingImages, refreshSecurity, refreshStale, refreshTrades, runRetention, snapshotPrices } from "../src/ingest";
 import { createDexScreener } from "../src/sources/dexscreener";
 import { createGeckoTerminal } from "../src/sources/geckoterminal";
 import { createGoPlus } from "../src/sources/goplus";
@@ -148,6 +148,35 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     expect(old.imageUrl).toBeNull();
   });
 
+  it("refreshHot: hanya token yang sedang dibuka yang disegarkan", async () => {
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    await created.db.update(tokens).set({ marketCapUsd: "1" }).where(eq(tokens.id, t.id));
+    expect((await refreshHot(deps())).checked).toBe(0); // belum ada yang membuka
+    expect(Number((await created.db.select().from(tokens).where(eq(tokens.id, t.id)))[0].marketCapUsd)).toBe(1);
+    await created.db.insert(tokenWatch).values({ tokenId: t.id, lastViewedAt: new Date() }).onConflictDoNothing();
+    const r = await refreshHot(deps());
+    expect(r).toEqual({ checked: 1, updated: 1 });
+    expect(Number((await created.db.select().from(tokens).where(eq(tokens.id, t.id)))[0].marketCapUsd)).toBeGreaterThan(1);
+    // dibuka lebih dari 3 menit lalu: tidak lagi dianggap sedang dibuka
+    await created.db.update(tokenWatch).set({ lastViewedAt: new Date(Date.now() - 10 * 60_000) }).where(eq(tokenWatch.tokenId, t.id));
+    expect((await refreshHot(deps())).checked).toBe(0);
+  });
+
+  it("refreshHotCharts: candle dan trade token yang sedang dibuka", async () => {
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    await created.db.update(tokenWatch).set({ lastViewedAt: new Date() }).where(eq(tokenWatch.tokenId, t.id));
+    const r = await refreshHotCharts(deps(), ["15m"]);
+    expect(r.tokens).toBe(1);
+    expect(r.candles).toBeGreaterThan(0);
+  });
+
+  it("snapshotPrices: satu titik per token per jendela", async () => {
+    const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
+    await created.db.update(tokens).set({ updatedAt: new Date() }).where(eq(tokens.id, t.id));
+    expect(await snapshotPrices(created.db)).toBeGreaterThanOrEqual(1);
+    expect(await snapshotPrices(created.db)).toBe(0); // titik baru saja dicatat
+  });
+
   it("refreshStale: token lama yang beku disegarkan dari DexScreener tanpa mengubah lastSeenAt", async () => {
     const old = new Date(Date.now() - 3_600_000);
     await created.db.update(tokens).set({ marketCapUsd: "1", updatedAt: old, lastSeenAt: old }).where(eq(tokens.mint, CASH));
@@ -170,6 +199,8 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
     const r = await runRetention(created.db, future);
     expect(r.trades).toBeGreaterThan(0);
     expect(r.candles5m15m).toBeGreaterThan(0);
+    expect(r.pricePoints).toBeGreaterThan(0); // titik harga > 24 jam dibuang
+    expect(r.watch).toBeGreaterThan(0);
     expect(r.signals).toBe(3); // sinyal > 7 hari dibuang
     expect(await created.db.select().from(tokenTrades)).toHaveLength(0);
     const candles = await created.db.select().from(tokenCandles);

@@ -121,10 +121,10 @@ export function TokenDetailContent({ mint }: { mint: string }) {
   const [interval, setIntervalKey] = useState<(typeof INTERVALS)[number]>("15m");
   const [period, setPeriod] = useState<(typeof PERIODS)[number][0]>("change24h");
   const [now] = useState(() => Date.now());
-  const detail = useApi<Detail>(`/api/tokens/${mint}`);
+  const detail = useApi<Detail>(`/api/tokens/${mint}`, 5_000);
   const security = useApi<Security>(`/api/tokens/${mint}/security`);
-  const trades = useApi<Trades>(`/api/tokens/trades?mint=${mint}&limit=30`);
-  const chart = useApi<Chart>(`/api/tokens/chart?mint=${mint}&type=${interval}`);
+  const trades = useApi<Trades>(`/api/tokens/trades?mint=${mint}&limit=30`, 10_000);
+  const chart = useApi<Chart>(`/api/tokens/chart?mint=${mint}&type=${interval}`, 15_000);
 
   if (detail.loading)
     return (

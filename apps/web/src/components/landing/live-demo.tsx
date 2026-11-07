@@ -841,24 +841,35 @@ function AgentPanel() {
   );
 }
 
+type DemoTok = { symbol: string; mint: string; image: string | null; marketCap: number; liquidity: number; change24h: number };
+type DemoSec = { passed: number; total: number; groups: { checks: { label: string; state: string; value?: string }[] }[] };
+
 function RugPanel() {
-  const list = trending.tokens.slice(0, 5);
+  // Mode API: token trending dan laporan keamanannya dari backend (diperbarui berkala); selain itu cuplikan fixture.
+  const live = useApi<{ tokens: { symbol: string | null; mint: string; image: string | null; marketCap: number | null; liquidity: number | null; change24h: number | null }[] }>(
+    USE_API ? "/api/tokens/trending?tab=trending&limit=5" : null,
+    30_000,
+  );
+  const list: DemoTok[] = USE_API
+    ? (live.data?.tokens ?? []).map((t) => ({ symbol: t.symbol ?? "?", mint: t.mint, image: t.image, marketCap: t.marketCap ?? 0, liquidity: t.liquidity ?? 0, change24h: t.change24h ?? 0 }))
+    : (trending.tokens.slice(0, 5) as unknown as DemoTok[]);
   const [i, setI] = useState(0);
   useEffect(() => {
+    if (list.length === 0) return;
     const t = setInterval(() => setI((x) => (x + 1) % list.length), 7000);
     return () => clearInterval(t);
   }, [list.length]);
-  const tk = list[i];
-  const checks: { label: string; state: string; value?: string }[] =
-    security.groups.flatMap(
-      (g) => g.checks as { label: string; state: string; value?: string }[],
-    );
+  const tk = list[list.length ? i % list.length : 0] as DemoTok | undefined;
+  const sec = useApi<DemoSec>(USE_API && tk ? `/api/tokens/${tk.mint}/security` : null, 60_000);
+  const secData: DemoSec = USE_API ? (sec.data ?? { passed: 0, total: 0, groups: [] }) : (security as unknown as DemoSec);
+  if (!tk) return <Panel title="rugcheck" sub="loading…" badge="" badgeColor="#FFC24D" extra={null}>{null}</Panel>;
+  const checks: { label: string; state: string; value?: string }[] = secData.groups.flatMap((g) => g.checks);
   const shown = checks.filter((c) => c.state !== "unknown").slice(0, 10);
   return (
     <Panel
       title="rugcheck"
       sub={`$${tk.symbol.toLowerCase()} · trending on robinhood chain`}
-      badge={`${security.passed}/${security.total} passed`}
+      badge={`${secData.passed}/${secData.total} passed`}
       badgeColor="#FFC24D"
       extra={
         <button
@@ -938,7 +949,7 @@ function ageLabel(createdAt: number | null | undefined) {
 
 function MemePanel() {
   // Token baru di Robinhood Chain. Mode API: data live dari /api/tokens/trending?tab=new; selain itu cuplikan fixture.
-  const live = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=new&limit=6" : null);
+  const live = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=new&limit=6" : null, 30_000);
   const source: FreshToken[] = live.data?.tokens ?? (USE_API ? [] : (freshTokens.tokens as FreshToken[]));
   const items = source.slice(0, 6).map((t) => ({ mint: t.mint, image: t.image, symbol: t.symbol ?? "?", marketCapUsd: t.marketCap ?? 0, age: ageLabel(t.createdAt) }));
   return (

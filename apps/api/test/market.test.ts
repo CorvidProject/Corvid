@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import EmbeddedPostgres from "embedded-postgres";
-import { applyMigrations, createDb, tokenCandles, tokens, walletActivity, wallets } from "@corvid/db";
+import { applyMigrations, createDb, tokenCandles, tokenPricePoints, tokens, tokenWatch, walletActivity, wallets } from "@corvid/db";
 import { eq } from "drizzle-orm";
 import { buildApp } from "../src/app";
 import { seedAll } from "../src/seed";
@@ -13,6 +13,7 @@ let pgServer: EmbeddedPostgres;
 let app: Awaited<ReturnType<typeof buildApp>>;
 let priceNow = () => 150.25;
 let pool: ReturnType<typeof createDb>["pool"];
+let testDb: ReturnType<typeof createDb>["db"];
 
 beforeAll(async () => {
   fs.rmSync(dir, { recursive: true, force: true });
@@ -23,6 +24,7 @@ beforeAll(async () => {
   await applyMigrations(url);
   const created = createDb(url);
   pool = created.pool;
+  testDb = created.db;
   await seedAll(created.db);
   const [tok] = await created.db.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump"));
   const t0 = Date.UTC(2026, 10, 1, 0, 0, 0);
@@ -82,6 +84,34 @@ describe("market API", () => {
     for (const t of tokens) {
       expect(t.chain).toBe("robinhood");
     }
+  });
+
+  it("trending: sparkline asli dari titik harga, kosong bila titik kurang dari 3", async () => {
+    const first = (await get("/api/tokens/trending?tab=trending&limit=3")).json().tokens;
+    const [withPts, without] = [first[0], first[1]];
+    const [row] = await testDb.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, withPts.mint));
+    const base = Date.now() - 5 * 3_600_000;
+    await testDb.insert(tokenPricePoints).values([1, 2, 3, 4].map((i) => ({ tokenId: row.id, at: new Date(base + i * 3_600_000), priceUsd: String(i) })));
+    const [row2] = await testDb.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, without.mint));
+    await testDb.insert(tokenPricePoints).values([{ tokenId: row2.id, at: new Date(base), priceUsd: "1" }]);
+    const list = (await get("/api/tokens/trending?tab=trending&limit=4")).json().tokens; // limit berbeda: cache sparkline tidak terpakai
+    const a = list.find((t: { mint: string }) => t.mint === withPts.mint);
+    const b = list.find((t: { mint: string }) => t.mint === without.mint);
+    expect(a.spark.length).toBeGreaterThanOrEqual(4);
+    expect(a.spark.slice(0, 4)).toEqual([1, 2, 3, 4]);
+    expect(b.spark).toBeUndefined();
+  });
+
+  it("membuka token menandainya sedang dibuka (untuk penyegaran cepat)", async () => {
+    const mint = "B8G87xPYnSTCrf52mjPHywWPmTYXHBRWtPKmoqtkpump";
+    const [row] = await testDb.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, mint));
+    expect((await get(`/api/tokens/${mint}`)).statusCode).toBe(200);
+    let found = false;
+    for (let i = 0; i < 20 && !found; i++) {
+      found = (await testDb.select().from(tokenWatch).where(eq(tokenWatch.tokenId, row.id))).length === 1;
+      if (!found) await new Promise((r) => setTimeout(r, 100));
+    }
+    expect(found).toBe(true);
   });
 
   it("menolak chain yang tidak dikenal", async () => {
