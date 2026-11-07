@@ -42,9 +42,10 @@ const clean = (list: Raw[]): T[] =>
       createdAt: t.createdAt ?? 0,
     }));
 
-const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number }> = {
+/** logoOnly: hanya token yang punya logo asli. Top Gainers memakainya karena banyak token baru tanpa logo yang identitasnya tidak jelas. */
+const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number; logoOnly?: boolean }> = {
   latest: { title: "Latest Tokens", sub: "New pools, newest first · Robinhood Chain", sort: "age", dir: -1, minLiq: 0 },
-  gainers: { title: "Top Gainers", sub: "Up the most in 24 hours, with real liquidity · Robinhood Chain", sort: "change24h", dir: -1, minLiq: 10000 },
+  gainers: { title: "Top Gainers", sub: "Up the most in 24 hours, with real liquidity and a logo · Robinhood Chain", sort: "change24h", dir: -1, minLiq: 10000, logoOnly: true },
   volume: { title: "High Volume", sub: "Most traded in 24 hours · Robinhood Chain", sort: "volume", dir: -1, minLiq: 0 },
 };
 
@@ -90,8 +91,6 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
   );
   const base = useMemo(() => clean(data?.tokens ?? []), [data]);
   const [q, setQ] = useState("");
-  // Banyak token tiruan/baru tidak punya logo di sumber mana pun; penyaring ini hanya menampilkan token yang punya logo asli.
-  const [logoOnly, setLogoOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>(cfg.sort);
   const [dir, setDir] = useState<1 | -1>(cfg.dir);
   const [shown, setShown] = useState(PAGE);
@@ -102,10 +101,10 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
     const val = (t: T) => (sort === "age" ? t.createdAt : (t[sort] as number));
     return base
       .filter((t) => t.liquidity >= cfg.minLiq)
-      .filter((t) => !logoOnly || !!t.image)
+      .filter((t) => !cfg.logoOnly || !!t.image)
       .filter((t) => !s || t.name.toLowerCase().includes(s) || t.symbol.toLowerCase().includes(s) || t.mint.toLowerCase().startsWith(s))
       .sort((a, b) => ((val(a) ?? 0) - (val(b) ?? 0)) * dir);
-  }, [base, q, sort, dir, cfg.minLiq, logoOnly]);
+  }, [base, q, sort, dir, cfg.minLiq, cfg.logoOnly]);
 
   const head = (k: SortKey, label: string) => (
     <button
@@ -147,22 +146,6 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
         >
           Robinhood Chain<span className="num text-[11px] opacity-70">{rows.length}</span>
         </span>
-        <button
-          type="button"
-          aria-pressed={logoOnly}
-          onClick={() => {
-            setLogoOnly((v) => !v);
-            setShown(PAGE);
-          }}
-          className="h-8 px-3 rounded-full text-[13px] flex items-center gap-1.5 transition-colors"
-          style={
-            logoOnly
-              ? { background: "rgba(var(--v2-accent-rgb),0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.45)" }
-              : { background: "transparent", color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }
-          }
-        >
-          With logo
-        </button>
         <input
           value={q}
           onChange={(e) => {
