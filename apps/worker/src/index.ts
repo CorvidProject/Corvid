@@ -29,7 +29,7 @@ const env = z
     WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Token per putaran pengecekan keamanan (30 per request GoPlus). */
-    WORKER_SECURITY_N: z.coerce.number().int().min(30).max(300).default(90),
+    WORKER_SECURITY_N: z.coerce.number().int().min(30).max(300).default(110),
     WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(600_000),
     /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
     WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(48),

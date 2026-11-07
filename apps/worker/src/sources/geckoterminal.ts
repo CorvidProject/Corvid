@@ -196,6 +196,10 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     async trendingPools(page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/trending_pools?page=${page}`));
     },
+    /** Pool se-jaringan menurut volume 24 jam (20 per halaman). */
+    async topPools(page = 1): Promise<Pool[]> {
+      return parsePools(await http.getJson(`${BASE}/pools?page=${page}&sort=h24_volume_usd_desc`));
+    },
     async newPools(page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/new_pools?page=${page}`));
     },

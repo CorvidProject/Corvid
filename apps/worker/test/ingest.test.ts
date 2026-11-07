@@ -237,4 +237,22 @@ describe("errText", () => {
     expect(t.length).toBeLessThanOrEqual(400);
     expect(errText(new Error("plain"))).toBe("plain");
   });
+  it("refreshBoard(trending): menambah pool volume terbesar se-jaringan, tanpa duplikat dan tanpa aset dasar WETH/USDG", async () => {
+    const WETH = "0x0bd7d308f8e1639fab988df18a8011f41eacad73";
+    const withTop = async (url: string) => {
+      if (url.includes("/networks/robinhood/pools?")) return json(fx("gt-new.json")); // sumber "volume terbesar" memakai fixture pool lain
+      return fakeFetch(url);
+    };
+    const d = { ...deps(), gt: createGeckoTerminal({ fetch: withTop, minIntervalMs: 0, sleep: noSleep }) };
+    const trendingOnly = new Set((await d.gt.trendingPools()).map((p) => p.baseMint));
+    const top = new Set((await d.gt.topPools()).map((p) => p.baseMint));
+    const expected = new Set([...trendingOnly, ...top]);
+    expected.delete(WETH);
+    const r = await refreshBoard(d, "trending");
+    expect(r.tokens).toBe(expected.size);
+    expect(r.tokens).toBeGreaterThanOrEqual(trendingOnly.size);
+    // tidak ada token ganda di snapshot terbaru
+    const latest = await created.db.execute(sql`select token_id from token_trending where tab = 'trending' and snapshot_at = (select max(snapshot_at) from token_trending where tab = 'trending')`);
+    expect(new Set(latest.rows.map((x) => x.token_id)).size).toBe(latest.rows.length);
+  });
 });

@@ -15,6 +15,7 @@ import {
   type schema,
 } from "@corvid/db";
 import { eq, and as andOp, ne } from "drizzle-orm";
+import { CHAINS } from "@corvid/shared/chains";
 import type { GoPlus } from "./sources/goplus";
 import { classifyCurve, FRESH_MIN_SHARE, LAUNCHPADS, migratedDexOf, type Launchpad, type LaunchpadId, type Rpc } from "./sources/launchpads";
 import type { DexScreener, DsToken } from "./sources/dexscreener";
@@ -85,23 +86,35 @@ export async function upsertToken(db: Db, v: TokenValues, now: Date): Promise<{ 
 
 // Jumlah halaman GeckoTerminal per papan (20 pool per halaman); makin banyak makin lama satu putaran karena batas laju ketat.
 const TRENDING_PAGES = 3;
+const TOP_VOLUME_PAGES = 5;
+const BASE_ASSETS = [CHAINS.mainnet.wrappedNative, CHAINS.mainnet.usdg?.address].filter((a): a is string => !!a).map((a) => a.toLowerCase());
 const NEW_PAGES = 2;
 
 /** Perbarui papan token (tab trending/new) dan simpan snapshot peringkat. */
-export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 60): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {
+export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 160): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {
   const now = (deps.now ?? (() => new Date()))();
-  const pages = tab === "trending" ? TRENDING_PAGES : NEW_PAGES;
   const pools: Pool[] = [];
-  for (let page = 1; page <= pages; page++) {
-    try {
-      pools.push(...(tab === "trending" ? await deps.gt.trendingPools(page) : await deps.gt.newPools(page)));
-    } catch (e) {
-      if (page === 1) throw e; // halaman pertama wajib; halaman berikutnya hanya menambah cakupan
-      logOf(deps)(`${tab} halaman ${page} gagal: ${errText(e)}`);
-      break;
+  // Papan trending = pool trending GeckoTerminal lalu pool dengan volume 24 jam terbesar se-jaringan (menambah cakupan);
+  // papan new = pool terbaru. Halaman pertama sumber utama wajib berhasil; halaman tambahan yang gagal hanya menghentikan penambahan.
+  const sources: { pages: number; get: (page: number) => Promise<Pool[]>; required: boolean }[] =
+    tab === "trending"
+      ? [
+          { pages: TRENDING_PAGES, get: (p) => deps.gt.trendingPools(p), required: true },
+          { pages: TOP_VOLUME_PAGES, get: (p) => deps.gt.topPools(p), required: false },
+        ]
+      : [{ pages: NEW_PAGES, get: (p) => deps.gt.newPools(p), required: true }];
+  for (const src of sources) {
+    for (let page = 1; page <= src.pages; page++) {
+      try {
+        pools.push(...(await src.get(page)));
+      } catch (e) {
+        if (page === 1 && src.required) throw e;
+        logOf(deps)(`${tab} halaman ${page} gagal: ${errText(e)}`);
+        break;
+      }
     }
   }
-  const seen = new Set<string>();
+  const seen = new Set<string>(BASE_ASSETS); // WETH/USDG adalah aset dasar pasangan, bukan token yang diperdagangkan
   const unique = pools.filter((p) => (seen.has(p.baseMint) ? false : (seen.add(p.baseMint), true))).slice(0, limit);
 
   let ds: DsToken[] = [];
