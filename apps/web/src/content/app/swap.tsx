@@ -206,8 +206,11 @@ export function ApplicationSwapContent() {
     if (!d) return;
     setToken((t) => (t && t.poolId === undefined && t.mint === d.mint.toLowerCase() ? { ...t, symbol: d.symbol?.trim() || t.symbol, name: d.name?.trim() || t.name, image: d.image ?? t.image, poolId: d.poolId } : t));
   }, [meta.data]);
-  const v4Only = !!token?.poolId && token.poolId.length === 66;
-  const V4_MSG = "This token trades only on Uniswap v4. Corvid swaps support Uniswap v3 pools for now.";
+  // Pool utama 32 byte = Uniswap v4: PoolKey-nya dibaca API dari chain (id pool hanya hash), lalu kuotasi dan swap lewat jalur v4.
+  const isV4 = !!token?.poolId && token.poolId.length === 66;
+  const poolKeyApi = useApi<{ currency0: string; currency1: string; fee: number; tickSpacing: number; hooks: string }>(isV4 && token ? `/api/v4/pool-key?poolId=${token.poolId}` : null);
+  const v4Key = isV4 && poolKeyApi.data ? { ...poolKeyApi.data, currency0: poolKeyApi.data.currency0 as Address, currency1: poolKeyApi.data.currency1 as Address, hooks: poolKeyApi.data.hooks as Address } : null;
+  const metaPending = !!token && isEvm && token.poolId === undefined && meta.loading;
   const sellAddr = (flipped ? token?.mint : NATIVE_ADDR) as Address;
   const buyAddr = (flipped ? NATIVE_ADDR : token?.mint) as Address;
 
@@ -216,9 +219,14 @@ export function ApplicationSwapContent() {
     setErr(null);
     setMsg(null);
     if (!setup || !token || !isEvm || !(Number(amount) > 0)) return;
+    if (metaPending) return; // jenis pool token belum diketahui: tunggu agar tidak salah memilih jalur
+    if (isV4 && !v4Key) {
+      if (poolKeyApi.error) setErr("Could not load this token's Uniswap v4 pool. Try again shortly.");
+      return;
+    }
     let alive = true;
     const t = setTimeout(() => {
-      planSwap({ account: (w.address as Address | null) ?? null, sell: sellAddr, buy: buyAddr, amount, slippageBps: slip })
+      planSwap({ account: (w.address as Address | null) ?? null, sell: sellAddr, buy: buyAddr, amount, slippageBps: slip, v4Key })
         .then((p) => alive && setPlan(p))
         .catch((e: unknown) => alive && setErr(e instanceof Error ? e.message.split("\n")[0] : "Could not get a quote"));
     }, 450);
@@ -227,7 +235,7 @@ export function ApplicationSwapContent() {
       clearTimeout(t);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, token, flipped, w.address, slip]);
+  }, [amount, token, flipped, w.address, slip, metaPending, isV4, poolKeyApi.data, poolKeyApi.error]);
 
   const pct = async (p: number) => {
     if (!setup || !w.address || !token || !isEvm) return;
@@ -456,12 +464,12 @@ export function ApplicationSwapContent() {
           </button>
           {plan && (
             <p className="px-3 pt-2 text-[12px]" style={{ color: "var(--v2-t-4)" }}>
-              Uniswap v3 · fee {(plan.fee / 10000).toString()}% · slippage {slip / 100}% · minimum received {fmt(plan.minText)}
+              {plan.venue === "v4" ? `Uniswap v4 · ${(plan.route ?? "").replace("token", token?.symbol ?? "token")} · pool fee is dynamic` : `Uniswap v3 · fee ${(plan.fee / 10000).toString()}%`} · slippage {slip / 100}% · minimum received {fmt(plan.minText)}
               {tradeMode() === "dry" ? " · dry mode: no transactions are sent" : ""}
             </p>
           )}
           {err && (
-            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-neg)" }}>{v4Only && err.startsWith("No Uniswap v3 pool") ? V4_MSG : err}</p>
+            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-neg)" }}>{err}</p>
           )}
           {msg && (
             <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-pos)" }}>{msg}</p>

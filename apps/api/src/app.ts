@@ -19,6 +19,8 @@ import { chatRoutes } from "./routes/chats";
 import { planRoutes } from "./routes/plan";
 import { paymentRoutes, type PaymentsConfig } from "./routes/payments";
 import { marketplaceRoutes } from "./routes/marketplace";
+import { v4Routes } from "./routes/v4";
+import type { V4PoolResolver } from "./v4pool";
 import type { PlanLimitsByPlan } from "@corvid/shared";
 import type { LlmClient } from "./llm";
 import type { RateLimiter } from "./ratelimit";
@@ -49,9 +51,11 @@ export interface AppOptions {
   planLimits?: PlanLimitsByPlan;
   /** Konfigurasi pembayaran USDG; null = pembelian dimatikan (403 payments_disabled). */
   payments?: PaymentsConfig | null;
+  /** Pencari PoolKey Uniswap v4; null = endpoint /v4/pool-key menjawab 503. */
+  v4Pools?: V4PoolResolver | null;
 }
 
-export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", telegramBot = null, llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null }: AppOptions) {
+export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", telegramBot = null, llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null, v4Pools = null }: AppOptions) {
   const app = Fastify({ logger, trustProxy: trustProxyHops > 0 ? (_addr: string, hop: number) => hop < trustProxyHops : false }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -67,6 +71,7 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
 
   await app.register(marketRoutes(db), { prefix: "/api" });
   await app.register(discoveryRoutes(db), { prefix: "/api" });
+  await app.register(v4Routes(db, v4Pools), { prefix: "/api" });
   await app.register(alphaRoutes(db), { prefix: "/api" });
   await app.register(priceRoutes(ethPrice), { prefix: "/api" });
   let requireAuth: Parameters<typeof agentRoutes>[0]["requireAuth"] | null = null;

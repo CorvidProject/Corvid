@@ -31,6 +31,11 @@ export type ChainConfig = {
     stateView: string;
     quoter: string;
     permit2: string;
+    /**
+     * Pool v4 ETH(native)/USDG yang dipakai sebagai jembatan untuk token berpasangan USDG. Hanya bagian PoolKey selain mata uang
+     * (currency0 = ETH native, currency1 = USDG). Aplikasi mengkuotasi semuanya dan memilih yang terbaik.
+     */
+    ethUsdgPools: { fee: number; tickSpacing: number; hooks: string }[];
   } | null;
 };
 
@@ -77,6 +82,12 @@ export const CHAINS: Record<ChainEnv, ChainConfig> = {
       stateView: "0xf3334192d15450cdd385c8b70e03f9a6bd9e673b",
       quoter: "0x8dc178efb8111bb0973dd9d722ebeff267c98f94",
       permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      // PoolKey dibaca dari event Initialize PoolManager (blok 41259014 dan 101281159), 2026-11-07. fee 8388608 = 0x800000 = fee dinamis.
+      // Kedua pool memakai HOOK pihak ketiga; kuotasi V4Quoter dan eth_call lewat Universal Router diuji sukses di mainnet (beli dan jual).
+      ethUsdgPools: [
+        { fee: 8388608, tickSpacing: 10, hooks: "0x06a889870c8f83640d6816319f72e2aa579b6080" },
+        { fee: 8388608, tickSpacing: 1, hooks: "0x987e330f00b79864a07fe81dfac344d0078abcc0" },
+      ],
     },
   },
 };

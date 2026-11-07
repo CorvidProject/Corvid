@@ -1,5 +1,6 @@
 "use client";
-// Swap lewat Uniswap v3 (SwapRouter02 + QuoterV2) dari wallet pengguna. Kunci tidak pernah di server.
+// Swap lewat Uniswap v3 (SwapRouter02 + QuoterV2) atau Uniswap v4 (Universal Router + V4Quoter, lihat swap-v4.ts) dari wallet pengguna.
+// Kunci tidak pernah di server.
 // Aturan proyek: trade tetap `dry` (simulasi) sampai pemilik mengizinkan `live` secara eksplisit
 // (NEXT_PUBLIC_TRADE_MODE=live). Pada mode dry tidak ada transaksi yang dikirim: hanya kuotasi + estimasi gas.
 // Kontrak diambil dari @corvid/shared/chains (diverifikasi on-chain); testnet belum punya → swap dimatikan di sana.
@@ -16,6 +17,7 @@ import {
 } from "viem";
 import { getChain, type ChainConfig } from "@corvid/shared/chains";
 import type { Eip1193Provider } from "./wallet";
+import { candidateRoutes, encodeUniversalRouterSwap, permit2Abi, permit2ApproveData, quoteRoute, type Hop, type PoolKey } from "./swap-v4";
 
 export const NATIVE: Address = "0x0000000000000000000000000000000000000000";
 const ROUTER_SELF: Address = "0x0000000000000000000000000000000000000002"; // ADDRESS_THIS di SwapRouter02
@@ -134,6 +136,9 @@ export type SwapSetup = {
   quoter: Address;
   router: Address;
   client: PublicClient;
+  /** Kontrak Uniswap v4 (null bila belum diverifikasi di chain ini). */
+  v4: NonNullable<ChainConfig["uniswapV4"]> | null;
+  usdg: Address | null;
 };
 
 let cached: SwapSetup | null | undefined;
@@ -155,6 +160,8 @@ export function swapSetup(): SwapSetup | null {
     quoter: chain.uniswapV3.quoterV2 as Address,
     router: chain.uniswapV3.swapRouter02 as Address,
     client: createPublicClient({ chain: def, transport: http(rpc) }) as PublicClient,
+    v4: chain.uniswapV4,
+    usdg: (chain.usdg?.address as Address | undefined) ?? null,
   });
 }
 
@@ -182,6 +189,11 @@ export type Plan = {
   decIn: number;
   decOut: number;
   needsApproval: boolean;
+  /** Transaksi persetujuan yang harus dikirim berurutan sebelum swap (kosong bila tidak perlu). */
+  approvalTxs: { to: Address; data: Hex }[];
+  venue: "v3" | "v4";
+  /** Jalur tampil, mis. "ETH → USDG → token" (v4). */
+  route?: string;
   tx: { to: Address; data: Hex; value: bigint };
   /** Teks siap tampil. */
   outText: string;
@@ -192,9 +204,10 @@ export type Plan = {
  * Susun rencana swap: kuotasi terbaik di antara tier fee 0,05% / 0,3% / 1%, batas minimum sesuai slippage, dan data transaksi.
  * Hanya pasangan ETH <-> token (lewat WETH, pool v3 langsung). Mengembalikan galat yang bisa dibaca bila tidak ada pool.
  */
-export async function planSwap(args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number }): Promise<Plan> {
+export async function planSwap(args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number; v4Key?: PoolKey | null }): Promise<Plan> {
   const s = swapSetup();
   if (!s) throw new Error("Swaps are not available on this network yet");
+  if (args.v4Key) return planSwapV4(s, { ...args, v4Key: args.v4Key });
   const sellNative = args.sell === NATIVE;
   const buyNative = args.buy === NATIVE;
   if (sellNative === buyNative) throw new Error("Pick ETH on one side and a token on the other");
@@ -262,8 +275,74 @@ export async function planSwap(args: { account: Address | null; sell: Address; b
     decIn,
     decOut,
     needsApproval,
+    approvalTxs: needsApproval ? [{ to: args.sell, data: encodeFunctionData({ abi: erc20Abi, functionName: "approve", args: [s.router, amountIn] }) }] : [],
+    venue: "v3",
     tx,
     outText: formatUnits(found.out, decOut),
+    minText: formatUnits(minOut, decOut),
+  };
+}
+
+/**
+ * Swap lewat Uniswap v4 untuk token yang pool utamanya v4 (`v4Key` dari API). ETH <-> token lewat satu lompatan (pasangan ETH)
+ * atau dua lompatan lewat pool ETH/USDG (pasangan USDG); semua rute dikuotasi dan yang terbaik dipilih. Menjual token ERC-20
+ * butuh dua persetujuan: token -> Permit2, lalu Permit2 -> Universal Router.
+ */
+async function planSwapV4(s: SwapSetup, args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number; v4Key: PoolKey }): Promise<Plan> {
+  const v4 = s.v4;
+  if (!v4) throw new Error("Uniswap v4 is not available on this network yet");
+  const sellNative = args.sell === NATIVE;
+  const buyNative = args.buy === NATIVE;
+  if (sellNative === buyNative) throw new Error("Pick ETH on one side and a token on the other");
+  const token = sellNative ? args.buy : args.sell;
+  const decIn = await tokenDecimals(s, args.sell);
+  const decOut = await tokenDecimals(s, args.buy);
+  const amountIn = parseUnits(args.amount, decIn);
+  if (amountIn <= 0n) throw new Error("Enter an amount");
+
+  const routes = candidateRoutes({
+    buy: sellNative,
+    token,
+    pool: args.v4Key,
+    usdg: s.usdg,
+    bridges: v4.ethUsdgPools.map((b) => ({ fee: b.fee, tickSpacing: b.tickSpacing, hooks: b.hooks as Address })),
+  });
+  if (routes.length === 0) throw new Error("This token's Uniswap v4 pool is not paired with ETH or USDG, so Corvid cannot route it yet");
+  const quoted = await Promise.all(routes.map(async (hops) => ({ hops, out: await quoteRoute(s.client, v4.quoter as Address, args.sell, hops, amountIn) })));
+  let best: { hops: Hop[]; out: bigint } | null = null;
+  for (const q of quoted) if (q.out !== null && (!best || q.out > best.out)) best = { hops: q.hops, out: q.out };
+  if (!best) throw new Error("No Uniswap v4 route with liquidity for this pair");
+
+  const minOut = (best.out * BigInt(10_000 - args.slippageBps)) / 10_000n;
+  const deadline = BigInt(Math.floor(Date.now() / 1000) + 20 * 60);
+  const enc = encodeUniversalRouterSwap({ currencyIn: args.sell, hops: best.hops, amountIn, minOut, deadline });
+  const router = v4.universalRouter as Address;
+  const permit2 = v4.permit2 as Address;
+
+  const approvalTxs: Plan["approvalTxs"] = [];
+  if (!sellNative && args.account) {
+    const erc20Allowance = await s.client.readContract({ address: args.sell, abi: erc20Abi, functionName: "allowance", args: [args.account, permit2] });
+    if (erc20Allowance < amountIn) approvalTxs.push({ to: args.sell, data: encodeFunctionData({ abi: erc20Abi, functionName: "approve", args: [permit2, amountIn] }) });
+    const [p2amount, p2exp] = await s.client.readContract({ address: permit2, abi: permit2Abi, functionName: "allowance", args: [args.account, args.sell, router] });
+    const now = Math.floor(Date.now() / 1000);
+    if (p2amount < amountIn || p2exp <= now + 120) approvalTxs.push({ to: permit2, data: permit2ApproveData(args.sell, router, amountIn, now + 30 * 60) });
+  }
+  const via = best.hops.length > 1 ? " via USDG" : "";
+  return {
+    sell: args.sell,
+    buy: args.buy,
+    amountIn,
+    amountOut: best.out,
+    minOut,
+    fee: 0,
+    decIn,
+    decOut,
+    needsApproval: approvalTxs.length > 0,
+    approvalTxs,
+    venue: "v4",
+    route: `${sellNative ? "ETH" : "token"} → ${buyNative ? "ETH" : "token"}${via}`,
+    tx: { to: router, data: enc.data, value: enc.value },
+    outText: formatUnits(best.out, decOut),
     minText: formatUnits(minOut, decOut),
   };
 }
@@ -291,10 +370,9 @@ export async function executePlan(plan: Plan, account: Address, provider: Eip119
   if (!s) throw new Error("Swaps are not available on this network yet");
   const send = async (to: Address, data: Hex, value: bigint) =>
     (await provider.request({ method: "eth_sendTransaction", params: [{ from: account, to, data, value: hex(value) }] })) as Hex;
-  if (plan.needsApproval) {
-    // Persetujuan sebesar jumlah swap saja (bukan tak terbatas).
-    const approveData = encodeFunctionData({ abi: erc20Abi, functionName: "approve", args: [s.router, plan.amountIn] });
-    const h = await send(plan.sell, approveData, 0n);
+  // Persetujuan sebesar jumlah swap saja (bukan tak terbatas), dikirim berurutan; masing-masing ditunggu sampai masuk blok.
+  for (const a of plan.approvalTxs) {
+    const h = await send(a.to, a.data, 0n);
     await s.client.waitForTransactionReceipt({ hash: h });
   }
   const hash = await send(plan.tx.to, plan.tx.data, plan.tx.value);

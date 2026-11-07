@@ -39,6 +39,8 @@ const envSchema = z.object({
   CHAIN_ENV: z.string().default("testnet"),
   /** RPC berkunci (Alchemy). Kosong = RPC publik chain. */
   RPC_URL: opt(z.string().url()),
+  /** RPC mainnet untuk membaca PoolKey Uniswap v4 (data pasar selalu mainnet; RPC_URL bisa testnet). Kosong = RPC publik. */
+  MAINNET_RPC_URL: opt(z.string().url()),
 });
 export type Env = z.infer<typeof envSchema>;
 

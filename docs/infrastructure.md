@@ -49,7 +49,7 @@ Nama env (tanpa nilai): backend `SUPABASE_URL`, `DATABASE_URL` (direct/session, 
 
 Env vars yang terpasang (nama saja):
 
-- `@corvid/api`: `DATABASE_URL` (Supabase session pooler), `SUPABASE_URL`, `WEB_ORIGIN` (daftar origin dipisah koma: production dan URL branch testnet Vercel, tanpa slash akhir), `TRADE_MODE=dry`, `CHAIN_ENV=testnet`, `RPC_URL`. `PORT` diisi Railway.
+- `@corvid/api`: `DATABASE_URL` (Supabase session pooler), `SUPABASE_URL`, `WEB_ORIGIN` (daftar origin dipisah koma: production dan URL branch testnet Vercel, tanpa slash akhir), `TRADE_MODE=dry`, `CHAIN_ENV=testnet`, `RPC_URL`. `PORT` diisi Railway. Opsional `MAINNET_RPC_URL` (RPC mainnet untuk membaca PoolKey Uniswap v4; kosong = RPC publik).
 - `@corvid/worker`: `DATABASE_URL`, `CHAIN_ENV=testnet`, `RPC_URL`; opsional `WORKER_*_MS`, `MAINNET_RPC_URL`, `PONS_GRADUATION_ETH`, `VIRTUALS_GRADUATION`.
 - **Belum dipasang (menunggu pemilik, rahasia):** chat LLM di `@corvid/api`: `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` (lihat BLOCKERS no. 16).
 
