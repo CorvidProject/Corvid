@@ -107,7 +107,7 @@ export function FaqSection() {
                   9
                 </p>
                 <p
-                  className="font-mono text-xs font-semibold tracking-[0.18em] uppercase"
+                  className="font-mono text-xs font-semibold tracking-[0.12em] uppercase"
                   style={{
                     color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.65)",
                   }}

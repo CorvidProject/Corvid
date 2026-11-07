@@ -5,7 +5,7 @@ export function AboutContent() {
       <section id="company" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 01 ]
@@ -29,7 +29,7 @@ export function AboutContent() {
       <section id="product" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 02 ]
@@ -54,7 +54,7 @@ export function AboutContent() {
       <section id="contact" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 03 ]
@@ -82,7 +82,7 @@ export function AboutContent() {
       <section id="official" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 04 ]
@@ -131,7 +131,7 @@ export function AboutContent() {
             }}
           >
             <div
-              className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1.5"
+              className="font-mono text-[10px] tracking-[0.12em] uppercase mb-1.5"
               style={{ color: "#0030cf" }}
             >
               ※ We will never ask for a seed phrase

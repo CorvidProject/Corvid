@@ -396,56 +396,15 @@ export function HowItWorks() {
             </div>
             <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
               <div
-                aria-hidden="true"
-                className="hidden md:block absolute pointer-events-none"
-                style={{
-                  top: "38px",
-                  left: "calc(25% + 30px)",
-                  right: "calc(25% + 30px)",
-                  height: "1.5px",
-                  background:
-                    "linear-gradient(90deg, rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.15) 0%, rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.55) 50%, rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.15) 100%)",
-                }}
-              ></div>
-              <div
                 className="relative group flex flex-col"
                 data-reveal
                 style={{ "--rv-t": "translateY(20px)" }}
               >
-                <div className="relative z-10 flex flex-col items-center">
-                  <div
-                    className="flex items-center justify-center mb-6 rounded-full"
-                    style={{
-                      width: "76px",
-                      height: "76px",
-                      background:
-                        "rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.10)",
-                      backdropFilter: "blur(14px) saturate(140%)",
-                      WebkitBackdropFilter: "blur(14px) saturate(140%)",
-                      border:
-                        "1px solid rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.40)",
-                      boxShadow:
-                        "0 8px 28px -8px rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.35)",
-                    }}
-                  >
-                    <span
-                      className="font-heading font-extrabold tracking-[-0.04em]"
-                      style={{
-                        fontSize: "28px",
-                        color: "var(--v2-section-accent, var(--v2-accent))",
-                      }}
-                    >
-                      01
-                    </span>
-                  </div>
-                </div>
                 <div
                   className="relative rounded-2xl p-7 lg:p-8 transition-all flex-1 flex flex-col"
                   style={{
                     background:
                       "rgba(var(--v2-section-fg-rgb, 10,10,15),0.025)",
-                    backdropFilter: "blur(8px)",
-                    WebkitBackdropFilter: "blur(8px)",
                     border:
                       "1px solid rgba(var(--v2-section-fg-rgb, 10,10,15),0.10)",
                   }}
@@ -484,7 +443,7 @@ export function HowItWorks() {
                     signals, never Twitter noise
                   </p>
                   <div
-                    className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.18em] uppercase"
+                    className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.12em] uppercase"
                     style={{
                       color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.55)",
                     }}
@@ -554,40 +513,11 @@ export function HowItWorks() {
                 data-reveal
                 style={{ "--rv-t": "translateY(20px)" }}
               >
-                <div className="relative z-10 flex flex-col items-center">
-                  <div
-                    className="flex items-center justify-center mb-6 rounded-full"
-                    style={{
-                      width: "76px",
-                      height: "76px",
-                      background:
-                        "rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.10)",
-                      backdropFilter: "blur(14px) saturate(140%)",
-                      WebkitBackdropFilter: "blur(14px) saturate(140%)",
-                      border:
-                        "1px solid rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.40)",
-                      boxShadow:
-                        "0 8px 28px -8px rgba(var(--v2-section-accent-rgb, var(--v2-accent-rgb)),0.35)",
-                    }}
-                  >
-                    <span
-                      className="font-heading font-extrabold tracking-[-0.04em]"
-                      style={{
-                        fontSize: "28px",
-                        color: "var(--v2-section-accent, var(--v2-accent))",
-                      }}
-                    >
-                      02
-                    </span>
-                  </div>
-                </div>
                 <div
                   className="relative rounded-2xl p-7 lg:p-8 transition-all flex-1 flex flex-col"
                   style={{
                     background:
                       "rgba(var(--v2-section-fg-rgb, 10,10,15),0.025)",
-                    backdropFilter: "blur(8px)",
-                    WebkitBackdropFilter: "blur(8px)",
                     border:
                       "1px solid rgba(var(--v2-section-fg-rgb, 10,10,15),0.10)",
                   }}
@@ -626,7 +556,7 @@ export function HowItWorks() {
                     Approvals only when you want them
                   </p>
                   <div
-                    className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.18em] uppercase"
+                    className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.12em] uppercase"
                     style={{
                       color: "rgba(var(--v2-section-fg-rgb, 10,10,15), 0.55)",
                     }}

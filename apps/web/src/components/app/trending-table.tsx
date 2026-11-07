@@ -289,7 +289,7 @@ export function IntervalControls({ value, onChange, onRefresh, spinning }: { val
               key={i.key}
               onClick={() => onChange(i.key)}
               aria-pressed={on}
-              className="num text-[11px] px-2.5 sm:px-3 py-1.5 transition-colors"
+              className="num text-[11px] crv-ivl-btn py-1.5 transition-colors"
               style={{ color: on ? "#ffffff" : "var(--v2-t-3)", background: on ? "var(--v2-accent)" : "transparent", fontWeight: on ? 600 : 400 }}
             >
               {i.label}

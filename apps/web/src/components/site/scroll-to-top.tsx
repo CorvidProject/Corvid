@@ -30,8 +30,7 @@ export function ScrollToTop() {
             color: "var(--v2-accent-text)",
             background: "rgba(10,10,15, 0.85)",
             border: "1px solid rgba(var(--v2-accent-rgb), 0.6)",
-            boxShadow: "0 0 24px rgba(var(--v2-accent-rgb), 0.45), 0 6px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
-            backdropFilter: "blur(8px)",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.45)",
           }}
         >
           Top <ArrowUp size={14} weight="bold" />

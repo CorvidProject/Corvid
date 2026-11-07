@@ -562,7 +562,7 @@ export const tokenItems: AccordionItem[] = [
     label: "Your agent becomes a tradeable token",
     badge: (
       <span
-        className="font-mono text-[11px] tracking-[0.18em] uppercase px-2 py-0.5 rounded-sm"
+        className="font-mono text-[11px] tracking-[0.12em] uppercase px-2 py-0.5 rounded-sm"
         style={{
           color: "var(--v2-accent-hover)",
           background: "rgba(var(--v2-accent-rgb),0.10)",
@@ -589,7 +589,7 @@ export const tokenItems: AccordionItem[] = [
     label: "Back an agent before it graduates",
     badge: (
       <span
-        className="font-mono text-[11px] tracking-[0.18em] uppercase px-2 py-0.5 rounded-sm"
+        className="font-mono text-[11px] tracking-[0.12em] uppercase px-2 py-0.5 rounded-sm"
         style={{
           color: "var(--v2-accent-hover)",
           background: "rgba(var(--v2-accent-rgb),0.10)",
@@ -616,7 +616,7 @@ export const tokenItems: AccordionItem[] = [
     label: "Governance",
     badge: (
       <span
-        className="font-mono text-[11px] tracking-[0.18em] uppercase px-2 py-0.5 rounded-sm"
+        className="font-mono text-[11px] tracking-[0.12em] uppercase px-2 py-0.5 rounded-sm"
         style={{
           color: "var(--v2-accent-hover)",
           background: "rgba(var(--v2-accent-rgb),0.10)",

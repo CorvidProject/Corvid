@@ -65,7 +65,7 @@ export function CookieBanner() {
               </motion.svg>
             ))}
             <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <span className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>
+              <span className="font-mono text-[10px] tracking-[0.12em] uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>
                 [ COOKIES ]
               </span>
               <button

@@ -18,7 +18,7 @@ export function DocsTelegramContent() {
   return (
     <article>
       <div
-        className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase"
+        className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.12em] uppercase"
         style={{ color: "rgba(255,255,255, 0.65)" }}
       >
         <span>
@@ -38,7 +38,7 @@ export function DocsTelegramContent() {
 
       <div className="mb-16">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
-          <span className="font-mono text-[11px] tracking-[0.2em]" style={{ color: "var(--v2-accent-text)" }}>[ 01 ]</span>
+          <span className="font-mono text-[11px] tracking-[0.12em]" style={{ color: "var(--v2-accent-text)" }}>[ 01 ]</span>
           <h2 className="font-heading font-bold text-[26px] tracking-[-0.02em] text-white m-0 p-0 border-0">Link your account</h2>
         </div>
         <ol className="list-none m-0 p-0 space-y-5 pl-4 border-l border-white/[0.08]">
@@ -61,7 +61,7 @@ export function DocsTelegramContent() {
 
       <div className="mb-16">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
-          <span className="font-mono text-[11px] tracking-[0.2em]" style={{ color: "var(--v2-accent-text)" }}>[ 02 ]</span>
+          <span className="font-mono text-[11px] tracking-[0.12em]" style={{ color: "var(--v2-accent-text)" }}>[ 02 ]</span>
           <h2 className="font-heading font-bold text-[26px] tracking-[-0.02em] text-white m-0 p-0 border-0">What to expect</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -75,7 +75,7 @@ export function DocsTelegramContent() {
       </div>
 
       <div className="mb-12 relative pl-4 py-3" style={{ borderLeft: "2px solid var(--v2-accent)", background: "rgba(var(--v2-accent-rgb),0.05)" }}>
-        <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "var(--v2-accent-text)" }}>※ Note</div>
+        <div className="font-mono text-[11px] tracking-[0.12em] uppercase mb-1.5" style={{ color: "var(--v2-accent-text)" }}>※ Note</div>
         <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
           Telegram only reports. The bot never approves or executes a trade, and it will never ask for your seed phrase, private key, or password. Alerts are information, not financial advice.
         </p>
@@ -84,14 +84,14 @@ export function DocsTelegramContent() {
       <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-3">
         <a className="group flex items-center justify-between p-5 border border-white/[0.08] hover:border-[var(--v2-accent)]/50 transition-colors" style={{ background: "rgba(255,255,255,0.02)" }} href="/docs/signals">
           <div>
-            <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: "rgba(255,255,255, 0.65)" }}>← BACK</div>
+            <div className="font-mono text-[11px] tracking-[0.12em] uppercase mb-1" style={{ color: "rgba(255,255,255, 0.65)" }}>← BACK</div>
             <div className="font-heading font-semibold text-white">Signals</div>
           </div>
           <span style={{ color: "var(--v2-accent-text)" }} className="text-xl">→</span>
         </a>
         <a className="group flex items-center justify-between p-5 border border-white/[0.08] hover:border-[var(--v2-accent)]/50 transition-colors" style={{ background: "rgba(255,255,255,0.02)" }} href="/docs/agents">
           <div>
-            <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: "rgba(255,255,255, 0.65)" }}>DEEP DIVE →</div>
+            <div className="font-mono text-[11px] tracking-[0.12em] uppercase mb-1" style={{ color: "rgba(255,255,255, 0.65)" }}>DEEP DIVE →</div>
             <div className="font-heading font-semibold text-white">Agents</div>
           </div>
           <span style={{ color: "var(--v2-accent-text)" }} className="text-xl group-hover:translate-x-1 transition-transform">→</span>

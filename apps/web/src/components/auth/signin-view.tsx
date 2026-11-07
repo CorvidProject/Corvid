@@ -148,7 +148,7 @@ export function SigninView() {
                   {s.k}
                 </div>
                 <div
-                  className="font-mono text-[8px] tracking-[0.18em] uppercase mt-0.5"
+                  className="font-mono text-[8px] tracking-[0.12em] uppercase mt-0.5"
                   style={{ color: "rgba(255,255,255,0.40)" }}
                 >
                   {s.v}
@@ -158,7 +158,7 @@ export function SigninView() {
           </div>
         </div>
         <div
-          className="relative z-10 flex items-end justify-between font-mono text-[9px] tracking-[0.2em] uppercase"
+          className="relative z-10 flex items-end justify-between font-mono text-[9px] tracking-[0.12em] uppercase"
           style={{ color: "rgba(255,255,255,0.30)" }}
         >
           <div className="flex flex-col gap-1">

@@ -58,7 +58,7 @@ export function DocsShell({ children }: { children: ReactNode }) {
         <main className="flex-1 min-w-0 w-full px-4 sm:px-10 py-8 sm:py-14 max-w-3xl docs-prose overflow-x-hidden">
           {children}
           <footer
-            className="mt-20 pt-8 border-t flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] tracking-[0.2em] uppercase"
+            className="mt-20 pt-8 border-t flex flex-wrap items-center justify-between gap-4 font-mono text-[11px] tracking-[0.12em] uppercase"
             style={{
               color: "rgba(255,255,255,0.65)",
               borderColor: "rgba(255,255,255,0.08)",

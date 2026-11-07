@@ -303,7 +303,7 @@ function Tier({ title, items, accent, current }: { title: string; items: string[
       }}
     >
       <div className="flex items-center justify-between mb-5">
-        <span className="font-mono text-[11px] tracking-[0.2em] uppercase" style={{ color: accent ? "var(--v2-accent-text)" : "var(--v2-t-3)" }}>
+        <span className="font-mono text-[11px] tracking-[0.12em] uppercase" style={{ color: accent ? "var(--v2-accent-text)" : "var(--v2-t-3)" }}>
           {title}
         </span>
         {current && (

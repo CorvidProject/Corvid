@@ -41,7 +41,7 @@ function Label({ text }: { text: string }) {
 export function DocArticle({ d }: { d: DocPageData }) {
   return (
     <article>
-      <div className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.2em] uppercase" style={{ color: "rgba(255,255,255, 0.65)" }}>
+      <div className="flex items-center justify-between border-y border-white/[0.08] py-2.5 mb-12 font-mono text-[11px] tracking-[0.12em] uppercase" style={{ color: "rgba(255,255,255, 0.65)" }}>
         <span>
           <span style={{ color: "var(--v2-accent-text)" }}>●</span> {d.code}
         </span>
@@ -60,7 +60,7 @@ export function DocArticle({ d }: { d: DocPageData }) {
       {d.sections.map((s, i) => (
         <div key={s.title} className="mb-16">
           <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
-            <span className="font-mono text-[11px] tracking-[0.2em]" style={{ color: "var(--v2-accent-text)" }}>
+            <span className="font-mono text-[11px] tracking-[0.12em]" style={{ color: "var(--v2-accent-text)" }}>
               [ {String(i + 1).padStart(2, "0")} ]
             </span>
             <h2 className="font-heading font-bold text-[26px] tracking-[-0.02em] text-white m-0 p-0 border-0">{s.title}</h2>
@@ -123,7 +123,7 @@ export function DocArticle({ d }: { d: DocPageData }) {
 
       {d.note && (
         <div className="mb-12 relative pl-4 py-3" style={{ borderLeft: "2px solid var(--v2-accent)", background: "rgba(var(--v2-accent-rgb),0.05)" }}>
-          <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "var(--v2-accent-text)" }}>
+          <div className="font-mono text-[11px] tracking-[0.12em] uppercase mb-1.5" style={{ color: "var(--v2-accent-text)" }}>
             ※ {d.note.label}
           </div>
           <p className="m-0" style={{ color: "rgba(255,255,255,0.70)" }}>
@@ -136,7 +136,7 @@ export function DocArticle({ d }: { d: DocPageData }) {
         {d.next.map((l) => (
           <a key={l.href} className="group flex items-center justify-between p-5 border border-white/[0.08] hover:border-[var(--v2-accent)]/50 transition-colors" style={{ background: "rgba(255,255,255,0.02)" }} href={l.href}>
             <div>
-              <div className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: "rgba(255,255,255, 0.65)" }}>
+              <div className="font-mono text-[11px] tracking-[0.12em] uppercase mb-1" style={{ color: "rgba(255,255,255, 0.65)" }}>
                 {l.kicker}
               </div>
               <div className="font-heading font-semibold text-white">{l.label}</div>

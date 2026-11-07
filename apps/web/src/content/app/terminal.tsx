@@ -65,7 +65,7 @@ function TerminalInner() {
           className="flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-8"
           style={{ borderBottom: "1px solid var(--v2-line-1)" }}
         >
-          <div className="flex items-center gap-5 sm:gap-8">
+          <div className="crv-tabs flex items-center">
             {(["trending", "trenches"] as const).map((k) => {
               const active = mode === k;
               return (

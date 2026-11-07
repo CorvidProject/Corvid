@@ -1053,7 +1053,7 @@ export function TokenSection() {
               style={{ borderRight: "1px solid rgba(255,255,255,0.08)" }}
             >
               <span
-                className="font-mono text-[11px] tracking-[0.18em] uppercase block mb-1"
+                className="font-mono text-[11px] tracking-[0.12em] uppercase block mb-1"
                 style={{ color: "rgba(255,255,255,0.60)" }}
               >
                 CONTRACT
@@ -1070,7 +1070,7 @@ export function TokenSection() {
               style={{ borderRight: "1px solid rgba(255,255,255,0.08)" }}
             >
               <span
-                className="font-mono text-[11px] tracking-[0.18em] uppercase block mb-1"
+                className="font-mono text-[11px] tracking-[0.12em] uppercase block mb-1"
                 style={{ color: "rgba(255,255,255,0.60)" }}
               >
                 NETWORK
@@ -1084,7 +1084,7 @@ export function TokenSection() {
             </div>
             <div className="px-6 lg:px-12 py-5">
               <span
-                className="font-mono text-[11px] tracking-[0.18em] uppercase block mb-1"
+                className="font-mono text-[11px] tracking-[0.12em] uppercase block mb-1"
                 style={{ color: "rgba(255,255,255,0.60)" }}
               >
                 STATUS

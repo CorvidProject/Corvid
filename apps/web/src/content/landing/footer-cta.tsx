@@ -151,13 +151,13 @@ export function FooterCta() {
             style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
           >
             <span
-              className="font-mono text-[11px] tracking-[0.18em] uppercase"
+              className="font-mono text-[11px] tracking-[0.12em] uppercase"
               style={{ color: "rgba(255,255,255,0.50)" }}
             >
               ROBINHOOD CHAIN · GECKOTERMINAL · GOPLUS
             </span>
             <span
-              className="font-mono text-[11px] tracking-[0.18em] uppercase"
+              className="font-mono text-[11px] tracking-[0.12em] uppercase"
               style={{ color: "rgba(255,255,255,0.50)" }}
             >
               EST. 2026

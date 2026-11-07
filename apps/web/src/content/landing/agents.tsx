@@ -467,7 +467,7 @@ export function Agents() {
             style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
           >
             <span
-              className="font-mono text-[10px] tracking-[0.18em] uppercase"
+              className="font-mono text-[10px] tracking-[0.12em] uppercase"
               style={{ color: "rgba(255,255,255, 0.65)" }}
             >
               BUILD · DEPLOY · EARN

@@ -4,7 +4,7 @@ export function PrivacyContent() {
       <section id="intro" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 01 ]
@@ -27,7 +27,7 @@ export function PrivacyContent() {
       <section id="collect" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 02 ]
@@ -92,7 +92,7 @@ export function PrivacyContent() {
       <section id="use" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 03 ]
@@ -135,7 +135,7 @@ export function PrivacyContent() {
       <section id="ai" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 04 ]
@@ -153,7 +153,7 @@ export function PrivacyContent() {
             }}
           >
             <div
-              className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1.5"
+              className="font-mono text-[10px] tracking-[0.12em] uppercase mb-1.5"
               style={{ color: "#0030cf" }}
             >
               ※ Notice
@@ -173,7 +173,7 @@ export function PrivacyContent() {
       <section id="wallet" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 05 ]
@@ -201,7 +201,7 @@ export function PrivacyContent() {
       <section id="share" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 06 ]
@@ -252,7 +252,7 @@ export function PrivacyContent() {
       <section id="retention" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 07 ]
@@ -282,7 +282,7 @@ export function PrivacyContent() {
       <section id="rights" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 08 ]
@@ -309,7 +309,7 @@ export function PrivacyContent() {
       <section id="cookies" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 09 ]
@@ -328,7 +328,7 @@ export function PrivacyContent() {
       <section id="children" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 10 ]
@@ -348,7 +348,7 @@ export function PrivacyContent() {
       <section id="changes" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 11 ]

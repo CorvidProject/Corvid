@@ -165,7 +165,7 @@ export function Navbar() {
                 <span className="font-mono text-[11px] tracking-[0.12em] uppercase mb-2" style={{ color: "var(--v2-accent-text)" }}>
                   ※ Trading OS
                 </span>
-                <span className="font-mono text-[11px] tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255, 0.65)" }}>
+                <span className="font-mono text-[11px] tracking-[0.12em] uppercase" style={{ color: "rgba(255,255,255, 0.65)" }}>
                   Robinhood Chain · agent-native
                 </span>
               </div>
@@ -181,7 +181,7 @@ export function Navbar() {
                   style={{ color: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
                 >
                   <span className="flex items-center gap-3">
-                    <span className="font-mono text-[11px] font-semibold tracking-[0.18em]" style={{ color: "var(--v2-accent-text)" }}>
+                    <span className="font-mono text-[11px] font-semibold tracking-[0.12em]" style={{ color: "var(--v2-accent-text)" }}>
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     {item.label}
@@ -201,12 +201,12 @@ export function Navbar() {
                   className="font-mono text-xs tracking-[0.10em] uppercase py-4 text-center font-bold text-white transition-all hover:brightness-110"
                   style={{
                     background: "var(--v2-accent)",
-                    boxShadow: "0 8px 32px rgba(var(--v2-accent-rgb),0.35), 0 0 0 1px rgba(var(--v2-accent-rgb),0.5) inset",
+                    boxShadow: "0 0 0 1px rgba(var(--v2-accent-rgb),0.5) inset",
                   }}
                 >
                   Launch App ▶
                 </Link>
-                <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-center mt-2" style={{ color: "rgba(255,255,255, 0.65)" }}>
+                <p className="font-mono text-[11px] tracking-[0.12em] uppercase text-center mt-2" style={{ color: "rgba(255,255,255, 0.65)" }}>
                   ※ Trading · Agents · Marketplace
                 </p>
               </div>

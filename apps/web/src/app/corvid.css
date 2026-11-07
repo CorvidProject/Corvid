@@ -324,3 +324,15 @@ a.pf-row:hover { background: var(--v2-bg-2); }
 .crv-node:hover .crv-node-icon { transform: scale(1.06); }
 .crv-node[aria-pressed="true"] .crv-node-icon, .crv-node[data-kind="trigger"] .crv-node-icon { color: #ffffff; filter: drop-shadow(0 0 12px rgba(var(--v2-accent-rgb), 0.85)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
 .crv-node-img { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.12)) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55)); }
+
+/* Tab dan tombol interval Terminal: lebih rapat di layar sempit agar tidak melebar. */
+.crv-tabs { gap: 1.25rem; }
+.crv-ivl-btn { padding-inline: 0.625rem; }
+@media (min-width: 640px) {
+  .crv-tabs { gap: 2rem; }
+  .crv-ivl-btn { padding-inline: 0.75rem; }
+}
+
+/* Redam glow: tombol chrome cukup bayangan gelap dan highlight tipis, tanpa cahaya biru. */
+:root[data-brand="corvid"] .crv-chrome-btn { box-shadow: 0 8px 22px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+:root[data-brand="corvid"] .crv-chrome-btn:hover { box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14); }

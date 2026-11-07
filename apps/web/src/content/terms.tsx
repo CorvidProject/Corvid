@@ -4,7 +4,7 @@ export function TermsContent() {
       <section id="acceptance" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 01 ]
@@ -27,7 +27,7 @@ export function TermsContent() {
       <section id="service" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 02 ]
@@ -64,7 +64,7 @@ export function TermsContent() {
       <section id="no-advice" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 03 ]
@@ -82,7 +82,7 @@ export function TermsContent() {
             }}
           >
             <div
-              className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1.5"
+              className="font-mono text-[10px] tracking-[0.12em] uppercase mb-1.5"
               style={{ color: "#0030cf" }}
             >
               ※ Disclaimer
@@ -107,7 +107,7 @@ export function TermsContent() {
       <section id="eligibility" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 04 ]
@@ -130,7 +130,7 @@ export function TermsContent() {
       <section id="wallet" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 05 ]
@@ -165,7 +165,7 @@ export function TermsContent() {
       <section id="agents" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 06 ]
@@ -205,7 +205,7 @@ export function TermsContent() {
       <section id="credits" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 07 ]
@@ -244,7 +244,7 @@ export function TermsContent() {
       <section id="marketplace" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 08 ]
@@ -282,7 +282,7 @@ export function TermsContent() {
       <section id="prohibited" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 09 ]
@@ -317,7 +317,7 @@ export function TermsContent() {
       <section id="ip" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 10 ]
@@ -340,7 +340,7 @@ export function TermsContent() {
       <section id="liability" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 11 ]
@@ -375,7 +375,7 @@ export function TermsContent() {
       <section id="indemnity" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 12 ]
@@ -400,7 +400,7 @@ export function TermsContent() {
       <section id="termination" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 13 ]
@@ -423,7 +423,7 @@ export function TermsContent() {
       <section id="contact" className="scroll-mt-28 mb-14">
         <div className="flex items-baseline gap-4 mb-5 pb-3 border-b border-white/[0.08]">
           <span
-            className="font-mono text-[11px] tracking-[0.2em]"
+            className="font-mono text-[11px] tracking-[0.12em]"
             style={{ color: "#0030cf" }}
           >
             [ 14 ]
