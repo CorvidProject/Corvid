@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useApi } from "@/lib/api";
+import { tokenFallbackStyle } from "@/components/app/token-avatar";
 
 // Mode "Trenches" di /application/terminal: tiga kolom (New / Trending / High Volume).
 // Data dari GET /api/tokens/trending, diambil ulang berkala.
@@ -138,7 +139,7 @@ function Row({ t, kind, now }: { t: Tok; kind: "new" | "trending" | "volume"; no
           ) : (
             <div
               className="h-9 w-9 rounded-full flex items-center justify-center num text-[11px] font-semibold"
-              style={{ background: "var(--v2-bg-2)", border: "1px solid var(--v2-line-1)", color: "var(--v2-t-1)" }}
+              style={tokenFallbackStyle(t.mint || t.symbol)}
             >
               {t.symbol.trim().slice(0, 2)}
             </div>

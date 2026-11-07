@@ -90,6 +90,8 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
   );
   const base = useMemo(() => clean(data?.tokens ?? []), [data]);
   const [q, setQ] = useState("");
+  // Banyak token tiruan/baru tidak punya logo di sumber mana pun; penyaring ini hanya menampilkan token yang punya logo asli.
+  const [logoOnly, setLogoOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>(cfg.sort);
   const [dir, setDir] = useState<1 | -1>(cfg.dir);
   const [shown, setShown] = useState(PAGE);
@@ -100,9 +102,10 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
     const val = (t: T) => (sort === "age" ? t.createdAt : (t[sort] as number));
     return base
       .filter((t) => t.liquidity >= cfg.minLiq)
+      .filter((t) => !logoOnly || !!t.image)
       .filter((t) => !s || t.name.toLowerCase().includes(s) || t.symbol.toLowerCase().includes(s) || t.mint.toLowerCase().startsWith(s))
       .sort((a, b) => ((val(a) ?? 0) - (val(b) ?? 0)) * dir);
-  }, [base, q, sort, dir, cfg.minLiq]);
+  }, [base, q, sort, dir, cfg.minLiq, logoOnly]);
 
   const head = (k: SortKey, label: string) => (
     <button
@@ -144,6 +147,22 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
         >
           Robinhood Chain<span className="num text-[11px] opacity-70">{rows.length}</span>
         </span>
+        <button
+          type="button"
+          aria-pressed={logoOnly}
+          onClick={() => {
+            setLogoOnly((v) => !v);
+            setShown(PAGE);
+          }}
+          className="h-8 px-3 rounded-full text-[13px] flex items-center gap-1.5 transition-colors"
+          style={
+            logoOnly
+              ? { background: "rgba(var(--v2-accent-rgb),0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.45)" }
+              : { background: "transparent", color: "var(--v2-t-3)", border: "1px solid var(--v2-line-1)" }
+          }
+        >
+          With logo
+        </button>
         <input
           value={q}
           onChange={(e) => {

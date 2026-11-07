@@ -5,6 +5,7 @@ import trending from "@/data/tokens-trending.json";
 import memescope from "@/data/memescope.json";
 import { formatUnits, type Address } from "viem";
 import { USE_API, useApi } from "@/lib/api";
+import { tokenFallbackStyle } from "@/components/app/token-avatar";
 import { switchToAppChain, useWallet } from "@/lib/wallet";
 import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, slippageBps, swapSetup, tokenDecimals, tradeMode, type Plan } from "@/lib/swap";
 
@@ -54,7 +55,7 @@ function Avatar({ t, size = 28 }: { t: SwapToken; size?: number }) {
     // eslint-disable-next-line @next/next/no-img-element
     <img alt="" width={size} height={size} src={t.image} className="rounded-full object-cover shrink-0" style={{ width: size, height: size, background: "var(--v2-bg-2)" }} />
   ) : (
-    <span className="rounded-full shrink-0 inline-flex items-center justify-center text-[11px] font-semibold" style={{ width: size, height: size, background: "var(--v2-bg-3)", color: "var(--v2-t-2)" }}>
+    <span className="rounded-full shrink-0 inline-flex items-center justify-center text-[11px] font-semibold" style={{ width: size, height: size, ...tokenFallbackStyle(t.mint || t.symbol) }}>
       {t.symbol.slice(0, 1)}
     </span>
   );

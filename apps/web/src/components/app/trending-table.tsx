@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowsClockwise, CaretDown, Check, Funnel, Star, X } from "@phosphor-icons/react";
+import { tokenFallbackStyle } from "@/components/app/token-avatar";
 
 // Tab "Trending" di /application/terminal: interval, filter, dan tabel. Data dari GET /api/tokens/trending
 // (diambil di terminal.tsx dan diperbarui berkala). Logika filter mengikuti referensi.
@@ -459,7 +460,7 @@ function Avatar({ t, size, round = true }: { t: Tok; size: number; round?: boole
     // eslint-disable-next-line @next/next/no-img-element
     <img alt="" width={size} height={size} className={cls} referrerPolicy="no-referrer" loading="lazy" src={t.image} onError={() => setBad(true)} style={{ width: size, height: size, background: "var(--v2-bg-2)" }} />
   ) : (
-    <div className={`${round ? "rounded-full" : "rounded-sm"} shrink-0 flex items-center justify-center num text-[11px] font-semibold`} style={{ width: size, height: size, background: "var(--v2-bg-2)", border: "1px solid var(--v2-line-1)", color: "var(--v2-t-1)" }}>
+    <div className={`${round ? "rounded-full" : "rounded-sm"} shrink-0 flex items-center justify-center num text-[11px] font-semibold`} style={{ width: size, height: size, ...tokenFallbackStyle(t.mint || t.symbol) }}>
       {t.symbol.trim().slice(0, 2)}
     </div>
   );
