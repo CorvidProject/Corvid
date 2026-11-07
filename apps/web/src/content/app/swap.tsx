@@ -7,7 +7,7 @@ import { formatUnits, type Address } from "viem";
 import { USE_API, useApi } from "@/lib/api";
 import { tokenFallbackStyle } from "@/components/app/token-avatar";
 import { switchToAppChain, useWallet } from "@/lib/wallet";
-import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, slippageBps, swapSetup, tokenDecimals, tradeMode, type Plan } from "@/lib/swap";
+import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, swapErrorText, slippageBps, swapSetup, tokenDecimals, tradeMode, type Plan } from "@/lib/swap";
 
 const EVM = /^0x[0-9a-fA-F]{40}$/;
 const GAS_RESERVE = 500_000_000_000_000n; // 0,0005 ETH disisakan saat memilih Max
@@ -187,6 +187,8 @@ export function ApplicationSwapContent() {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [step, setStep] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [slip, setSlip] = useState(100);
   useEffect(() => setSlip(slippageBps()), []);
@@ -219,6 +221,8 @@ export function ApplicationSwapContent() {
     setPlan(null);
     setErr(null);
     setMsg(null);
+    setInfo(null);
+    setStep(null);
     if (!setup || !token || !isEvm || !(Number(amount) > 0)) return;
     if (metaPending) return; // jenis pool token belum diketahui: tunggu agar tidak salah memilih jalur
     if (isV4 && !v4Key) {
@@ -255,6 +259,8 @@ export function ApplicationSwapContent() {
     setBusy(true);
     setErr(null);
     setMsg(null);
+    setInfo(null);
+    setStep(null);
     try {
       if (w.wrongChain) {
         const r = await switchToAppChain();
@@ -270,7 +276,7 @@ export function ApplicationSwapContent() {
       } else {
         const provider = w.wallets.find((x) => x.id === w.walletId)?.provider;
         if (!provider) throw new Error("Connect a wallet first");
-        const hash = await executePlan(plan, acct, provider);
+        const hash = await executePlan(plan, acct, provider, setStep);
         setMsg(`Swap confirmed: ${hash}`);
       }
     } catch (e) {
@@ -471,6 +477,12 @@ export function ApplicationSwapContent() {
           )}
           {err && (
             <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-neg)" }}>{err}</p>
+          )}
+          {step && (
+            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-t-2)" }} role="status">{step}</p>
+          )}
+          {info && (
+            <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-t-3)" }}>{info}</p>
           )}
           {msg && (
             <p className="px-3 pt-1 text-[12px]" style={{ color: "var(--v2-pos)" }}>{msg}</p>

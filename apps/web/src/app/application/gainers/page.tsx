@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppShell } from "@/components/app/app-shell";
 import { ApplicationGainersContent } from "@/content/app/gainers";
 
-export const metadata: Metadata = { title: "Corvid App" };
+export const metadata: Metadata = { title: "Top Gainers | Corvid" };
 
 export default function Page() {
   return (

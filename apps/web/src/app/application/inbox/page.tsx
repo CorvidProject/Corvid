@@ -5,7 +5,7 @@ import {
   ApplicationInboxContentExtra,
 } from "@/content/app/inbox";
 
-export const metadata: Metadata = { title: "Corvid App" };
+export const metadata: Metadata = { title: "Inbox | Corvid" };
 
 export default function Page() {
   return (

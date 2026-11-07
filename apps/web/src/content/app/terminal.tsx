@@ -62,10 +62,10 @@ function TerminalInner() {
       </div>
       <div className="max-w-[1800px] mx-auto">
         <div
-          className="flex items-center justify-between gap-6 px-5 sm:px-8"
+          className="flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-8"
           style={{ borderBottom: "1px solid var(--v2-line-1)" }}
         >
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-5 sm:gap-8">
             {(["trending", "trenches"] as const).map((k) => {
               const active = mode === k;
               return (
@@ -73,7 +73,7 @@ function TerminalInner() {
                   key={k}
                   onClick={() => setMode(k)}
                   aria-pressed={active}
-                  className="relative py-3.5 text-[15px] tracking-wide transition-colors"
+                  className="relative py-3.5 text-[14px] sm:text-[15px] tracking-wide transition-colors"
                   style={{
                     color: active ? "var(--v2-t-1)" : "var(--v2-t-4)",
                     fontWeight: active ? "600" : "400",

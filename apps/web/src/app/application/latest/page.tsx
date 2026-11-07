@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppShell } from "@/components/app/app-shell";
 import { ApplicationLatestContent } from "@/content/app/latest";
 
-export const metadata: Metadata = { title: "Corvid App" };
+export const metadata: Metadata = { title: "Latest Tokens | Corvid" };
 
 export default function Page() {
   return (

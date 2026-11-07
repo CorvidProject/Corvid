@@ -74,7 +74,7 @@ export function Navbar() {
           <div className="flex h-[72px] items-center">
             <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-70 shrink-0 mr-3" aria-label={site.name}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/corvid-logo-512.png" alt="" width={28} height={28} style={{ width: 28, height: 28 }} />
+              <img src="/brand/corvid-logo-512.png" alt="Corvid" width={28} height={28} style={{ width: 28, height: 28 }} />
               <span
                 className="font-heading font-extrabold tracking-[-0.04em] leading-none"
                 style={{ fontSize: "1.25rem", color: "#fff" }}

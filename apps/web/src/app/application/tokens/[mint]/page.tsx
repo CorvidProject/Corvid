@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
 import { TokenDetailContent } from "@/content/app/token-detail";
 
-export const metadata: Metadata = { title: "Token · Corvid App" };
+export const metadata: Metadata = { title: "Token | Corvid" };
 
 // Alamat EVM (utama); base58 diterima sementara karena fixture lama masih memuat token Solana.
 const TOKEN_ADDRESS = /^(0x[0-9a-fA-F]{40}|[1-9A-HJ-NP-Za-km-z]{32,44})$/;

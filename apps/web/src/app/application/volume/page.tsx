@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppShell } from "@/components/app/app-shell";
 import { ApplicationVolumeContent } from "@/content/app/volume";
 
-export const metadata: Metadata = { title: "Corvid App" };
+export const metadata: Metadata = { title: "High Volume | Corvid" };
 
 export default function Page() {
   return (

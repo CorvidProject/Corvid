@@ -356,25 +356,41 @@ export async function simulatePlan(plan: Plan, account: Address): Promise<{ ok: 
     const gas = await s.client.estimateGas({ account, to: plan.tx.to, data: plan.tx.data, value: plan.tx.value });
     return { ok: true, gas };
   } catch (e) {
-    const m = (e as { shortMessage?: string }).shortMessage ?? "Simulation failed";
-    return { ok: false, note: m };
+    return { ok: false, note: swapErrorText(e).text ?? "Cancelled" };
   }
+}
+
+/** Pesan galat singkat dan ramah untuk pengguna; teks mentah dari pustaka (viem/ethers) tidak pernah ditampilkan. `rejected` = pengguna membatalkan sendiri (bukan kegagalan). */
+export function swapErrorText(e: unknown): { text: string | null; rejected: boolean } {
+  const x = e as { code?: number; shortMessage?: string; message?: string };
+  const raw = `${x?.shortMessage ?? ""} ${x?.message ?? ""}`;
+  if (x?.code === 4001 || /user (rejected|denied)|rejected the request|denied transaction/i.test(raw)) return { text: null, rejected: true };
+  if (x?.code === -32002) return { text: "A request is already open in your wallet. Finish or close it first.", rejected: false };
+  if (/insufficient funds|exceeds the balance|insufficient balance/i.test(raw)) return { text: "Not enough ETH to cover the amount and network fee.", rejected: false };
+  if (/revert|slippage|too little received|execution reverted/i.test(raw)) return { text: "The swap would fail at the current price. Try a smaller amount or get a new quote.", rejected: false };
+  if (/network|chain|fetch|timeout|429|rate/i.test(raw)) return { text: "Network problem. Please try again in a moment.", rejected: false };
+  return { text: "Swap failed. Please try again.", rejected: false };
 }
 
 const hex = (n: bigint) => `0x${n.toString(16)}`;
 
 /** Kirim transaksi nyata. Hanya dipanggil bila tradeMode() === "live"; selain itu menolak. */
-export async function executePlan(plan: Plan, account: Address, provider: Eip1193Provider): Promise<Hex> {
+export async function executePlan(plan: Plan, account: Address, provider: Eip1193Provider, onStep?: (label: string) => void): Promise<Hex> {
   if (tradeMode() !== "live") throw new Error("Trading is in dry mode: transactions are not sent");
   const s = swapSetup();
   if (!s) throw new Error("Swaps are not available on this network yet");
   const send = async (to: Address, data: Hex, value: bigint) =>
     (await provider.request({ method: "eth_sendTransaction", params: [{ from: account, to, data, value: hex(value) }] })) as Hex;
   // Persetujuan sebesar jumlah swap saja (bukan tak terbatas), dikirim berurutan; masing-masing ditunggu sampai masuk blok.
+  const total = plan.approvalTxs.length + 1;
+  let n = 0;
   for (const a of plan.approvalTxs) {
+    onStep?.(`Step ${++n} of ${total}: approve in your wallet`);
     const h = await send(a.to, a.data, 0n);
+    onStep?.(`Step ${n} of ${total}: waiting for approval to confirm`);
     await s.client.waitForTransactionReceipt({ hash: h });
   }
+  onStep?.(`Step ${total} of ${total}: confirm the swap in your wallet`);
   const hash = await send(plan.tx.to, plan.tx.data, plan.tx.value);
   await s.client.waitForTransactionReceipt({ hash });
   return hash;

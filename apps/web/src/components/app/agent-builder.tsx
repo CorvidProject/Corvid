@@ -356,7 +356,7 @@ export function AgentBuilder() {
           <div className="flex items-center gap-2 px-4 h-12 shrink-0" style={{ borderBottom: "1px solid var(--v2-line-1)" }}>
             <Link className="flex items-center gap-2 min-w-0" href="/application">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/corvid-logo-512.png" alt="" width={20} height={20} className="shrink-0" style={{ width: 20, height: 20 }} />
+              <img src="/brand/corvid-logo-512.png" alt="Corvid" width={20} height={20} className="shrink-0" style={{ width: 20, height: 20 }} />
               <span className="text-[13px] font-semibold truncate" style={{ color: "var(--v2-t-1)" }}>Corvid</span>
             </Link>
             <div className="flex-1"></div>

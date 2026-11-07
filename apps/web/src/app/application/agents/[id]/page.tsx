@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/app-shell";
 import { AgentPublicContent } from "@/content/app/agent-public";
 
-export const metadata: Metadata = { title: "Agent · Corvid App" };
+export const metadata: Metadata = { title: "Agent | Corvid" };
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

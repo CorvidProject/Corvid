@@ -280,7 +280,7 @@ const INTERVALS: { key: Interval; label: string }[] = [
 ];
 export function IntervalControls({ value, onChange, onRefresh, spinning }: { value: Interval; onChange: (i: Interval) => void; onRefresh: () => void; spinning: boolean }) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2 sm:gap-4">
       <div className="flex items-center" style={{ border: "1px solid var(--v2-line-1)", borderRadius: 4 }}>
         {INTERVALS.map((i) => {
           const on = value === i.key;
@@ -289,7 +289,7 @@ export function IntervalControls({ value, onChange, onRefresh, spinning }: { val
               key={i.key}
               onClick={() => onChange(i.key)}
               aria-pressed={on}
-              className="num text-[11px] px-3 py-1.5 transition-colors"
+              className="num text-[11px] px-2.5 sm:px-3 py-1.5 transition-colors"
               style={{ color: on ? "#ffffff" : "var(--v2-t-3)", background: on ? "var(--v2-accent)" : "transparent", fontWeight: on ? 600 : 400 }}
             >
               {i.label}
@@ -297,7 +297,7 @@ export function IntervalControls({ value, onChange, onRefresh, spinning }: { val
           );
         })}
       </div>
-      <span className="eyebrow flex items-center gap-1.5" style={{ color: "var(--v2-pos)" }}>
+      <span className="eyebrow hidden sm:flex items-center gap-1.5" style={{ color: "var(--v2-pos)" }}>
         <span className="dot dot-pos dot-pulse"></span>LIVE
       </span>
       <button className="btn-v2 btn-v2-ghost btn-v2-sm" onClick={onRefresh} aria-label="Refresh" disabled={spinning}>

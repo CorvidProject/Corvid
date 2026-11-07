@@ -366,7 +366,7 @@ export function AppHeader() {
               style={{ color: "var(--v2-t-1)" }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/corvid-logo-512.png" alt="" width={22} height={22} style={{ width: 22, height: 22 }} />
+              <img src="/brand/corvid-logo-512.png" alt="Corvid" width={22} height={22} style={{ width: 22, height: 22 }} />
               {site.name.toUpperCase()}
             </Link>
           </div>
@@ -384,7 +384,7 @@ export function AppHeader() {
             aria-label={site.name}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/corvid-logo-512.png" alt="" width={24} height={24} style={{ width: 24, height: 24 }} />
+            <img src="/brand/corvid-logo-512.png" alt="Corvid" width={24} height={24} style={{ width: 24, height: 24 }} />
             <span
               className="font-heading font-extrabold tracking-[-0.03em] text-[16px]"
               style={{ color: "var(--v2-t-1)" }}
