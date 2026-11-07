@@ -2,9 +2,10 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { DotBackdrop } from "@/components/app/dot-backdrop";
+import { TokenAvatar } from "@/components/app/token-avatar";
 import { USE_API, apiGet, useApi } from "@/lib/api";
 
-type Hit = { mint: string; symbol: string | null; name: string | null };
+type Hit = { mint: string; symbol: string | null; name: string | null; image?: string | null };
 const EVM = /^0x[0-9a-fA-F]{40}$/;
 const open = (mint: string) => `/application/tokens/${mint.toLowerCase()}`;
 
@@ -15,9 +16,10 @@ export function ApplicationRugcheckContent() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [hits, setHits] = useState<Hit[]>([]);
-  // Contoh diambil dari token yang benar-benar terindeks; diutamakan yang sudah punya laporan keamanan.
-  const trending = useApi<{ tokens: (Hit & { riskChecked?: boolean })[] }>(USE_API ? "/api/tokens/trending?limit=20" : null);
-  const examples = [...(trending.data?.tokens ?? [])].sort((a, b) => Number(!!b.riskChecked) - Number(!!a.riskChecked)).slice(0, 2);
+  // Contoh diambil dari token yang benar-benar terindeks; diutamakan yang punya logo, lalu yang sudah punya laporan keamanan.
+  const trending = useApi<{ tokens: (Hit & { riskChecked?: boolean })[] }>(USE_API ? "/api/tokens/trending?limit=100" : null);
+  const rank = (t: Hit & { riskChecked?: boolean }) => Number(!!t.image) * 2 + Number(!!t.riskChecked);
+  const examples = [...(trending.data?.tokens ?? [])].sort((a, b) => rank(b) - rank(a)).slice(0, 2);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -163,7 +165,10 @@ export function ApplicationRugcheckContent() {
               {hits.map((h) => (
                 <li key={h.mint}>
                   <button type="button" onClick={() => router.push(open(h.mint))} className="w-full flex items-center justify-between gap-3 h-11 px-4 text-[14px]" style={{ background: "rgb(26, 32, 37)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "var(--v2-t-1)", borderRadius: 12 }}>
-                    <span className="font-semibold">{h.symbol ?? "?"} <span style={{ color: "var(--v2-t-4)", fontWeight: 400 }}>{h.name}</span></span>
+                    <span className="flex items-center gap-2.5 min-w-0">
+                      <TokenAvatar src={h.image} symbol={h.symbol} seed={h.mint} size={24} />
+                      <span className="font-semibold truncate">{h.symbol ?? "?"} <span style={{ color: "var(--v2-t-4)", fontWeight: 400 }}>{h.name}</span></span>
+                    </span>
                     <span className="font-mono text-[12px]" style={{ color: "var(--v2-t-4)" }}>{h.mint.slice(0, 6)}…{h.mint.slice(-4)}</span>
                   </button>
                 </li>
@@ -184,7 +189,7 @@ export function ApplicationRugcheckContent() {
                     className="flex items-center gap-2 h-9 pl-1.5 pr-3.5 rounded-full text-[13px] transition-colors hover:bg-[#1A1A20]"
                     style={{ background: "rgb(26, 32, 37)", border: "1px solid rgba(255, 255, 255, 0.1)", color: "var(--v2-t-2)" }}
                   >
-                    <span aria-hidden className="inline-block rounded-full shrink-0" style={{ width: 22, height: 22, background: "var(--v2-accent)" }} />
+                    <TokenAvatar src={t.image} symbol={t.symbol} seed={t.mint} size={22} />
                     <span className="font-semibold" style={{ color: "var(--v2-t-1)" }}>
                       {t.symbol ?? t.mint.slice(0, 6)}
                     </span>
