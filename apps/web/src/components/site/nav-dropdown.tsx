@@ -119,7 +119,11 @@ function DropdownGroup({
               <motion.span
                 layoutId={`crv-nav-hl-${layoutKey}`}
                 className="absolute inset-0 rounded-xl"
-                style={{ background: "rgba(255,255,255,0.05)", boxShadow: "inset 0 0 0 1px rgba(var(--v2-accent-rgb),0.18)" }}
+                style={{
+                  // Seluruh baris biru (bukan hanya ikon), meluncur mengikuti kursor.
+                  background: "linear-gradient(90deg, #1a47e0 0%, var(--v2-accent) 100%)",
+                  boxShadow: "inset 0 0 0 1px rgba(124,155,255,0.55), 0 8px 24px -10px rgba(var(--v2-accent-rgb),0.8)",
+                }}
                 transition={{ type: "spring", stiffness: 520, damping: 40 }}
               />
             )}
@@ -127,13 +131,12 @@ function DropdownGroup({
               className="relative shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200"
               style={{
                 color: active ? "#ffffff" : "rgba(255,255,255,0.7)",
+                // Di atas baris biru, ubin ikon dibuat bening agar tidak menyatu dengan latar.
                 background: active
-                  ? "linear-gradient(180deg, #1a47e0 0%, var(--v2-accent) 100%)"
+                  ? "rgba(255,255,255,0.16)"
                   : "linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 100%)",
-                border: `1px solid ${active ? "rgba(124,155,255,0.6)" : "rgba(255,255,255,0.07)"}`,
-                boxShadow: active
-                  ? "0 6px 20px -6px rgba(var(--v2-accent-rgb),0.8), inset 0 1px 0 rgba(255,255,255,0.3)"
-                  : "inset 0 1px 0 rgba(255,255,255,0.05)",
+                border: `1px solid ${active ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.07)"}`,
+                boxShadow: active ? "inset 0 1px 0 rgba(255,255,255,0.3)" : "inset 0 1px 0 rgba(255,255,255,0.05)",
                 transform: active ? "scale(1.06)" : "scale(1)",
               }}
             >
@@ -165,13 +168,13 @@ function DropdownGroup({
                   </span>
                 )}
               </span>
-              <span className="block text-[12px] text-white/45 truncate">{item.desc}</span>
+              <span className={`block text-[12px] truncate transition-colors duration-150 ${active ? "text-white/85" : "text-white/45"}`}>{item.desc}</span>
             </span>
             {!item.soon && (
               <ArrowRight
                 size={14}
                 weight="bold"
-                className={`relative shrink-0 text-[var(--v2-accent-text)] transition-all duration-200 ${
+                className={`relative shrink-0 text-white transition-all duration-200 ${
                   active ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1.5"
                 }`}
               />
