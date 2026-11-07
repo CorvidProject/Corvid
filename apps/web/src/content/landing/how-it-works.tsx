@@ -408,7 +408,7 @@ export function HowItWorks() {
                 }}
               ></div>
               <div
-                className="relative group"
+                className="relative group flex flex-col"
                 data-reveal
                 style={{ "--rv-t": "translateY(20px)" }}
               >
@@ -440,7 +440,7 @@ export function HowItWorks() {
                   </div>
                 </div>
                 <div
-                  className="relative rounded-2xl p-7 lg:p-8 transition-all"
+                  className="relative rounded-2xl p-7 lg:p-8 transition-all flex-1 flex flex-col"
                   style={{
                     background:
                       "rgba(var(--v2-section-fg-rgb, 10,10,15),0.025)",
@@ -524,8 +524,9 @@ export function HowItWorks() {
                       </span>
                     </div>
                   </div>
+                  <div className="h-6 shrink-0" aria-hidden="true"></div>
                   <div
-                    className="mt-6 rounded-xl overflow-hidden"
+                    className="mt-auto rounded-xl overflow-hidden"
                     style={{
                       aspectRatio: "16 / 9",
                       background: "#0A0A0F",
@@ -549,7 +550,7 @@ export function HowItWorks() {
                 </div>
               </div>
               <div
-                className="relative group"
+                className="relative group flex flex-col"
                 data-reveal
                 style={{ "--rv-t": "translateY(20px)" }}
               >
@@ -581,7 +582,7 @@ export function HowItWorks() {
                   </div>
                 </div>
                 <div
-                  className="relative rounded-2xl p-7 lg:p-8 transition-all"
+                  className="relative rounded-2xl p-7 lg:p-8 transition-all flex-1 flex flex-col"
                   style={{
                     background:
                       "rgba(var(--v2-section-fg-rgb, 10,10,15),0.025)",
@@ -653,8 +654,9 @@ export function HowItWorks() {
                       <span className="flex items-center gap-1.5">24/7</span>
                     </div>
                   </div>
+                  <div className="h-6 shrink-0" aria-hidden="true"></div>
                   <div
-                    className="mt-6 rounded-xl overflow-hidden"
+                    className="mt-auto rounded-xl overflow-hidden"
                     style={{
                       aspectRatio: "16 / 9",
                       background: "#0A0A0F",
