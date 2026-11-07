@@ -6,10 +6,10 @@
    - Pindahkan disk image Docker Desktop ke D: sebelum memakai Docker.
 2. **Supabase:** project `Corvid` sudah dibuat pemilik (ref `qdlioftfvcoxxkqlkgqx`, 2026-11-05). Project lama `nexa-ai-*` milik proyek NEXA tidak dipakai. **Menunggu pemilik:** terapkan migrasi dan isi env (langkah di bawah).
 3. **Railway: SELESAI** (2026-11-06). CLI terlogin; project `Corvid` dengan service `@corvid/api` dan `@corvid/worker` sudah hidup (lihat `docs/infrastructure.md`).
-4. **Email kontak, logo (PNG ≥512×512 transparan + favicon), domain:** belum diberikan. Pakai env `CONTACT_EMAIL` dan wordmark placeholder.
+4. **Email kontak dan domain:** belum diberikan. Pakai env `CONTACT_EMAIL`. **Logo: sudah ada** (commit `3068ea8`, 2026-11-06) di `apps/web/public/brand/corvid-logo.png` (master), `corvid-logo-512.png`, `src/app/icon.png`, `apple-icon.png`, `favicon.ico`, `public/og-image.png`. **Menunggu pemilik:** pastikan berkas itu logo final dari head dev; bila master asli (SVG/PNG transparan ≥512 px) ada di tempat lain, ganti berkas-berkas tadi.
 5. **Merek "Corvid" / ticker $CRVD:** cek merek, domain, dan ticker sebelum publik.
 6. **terms/privacy:** perlu dibaca pihak hukum setelah nama entitas diganti.
-7. **Placeholder yang perlu diganti** setelah data diberikan: `contact@corvid.example` (74 tempat di halaman docs/legal), `https://x.com/PLACEHOLDER`, `https://t.me/PLACEHOLDER`, nama entitas di terms/privacy, logo (`data-placeholder="logo"`), favicon, OG image. Pencarian: `grep -r "corvid.example\|PLACEHOLDER" apps/web/src`.
+7. **Placeholder yang perlu diganti** setelah data diberikan: `contact@corvid.example` (74 tempat di halaman docs/legal), `https://x.com/PLACEHOLDER`, `https://t.me/PLACEHOLDER`, nama entitas di terms/privacy, OG image (logo dan favicon sudah diganti, lihat butir 4). Pencarian: `grep -r "corvid.example\|PLACEHOLDER" apps/web/src`.
 8. **Copy produk hasil crawl** masih menyebut konsep EVM yang tidak punya padanan Solana yang jelas (mis. "Uniswap v3 pool", "graduation ke ERC-20 / mint token agent"). Perlu keputusan produk sebelum copy final.
 9. **Aset how-analyze/how-automate** (`apps/web/public/media`) berasal dari crawl lama dan mungkin menampilkan brand lama; ganti dengan aset Corvid.
 10. **Fitur yang UI-nya belum dibuat:** `/application/admin`. (Detail token `/application/tokens/[mint]` sudah ada sejak 2026-11-05.) `NEXT_PUBLIC_API_URL` belum terhubung (Tahap 2).
