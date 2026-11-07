@@ -382,7 +382,18 @@ export const agentCreateSchema = z
       if (!isFinite(per) || per <= 0) ctx.addIssue({ code: "custom", path: ["limits", "perTrade"], message: "batas per trade wajib untuk mode trading" });
     }
   });
-export const agentUpdateSchema = z.object({ name: z.string().trim().min(1).max(80).optional(), running: z.boolean().optional() });
+/**
+ * Perubahan agent yang sudah dibuat. Pipeline, mode, alamat token dan alamat wallet sumber tidak bisa diubah
+ * (menentukan identitas agent dan jejak run/posisinya); config dan limits diganti utuh bila dikirim.
+ */
+export const agentUpdateSchema = z.object({
+  name: z.string().trim().min(1).max(80).optional(),
+  running: z.boolean().optional(),
+  config: z.record(z.string().max(60), z.string().max(300)).refine((c) => Object.keys(c).length <= 40, "terlalu banyak field").optional(),
+  limits: z.record(z.string().max(30), z.string().max(300)).optional(),
+});
+/** Kunci config yang terkunci setelah agent dibuat. */
+export const AGENT_LOCKED_CONFIG_KEYS = ["token_mint", "wallet_address"] as const;
 export const agentIdParamSchema = z.object({ id: z.coerce.number().int().positive() });
 
 export const inboxResponseSchema = z.object({

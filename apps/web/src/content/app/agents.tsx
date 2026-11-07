@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Plus, Robot, Play, Pause, Trash } from "@phosphor-icons/react";
+import { Plus, Robot, Play, Pause, Trash, PencilSimple } from "@phosphor-icons/react";
 import fixture from "@/data/agents.json";
 import { useSigned } from "@/components/auth/signed";
 import { apiGet, apiSend, USE_API } from "@/lib/api";
@@ -173,6 +173,11 @@ export function ApplicationAgentsContent() {
                   <button className="btn-v2 btn-v2-ghost btn-v2-sm" onClick={() => toggle(a.id)}>
                     {a.running ? <Pause size={12} /> : <Play size={12} />} {a.running ? "Pause" : "Resume"}
                   </button>
+                  {USE_API && (
+                    <a className="btn-v2 btn-v2-ghost btn-v2-sm" href={`/application/agents/new?edit=${a.id}`} aria-label={`Edit ${a.name}`}>
+                      <PencilSimple size={12} /> Edit
+                    </a>
+                  )}
                   {USE_API && (
                     <button
                       className="btn-v2 btn-v2-ghost btn-v2-sm"

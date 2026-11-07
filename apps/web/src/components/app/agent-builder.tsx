@@ -38,7 +38,10 @@ import {
   type Step,
 } from "@/lib/builder-defs";
 import { loadSession } from "@/lib/auth";
-import { apiSend, ApiError, USE_API } from "@/lib/api";
+import { apiGet, apiSend, ApiError, USE_API } from "@/lib/api";
+
+// Kunci yang tidak bisa diubah setelah agent dibuat (sama dengan AGENT_LOCKED_CONFIG_KEYS di API).
+const LOCKED_KEYS = ["token_mint", "wallet_address"];
 
 // Builder pipeline agent (sidebar quick start, kanvas node, panel konfigurasi, mode Signal/Trading,
 // ringkasan Saved/Draft). Deploy butuh akun dan backend agent (Tahap 3).
@@ -65,7 +68,7 @@ function useSigned() {
   return signed;
 }
 
-function FieldInput({ f, value, onChange }: { f: Field; value: string; onChange: (v: string) => void }) {
+function FieldInput({ f, value, onChange, disabled = false }: { f: Field; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   const invalid = f.required && value && (f.key === "wallet_address" || f.key === "token_mint") && !isEvmAddress(value);
   const base = { color: "var(--v2-t-1)", border: `1px solid ${invalid ? "var(--v2-neg)" : "var(--v2-line-2)"}`, background: "var(--v2-bg-0)" } as const;
   return (
@@ -100,9 +103,11 @@ function FieldInput({ f, value, onChange }: { f: Field; value: string; onChange:
               min={f.type === "number" ? 0 : undefined}
               step={f.type === "number" ? "any" : undefined}
               value={value}
+              disabled={disabled}
+              title={disabled ? "Cannot be changed after the agent is created" : undefined}
               placeholder={f.placeholder || (f.type === "text" ? "Paste address" : "")}
               onChange={(e) => onChange(e.target.value)}
-              className="w-full h-9 px-2 rounded-sm text-[13px] outline-none num"
+              className="w-full h-9 px-2 rounded-sm text-[13px] outline-none num disabled:opacity-60 disabled:cursor-not-allowed"
               style={base}
             />
           )}
@@ -140,6 +145,8 @@ export function AgentBuilder() {
   const [persona, setPersona] = useState("");
   const [knowledge, setKnowledge] = useState("");
   const [telegram, setTelegram] = useState(true);
+  // Mode edit (?edit=<id>): agent yang sudah ada. Pipeline, mode, dan alamat token/wallet terkunci; status jalan tidak disentuh.
+  const [editId, setEditId] = useState<number | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [adv, setAdv] = useState(false);
   const [sidebar, setSidebar] = useState(true);
@@ -186,6 +193,30 @@ export function AgentBuilder() {
     if (q.get("start") === "1" || (!q.get("template") && (mint || wallet))) setSelected(key === "new_tokens" ? "scan" : "monitor");
   }, []);
 
+  // Muat agent yang diedit.
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("edit");
+    if (!raw || !/^[1-9][0-9]{0,15}$/.test(raw) || !USE_API || !signed) return;
+    apiGet<{ id: number; name: string; pipeline: PipelineKey | null; mode: Mode; config: Record<string, string>; limits: Record<string, string> }>(`/api/agents/${raw}`)
+      .then((a) => {
+        if (!a.pipeline) return say("This agent cannot be edited.");
+        const { telegram: tg, ...rest } = a.config;
+        setEditId(a.id);
+        setPipe(a.pipeline);
+        setMode(a.mode);
+        setName(a.name);
+        setCfg(rest);
+        setPreset(null);
+        setTelegram(tg === "true");
+        setLimits({ perTrade: a.limits.perTrade ?? "", daily: a.limits.daily ?? "", allowed: a.limits.allowed ?? "" });
+        setSelected(null);
+        setDirty(false);
+        say("Editing this agent. It keeps running and uses your changes from its next run.");
+      })
+      .catch(() => say("Could not load this agent."));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signed]);
+
   const pickPipeline = (key: PipelineKey, p: Preset) => {
     setPipe(key);
     setPreset(p);
@@ -194,6 +225,10 @@ export function AgentBuilder() {
     setDirty(false);
   };
   const reset = () => {
+    if (editId !== null) {
+      window.location.href = "/application/agents/new";
+      return;
+    }
     pickPipeline("follow_wallet", "balanced");
     setMode("signal");
     setName("My Pipeline");
@@ -285,6 +320,17 @@ export function AgentBuilder() {
       return say("Set a per-trade limit before trading");
     }
     if (!USE_API) return say("Agent service is not connected yet. Your pipeline is ready to deploy once it is live.");
+    if (editId !== null) {
+      const patchBody = { name: name.trim() || pipeline.name, config: { ...cfg, telegram: telegram ? "true" : "false" }, limits: { ...limits } };
+      apiSend("PUT", `/api/agents/${editId}`, patchBody)
+        .then(() => {
+          say("Saved. The agent keeps running and uses your changes from its next run.");
+          setDirty(false);
+          setTimeout(() => (window.location.href = "/application/agents"), 900);
+        })
+        .catch((e: unknown) => say(e instanceof ApiError && e.status === 400 ? "Some settings are not valid. Check the fields and limits." : "Could not save the changes. Try again."));
+      return;
+    }
     const body = { name: name.trim() || pipeline.name, pipeline: pipe, mode, config: { ...cfg, telegram: telegram ? "true" : "false" }, limits: { ...limits } };
     apiSend<{ id: number }>("POST", "/api/agents", body)
       .then(() => {
@@ -333,7 +379,8 @@ export function AgentBuilder() {
             <div className="mx-4 my-3 h-px" style={{ background: "var(--v2-line-1)" }}></div>
             <div className="px-3 pb-4">
               <p className="text-[12px] font-semibold uppercase tracking-wider px-2 mb-2" data-tour="pipeline-select" style={{ color: "var(--v2-t-3)" }}>Quick Start</p>
-              {PIPELINES.map((p) => {
+              {editId !== null && <p className="text-[12px] px-2 py-1" style={{ color: "var(--v2-t-3)" }}>Editing agent #{editId}. The pipeline, mode, and target address are fixed. Use + to create a new agent instead.</p>}
+              {(editId !== null ? [] : PIPELINES).map((p) => {
                 const Icon = PIPE_ICON[p.key];
                 return (
                   <div key={p.key} className="mb-3">
@@ -381,9 +428,9 @@ export function AgentBuilder() {
           <div className="flex-1"></div>
           <div className="relative group/mode shrink-0" data-tour="mode-toggle">
             <button
-              onClick={() => { setMode((m) => (m === "signal" ? "trading" : "signal")); touch(); }}
+              onClick={() => { if (editId !== null) return say("The mode cannot be changed after the agent is created."); setMode((m) => (m === "signal" ? "trading" : "signal")); touch(); }}
               aria-pressed={isTrading}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-semibold transition-colors"
+              className={`flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-semibold transition-colors ${editId !== null ? "opacity-60 cursor-not-allowed" : ""}`}
               style={{ background: isTrading ? "rgba(var(--v2-accent-rgb),0.12)" : "var(--v2-bg-2)", color: isTrading ? "var(--v2-accent-text)" : "var(--v2-t-3)", border: isTrading ? "1px solid rgba(var(--v2-accent-rgb),0.3)" : "1px solid var(--v2-line-1)" }}
             >
               {isTrading ? (<><Lightning size={14} weight="bold" /> Trading</>) : (<><Bell size={14} /> Signal</>)}
@@ -431,7 +478,7 @@ export function AgentBuilder() {
               className="flex items-center gap-1.5 h-8 px-3 md:px-5 rounded-sm text-[13px] font-semibold transition-all disabled:opacity-50"
               style={{ background: "var(--v2-pos)", color: "#0A0A0F" }}
             >
-              <Lightning size={13} weight="fill" /> {signed ? "Deploy Pipeline" : "Sign In to Deploy"}
+              <Lightning size={13} weight="fill" /> {signed ? (editId !== null ? "Save changes" : "Deploy Pipeline") : "Sign In to Deploy"}
             </button>
             <button onClick={share} className="hidden md:flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-medium transition-colors hover:bg-[var(--v2-bg-2)]" style={{ color: "var(--v2-t-2)", border: "1px solid var(--v2-line-1)" }}>
               <XLogo size={13} weight="bold" /> Share
@@ -551,13 +598,13 @@ export function AgentBuilder() {
                           <FieldInput f={{ key: "tg", label: "Telegram alerts", hint: "Send each signal to your Telegram (link it in Settings)", type: "toggle" }} value={telegram ? "true" : "false"} onChange={(v) => { setTelegram(v === "true"); touch(); }} />
                         </div>
                       )}
-                      {main.map((f) => <FieldInput key={f.key} f={f} value={cfg[f.key] ?? ""} onChange={(v) => edit(f.key, v)} />)}
+                      {main.map((f) => <FieldInput key={f.key} f={f} value={cfg[f.key] ?? ""} onChange={(v) => edit(f.key, v)} disabled={editId !== null && LOCKED_KEYS.includes(f.key)} />)}
                       {advanced.length > 0 && (
                         <>
                           <button onClick={() => setAdv((a) => !a)} aria-expanded={adv} className="flex items-center gap-1.5 text-[12px] py-2" style={{ color: "var(--v2-t-3)" }}>
                             <CaretDown size={11} style={{ transform: adv ? "none" : "rotate(-90deg)" }} /> Advanced
                           </button>
-                          {adv && advanced.map((f) => <FieldInput key={f.key} f={f} value={cfg[f.key] ?? ""} onChange={(v) => edit(f.key, v)} />)}
+                          {adv && advanced.map((f) => <FieldInput key={f.key} f={f} value={cfg[f.key] ?? ""} onChange={(v) => edit(f.key, v)} disabled={editId !== null && LOCKED_KEYS.includes(f.key)} />)}
                         </>
                       )}
                       {step.id === "execute" && mode === "signal" && (

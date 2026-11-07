@@ -224,3 +224,54 @@ describe("inbox dan signals", () => {
     expect(bad.json().access).toBe("free");
   });
 });
+
+describe("agents: edit pengaturan", () => {
+  const EO = "33333333-3333-4333-8333-333333333333";
+  const W2 = "0x00000000000000000000000000000000000000b2";
+  const TOK = "0x00000000000000000000000000000000000000c3";
+  let id: number;
+  beforeAll(async () => {
+    const r = await call("POST", "/api/agents", EO, { name: "Editable", pipeline: "token_trading", mode: "signal", config: { token_mint: TOK, trigger_type: "price_drop", trigger_threshold: "5", telegram: "false" } });
+    id = r.json().id;
+    await call("PUT", `/api/agents/${id}`, EO, { running: true });
+  });
+
+  it("mengganti config dan limits tanpa menghentikan agent, tanpa mengubah identitas atau jumlah run", async () => {
+    const r = await call("PUT", `/api/agents/${id}`, EO, { config: { token_mint: TOK, trigger_type: "percent_change", trigger_threshold: "0.1", telegram: "true" } });
+    expect(r.statusCode).toBe(200);
+    expect(r.json()).toMatchObject({ running: true, pipeline: "token_trading", mode: "signal", runs: 0, config: { trigger_type: "percent_change", trigger_threshold: "0.1", telegram: "true", token_mint: TOK } });
+  });
+
+  it("nama saja tidak menyentuh config", async () => {
+    const r = await call("PUT", `/api/agents/${id}`, EO, { name: "Renamed edit" });
+    expect(r.json()).toMatchObject({ name: "Renamed edit", running: true, config: { trigger_threshold: "0.1" } });
+  });
+
+  it("alamat token terkunci: mengubah atau menghapusnya ditolak, config lama utuh", async () => {
+    const other = "0x00000000000000000000000000000000000000d4";
+    const a = await call("PUT", `/api/agents/${id}`, EO, { config: { token_mint: other, trigger_threshold: "9" } });
+    expect(a.statusCode).toBe(400);
+    expect(a.json()).toEqual({ error: "locked_field" });
+    expect((await call("PUT", `/api/agents/${id}`, EO, { config: { trigger_threshold: "9" } })).statusCode).toBe(400);
+    expect((await call("GET", `/api/agents/${id}`, EO)).json().config).toMatchObject({ token_mint: TOK, trigger_threshold: "0.1" });
+  });
+
+  it("huruf besar/kecil pada alamat dinormalkan ke nilai tersimpan", async () => {
+    const r = await call("PUT", `/api/agents/${id}`, EO, { config: { token_mint: TOK.toUpperCase().replace("0X", "0x"), trigger_threshold: "2" } });
+    expect(r.statusCode).toBe(200);
+    expect(r.json().config.token_mint).toBe(TOK);
+  });
+
+  it("wallet sumber follow_wallet terkunci; mode trading tetap butuh batas per trade", async () => {
+    const f = await call("POST", "/api/agents", EO, follow({ name: "F", mode: "trading", limits: { perTrade: "0.05" } }));
+    const fid = f.json().id;
+    expect((await call("PUT", `/api/agents/${fid}`, EO, { config: { wallet_address: W2 } })).json()).toEqual({ error: "locked_field" });
+    expect((await call("PUT", `/api/agents/${fid}`, EO, { config: { wallet_address: WALLET, only_buys: "false" }, limits: { perTrade: "0" } })).statusCode).toBe(400);
+    const ok = await call("PUT", `/api/agents/${fid}`, EO, { config: { wallet_address: WALLET, only_buys: "false" }, limits: { perTrade: "0.2" } });
+    expect(ok.json()).toMatchObject({ mode: "trading", config: { only_buys: "false" }, limits: { perTrade: "0.2" } });
+  });
+
+  it("pengguna lain tidak bisa mengedit (404)", async () => {
+    expect((await call("PUT", `/api/agents/${id}`, B, { config: { token_mint: TOK } })).statusCode).toBe(404);
+  });
+});

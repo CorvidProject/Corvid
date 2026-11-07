@@ -11,6 +11,7 @@ import {
   runsQuerySchema,
   agentSummarySchema,
   agentUpdateSchema,
+  AGENT_LOCKED_CONFIG_KEYS,
   errorSchema,
   inboxResponseSchema,
   pipelineSchema,
@@ -175,14 +176,31 @@ export const agentRoutes =
 
     app.put(
       "/agents/:id",
-      { ...auth, schema: { tags: ["agents"], params: agentIdParamSchema, body: agentUpdateSchema, response: { 200: agentDetailSchema, 404: errorSchema, ...authErrors } } },
+      { ...auth, schema: { tags: ["agents"], params: agentIdParamSchema, body: agentUpdateSchema, response: { 200: agentDetailSchema, 400: errorSchema, 404: errorSchema, ...authErrors } } },
       async (req, reply) => {
         const a = await owned(req.params.id, me(req));
         if (!a) return reply.code(404).send({ error: "agent_not_found" });
         const set: Partial<typeof agents.$inferInsert> = {};
         if (req.body.name !== undefined) set.name = req.body.name;
         if (req.body.running !== undefined) set.running = req.body.running;
-        const [row] = Object.keys(set).length ? await db.update(agents).set(set).where(eq(agents.id, a.id)).returning() : [a];
+        if (req.body.config !== undefined || req.body.limits !== undefined) {
+          // Mengedit tidak boleh mengubah identitas agent: pipeline, mode, token, dan wallet sumber tetap. Status jalan,
+          // riwayat run, dan posisi tidak disentuh; runner membaca baris agent di tiap siklus, jadi perubahan berlaku
+          // mulai siklus berikutnya tanpa menghentikan agent.
+          if (!a.pipeline) return reply.code(400).send({ error: "not_editable" });
+          const oldCfg = a.config as Record<string, string>;
+          const config = { ...(req.body.config ?? oldCfg) };
+          for (const k of AGENT_LOCKED_CONFIG_KEYS) {
+            if (oldCfg[k] === undefined) delete config[k];
+            else if ((config[k] ?? "").trim().toLowerCase() !== oldCfg[k].trim().toLowerCase()) return reply.code(400).send({ error: "locked_field" });
+            else config[k] = oldCfg[k];
+          }
+          const parsed = agentCreateSchema.safeParse({ name: req.body.name ?? a.name, pipeline: a.pipeline, mode: a.mode, config, limits: req.body.limits ?? a.limits });
+          if (!parsed.success) return reply.code(400).send({ error: "invalid_config" });
+          set.config = parsed.data.config;
+          set.limits = parsed.data.limits;
+        }
+        const [row] = Object.keys(set).length ? await db.update(agents).set(set).where(and(eq(agents.id, a.id), eq(agents.ownerId, me(req)))).returning() : [a];
         return detail(row, await runCount(a.id));
       },
     );
