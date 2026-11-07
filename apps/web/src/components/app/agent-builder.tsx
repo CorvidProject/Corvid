@@ -514,8 +514,8 @@ export function AgentBuilder() {
                           className="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-left"
                           style={{ background: tint, border: `1px solid ${selected === n.id ? "rgba(var(--v2-accent-rgb),0.6)" : "var(--v2-line-1)"}`, opacity: dim ? 0.85 : 1 }}
                         >
-                          <span className="h-10 w-10 shrink-0 rounded-lg flex items-center justify-center" style={{ background: "var(--v2-bg-2)", border: "1px solid var(--v2-line-1)" }}>
-                            <Icon size={20} weight="duotone" style={{ color: n.kind === "trigger" ? "var(--v2-accent-text)" : "var(--v2-t-3)" }} />
+                          <span className="crv-node h-11 w-11 shrink-0 flex items-center justify-center" data-kind={n.kind} style={{ borderRadius: 14 }}>
+                            <Icon size={22} weight="duotone" className="crv-node-icon relative" />
                           </span>
                           <span className="flex-1 min-w-0">
                             <span className="block text-[15px] font-semibold" style={{ color: "var(--v2-t-1)" }}>{n.label}</span>
@@ -557,14 +557,9 @@ export function AgentBuilder() {
                         onClick={(e) => { e.stopPropagation(); setSelected(n.id); setAdv(false); }}
                         aria-label={`${n.label} settings`}
                         aria-pressed={on}
-                        className="relative flex items-center justify-center cursor-pointer transition-all duration-200"
-                        style={{
-                          width: n.size, height: n.size, borderRadius: 20,
-                          background: on ? "linear-gradient(145deg, rgba(var(--v2-accent-rgb),0.16), rgba(var(--v2-accent-rgb),0.04)), var(--v2-bg-1)" : "linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008)), var(--v2-bg-1)",
-                          border: `1px solid ${on ? "rgba(var(--v2-accent-rgb),0.6)" : "rgba(255, 255, 255, 0.06)"}`,
-                          boxShadow: "rgba(12, 14, 17, 0.25) 0px 4px 20px, rgba(255, 255, 255, 0.03) 0px 1px 0px inset",
-                          opacity: dim ? 0.85 : 1,
-                        }}
+                        data-kind={n.kind}
+                        className="crv-node flex items-center justify-center cursor-pointer"
+                        style={{ width: n.size, height: n.size, borderRadius: 22, opacity: dim ? 0.8 : 1 }}
                       >
                         {n.kind === "trigger" && (
                           <span className="absolute -top-2 -left-2 z-10 h-5 w-5 rounded-full flex items-center justify-center" style={{ background: "var(--v2-accent)", boxShadow: "0 0 12px rgba(var(--v2-accent-rgb),0.5), 0 2px 6px rgba(12,14,17,0.3)" }}>
@@ -572,10 +567,10 @@ export function AgentBuilder() {
                           </span>
                         )}
                         {Icon ? (
-                          <Icon size={n.size === 76 ? 26 : 32} weight="duotone" style={{ color: on ? "var(--v2-accent-text)" : "rgba(255,255,255,0.45)", transition: "0.2s" }} />
+                          <Icon size={n.size === 76 ? 30 : 38} weight="duotone" className="crv-node-icon relative" />
                         ) : (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={44} height={44} className="shrink-0" style={{ width: 44, height: 44, borderRadius: 11 }} />
+                          <img src="/brand/robinhood-chain-symbol.png" alt="" aria-hidden width={46} height={46} className="crv-node-img relative shrink-0" style={{ width: 46, height: 46, borderRadius: 12 }} />
                         )}
                       </button>
                       <span className="mt-2.5 text-center whitespace-nowrap" style={{ textShadow: "0 0 6px var(--v2-bg-0), 0 0 12px var(--v2-bg-0), 0 1px 2px var(--v2-bg-0)", fontSize: 14, fontWeight: 600, color: on ? "var(--v2-t-1)" : "rgba(255,255,255,0.8)" }}>{n.label}</span>
