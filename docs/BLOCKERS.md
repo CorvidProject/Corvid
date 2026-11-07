@@ -11,7 +11,7 @@
 6. **terms/privacy:** perlu dibaca pihak hukum setelah nama entitas diganti.
 7. **Placeholder yang perlu diganti** setelah data diberikan: `contact@corvid.example` (74 tempat di halaman docs/legal), `https://x.com/PLACEHOLDER`, `https://t.me/PLACEHOLDER`, nama entitas di terms/privacy, OG image (logo dan favicon sudah diganti, lihat butir 4). Pencarian: `grep -r "corvid.example\|PLACEHOLDER" apps/web/src`.
 8. **Copy produk hasil crawl** masih menyebut konsep EVM yang tidak punya padanan Solana yang jelas (mis. "Uniswap v3 pool", "graduation ke ERC-20 / mint token agent"). Perlu keputusan produk sebelum copy final.
-9. **Aset how-analyze/how-automate** (`apps/web/public/media`) berasal dari crawl lama dan mungkin menampilkan brand lama; ganti dengan aset Corvid.
+9. ~~Aset how-analyze/how-automate~~ Selesai: video diganti rekaman aplikasi Corvid sungguhan (`apps/web/public/corvid/how-*.mp4`, direkam dari produksi dengan Playwright, 1280x720).
 10. **Fitur yang UI-nya belum dibuat:** `/application/admin`. (Detail token `/application/tokens/[mint]` sudah ada sejak 2026-11-05.) `NEXT_PUBLIC_API_URL` belum terhubung (Tahap 2).
 
 - Avatar wallet (`/avatars/wallets/*.webp`) tidak ikut ter-crawl; dipakai placeholder SVG netral `public/avatars/wallets/placeholder.svg`. Kirim aset asli bila ada.

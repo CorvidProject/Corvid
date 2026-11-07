@@ -535,8 +535,8 @@ export function HowItWorks() {
                     }}
                   >
                     <video
-                      src="/media/how-analyze.mp4"
-                      poster="/media/how-analyze.jpg"
+                      src="/corvid/how-analyze.mp4"
+                      poster="/corvid/how-analyze.jpg"
                       autoPlay
                       muted
                       loop
@@ -664,8 +664,8 @@ export function HowItWorks() {
                     }}
                   >
                     <video
-                      src="/media/how-automate.mp4"
-                      poster="/media/how-automate.jpg"
+                      src="/corvid/how-automate.mp4"
+                      poster="/corvid/how-automate.jpg"
                       autoPlay
                       muted
                       loop
