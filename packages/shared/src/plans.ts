@@ -1,5 +1,5 @@
 // Paket, kuota, dan produk yang dijual. Satu sumber untuk API dan web.
-// Harga paket 3 dan 12 bulan adalah usulan (diskon) yang masih menunggu keputusan Bimo; ubah di sini saja.
+// Harga paket 3 dan 12 bulan disetujui pemilik (2026-11-07); ubah di sini saja.
 
 export type UsageKind = "chat" | "deep";
 

@@ -427,12 +427,12 @@ export const CORE = {
       },
       {
         title: "Buying",
-        text: ["Paid options use USDG on Robinhood Chain, paid from your own wallet. They only work when paid features are switched on for the deployment you use. While they are off, the buy buttons stay disabled (Soon)."],
+        text: ["Paid options use USDG on Robinhood Chain, paid from your own wallet."],
         rows: [
           [PRODUCTS.credits_50.label, `$${PRODUCTS.credits_50.usd}`],
           [PRODUCTS.credits_300.label, `$${PRODUCTS.credits_300.usd}`],
           [PRODUCTS.pro_1m.label, `$${PRODUCTS.pro_1m.usd}`],
-          [`${PRODUCTS.pro_3m.label} / ${PRODUCTS.pro_12m.label}`, `$${PRODUCTS.pro_3m.usd} / $${PRODUCTS.pro_12m.usd}. These two prices are proposals and may change.`],
+          [`${PRODUCTS.pro_3m.label} / ${PRODUCTS.pro_12m.label}`, `$${PRODUCTS.pro_3m.usd} / $${PRODUCTS.pro_12m.usd}`],
         ],
       },
       {
