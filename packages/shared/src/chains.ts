@@ -20,6 +20,18 @@ export type ChainConfig = {
   usdg: { address: string; decimals: number } | null;
   /** Kontrak Uniswap v3 (lowercase). null = belum diverifikasi di chain ini → swap dimatikan. */
   uniswapV3: { factory: string; quoterV2: string; swapRouter02: string } | null;
+  /**
+   * Kontrak Uniswap v4 (lowercase, Permit2 apa adanya). HANYA DICATAT: belum dipakai oleh kode swap mana pun (swap baru mendukung v3).
+   * null = belum diverifikasi di chain ini.
+   */
+  uniswapV4: {
+    poolManager: string;
+    universalRouter: string;
+    positionManager: string;
+    stateView: string;
+    quoter: string;
+    permit2: string;
+  } | null;
 };
 
 export const CHAINS: Record<ChainEnv, ChainConfig> = {
@@ -34,6 +46,7 @@ export const CHAINS: Record<ChainEnv, ChainConfig> = {
     wrappedNative: "", // belum diverifikasi di testnet
     usdg: null, // belum diverifikasi di testnet; uji alur bayar dengan ETH testnet
     uniswapV3: null, // Uniswap belum tercantum/diverifikasi di testnet
+    uniswapV4: null,
   },
   mainnet: {
     env: "mainnet",
@@ -53,6 +66,17 @@ export const CHAINS: Record<ChainEnv, ChainConfig> = {
       factory: "0x1f7d7550b1b028f7571e69a784071f0205fd2efa",
       quoterV2: "0x33e885ed0ec9bf04ecfb19341582aadcb4c8a9e7",
       swapRouter02: "0xcaf681a66d020601342297493863e78c959e5cb2",
+    },
+    // Sumber: developers.uniswap.org/docs/protocols/v4/deployments (bagian Robinhood Chain, 4663). Diverifikasi 2026-11-07 lewat RPC mainnet:
+    // semua berisi bytecode; poolManager() pada UniversalRouter, PositionManager, StateView, dan V4Quoter sama dengan PoolManager di bawah;
+    // Permit2 punya DOMAIN_SEPARATOR. Ada juga UniversalRouter 2.1.2 (0x204faca1764b154221e35c0d20abb3c525710498), belum dipilih.
+    uniswapV4: {
+      poolManager: "0x8366a39cc670b4001a1121b8f6a443a643e40951",
+      universalRouter: "0x8876789976decbfcbbbe364623c63652db8c0904",
+      positionManager: "0x58daec3116aae6d93017baaea7749052e8a04fa7",
+      stateView: "0xf3334192d15450cdd385c8b70e03f9a6bd9e673b",
+      quoter: "0x8dc178efb8111bb0973dd9d722ebeff267c98f94",
+      permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
     },
   },
 };
