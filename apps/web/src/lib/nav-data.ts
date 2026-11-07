@@ -118,7 +118,7 @@ export const NAV_SECTIONS: NavSection[] = [
         {
           title: "Build",
           items: [
-            { icon: Code, label: "Data API", desc: "Our token, wallet and risk data over REST", href: "/developers" },
+            { icon: Code, label: "Data API", desc: "Our token, wallet and risk data over REST", href: "/developers", soon: true },
             { icon: BookOpen, label: "Docs", desc: "How the agents and the API work", href: "/docs" },
           ],
         },
