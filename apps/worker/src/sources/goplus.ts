@@ -59,6 +59,8 @@ export interface SecurityInfo {
   devPct: number | null;
   holders: number | null;
   lockedLpPct: number | null;
+  /** Pajak tertinggi dari beli/jual dalam basis poin (5% = 500); null bila GoPlus tidak melaporkannya. */
+  taxBps: number | null;
   creator: string | null;
   groups: SecGroup[];
   passed: number;
@@ -160,6 +162,12 @@ export function parseSecurity(json: unknown): SecurityInfo[] {
       devPct: creatorPct === null ? null : creatorPct * 100,
       holders: num(e.holder_count) === null ? null : Math.round(num(e.holder_count)!),
       lockedLpPct: lockedLp === null ? null : lockedLp * 100,
+      taxBps: (() => {
+        const b = num(e.buy_tax);
+        const s = num(e.sell_tax);
+        if (b === null && s === null) return null;
+        return Math.round(Math.max(b ?? 0, s ?? 0) * 10_000);
+      })(),
       creator: e.creator_address ? e.creator_address.toLowerCase() : null,
       groups,
       passed: all.filter((c) => c.state === "pass").length,
@@ -169,17 +177,37 @@ export function parseSecurity(json: unknown): SecurityInfo[] {
   return out;
 }
 
-export function createGoPlus(opts: { fetch?: FetchLike; minIntervalMs?: number; sleep?: (ms: number) => Promise<void> } = {}) {
+const respCode = z.object({ code: z.number() }).passthrough();
+
+export function createGoPlus(opts: { fetch?: FetchLike; minIntervalMs?: number; sleep?: (ms: number) => Promise<void>; throttleWaitMs?: number } = {}) {
   const http = createHttp({ fetch: opts.fetch, sleep: opts.sleep, minIntervalMs: opts.minIntervalMs ?? 2500 });
+  const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+  const throttleWaitMs = opts.throttleWaitMs ?? 20_000;
   return {
-    async tokens(addresses: string[]): Promise<SecurityInfo[]> {
+    /**
+     * Satu alamat per request: untuk Robinhood Chain GoPlus hanya menjawab alamat PERTAMA bila diminta beberapa sekaligus
+     * (diuji langsung), jadi batch tidak berguna. Kode non-1 (mis. 4029 = terlalu sering) dicoba ulang sekali setelah jeda;
+     * bila masih ditolak, berhenti. `attempted` hanya berisi alamat yang benar-benar dijawab GoPlus (ada atau tidak ada
+     * datanya), supaya yang belum sempat dicoba tidak dianggap tidak dikenal.
+     */
+    async lookup(addresses: string[]): Promise<{ infos: SecurityInfo[]; attempted: string[]; throttled: boolean }> {
       const valid = [...new Set(addresses.map((a) => a.toLowerCase()))].filter((a) => evmAddress.safeParse(a).success);
-      const out: SecurityInfo[] = [];
-      for (let i = 0; i < valid.length; i += SECURITY_BATCH) {
-        const chunk = valid.slice(i, i + SECURITY_BATCH);
-        out.push(...parseSecurity(await http.getJson(`${BASE}?contract_addresses=${chunk.join(",")}`)));
+      const infos: SecurityInfo[] = [];
+      const attempted: string[] = [];
+      for (const addr of valid) {
+        let json = await http.getJson(`${BASE}?contract_addresses=${addr}`);
+        if (respCode.parse(json).code !== 1) {
+          await sleep(throttleWaitMs);
+          json = await http.getJson(`${BASE}?contract_addresses=${addr}`);
+          if (respCode.parse(json).code !== 1) return { infos, attempted, throttled: true };
+        }
+        infos.push(...parseSecurity(json));
+        attempted.push(addr);
       }
-      return out;
+      return { infos, attempted, throttled: false };
+    },
+    async tokens(addresses: string[]): Promise<SecurityInfo[]> {
+      return (await this.lookup(addresses)).infos;
     },
   };
 }

@@ -4,7 +4,7 @@ import path from "node:path";
 import { createHttp, HttpError } from "../src/http";
 import { parseOhlcv, parsePools, parseTrades, WETH } from "../src/sources/geckoterminal";
 import { parseTokens } from "../src/sources/dexscreener";
-import { parseSecurity } from "../src/sources/goplus";
+import { createGoPlus, parseSecurity } from "../src/sources/goplus";
 
 const fx = (n: string) => JSON.parse(fs.readFileSync(path.join(__dirname, "fixtures", n), "utf8"));
 const CASH = "0x020bfc650a365f8bb26819deaabf3e21291018b4"; // CASHCAT (token nyata di Robinhood Chain)
@@ -174,5 +174,57 @@ describe("http: retry dan antrean", () => {
     const good = http.getJson("https://x/good");
     await expect(bad).rejects.toBeInstanceOf(HttpError);
     expect(await good).toEqual({ u: "https://x/good" });
+  });
+});
+
+describe("GoPlus lookup", () => {
+  const noSleep = async () => {};
+  const ADDR = (n: number) => "0x" + String(n).repeat(40);
+  const entry = () => {
+    const j = fx("goplus-cashcat.json");
+    return j.result[Object.keys(j.result)[0]];
+  };
+  const okBody = (addr: string) => JSON.stringify({ code: 1, message: "OK", result: { [addr]: entry() } });
+  const resp = (b: unknown) => new Response(typeof b === "string" ? b : JSON.stringify(b), { status: 200, headers: { "content-type": "application/json" } });
+
+  it("meminta satu alamat per request", async () => {
+    const urls: string[] = [];
+    const gp = createGoPlus({ fetch: async (u) => (urls.push(u), resp(okBody(u.split("=")[1]))), minIntervalMs: 0, sleep: noSleep });
+    const r = await gp.lookup([ADDR(1), ADDR(2), ADDR(3)]);
+    expect(urls).toHaveLength(3);
+    expect(urls.every((u) => !u.includes(","))).toBe(true);
+    expect(r.attempted).toHaveLength(3);
+    expect(r.infos).toHaveLength(3);
+  });
+
+  it("kode 4029 dicoba ulang sekali; bila tetap ditolak berhenti dan token sisa tidak dianggap tidak dikenal", async () => {
+    let n = 0;
+    const gp = createGoPlus({
+      fetch: async (u) => {
+        n++;
+        const addr = u.split("=")[1];
+        return resp(addr === ADDR(2) ? { code: 4029, message: "too many" } : okBody(addr));
+      },
+      minIntervalMs: 0,
+      sleep: noSleep,
+      throttleWaitMs: 0,
+    });
+    const r = await gp.lookup([ADDR(1), ADDR(2), ADDR(3)]);
+    expect(r.throttled).toBe(true);
+    expect(r.attempted).toEqual([ADDR(1)]); // ADDR(2) ditolak dua kali, ADDR(3) belum dicoba
+    expect(n).toBe(3);
+  });
+
+  it("kode 4029 sekali lalu berhasil: lanjut", async () => {
+    let hit = 0;
+    const gp = createGoPlus({
+      fetch: async (u) => (hit++ === 0 ? resp({ code: 4029, message: "too many" }) : resp(okBody(u.split("=")[1]))),
+      minIntervalMs: 0,
+      sleep: noSleep,
+      throttleWaitMs: 0,
+    });
+    const r = await gp.lookup([ADDR(1)]);
+    expect(r.throttled).toBe(false);
+    expect(r.attempted).toEqual([ADDR(1)]);
   });
 });

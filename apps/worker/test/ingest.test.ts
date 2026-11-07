@@ -100,16 +100,17 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
   });
 
   it("refreshSecurity: skor, holders, laporan terbaru saja; token tak dikenal GoPlus tetap null", async () => {
-    const r1 = await refreshSecurity(deps(), 10);
+    const r1 = await refreshSecurity(deps(), 10, { tried: new Map() });
     expect(r1.checked).toBe(1); // hanya CASHCAT ada di respons GoPlus
     const [t] = await created.db.select().from(tokens).where(eq(tokens.mint, CASH));
     expect(t.riskScore).not.toBeNull();
     expect(t.holders).toBe(114625);
+    expect(t.transferFeeBps).not.toBeNull(); // pajak dari GoPlus tersimpan (basis poin)
     expect(t.rugged).toBe(false);
     const others = (await created.db.select().from(tokens)).filter((x) => x.mint !== CASH);
     expect(others.every((o) => o.riskScore === null)).toBe(true); // tidak dikarang
     // ulang: laporan lama dibuang, tersisa satu
-    await refreshSecurity(deps(), 10, { recheckMin: 0 });
+    await refreshSecurity(deps(), 10, { recheckMin: 0, tried: new Map() });
     const reports = await created.db.select().from(tokenSecurityReports).where(eq(tokenSecurityReports.tokenId, t.id));
     expect(reports).toHaveLength(1);
     const checks = await created.db.select().from(tokenSecurityChecks);
@@ -119,18 +120,19 @@ describe("siklus ingest (fetch palsu, Postgres nyata)", () => {
   it("refreshSecurity: antrean berputar; token tak dikenal GoPlus dicap dan tidak menyumbat", async () => {
     const all = await created.db.select().from(tokens);
     const others = all.filter((x) => x.mint !== CASH);
-    // semua token dianggap belum pernah dicek; token lain diberi volume lebih besar dari CASHCAT (meniru volume palsu)
-    await created.db.update(tokens).set({ securityCheckedAt: null, lastSeenAt: new Date() });
+    await created.db.update(tokens).set({ lastSeenAt: new Date() });
+    // token lain bervolume lebih besar dari CASHCAT (meniru volume palsu yang dulu menguasai antrean)
     await created.db.update(tokens).set({ volumeUsd: "99999999" }).where(eq(tokens.id, others[0].id));
-    const r1 = await refreshSecurity(deps(), 1, { recheckMin: 30 });
-    expect(r1.checked + r1.unknown).toBe(1); // hanya satu dicoba
-    const [first] = await created.db.select().from(tokens).where(eq(tokens.id, others[0].id));
-    expect(first.securityCheckedAt).not.toBeNull();
-    // putaran berikutnya melompati yang sudah dicap dan mengambil token lain, bukan mengulang yang sama
-    const r2 = await refreshSecurity(deps(), 1, { recheckMin: 30 });
-    expect(r2.checked + r2.unknown).toBe(1);
-    const stamped = (await created.db.select().from(tokens)).filter((x) => x.securityCheckedAt !== null).length;
-    expect(stamped).toBe(2);
+    const tried = new Map<string, number>();
+    const seen: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const r = await refreshSecurity(deps(), 1, { recheckMin: 30, tried });
+      expect(r.checked + r.unknown).toBe(1); // hanya satu dicoba per putaran
+      seen.push([...tried.keys()].at(-1)!);
+    }
+    // tiga putaran = tiga token berbeda, bukan token yang sama berulang
+    expect(new Set(seen).size).toBe(3);
+    expect(tried.size).toBe(3);
   });
 
   it("refreshCandles: candle 15m tersimpan, ulang tidak menggandakan", async () => {

@@ -1,4 +1,4 @@
-import { and, gt as gtOp, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, gt as gtOp, isNotNull, isNull, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   memescopeCoins,
@@ -386,39 +386,37 @@ async function activeTokens(deps: Deps, topN: number) {
  * menit lalu. Token di papan trending/new didahulukan, lalu yang paling lama tidak dicek. Urutan menurut volume sengaja tidak
  * dipakai: volume palsu membuat token yang sama selalu di depan dan token lain tidak pernah kebagian.
  */
-async function securityQueue(deps: Deps, limit: number, recheckMin: number) {
+async function securityQueue(deps: Deps, limit: number, recheckMin: number, tried: Map<string, number>) {
   const now = (deps.now ?? (() => new Date()))();
   const seenSince = new Date(now.getTime() - 60 * 60_000);
-  const staleBefore = new Date(now.getTime() - recheckMin * 60_000);
   const boardSince = new Date(now.getTime() - 15 * 60_000);
-  return deps.db
-    .select({ id: tokens.id, mint: tokens.mint })
+  const cands = await deps.db
+    .select({ id: tokens.id, mint: tokens.mint, inBoard: sql<boolean>`(${tokens.id} in (select token_id from token_trending where snapshot_at > ${boardSince}))` })
     .from(tokens)
-    .where(
-      and(
-        isNotNull(tokens.poolId),
-        gtOp(tokens.lastSeenAt, seenSince),
-        sql`(${tokens.securityCheckedAt} is null or ${tokens.securityCheckedAt} < ${staleBefore})`,
-      ),
-    )
-    .orderBy(
-      sql`(${tokens.id} in (select token_id from token_trending where snapshot_at > ${boardSince})) desc`,
-      sql`${tokens.securityCheckedAt} asc nulls first`,
-      sql`${tokens.volumeUsd} desc nulls last`,
-    )
-    .limit(limit);
+    .where(and(isNotNull(tokens.poolId), gtOp(tokens.lastSeenAt, seenSince)))
+    .orderBy(sql`${tokens.volumeUsd} desc nulls last`)
+    .limit(600);
+  const staleBefore = now.getTime() - recheckMin * 60_000;
+  return cands
+    .filter((c) => (tried.get(c.mint) ?? 0) < staleBefore)
+    .sort((a, b) => Number(b.inBoard) - Number(a.inBoard) || (tried.get(a.mint) ?? 0) - (tried.get(b.mint) ?? 0))
+    .slice(0, limit);
 }
 
+/** Waktu terakhir tiap token dicoba dicek (di memori worker; hilang saat restart, lalu antrean mulai lagi dari awal). */
+const securityTried = new Map<string, number>();
+
 /** Ambil data keamanan (GoPlus) untuk antrean token dan simpan: kolom ringkas di tokens, metrik, serta laporan terbaru. */
-export async function refreshSecurity(deps: Deps, topN = 90, opts: { recheckMin?: number } = {}): Promise<{ checked: number; unknown: number }> {
+export async function refreshSecurity(deps: Deps, topN = 90, opts: { recheckMin?: number; tried?: Map<string, number> } = {}): Promise<{ checked: number; unknown: number; throttled?: boolean }> {
   if (!deps.sec) return { checked: 0, unknown: 0 };
-  const rows = await securityQueue(deps, topN, opts.recheckMin ?? 30);
+  const tried = opts.tried ?? securityTried;
+  const rows = await securityQueue(deps, topN, opts.recheckMin ?? 30, tried);
   if (rows.length === 0) return { checked: 0, unknown: 0 };
-  const infos = await deps.sec.tokens(rows.map((r) => r.mint));
+  const { infos, attempted, throttled } = await deps.sec.lookup(rows.map((r) => r.mint));
   const byAddr = new Map(infos.map((i) => [i.address, i]));
   const now = (deps.now ?? (() => new Date()))();
-  // Semua yang dicoba dicap, termasuk yang tidak dikenal GoPlus, supaya antrean berputar ke token lain.
-  await deps.db.update(tokens).set({ securityCheckedAt: now }).where(inArray(tokens.id, rows.map((r) => r.id)));
+  // Yang dijawab GoPlus dicap, termasuk yang tanpa data, supaya antrean berputar; yang belum sempat dicoba tetap di depan.
+  for (const m of attempted) tried.set(m, now.getTime());
   let checked = 0;
   for (const t of rows) {
     const info = byAddr.get(t.mint);
@@ -433,6 +431,7 @@ export async function refreshSecurity(deps: Deps, topN = 90, opts: { recheckMin?
           devPct: info.devPct === null ? undefined : info.devPct.toFixed(2),
           holders: info.holders ?? undefined,
           lpBurnPct: info.lockedLpPct === null ? undefined : info.lockedLpPct.toFixed(2),
+          transferFeeBps: info.taxBps ?? undefined,
           updatedAt: now,
         })
         .where(eq(tokens.id, t.id));
@@ -450,7 +449,7 @@ export async function refreshSecurity(deps: Deps, topN = 90, opts: { recheckMin?
     });
     checked++;
   }
-  return { checked, unknown: rows.length - checked };
+  return { checked, unknown: attempted.length - checked, ...(throttled ? { throttled: true } : {}) };
 }
 
 type PoolToken = { id: number; mint: string; poolId: string | null };
