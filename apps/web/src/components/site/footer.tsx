@@ -44,7 +44,7 @@ function FooterLink({ href, label, external }: { href: string; label: string; ex
 const PRODUCT = [
   { label: "Token Analysis", href: "/#features" },
   { label: "AI Agents", href: "/#agents" },
-  { label: "Auto Trader", href: "/docs/agents/auto-trader" },
+  { label: "Pipelines", href: "/docs/agents" },
   { label: "Marketplace", href: "/docs/agents/marketplace" },
 ];
 const RESOURCES = [

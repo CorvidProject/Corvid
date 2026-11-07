@@ -3,9 +3,8 @@ import { DocsShell } from "@/components/docs/docs-shell";
 import { DocsCreditsContent } from "@/content/docs/credits";
 
 export const metadata: Metadata = {
-  title: "AI analysis quota",
-  description:
-    "25 free AI analyses on signup, pay-as-you-go after. Trading has no subscription or credit cost",
+  title: "Credits & billing",
+  description: "Monthly AI quota, then credits. Trading, agents and following have no Corvid fee",
 };
 
 export default function DocsCreditsPage() {

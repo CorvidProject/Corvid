@@ -4,8 +4,7 @@ import { DocsAgentsContent } from "@/content/docs/agents";
 
 export const metadata: Metadata = {
   title: "Pipelines",
-  description:
-    "Three pipeline types with two modes each: the core of Corvid agents",
+  description: "Three pipeline types with signal and simulated trading modes",
 };
 
 export default function DocsAgentsPage() {

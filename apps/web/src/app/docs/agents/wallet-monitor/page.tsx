@@ -1,17 +1,6 @@
-import type { Metadata } from "next";
-import { DocsShell } from "@/components/docs/docs-shell";
-import { DocsAgentsWalletMonitorContent } from "@/content/docs/agents__wallet-monitor";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Wallet Monitor",
-  description:
-    "Tracks a list of wallets and signals when they buy or sell above a threshold",
-};
-
+// Tipe agent lama digantikan oleh tiga pipeline Corvid.
 export default function DocsAgentsWalletMonitorPage() {
-  return (
-    <DocsShell>
-      <DocsAgentsWalletMonitorContent />
-    </DocsShell>
-  );
+  permanentRedirect("/docs/agents/follow-wallet");
 }

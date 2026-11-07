@@ -1,17 +1,6 @@
-import type { Metadata } from "next";
-import { DocsShell } from "@/components/docs/docs-shell";
-import { DocsAgentsTokenAnalystContent } from "@/content/docs/agents__token-analyst";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Token Analyst",
-  description:
-    "AI agent that reads project knowledge and produces a written verdict",
-};
-
+// Tipe agent lama digantikan oleh tiga pipeline Corvid.
 export default function DocsAgentsTokenAnalystPage() {
-  return (
-    <DocsShell>
-      <DocsAgentsTokenAnalystContent />
-    </DocsShell>
-  );
+  permanentRedirect("/docs/risk-scoring");
 }

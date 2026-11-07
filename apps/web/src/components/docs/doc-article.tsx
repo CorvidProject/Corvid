@@ -23,6 +23,20 @@ export type DocPageData = {
 };
 
 const mute = "rgba(255,255,255,0.55)";
+const SOON = " (Soon)";
+
+/** Judul yang berakhiran " (Soon)" tampil dengan lencana SOON: fitur yang belum ada. */
+function Label({ text }: { text: string }) {
+  if (!text.endsWith(SOON)) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, -SOON.length)}
+      <span className="ml-2 align-middle font-mono text-[10px] tracking-[0.14em] uppercase px-1.5 py-0.5" style={{ color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.4)" }}>
+        Soon
+      </span>
+    </>
+  );
+}
 
 export function DocArticle({ d }: { d: DocPageData }) {
   return (
@@ -80,7 +94,9 @@ export function DocArticle({ d }: { d: DocPageData }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {s.cards.map(([t, b]) => (
                 <div key={t} className="p-5 border border-white/[0.08]" style={{ background: "rgba(255,255,255,0.02)" }}>
-                  <h3 className="font-heading font-semibold text-[15px] text-white mb-1.5 tracking-[-0.01em]">{t}</h3>
+                  <h3 className="font-heading font-semibold text-[15px] text-white mb-1.5 tracking-[-0.01em]">
+                    <Label text={t} />
+                  </h3>
                   <p className="text-[13px] leading-relaxed m-0" style={{ color: mute }}>
                     {b}
                   </p>
@@ -93,7 +109,7 @@ export function DocArticle({ d }: { d: DocPageData }) {
               {s.rows.map(([k, v]) => (
                 <div key={k} className="grid gap-x-6 gap-y-1 py-3 border-b border-white/[0.08] sm:grid-cols-[200px_1fr]">
                   <dt className="font-mono text-[11px] tracking-[0.06em] uppercase pt-0.5" style={{ color: "var(--v2-accent-text)" }}>
-                    {k}
+                    <Label text={k} />
                   </dt>
                   <dd className="m-0 text-[13px] leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
                     {v}

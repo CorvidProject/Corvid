@@ -256,7 +256,7 @@ export const PAGES = {
       {
         title: "Status",
         rows: [
-          ["Available", "No."],
+          ["Backing agents (Soon)", "Not part of Corvid today."],
           ["What exists instead", "You can publish an agent to the marketplace and other people can follow it for signals. Following is free and does not move money."],
           ["Your funds", "Corvid is non-custodial. Your wallet stays yours, and no Corvid screen asks you to send funds to an agent."],
         ],
@@ -278,7 +278,7 @@ export const PAGES = {
       {
         title: "Status",
         rows: [
-          ["Available", "No. Nothing is bought back or burned on a schedule."],
+          ["Buyback (Soon)", "Nothing is bought back or burned on a schedule."],
           ["Why", "A buyback needs a token and fees to fund it. The $CRVD token has not been launched and Corvid charges no swap commission."],
           ["Burn dashboard", "Shows burns only once a token and a burn program exist. Until then there is nothing live to report."],
         ],

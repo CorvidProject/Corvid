@@ -4,8 +4,7 @@ import { DocsPortfolioContent } from "@/content/docs/portfolio";
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description:
-    "Your open positions, ERC-20 tokens, and running PnL. Wallet keys encrypted at rest, exportable to MetaMask anytime",
+  description: "Your wallet balances read on-chain. Non-custodial: Corvid never holds your keys",
 };
 
 export default function DocsPortfolioPage() {

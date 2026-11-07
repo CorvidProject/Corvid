@@ -4,8 +4,7 @@ import { DocsContent } from "@/content/docs/index";
 
 export const metadata: Metadata = {
   title: "Documentation",
-  description:
-    "Corvid runs autonomous trading agents on Robinhood Chain. Build pipelines, follow smart money, pay per action",
+  description: "Corvid runs agents on Robinhood Chain that watch smart money and read token risk. Your wallet stays yours",
 };
 
 export default function DocsPage() {

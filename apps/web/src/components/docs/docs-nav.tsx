@@ -56,10 +56,10 @@ const GROUPS: DocsGroup[] = [
     title: "Economy",
     items: [
       { label: "Splits & Fees", href: "/docs/economy" },
-      { label: "Following & Cashback", href: "/docs/following" },
+      { label: "Following", href: "/docs/following" },
       { label: "Graduation", href: "/docs/graduation" },
-      { label: "Backing Agents", href: "/docs/backing" },
-      { label: "Buyback", href: "/docs/buyback" },
+      { label: "Backing (Soon)", href: "/docs/backing" },
+      { label: "Buyback (Soon)", href: "/docs/buyback" },
     ],
   },
   {

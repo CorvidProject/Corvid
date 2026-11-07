@@ -4,8 +4,7 @@ import { DocsBurnDashboardContent } from "@/content/docs/burn-dashboard";
 
 export const metadata: Metadata = {
   title: "Burn Dashboard",
-  description:
-    "Public counter of everything ever burned: $CRVD and graduated agent tokens",
+  description: "Status of burns: none yet, the dashboard comes with the token",
 };
 
 export default function DocsBurnDashboardPage() {
