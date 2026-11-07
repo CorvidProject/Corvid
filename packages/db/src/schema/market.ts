@@ -53,6 +53,8 @@ export const tokens = pgTable(
     mintAuthority: text("mint_authority"),
     createdAtChain: ts("created_at_chain"),
     lastSeenAt: ts("last_seen_at").notNull().defaultNow(),
+    /** Terakhir data keamanan dicoba diambil (berhasil atau tidak). */
+    securityCheckedAt: ts("security_checked_at"),
     updatedAt: ts("updated_at").notNull().defaultNow(),
   },
   (t) => [

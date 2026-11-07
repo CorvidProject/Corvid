@@ -1,4 +1,4 @@
-import { and, gt as gtOp, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, gt as gtOp, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   memescopeCoins,
@@ -83,10 +83,24 @@ export async function upsertToken(db: Db, v: TokenValues, now: Date): Promise<{ 
   return { id: row.id, inserted: row.inserted };
 }
 
+// Jumlah halaman GeckoTerminal per papan (20 pool per halaman); makin banyak makin lama satu putaran karena batas laju ketat.
+const TRENDING_PAGES = 3;
+const NEW_PAGES = 2;
+
 /** Perbarui papan token (tab trending/new) dan simpan snapshot peringkat. */
-export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 30): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {
+export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 60): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {
   const now = (deps.now ?? (() => new Date()))();
-  const pools = tab === "trending" ? await deps.gt.trendingPools() : await deps.gt.newPools();
+  const pages = tab === "trending" ? TRENDING_PAGES : NEW_PAGES;
+  const pools: Pool[] = [];
+  for (let page = 1; page <= pages; page++) {
+    try {
+      pools.push(...(tab === "trending" ? await deps.gt.trendingPools(page) : await deps.gt.newPools(page)));
+    } catch (e) {
+      if (page === 1) throw e; // halaman pertama wajib; halaman berikutnya hanya menambah cakupan
+      logOf(deps)(`${tab} halaman ${page} gagal: ${errText(e)}`);
+      break;
+    }
+  }
   const seen = new Set<string>();
   const unique = pools.filter((p) => (seen.has(p.baseMint) ? false : (seen.add(p.baseMint), true))).slice(0, limit);
 
@@ -367,14 +381,44 @@ async function activeTokens(deps: Deps, topN: number) {
     .limit(topN);
 }
 
-/** Ambil data keamanan (GoPlus) untuk token aktif teratas dan simpan: kolom ringkas di tokens, metrik, serta laporan terbaru. */
-export async function refreshSecurity(deps: Deps, topN = 30): Promise<{ checked: number; unknown: number }> {
+/**
+ * Token yang perlu dicek keamanannya: aktif dalam 1 jam terakhir, belum pernah dicek atau terakhir dicek lebih dari `recheckMin`
+ * menit lalu. Token di papan trending/new didahulukan, lalu yang paling lama tidak dicek. Urutan menurut volume sengaja tidak
+ * dipakai: volume palsu membuat token yang sama selalu di depan dan token lain tidak pernah kebagian.
+ */
+async function securityQueue(deps: Deps, limit: number, recheckMin: number) {
+  const now = (deps.now ?? (() => new Date()))();
+  const seenSince = new Date(now.getTime() - 60 * 60_000);
+  const staleBefore = new Date(now.getTime() - recheckMin * 60_000);
+  const boardSince = new Date(now.getTime() - 15 * 60_000);
+  return deps.db
+    .select({ id: tokens.id, mint: tokens.mint })
+    .from(tokens)
+    .where(
+      and(
+        isNotNull(tokens.poolId),
+        gtOp(tokens.lastSeenAt, seenSince),
+        sql`(${tokens.securityCheckedAt} is null or ${tokens.securityCheckedAt} < ${staleBefore})`,
+      ),
+    )
+    .orderBy(
+      sql`(${tokens.id} in (select token_id from token_trending where snapshot_at > ${boardSince})) desc`,
+      sql`${tokens.securityCheckedAt} asc nulls first`,
+      sql`${tokens.volumeUsd} desc nulls last`,
+    )
+    .limit(limit);
+}
+
+/** Ambil data keamanan (GoPlus) untuk antrean token dan simpan: kolom ringkas di tokens, metrik, serta laporan terbaru. */
+export async function refreshSecurity(deps: Deps, topN = 90, opts: { recheckMin?: number } = {}): Promise<{ checked: number; unknown: number }> {
   if (!deps.sec) return { checked: 0, unknown: 0 };
-  const rows = await activeTokens(deps, topN);
+  const rows = await securityQueue(deps, topN, opts.recheckMin ?? 30);
   if (rows.length === 0) return { checked: 0, unknown: 0 };
   const infos = await deps.sec.tokens(rows.map((r) => r.mint));
   const byAddr = new Map(infos.map((i) => [i.address, i]));
   const now = (deps.now ?? (() => new Date()))();
+  // Semua yang dicoba dicap, termasuk yang tidak dikenal GoPlus, supaya antrean berputar ke token lain.
+  await deps.db.update(tokens).set({ securityCheckedAt: now }).where(inArray(tokens.id, rows.map((r) => r.id)));
   let checked = 0;
   for (const t of rows) {
     const info = byAddr.get(t.mint);

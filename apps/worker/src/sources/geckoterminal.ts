@@ -193,8 +193,8 @@ export function createGeckoTerminal(opts: { fetch?: FetchLike; minIntervalMs?: n
     headers: { accept: "application/json;version=20230203" },
   });
   return {
-    async trendingPools(): Promise<Pool[]> {
-      return parsePools(await http.getJson(`${BASE}/trending_pools?page=1`));
+    async trendingPools(page = 1): Promise<Pool[]> {
+      return parsePools(await http.getJson(`${BASE}/trending_pools?page=${page}`));
     },
     async newPools(page = 1): Promise<Pool[]> {
       return parsePools(await http.getJson(`${BASE}/new_pools?page=${page}`));

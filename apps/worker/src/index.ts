@@ -27,7 +27,9 @@ const env = z
     WORKER_PRICES_MS: z.coerce.number().int().min(30_000).default(60_000),
     WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(600_000),
     WORKER_TRADES_MS: z.coerce.number().int().min(30_000).default(600_000),
-    WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(600_000),
+    WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(300_000),
+    /** Token per putaran pengecekan keamanan (30 per request GoPlus). */
+    WORKER_SECURITY_N: z.coerce.number().int().min(30).max(300).default(90),
     WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(600_000),
     /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
     WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(48),
@@ -86,7 +88,7 @@ const timers = [
   every("prices", env.WORKER_PRICES_MS, async () => ({ points: await snapshotPrices(db) })),
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
-  every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, 30)),
+  every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, env.WORKER_SECURITY_N)),
   every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
   every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS })), pruned: await pruneWallets(db) })),
   every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd: cachedEthUsd(), notify })),
