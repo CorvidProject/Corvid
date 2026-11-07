@@ -89,7 +89,7 @@ export function FooterCta() {
                   "--rv-t": "translateY(10px)",
                 }}
               >
-                Sign up, fund the wallet, deploy an agent
+                Sign up, connect your wallet, deploy an agent
               </p>
               <div
                 className="relative group"
@@ -141,7 +141,7 @@ export function FooterCta() {
                 <span style={{ color: "rgba(255,255,255, 0.65)" }}>·</span>
                 <span className="flex items-center gap-1.5">
                   <span style={{ color: "var(--v2-accent-text)" }}>✓</span>{" "}
-                  Self-custody export
+                  Non-custodial
                 </span>
               </div>
             </div>

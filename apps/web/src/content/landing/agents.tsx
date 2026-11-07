@@ -454,13 +454,11 @@ export function Agents() {
                 className="font-sans text-[14px] leading-relaxed m-0"
                 style={{ color: "rgba(255,255,255,0.75)" }}
               >
-                Wallets are created on signup and encrypted on our
-                infrastructure. Agents trade{" "}
+                Corvid is non-custodial: your wallet, your keys. Agents watch the chain{" "}
                 <span style={{ color: "#fff", fontWeight: "600" }}>
-                  autonomously 24/7
+                  around the clock
                 </span>
-                . No MetaMask popups, no manual approvals on every swap. Export
-                your private key to MetaMask anytime to take full self-custody.
+                {" "}and alert you. In trading mode they record simulated buys and send no transactions, and every real swap is signed by you.
               </p>
             </div>
           </div>

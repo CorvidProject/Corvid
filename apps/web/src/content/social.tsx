@@ -513,7 +513,7 @@ export function SocialContent() {
               <span style={{ color: "rgba(255,255,255, 0.65)" }}>·</span>
               <span className="flex items-center gap-1.5">
                 <span style={{ color: "var(--v2-accent-text)" }}>✓</span>{" "}
-                Self-custody export
+                Non-custodial
               </span>
             </div>
           </div>

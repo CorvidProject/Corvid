@@ -61,7 +61,7 @@ export function TokenSection() {
                   "--rv-t": "translateY(10px)",
                 }}
               >
-                The engine behind every action on Corvid
+                A planned token. Nothing in Corvid requires it today.
               </p>
               <p
                 className="font-mono text-xs font-semibold tracking-[0.14em] uppercase mt-4"
@@ -71,8 +71,7 @@ export function TokenSection() {
                   "--rv-t": "translateY(10px)",
                 }}
               >
-                Swaps, AI, agent backing, graduation pools · all settled in
-                $CRVD
+                Not launched yet · details will be published in the docs first
               </p>
             </div>
             <div

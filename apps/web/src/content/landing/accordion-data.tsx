@@ -12,13 +12,12 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Corvid is a trading terminal with autonomous agents, on Robinhood Chain. Check any token with an on-chain risk report,
-        deploy no-code agents that watch wallets and signals, and swap through Uniswap · all from one platform.
+        Corvid is a trading terminal with agents, on Robinhood Chain. Check any token with an on-chain risk report, set up no-code agents that watch wallets and new tokens, and swap through Uniswap, all from your own wallet.
       </p>
     ),
   },
   {
-    label: "How do AI agents work?",
+    label: "How do agents work?",
     content: (
       <p
         className="font-mono leading-relaxed"
@@ -28,16 +27,12 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Agents run every minute on Corvid servers. Four types: Signal Bot
-        monitors price/volume/LP; Wallet Monitor tracks addresses on-chain;
-        Token Analyst runs scheduled AI risk reports; Auto Trader executes
-        on-chain swaps when conditions are met. Signals can also be sent to
-        your Telegram once you link it.
+        Agents run about once a minute on Corvid servers. Three pipelines: Follow Wallet reacts when a wallet you pick buys, New Tokens scans fresh launches against your safety filters, and Token Trading watches one token for a trigger. Each runs in signal mode (alerts) or trading mode (simulated trades). Alerts reach your inbox, and Telegram once you link it.
       </p>
     ),
   },
   {
-    label: "How does the platform wallet work?",
+    label: "Does Corvid hold my funds?",
     content: (
       <p
         className="font-mono leading-relaxed"
@@ -47,10 +42,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Every user gets a platform wallet on signup, with an EVM address. Keys are encrypted
-        at rest in our infrastructure so the platform can sign trades for you,
-        which is what lets agents trade while you are offline. Export your
-        private key at any time to take full self-custody.
+        No. Corvid is non-custodial. You connect your own wallet, such as MetaMask, and sign every swap yourself. Corvid does not create a wallet for you or store a private key. Agents do not sign anything today: in trading mode they record simulated buys.
       </p>
     ),
   },
@@ -65,10 +57,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        $CRVD is the platform token. Every swap fee routes a slice into $CRVD
-        buyback + burn. Credits are paid in the native coin, USDC or USDT; the
-        Pro subscription is priced in USD and settled in $CRVD. Backing agents
-        before graduation is not live yet.
+        $CRVD is the planned Corvid token. It has not launched and nothing in the app needs it. Official details and the contract address will be published in the docs first. Credits and Pro are paid in USDG for now.
       </p>
     ),
   },
@@ -83,10 +72,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        1% flat commission on swaps. Manual trades get 40% back as cashback (0.6% effective) and copy-trades 20%
-        (0.8% effective), half the fee paying the agent's creator. Cashback on
-        swaps is coming: those fees are recorded now and paid out once
-        the on-chain distributor is live.
+        Corvid adds no commission to swaps today. You pay the Uniswap pool fee and gas. AI answers use a monthly quota, then credits, and Pro raises the quota. Cashback, revenue sharing and any future fees are not live yet and will be announced in the docs first.
       </p>
     ),
   },
@@ -101,9 +87,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        No. You trade with ETH like on any DEX. $CRVD accumulates
-        passively under the hood (burn + reserve slots). Cashback comes back in the coin you traded with, not $CRVD. Holding
-        $CRVD is optional.
+        No. You swap with ETH like on any DEX. $CRVD has not launched, and holding it is not required for anything.
       </p>
     ),
   },
@@ -118,9 +102,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Yes. Publish to the marketplace · followers subscribe for free and you
-        earn 50% of the 1% swap fee when they copy-trade. Agent tokens
-        (graduation) are not live yet.
+        Yes. Publish an agent to the marketplace with a short description and followers receive its signals for free. Creator earnings and agent tokens (graduation) are not live yet.
       </p>
     ),
   },
@@ -135,9 +117,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        DexScreener, GeckoTerminal, GoPlus and public RPC nodes. An OpenAI model writes the risk reports and signal summaries
-        from that on-chain data. TradingView-style charts with custom indicators
-        built in.
+        DexScreener, GeckoTerminal, GoPlus and public RPC nodes. AI chat and token analyses are written by a language model from that data and use your AI quota. Token pages show candle charts from market data.
       </p>
     ),
   },
@@ -152,9 +132,7 @@ export const faqItems: AccordionItem[] = [
           wordBreak: "break-word",
         }}
       >
-        Auto Trader executes on its own once its conditions are met, inside the
-        caps you set: daily spend, per-trade size, max trades per day. Telegram only
-        reports results; it never approves or executes a trade.
+        Not yet. In trading mode agents record simulated buys within the per-trade limit you set and send no transactions. On-chain execution is not live yet. Manual swaps are always signed by you in your wallet.
       </p>
     ),
   },
@@ -210,7 +188,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            No-code agent builder with 4 agent types
+            No-code agent builder with 3 pipeline types
           </span>
         </li>
         <li
@@ -255,7 +233,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Credit system and platform wallets on Robinhood Chain
+            Credit system and wallet connection on Robinhood Chain
           </span>
         </li>
       </ul>
@@ -295,7 +273,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            TradingView-style charts with SMA, EMA, Bollinger
+            Candle charts on token pages
           </span>
         </li>
         <li
@@ -340,7 +318,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Agent marketplace to publish and clone
+            Agent marketplace to publish and follow
           </span>
         </li>
         <li
@@ -355,7 +333,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Token search and $CRVD burn tracking
+            Token search across Robinhood Chain
           </span>
         </li>
       </ul>
@@ -397,7 +375,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Telegram signal delivery for all agent types
+            Telegram alerts for agents
           </span>
         </li>
         <li
@@ -414,7 +392,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            Auto Trader with on-chain swaps and approval mode
+            Agent on-chain execution with approval mode (planned)
           </span>
         </li>
         <li
@@ -448,7 +426,7 @@ export const roadmapItems: AccordionItem[] = [
             className="font-mono text-sm leading-relaxed"
             style={{ color: "rgba(var(--v2-section-fg-rgb, 10,10,15),0.55)" }}
           >
-            $CRVD credit packs and burn tracking live
+            Credit packs and Pro plan, paid in USDG
           </span>
         </li>
       </ul>
@@ -563,15 +541,20 @@ export const roadmapItems: AccordionItem[] = [
 export const tokenItems: AccordionItem[] = [
   {
     label: "Continuous Buyback + Burn",
+    badge: (
+      <span
+        className="font-mono uppercase"
+        style={{ fontSize: "0.62rem", padding: "2px 7px", color: "var(--v2-accent-text)", background: "rgba(var(--v2-accent-rgb),0.10)", border: "1px solid rgba(var(--v2-accent-rgb),0.25)", letterSpacing: "0.12em" }}
+      >
+        Coming Soon
+      </span>
+    ),
     content: (
       <p
         className="font-mono text-sm leading-relaxed"
         style={{ color: "rgba(255, 255, 255, 0.55)", maxWidth: "580px" }}
       >
-        From launch, every swap on the platform routes part of its 1% fee into
-        $CRVD buyback through Uniswap. The bought tokens are burned
-        on-chain · supply shrinks, every holder benefits. Until buyback switches
-        on, that share is recorded and held for it.
+        A share of future swap fees is planned to buy back and burn $CRVD. Neither the token nor any swap fee exists yet.
       </p>
     ),
   },
