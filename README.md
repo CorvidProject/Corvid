@@ -1,6 +1,6 @@
 # Corvid
 
-AI trading agents on [Robinhood Chain](https://robinhood.com/us/en/newsroom/introducing-robinhood-chain/). Corvid watches smart-money wallets, reads token risk, and lets you trade from your own wallet. Live at [corvidagent.com](https://corvidagent.com). Official X account: [@CorvidAgentX](https://x.com/CorvidAgentX).
+AI trading agents on Robinhood Chain. Corvid watches smart-money wallets, reads token risk, and lets you trade from your own wallet. Live at [corvidagent.com](https://corvidagent.com). Official X account: [@CorvidAgentX](https://x.com/CorvidAgentX).
 
 ## What it does
 
