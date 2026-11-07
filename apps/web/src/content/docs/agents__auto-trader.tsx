@@ -198,14 +198,15 @@ export function DocsAgentsAutoTraderContent() {
               04
             </span>
             <h3 className="font-heading font-semibold text-base text-white m-0 mb-1">
-              Telegram reports the result
+              Telegram sends a summary
             </h3>
             <p
               className="text-[14px] m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              After execution, the notification includes the side, size, and
-              transaction link
+              If Telegram alerts are on, you get a short summary with the token
+              and the reason. While trades are simulated, it is marked as a dry
+              run
             </p>
           </li>
         </ol>

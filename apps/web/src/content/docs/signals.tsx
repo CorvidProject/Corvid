@@ -26,7 +26,7 @@ export function DocsSignalsContent() {
           style={{ color: "rgba(255,255,255,0.65)" }}
         >
           Every pipeline funnels output into one place. Filter by agent, token,
-          type, or read status. Connect Telegram for push notifications.
+          type, or read status. Link Telegram in Settings for push notifications.
         </p>
       </div>
       <div className="mb-16">

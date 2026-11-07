@@ -174,8 +174,8 @@ export function DocsAgentsMarketplaceContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              You get a notification in your inbox, plus Telegram if you've
-              wired that up. Nothing executes until you click Buy or Sell
+              You get a notification in your inbox, plus Telegram if you linked it
+              in Settings and turned it on for that agent. Nothing executes until you click Buy or Sell
               yourself. Safer, but you have to be around.
             </p>
           </div>

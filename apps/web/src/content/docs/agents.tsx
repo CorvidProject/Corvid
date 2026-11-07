@@ -362,8 +362,8 @@ export function DocsAgentsContent() {
               className="text-[14px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.60)" }}
             >
-              Signal lands in your inbox. If Telegram is connected, it pushes to
-              your phone too
+              Signal lands in your inbox. If you linked Telegram and turned it on
+              for the agent, it pushes to your phone too
             </p>
           </li>
         </ol>

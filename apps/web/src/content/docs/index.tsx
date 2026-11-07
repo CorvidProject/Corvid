@@ -133,8 +133,8 @@ export function DocsContent() {
               className="text-[13px] leading-relaxed m-0"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Whale moves, new pools, price triggers, copy trades. All pushed to
-              your inbox and Telegram
+              Whale moves, new pools, price triggers, copy trades. Pushed to
+              your inbox, and to Telegram once you link it
             </p>
           </a>
           <a

@@ -31,8 +31,8 @@ export const faqItems: AccordionItem[] = [
         Agents run every minute on Corvid servers. Four types: Signal Bot
         monitors price/volume/LP; Wallet Monitor tracks addresses on-chain;
         Token Analyst runs scheduled AI risk reports; Auto Trader executes
-        on-chain swaps when conditions are met. Signals delivered to Telegram
-        instantly.
+        on-chain swaps when conditions are met. Signals can also be sent to
+        your Telegram once you link it.
       </p>
     ),
   },
@@ -153,8 +153,8 @@ export const faqItems: AccordionItem[] = [
         }}
       >
         Auto Trader executes on its own once its conditions are met, inside the
-        caps you set: daily spend, per-trade size, max trades per day. Swaps
-        proposed by the AI agent go through Telegram approval first.
+        caps you set: daily spend, per-trade size, max trades per day. Telegram only
+        reports results; it never approves or executes a trade.
       </p>
     ),
   },
