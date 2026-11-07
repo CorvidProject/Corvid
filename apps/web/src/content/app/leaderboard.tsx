@@ -25,7 +25,7 @@ export function ApplicationLeaderboardContent() {
   const [sort, setSort] = useState<Key>("pnl");
   const [dir, setDir] = useState<1 | -1>(-1);
   const [q, setQ] = useState("");
-  const { data, loading, error } = useApi<Curated>("/api/alpha/curated?limit=200");
+  const { data, loading, error } = useApi<Curated>("/api/alpha/curated?limit=200", 30_000);
   const windowHours = data?.windowHours ?? 48;
 
   const all = useMemo<Row[]>(

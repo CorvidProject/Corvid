@@ -1,4 +1,4 @@
-import { and, eq, gte, isNotNull, lt, notInArray, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, lt, notInArray, sql } from "drizzle-orm";
 import { platformStats, signals, tokens, tokenTrades, walletActivity, wallets } from "@corvid/db";
 import type { Db } from "./ingest";
 
@@ -97,32 +97,56 @@ export const WALLET_SOURCE = "trades-window";
 export const SIGNAL_WINDOW_MS = 30 * 60_000;
 const fmtEth = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(2)} ETH`;
 
-/** Hitung ulang skor dari trade dalam jendela, simpan wallet bertier, dan isi aktivitas terbarunya. */
+/** Batas nilai satu trade yang nilai ETH-nya diturunkan dari harga USD; di atas ini dianggap anomali harga (nilai ETH pasti dari pool WETH tidak dibatasi). */
+export const MAX_DERIVED_TRADE_USD = 1_000_000;
+
+/**
+ * Nilai ETH satu trade. Pool berpasangan WETH menyimpan jumlah ETH pasti. Pool lain (USDG, Uniswap v4, dll.) tidak punya jumlah
+ * ETH, jadi nilainya diturunkan dari jumlah token x harga USD saat trade / harga ETH sekarang (perkiraan: harga ETH dianggap
+ * tetap selama jendela; beli dan jual dikonversi dengan kurs yang sama sehingga PnL tetap konsisten).
+ */
+export function tradeEth(eth: string | number | null, tokenAmount: number, priceUsd: string | number | null, ethUsd: number | null): number | null {
+  if (eth !== null && eth !== undefined) return Number(eth);
+  if (!ethUsd || !(ethUsd > 0) || priceUsd === null || priceUsd === undefined) return null;
+  const px = Number(priceUsd);
+  if (!(px > 0) || !(tokenAmount > 0)) return null;
+  const usd = tokenAmount * px;
+  return usd <= MAX_DERIVED_TRADE_USD ? usd / ethUsd : null;
+}
+
+/**
+ * Hitung ulang skor dari trade dalam jendela, simpan wallet bertier, dan isi aktivitas terbarunya.
+ * Hanya wallet yang pernah membeli DAN menjual token yang sama di jendela yang ditarik dari database (hanya mereka yang bisa punya
+ * PnL realisasi); ini menekan transfer data. `ethUsd` dipakai untuk trade tanpa jumlah ETH pasti (lihat tradeEth).
+ */
 export async function refreshWallets(
   db: Db,
-  opts: { windowHours?: number; now?: Date } = {},
+  opts: { windowHours?: number; now?: Date; ethUsd?: number | null } = {},
 ): Promise<{ trades: number; wallets: number; tiered: number; activity: number }> {
   const now = opts.now ?? new Date();
   const windowHours = opts.windowHours ?? 48;
+  const ethUsd = opts.ethUsd ?? null;
   const since = new Date(now.getTime() - windowHours * HOUR);
   const rows = await db
     .select({
       wallet: tokenTrades.walletAddress,
       tokenId: tokenTrades.tokenId,
-      mint: tokens.mint,
-      symbol: tokens.symbol,
       side: tokenTrades.side,
       tokenAmount: tokenTrades.tokenAmount,
       eth: tokenTrades.ethAmount,
-      txHash: tokenTrades.txHash,
+      priceUsd: tokenTrades.priceUsd,
       at: tokenTrades.tradedAt,
     })
     .from(tokenTrades)
-    .innerJoin(tokens, eq(tokens.id, tokenTrades.tokenId))
-    .where(and(gte(tokenTrades.tradedAt, since), isNotNull(tokenTrades.ethAmount)))
-    .limit(100_000);
+    .where(
+      and(
+        gte(tokenTrades.tradedAt, since),
+        sql`${tokenTrades.walletAddress} in (select wallet_address from (select wallet_address, token_id from token_trades where traded_at >= ${since} group by wallet_address, token_id having count(distinct side) = 2) rt)`,
+      ),
+    )
+    .limit(150_000);
 
-  const scores = scoreWallets(rows.map((r) => ({ wallet: r.wallet.toLowerCase(), mint: r.mint, side: r.side, tokenAmount: Number(r.tokenAmount), eth: r.eth === null ? null : Number(r.eth), at: r.at })));
+  const scores = scoreWallets(rows.map((r) => ({ wallet: r.wallet.toLowerCase(), mint: String(r.tokenId), side: r.side, tokenAmount: Number(r.tokenAmount), eth: tradeEth(r.eth, Number(r.tokenAmount), r.priceUsd, ethUsd), at: r.at })));
   const tiered = scores.filter((s) => s.tier !== null);
 
   const idByAddr = new Map<string, number>();
@@ -156,13 +180,40 @@ export async function refreshWallets(
   // Penghitung "smart wallets" di statistik landing = jumlah wallet bertier saat ini.
   await db.insert(platformStats).values({ id: 1, smartWallets: tiered.length }).onConflictDoUpdate({ target: platformStats.id, set: { smartWallets: tiered.length } });
 
+  // Aktivitas hanya untuk wallet bertier: tarik baris lengkapnya (termasuk pembelian token yang belum dijual) dalam kelompok kecil.
+  const tieredAddrs = [...idByAddr.keys()];
+  const actRows: {
+    wallet: string; tokenId: number; mint: string; symbol: string | null; side: "buy" | "sell"; tokenAmount: string; eth: number | null; txHash: string; at: Date;
+  }[] = [];
+  for (let i = 0; i < tieredAddrs.length; i += 300) {
+    const part = await db
+      .select({
+        wallet: tokenTrades.walletAddress,
+        tokenId: tokenTrades.tokenId,
+        mint: tokens.mint,
+        symbol: tokens.symbol,
+        side: tokenTrades.side,
+        tokenAmount: tokenTrades.tokenAmount,
+        eth: tokenTrades.ethAmount,
+        priceUsd: tokenTrades.priceUsd,
+        txHash: tokenTrades.txHash,
+        at: tokenTrades.tradedAt,
+      })
+      .from(tokenTrades)
+      .innerJoin(tokens, eq(tokens.id, tokenTrades.tokenId))
+      .where(and(gte(tokenTrades.tradedAt, since), inArray(tokenTrades.walletAddress, tieredAddrs.slice(i, i + 300))));
+    for (const r of part) {
+      const eth = tradeEth(r.eth, Number(r.tokenAmount), r.priceUsd, ethUsd);
+      if (eth !== null) actRows.push({ wallet: r.wallet, tokenId: r.tokenId, mint: r.mint, symbol: r.symbol, side: r.side, tokenAmount: r.tokenAmount, eth, txHash: r.txHash, at: r.at });
+    }
+  }
   let activity = 0;
-  for (const r of rows) {
+  for (const r of actRows) {
     const walletId = idByAddr.get(r.wallet.toLowerCase());
     if (!walletId) continue;
     const res = await db
       .insert(walletActivity)
-      .values({ walletId, tokenId: r.tokenId, mint: r.mint, side: r.side, amountEth: r.eth, txHash: r.txHash, at: r.at })
+      .values({ walletId, tokenId: r.tokenId, mint: r.mint, side: r.side, amountEth: r.eth === null ? null : r.eth.toFixed(9), txHash: r.txHash, at: r.at })
       .onConflictDoNothing()
       .returning({ id: walletActivity.id });
     activity += res.length;

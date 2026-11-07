@@ -32,7 +32,7 @@ const env = z
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Token per putaran pengecekan keamanan (satu request GoPlus per token, jeda 4 dtk). */
     WORKER_SECURITY_N: z.coerce.number().int().min(10).max(300).default(70),
-    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(600_000),
+    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
     WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(48),
     WORKER_LAUNCHPAD_MS: z.coerce.number().int().min(60_000).default(300_000),
@@ -60,6 +60,7 @@ const notify = tg ? createNotifier(deps, tg) : undefined;
 let tgOffset: number | undefined;
 
 const rpc = createRpc({ url: env.MAINNET_RPC_URL });
+const ethUsd = cachedEthUsd(); // satu cache bersama (agent dan leaderboard)
 
 // Satu job tidak berjalan tumpang tindih dengan dirinya sendiri; kegagalan dicatat, bukan mematikan proses.
 function every(name: string, ms: number, fn: () => Promise<unknown>) {
@@ -93,8 +94,8 @@ const timers = [
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, env.WORKER_SECURITY_N)),
   every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
-  every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS })), pruned: await pruneWallets(db) })),
-  every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd: cachedEthUsd(), notify })),
+  every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS, ethUsd: await ethUsd() })), pruned: await pruneWallets(db) })),
+  every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd, notify })),
   ...(tg
     ? [
         every("telegram", 3_000, async () => {

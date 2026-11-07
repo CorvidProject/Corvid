@@ -4,7 +4,7 @@ import EmbeddedPostgres from "embedded-postgres";
 import { eq } from "drizzle-orm";
 import { applyMigrations, createDb, signals, tokenTrades, walletActivity, wallets } from "@corvid/db";
 import { upsertToken } from "../src/ingest";
-import { pruneWallets, refreshWallets, scoreWallets, SIGNAL_WINDOW_MS, tierOf, type TradeRow } from "../src/wallets";
+import { MAX_DERIVED_TRADE_USD, pruneWallets, refreshWallets, scoreWallets, SIGNAL_WINDOW_MS, tierOf, tradeEth, type TradeRow } from "../src/wallets";
 
 const T0 = Date.UTC(2026, 10, 4, 0, 0, 0);
 const at = (h: number) => new Date(T0 + h * 3_600_000);
@@ -147,5 +147,87 @@ describe("refreshWallets (Postgres)", () => {
     expect(NOW2.getTime() - sigs[0].at.getTime()).toBeLessThanOrEqual(SIGNAL_WINDOW_MS);
     await refreshWallets(created.db, { now: NOW2, windowHours: 48 });
     expect(await created.db.select().from(signals).where(eq(signals.type, "wallet_buy"))).toHaveLength(1); // idempoten
+  });
+});
+
+describe("tradeEth", () => {
+  it("memakai jumlah ETH pasti bila ada, termasuk nol", () => {
+    expect(tradeEth("1.5", 100, "999", 2000)).toBe(1.5);
+    expect(tradeEth(0, 100, "999", 2000)).toBe(0);
+  });
+  it("menurunkan ETH dari token x harga USD / harga ETH bila jumlah ETH tidak ada", () => {
+    expect(tradeEth(null, 1000, "0.5", 2000)).toBeCloseTo(0.25, 9); // $500 / $2000
+  });
+  it("null bila harga ETH, harga token, atau jumlah tidak valid", () => {
+    expect(tradeEth(null, 1000, "0.5", null)).toBeNull();
+    expect(tradeEth(null, 1000, null, 2000)).toBeNull();
+    expect(tradeEth(null, 1000, "0", 2000)).toBeNull();
+    expect(tradeEth(null, 0, "0.5", 2000)).toBeNull();
+    expect(tradeEth(null, 1000, "abc", 2000)).toBeNull();
+  });
+  it("membuang nilai turunan yang tidak masuk akal (anomali harga)", () => {
+    expect(tradeEth(null, 1e12, "1", 2000)).toBeNull();
+    expect(tradeEth(null, MAX_DERIVED_TRADE_USD, "1", 2000)).not.toBeNull();
+    expect(tradeEth("5000", 1e12, "1", 2000)).toBe(5000); // nilai pasti tidak dibatasi
+  });
+});
+
+describe("refreshWallets: trade berpasangan USDG/v4 (tanpa jumlah ETH) ikut dihitung lewat harga USD", () => {
+  const dir = "D:/.dev/tmp/pgtest-wallets-usd";
+  const port = 54343;
+  const url = `postgres://corvid:corvid-dev@localhost:${port}/corvid`;
+  let pg: EmbeddedPostgres;
+  let created: ReturnType<typeof createDb>;
+  const NOW = new Date(T0 + 24 * 3_600_000);
+
+  beforeAll(async () => {
+    fs.rmSync(dir, { recursive: true, force: true });
+    pg = new EmbeddedPostgres({ databaseDir: dir, user: "corvid", password: "corvid-dev", port, persistent: false, initdbFlags: ["--encoding=UTF8", "--locale=C"] });
+    await pg.initialise();
+    await pg.start();
+    await pg.createDatabase("corvid");
+    await applyMigrations(url);
+    created = createDb(url);
+    const { id } = await upsertToken(created.db, { mint: MINT(21), symbol: "USD1", name: "Usd" }, NOW);
+    const { id: id2 } = await upsertToken(created.db, { mint: MINT(22), symbol: "ONLYBUY", name: "Only buy" }, NOW);
+    const t = (n: number, tokenId: number, wallet: string, side: "buy" | "sell", amount: number, price: string, h: number) => ({
+      tokenId,
+      txHash: "0x" + (5000 + n).toString(16).padStart(64, "0"),
+      walletAddress: wallet,
+      side,
+      tokenAmount: String(amount),
+      ethAmount: null,
+      priceUsd: price,
+      tradedAt: at(h),
+    });
+    await created.db.insert(tokenTrades).values([
+      t(1, id, W(11), "buy", 1000, "0.5", 2), // $500
+      t(2, id, W(11), "sell", 1000, "1.5", 6), // $1500: untung $1000 = 0,5 ETH pada ETH $2000
+      t(3, id2, W(12), "buy", 1000, "1", 3), // hanya beli: tidak ditarik dan tidak punya PnL
+      t(4, id, W(13), "buy", 1000, "1e12", 3), // harga anomali
+      t(5, id, W(13), "sell", 1000, "1e12", 4),
+    ]);
+  }, 120_000);
+  afterAll(async () => {
+    await created?.pool.end();
+    await pg?.stop();
+  });
+
+  it("menghitung PnL dari harga USD dan membuang anomali", async () => {
+    const res = await refreshWallets(created.db, { now: NOW, windowHours: 48, ethUsd: 2000 });
+    expect(res.tiered).toBe(1);
+    const rows = await created.db.select().from(wallets);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].address).toBe(W(11));
+    expect(Number(rows[0].totalPnlEth)).toBeCloseTo(0.5, 6);
+    expect(rows[0].curatedTier).toBe("A"); // 0,5 ETH dan win rate 100%: tier A
+    expect(res.activity).toBe(2);
+  });
+
+  it("tanpa harga ETH, trade tanpa jumlah ETH diabaikan (tidak ada yang dikarang)", async () => {
+    await created.db.delete(wallets);
+    const res = await refreshWallets(created.db, { now: NOW, windowHours: 48, ethUsd: null });
+    expect(res.tiered).toBe(0);
+    expect(await created.db.select().from(wallets)).toHaveLength(0);
   });
 });
