@@ -286,7 +286,7 @@ export async function refreshHotCharts(deps: Deps, intervals: ChartInterval[], o
  * datanya baru diperbarui (`freshMin`). Memakai satu pernyataan SQL.
  */
 export async function snapshotPrices(db: Db, now = new Date(), opts: { everyMin?: number; freshMin?: number } = {}): Promise<number> {
-  const everyAgo = new Date(now.getTime() - (opts.everyMin ?? 3) * 60_000 + 5_000);
+  const everyAgo = new Date(now.getTime() - (opts.everyMin ?? 10) * 60_000 + 5_000);
   const freshAgo = new Date(now.getTime() - (opts.freshMin ?? 10) * 60_000);
   const res = await db.execute(sql`
     insert into token_price_points (token_id, at, price_usd)
