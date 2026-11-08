@@ -135,7 +135,7 @@ export function AlphaLive() {
         .then((r) => alive && (setItems(r.activity), setFailed(false), setUpdated(0)))
         .catch(() => alive && setFailed(true));
     void load();
-    const poll = setInterval(load, 8000);
+    const poll = setInterval(load, 20_000);
     const tick = setInterval(() => setUpdated((s) => s + 1), 1000);
     return () => {
       alive = false;

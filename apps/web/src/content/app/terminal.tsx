@@ -6,7 +6,7 @@ import { useApi } from "@/lib/api";
 import { cleanTokens, EMPTY_FILTERS, FilterBar, IntervalControls, TrendingRows, useFiltered, useNow, type Filters, type Interval } from "@/components/app/trending-table";
 
 // Data pasar diambil ulang tiap 20 detik (worker memperbarui sumbernya tiap menit).
-const REFRESH_MS = 20_000;
+const REFRESH_MS = 45_000;
 const fmtMcap = (n: number | null) => (n === null ? "-" : n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(2)}K` : `${n.toFixed(0)}`);
 
 function TerminalInner() {

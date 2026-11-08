@@ -19,7 +19,7 @@ const env = z
     WORKER_IMAGES_GT_MS: z.coerce.number().int().min(60_000).default(300_000),
     WORKER_IMAGES_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Segarkan harga/market cap token yang tidak lagi di papan trending/new. */
-    WORKER_STALE_MS: z.coerce.number().int().min(30_000).default(60_000),
+    WORKER_STALE_MS: z.coerce.number().int().min(30_000).default(120_000),
     /** Jumlah token maksimal per putaran (30 token per request DexScreener, batas 300 request/menit). */
     WORKER_STALE_LIMIT: z.coerce.number().int().min(30).max(600).default(300),
     /** Token yang sedang dibuka pengguna: harga tiap beberapa detik, candle/trade lebih jarang (GeckoTerminal ketat). */
@@ -32,16 +32,16 @@ const env = z
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Token per putaran pengecekan keamanan (satu request GoPlus per token, jeda 4 dtk). */
     WORKER_SECURITY_N: z.coerce.number().int().min(10).max(300).default(70),
-    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(300_000),
+    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(1_800_000),
     /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
-    WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(48),
+    WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(24),
     WORKER_LAUNCHPAD_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** RPC mainnet untuk membaca saldo kurva launchpad (data pasar selalu mainnet; RPC_URL bisa testnet). Kosong = RPC publik. */
     MAINNET_RPC_URL: z.string().optional(),
     /** Ambang kelulusan kurva (lihat sources/launchpads.ts untuk dasar verifikasi). Pons dalam ETH, Virtuals dalam VIRTUAL. */
     PONS_GRADUATION_ETH: z.coerce.number().positive().default(PONS.graduation),
     VIRTUALS_GRADUATION: z.coerce.number().positive().default(VIRTUALS.graduation),
-    WORKER_AGENTS_MS: z.coerce.number().int().min(15_000).default(60_000),
+    WORKER_AGENTS_MS: z.coerce.number().int().min(15_000).default(120_000),
     WORKER_RETENTION_MS: z.coerce.number().int().min(60_000).default(3_600_000),
     /** Jeda antar request GeckoTerminal; batas publik ketat (observasi: 429 pada ~2,2 dtk). */
     WORKER_GT_INTERVAL_MS: z.coerce.number().int().min(1000).default(6500),

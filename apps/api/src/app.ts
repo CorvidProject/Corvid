@@ -53,9 +53,14 @@ export interface AppOptions {
   payments?: PaymentsConfig | null;
   /** Pencari PoolKey Uniswap v4; null = endpoint /v4/pool-key menjawab 503. */
   v4Pools?: V4PoolResolver | null;
+  /** TTL (ms) cache respons GET publik tanpa login (hemat egress Supabase). 0 = mati (default, dipakai test). */
+  publicCacheMs?: number;
 }
 
-export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", telegramBot = null, llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null, v4Pools = null }: AppOptions) {
+// Hanya data pasar yang sama untuk semua pengunjung; jangan menambah rute per pengguna di sini.
+const CACHEABLE = new Set(["/api/tokens/trending", "/api/stats", "/api/memescope", "/api/solana/memescope", "/api/marketplace/feed", "/api/alpha/curated", "/api/alpha/activity"]);
+
+export async function buildApp({ db, webOrigin = "http://localhost:3000", logger = false, ethPrice = ethPriceSource, verifier = null, tradeMode = "dry", telegramBot = null, llm = null, trustProxyHops = 0, chatDailyCap = 3000, chatLimiter, planLimits, payments = null, v4Pools = null, publicCacheMs = 0 }: AppOptions) {
   const app = Fastify({ logger, trustProxy: trustProxyHops > 0 ? (_addr: string, hop: number) => hop < trustProxyHops : false }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -65,6 +70,31 @@ export async function buildApp({ db, webOrigin = "http://localhost:3000", logger
     openapi: { info: { title: "Corvid API", version: "0.1.0" } },
     transform: jsonSchemaTransform,
   });
+
+  if (publicCacheMs > 0) {
+    const cache = new Map<string, { at: number; body: string; type: string }>();
+    const keyOf = (req: { method: string; url: string; headers: { authorization?: string } }) => {
+      if (req.method !== "GET" || req.headers.authorization) return null;
+      const path = req.url.split("?")[0];
+      return CACHEABLE.has(path) ? req.url : null;
+    };
+    app.addHook("onRequest", async (req, reply) => {
+      const k = keyOf(req);
+      const hit = k ? cache.get(k) : undefined;
+      if (k && hit && Date.now() - hit.at < publicCacheMs) {
+        return reply.header("cache-control", `public, max-age=${Math.ceil(publicCacheMs / 2000)}`).header("x-cache", "hit").type(hit.type).send(hit.body);
+      }
+    });
+    app.addHook("onSend", async (req, reply, payload) => {
+      const k = keyOf(req);
+      if (k && reply.statusCode === 200 && typeof payload === "string") {
+        if (cache.size > 200) cache.clear();
+        cache.set(k, { at: Date.now(), body: payload, type: String(reply.getHeader("content-type") ?? "application/json") });
+        reply.header("cache-control", `public, max-age=${Math.ceil(publicCacheMs / 2000)}`);
+      }
+      return payload;
+    });
+  }
 
   app.get("/health", async () => ({ ok: true }));
   app.get("/openapi.json", async () => app.swagger());
