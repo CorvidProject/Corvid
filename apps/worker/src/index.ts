@@ -2,7 +2,7 @@ import { createDb } from "@corvid/db";
 import { z } from "zod";
 import { refreshBoard, refreshCandles, refreshLaunchpad, refreshHot, refreshHotCharts, refreshImagesGt, refreshMissingImages, refreshSecurity, refreshStale, snapshotPrices, refreshTrades, runRetention, type Deps } from "./ingest";
 import { createRpc, PONS, VIRTUALS } from "./sources/launchpads";
-import { pruneWallets, refreshWallets } from "./wallets";
+import { pruneWallets, refreshWalletActivity, refreshWallets } from "./wallets";
 import { runAgentCycle } from "./runner";
 import { cachedEthUsd } from "./ethprice";
 import { createDexScreener } from "./sources/dexscreener";
@@ -32,9 +32,11 @@ const env = z
     WORKER_SECURITY_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** Token per putaran pengecekan keamanan (satu request GoPlus per token, jeda 4 dtk). */
     WORKER_SECURITY_N: z.coerce.number().int().min(10).max(300).default(70),
-    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(1_800_000),
+    WORKER_WALLETS_MS: z.coerce.number().int().min(60_000).default(7_200_000),
+    /** Jalur ringan: aktivitas/sinyal wallet yang sudah bertier (tanpa hitung ulang skor). */
+    WORKER_WALLET_ACTIVITY_MS: z.coerce.number().int().min(60_000).default(600_000),
     /** Jendela trade untuk menilai smart wallet (jam). Lebih panjang = lebih banyak data tersimpan; retensi trade 48 jam. */
-    WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(24),
+    WALLETS_WINDOW_HOURS: z.coerce.number().int().min(1).max(48).default(12),
     WORKER_LAUNCHPAD_MS: z.coerce.number().int().min(60_000).default(300_000),
     /** RPC mainnet untuk membaca saldo kurva launchpad (data pasar selalu mainnet; RPC_URL bisa testnet). Kosong = RPC publik. */
     MAINNET_RPC_URL: z.string().optional(),
@@ -94,7 +96,8 @@ const timers = [
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),
   every("security", env.WORKER_SECURITY_MS, () => refreshSecurity(deps, env.WORKER_SECURITY_N)),
   every("launchpad", env.WORKER_LAUNCHPAD_MS, () => refreshLaunchpad({ ...deps, rpc }, { graduation: { pons: env.PONS_GRADUATION_ETH, virtuals: env.VIRTUALS_GRADUATION } })),
-  every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS, ethUsd: await ethUsd() })), pruned: await pruneWallets(db) })),
+  every("wallets", env.WORKER_WALLETS_MS, async () => ({ ...(await refreshWallets(db, { windowHours: env.WALLETS_WINDOW_HOURS, activityHours: 3, ethUsd: await ethUsd() })), pruned: await pruneWallets(db) })),
+  every("wallet-activity", env.WORKER_WALLET_ACTIVITY_MS, async () => refreshWalletActivity(db, { hours: 1, ethUsd: await ethUsd() })),
   every("agents", env.WORKER_AGENTS_MS, () => runAgentCycle({ ...deps, ethUsd, notify })),
   ...(tg
     ? [

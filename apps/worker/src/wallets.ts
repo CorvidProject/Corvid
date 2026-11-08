@@ -1,4 +1,4 @@
-import { and, eq, gte, inArray, lt, notInArray, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, isNotNull, lt, notInArray, sql } from "drizzle-orm";
 import { platformStats, signals, tokens, tokenTrades, walletActivity, wallets } from "@corvid/db";
 import type { Db } from "./ingest";
 
@@ -121,7 +121,7 @@ export function tradeEth(eth: string | number | null, tokenAmount: number, price
  */
 export async function refreshWallets(
   db: Db,
-  opts: { windowHours?: number; now?: Date; ethUsd?: number | null } = {},
+  opts: { windowHours?: number; activityHours?: number; now?: Date; ethUsd?: number | null } = {},
 ): Promise<{ trades: number; wallets: number; tiered: number; activity: number }> {
   const now = opts.now ?? new Date();
   const windowHours = opts.windowHours ?? 48;
@@ -180,7 +180,15 @@ export async function refreshWallets(
   // Penghitung "smart wallets" di statistik landing = jumlah wallet bertier saat ini.
   await db.insert(platformStats).values({ id: 1, smartWallets: tiered.length }).onConflictDoUpdate({ target: platformStats.id, set: { smartWallets: tiered.length } });
 
-  // Aktivitas hanya untuk wallet bertier: tarik baris lengkapnya (termasuk pembelian token yang belum dijual) dalam kelompok kecil.
+  // Aktivitas hanya untuk wallet bertier dan hanya jendela pendek (activityHours): riwayat lama sudah tercatat putaran sebelumnya.
+  const actSince = new Date(now.getTime() - (opts.activityHours ?? windowHours) * HOUR);
+  const activity = await syncActivity(db, idByAddr, tierByAddr, actSince, now, ethUsd);
+  return { trades: rows.length, wallets: scores.length, tiered: tiered.length, activity };
+}
+
+
+/** Catat aktivitas (dan sinyal tier S/A) wallet bertier dari trade sejak `since`. Hanya baris baru yang masuk (on conflict do nothing). */
+async function syncActivity(db: Db, idByAddr: Map<string, number>, tierByAddr: Map<string, string | null>, since: Date, now: Date, ethUsd: number | null): Promise<number> {
   const tieredAddrs = [...idByAddr.keys()];
   const actRows: {
     wallet: string; tokenId: number; mint: string; symbol: string | null; side: "buy" | "sell"; tokenAmount: string; eth: number | null; txHash: string; at: Date;
@@ -223,7 +231,20 @@ export async function refreshWallets(
       await db.insert(signals).values({ type: "wallet_buy", mint: r.mint, symbol: r.symbol ?? null, score: tier === "S" ? 90 : 75, at: r.at });
     }
   }
-  return { trades: rows.length, wallets: scores.length, tiered: tiered.length, activity };
+  return activity;
+}
+
+/**
+ * Jalur ringan: hanya aktivitas/sinyal wallet yang SUDAH bertier, dari trade `hours` jam terakhir. Tidak menghitung ulang skor,
+ * jadi baris yang ditarik dari database kecil (skoring penuh jarang dijalankan).
+ */
+export async function refreshWalletActivity(db: Db, opts: { hours?: number; now?: Date; ethUsd?: number | null } = {}): Promise<{ wallets: number; activity: number }> {
+  const now = opts.now ?? new Date();
+  const tiered = await db.select({ id: wallets.id, address: wallets.address, tier: wallets.curatedTier }).from(wallets).where(and(eq(wallets.source, WALLET_SOURCE), isNotNull(wallets.curatedTier)));
+  const idByAddr = new Map(tiered.map((w) => [w.address.toLowerCase(), w.id]));
+  const tierByAddr = new Map(tiered.map((w) => [w.address.toLowerCase(), w.tier as string | null]));
+  const activity = await syncActivity(db, idByAddr, tierByAddr, new Date(now.getTime() - (opts.hours ?? 1) * HOUR), now, opts.ethUsd ?? null);
+  return { wallets: tiered.length, activity };
 }
 
 /** Retensi: aktivitas lama dan wallet hasil penemuan yang lama tidak diperbarui. */
