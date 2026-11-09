@@ -294,6 +294,7 @@ export const signals = pgTable(
     mint: text("mint").notNull(),
     symbol: text("symbol"),
     score: smallint("score").notNull().default(0),
+    walletTier: text("wallet_tier"),
     at: ts("at").notNull().defaultNow(),
   },
   (t) => [index("signals_at_idx").on(t.at.desc()), index("signals_mint_idx").on(t.mint)],

@@ -254,6 +254,6 @@ export const agentRoutes =
         .where(pro ? undefined : and(eq(signals.type, "new_token"), lte(signals.at, cutoff)))
         .orderBy(desc(signals.at))
         .limit(50);
-      return { access: pro ? ("pro" as const) : ("free" as const), delayMinutes: pro ? 0 : FREE_SIGNAL_DELAY_MIN, signals: rows.map((s) => ({ id: s.id, type: s.type, symbol: s.symbol, mint: s.mint, score: s.score, at: Math.floor(s.at.getTime() / 1000) })) };
+      return { access: pro ? ("pro" as const) : ("free" as const), delayMinutes: pro ? 0 : FREE_SIGNAL_DELAY_MIN, signals: rows.map((s) => ({ id: s.id, type: s.type, symbol: s.symbol, mint: s.mint, score: s.score, walletTier: (s.walletTier as "S" | "A" | "B" | "C" | null) ?? null, at: Math.floor(s.at.getTime() / 1000) })) };
     });
   };

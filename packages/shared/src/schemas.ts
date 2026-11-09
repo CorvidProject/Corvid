@@ -422,6 +422,7 @@ export const signalsResponseSchema = z.object({
       symbol: z.string().nullable(),
       mint: chainAddress,
       score: z.number().int(),
+      walletTier: z.enum(["S", "A", "B", "C"]).nullable(),
       at: z.number(),
     }),
   ),

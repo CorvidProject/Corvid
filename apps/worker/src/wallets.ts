@@ -228,7 +228,7 @@ async function syncActivity(db: Db, idByAddr: Map<string, number>, tierByAddr: M
     // Sinyal premium: pembelian BARU oleh wallet tier S/A dalam SIGNAL_WINDOW_MS terakhir (riwayat lama tidak memicu sinyal).
     const tier = tierByAddr.get(r.wallet.toLowerCase());
     if (res.length && r.side === "buy" && r.eth !== null && (tier === "S" || tier === "A") && now.getTime() - r.at.getTime() <= SIGNAL_WINDOW_MS) {
-      await db.insert(signals).values({ type: "wallet_buy", mint: r.mint, symbol: r.symbol ?? null, score: tier === "S" ? 90 : 75, at: r.at });
+      await db.insert(signals).values({ type: "wallet_buy", mint: r.mint, symbol: r.symbol ?? null, score: tier === "S" ? 90 : 75, walletTier: tier, at: r.at });
     }
   }
   return activity;

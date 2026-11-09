@@ -1,5 +1,5 @@
 import { and, desc, eq, gt as gtOp, sql } from "drizzle-orm";
-import { agentRunSteps, agentRuns, agents, notifications, subscriptions, swaps, tokens, walletActivity, wallets } from "@corvid/db";
+import { agentRunSteps, agentRuns, agents, notifications, profiles, subscriptions, swaps, tokens, walletActivity, wallets } from "@corvid/db";
 import type { Deps } from "./ingest";
 
 // Runner agent (SIMULASI). Satu siklus: untuk tiap agent berstatus running, cari kandidat token menurut
@@ -329,10 +329,17 @@ export interface CycleResult {
 /** Satu siklus untuk semua agent berstatus running. Kegagalan satu agent tidak menghentikan yang lain. */
 export async function runAgentCycle(deps: RunnerDeps): Promise<CycleResult> {
   const now = (deps.now ?? (() => new Date()))();
-  const running = await deps.db.select().from(agents).where(eq(agents.running, true));
-  const res: CycleResult = { agents: running.length, runs: 0, passed: 0, failed: 0 };
+  const rows = await deps.db
+    .select({ agent: agents, proUntil: profiles.proUntil })
+    .from(agents)
+    .leftJoin(profiles, eq(agents.ownerId, profiles.id))
+    .where(eq(agents.running, true));
+  // Pro agents run first so quota agents don't consume shared I/O budget ahead of paying users.
+  const proCheck = (d: Date | null) => !!d && d.getTime() > now.getTime();
+  rows.sort((a, b) => (proCheck(b.proUntil ?? null) ? 1 : 0) - (proCheck(a.proUntil ?? null) ? 1 : 0));
+  const res: CycleResult = { agents: rows.length, runs: 0, passed: 0, failed: 0 };
 
-  for (const a of running) {
+  for (const { agent: a } of rows) {
     try {
       const cands = await findCandidates(deps, a, now);
       if (cands.length === 0) {
