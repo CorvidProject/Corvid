@@ -1,17 +1,17 @@
-// Swap lewat Uniswap v4 (Universal Router + V4Quoter + Permit2) di Robinhood Chain. Bagian murni: pemilihan rute, kuotasi,
-// dan penyusunan calldata. Tidak mengirim apa pun. Alamat kontrak dari @corvid/shared/chains (diverifikasi lewat RPC).
+// Swap via Uniswap v4 (Universal Router + V4Quoter + Permit2) on Robinhood Chain. Pure functions: routing, quoting,
+// and calldata encoding. Does not dispatch any transactions. Contract addresses from @corvid/shared/chains (RPC verified).
 //
-// Rute: pool utama token (PoolKey dibaca dari event Initialize oleh API) berpasangan ETH native atau USDG.
-//  - pasangan ETH native : satu lompatan.
-//  - pasangan USDG       : dua lompatan lewat pool ETH/USDG v4 (dikuotasi semua, dipilih yang terbaik).
-// Semua lompatan dieksekusi atomik dalam satu transaksi `execute` Universal Router (perintah V4_SWAP).
+// Routes: token's primary pool (PoolKey decoded from Initialize events by API) paired with native ETH or USDG.
+//  - native ETH pair : 1 hop.
+//  - USDG pair       : 2 hops via ETH/USDG v4 pools (all quoted, best selected).
+// All hops execute atomically in a single Universal Router `execute` transaction (V4_SWAP command).
 import { encodeAbiParameters, encodeFunctionData, parseAbi, type Address, type Hex, type PublicClient } from "viem";
 
 export const ZERO: Address = "0x0000000000000000000000000000000000000000";
 
 export type PoolKeyLike = { fee: number; tickSpacing: number; hooks: Address };
 export type PoolKey = PoolKeyLike & { currency0: Address; currency1: Address };
-/** Satu lompatan: pool yang dipakai dan mata uang keluarannya. */
+/** A single hop: pool used and the output currency. */
 export type Hop = PoolKeyLike & { to: Address };
 
 // Universal Router: command V4_SWAP. v4-periphery Actions: SWAP_EXACT_IN, SETTLE_ALL, TAKE_ALL.
@@ -40,8 +40,8 @@ export const permit2Abi = parseAbi([
 const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 /**
- * Rute kandidat dari mata uang masuk. `buy` = ETH -> token; selain itu token -> ETH.
- * Kosong bila pasangan pool token tidak didukung (bukan ETH native dan bukan USDG).
+ * Candidate routes from input currency. `buy` = ETH -> token; otherwise token -> ETH.
+ * Empty if the token pool pair is unsupported (neither native ETH nor USDG).
  */
 export function candidateRoutes(args: { buy: boolean; token: Address; pool: PoolKey; usdg: Address | null; bridges: PoolKeyLike[] }): Hop[][] {
   const { buy, token, pool, usdg, bridges } = args;
@@ -57,7 +57,7 @@ export function candidateRoutes(args: { buy: boolean; token: Address; pool: Pool
   return [];
 }
 
-/** Kuotasi satu rute lewat V4Quoter (eth_call, tanpa transaksi). null = rute gagal (mis. hook menolak, tidak ada likuiditas). */
+/** Quote single route via V4Quoter (eth_call, no transaction). null = route failed (e.g. hook rejected, lack of liquidity). */
 export async function quoteRoute(client: PublicClient, quoter: Address, currencyIn: Address, hops: Hop[], amountIn: bigint): Promise<bigint | null> {
   try {
     const { result } = await client.simulateContract({
@@ -78,7 +78,7 @@ export async function quoteRoute(client: PublicClient, quoter: Address, currency
   }
 }
 
-/** Calldata `execute` Universal Router untuk satu swap exact-in (SWAP_EXACT_IN + SETTLE_ALL + TAKE_ALL). */
+/** Universal Router `execute` calldata for a single exact-in swap (SWAP_EXACT_IN + SETTLE_ALL + TAKE_ALL). */
 export function encodeUniversalRouterSwap(args: { currencyIn: Address; hops: Hop[]; amountIn: bigint; minOut: bigint; deadline: bigint }): { data: Hex; value: bigint } {
   const { currencyIn, hops, amountIn, minOut, deadline } = args;
   const currencyOut = hops[hops.length - 1].to;
@@ -90,8 +90,8 @@ export function encodeUniversalRouterSwap(args: { currencyIn: Address; hops: Hop
         components: [
           { name: "currencyIn", type: "address" },
           { name: "path", type: "tuple[]", components: pathKeyComponents },
-          // Struktur v4-periphery terbaru memuat batas slippage per lompatan; array kosong = tanpa batas per lompatan
-          // (batas keseluruhan tetap dari amountOutMinimum). Tanpa field ini calldata ditolak (revert tanpa pesan).
+          // Latest v4-periphery struct includes per-hop slippage limits; empty array = no per-hop limit
+          // (overall limit is still enforced by amountOutMinimum). Without this field calldata is rejected (empty revert).
           { name: "maxHopSlippage", type: "uint256[]" },
           { name: "amountIn", type: "uint128" },
           { name: "amountOutMinimum", type: "uint128" },
@@ -115,7 +115,7 @@ export function encodeUniversalRouterSwap(args: { currencyIn: Address; hops: Hop
   return { data, value: currencyIn === ZERO ? amountIn : 0n };
 }
 
-/** Data persetujuan Permit2 untuk menjual token ERC-20: approve token ke Permit2, lalu Permit2.approve ke Universal Router. */
+/** Permit2 approval calldata to sell ERC-20 tokens: approve token to Permit2, then Permit2.approve to Universal Router. */
 export function permit2ApproveData(token: Address, router: Address, amount: bigint, expiration: number): Hex {
   return encodeFunctionData({ abi: permit2Abi, functionName: "approve", args: [token, router, amount, expiration] });
 }

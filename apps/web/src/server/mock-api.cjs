@@ -126,8 +126,43 @@ function handleMockApi(req, res, pathname, searchParams) {
   }
 
   if (pathname.startsWith('/api/tokens/')) {
-    const mint = decodeURIComponent(pathname.slice('/api/tokens/'.length));
-    if (mint === seed.tokenSample.token?.mint) {
+    const mint = decodeURIComponent(pathname.slice('/api/tokens/'.length)).toLowerCase();
+    // Canonical Paxos Global Dollar (USDG) stablecoin on Robinhood Chain
+    if (mint === '0x5fc5360d0400a0fd4f2af552add042d716f1d168') {
+      sendJSON(res, 200, {
+        token: {
+          name: 'Global Dollar',
+          symbol: 'USDG',
+          mint: '0x5fc5360d0400a0fd4f2af552add042d716f1d168',
+          image: '/brand/usdg.svg',
+          description: 'Global Dollar (USDG) is the official native US dollar stablecoin on Robinhood Chain, issued by Paxos.',
+          links: ['https://paxos.com/usdg'],
+          decimals: 6,
+          price: 1.0,
+          marketCap: null,
+          liquidity: null,
+          lpBurn: null,
+          volume: null,
+          buys: null,
+          sells: null,
+          txns: null,
+          change1m: 0,
+          change5m: 0,
+          change1h: 0,
+          change6h: 0,
+          change24h: 0,
+          risk: { score: 0, rugged: false, risks: [] },
+          security: { freezeAuthority: null, mintAuthority: null },
+          transferFeeBps: 0,
+          totalSupply: null,
+          topHoldersPercent: null,
+          devHoldingsPercent: null,
+          poolId: null,
+        },
+      });
+      return true;
+    }
+    if (mint === seed.tokenSample.token?.mint?.toLowerCase()) {
       sendJSON(res, 200, seed.tokenSample);
     } else {
       sendJSON(res, 200, synthesizeToken(mint));
@@ -143,7 +178,7 @@ function handleMockApi(req, res, pathname, searchParams) {
     return true;
   }
 
-  // Smart wallets berasal dari penemuan worker (data nyata); mode fixture tidak punya data wallet, jadi kosong.
+  // Smart wallets come from worker discovery (live chain data); fixture mode has no wallet data, returning empty.
   if (pathname === '/api/alpha/curated') {
     sendJSON(res, 200, { wallets: [], windowHours: 48, at: Math.floor(Date.now() / 1000) });
     return true;

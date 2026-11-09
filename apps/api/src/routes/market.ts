@@ -70,7 +70,7 @@ export const marketRoutes =
           tokens: rows.map((r) => {
             const spark = sparks.get(r.token.id);
             const price = Number(r.token.priceUsd);
-            // Titik terakhir = harga terkini, supaya ujung garis selalu sama dengan angka di tabel.
+            // Last point = current price, ensuring line endpoint matches table price.
             return { ...toTrending(r.token), ...(spark ? { spark: price > 0 ? [...spark, price] : spark } : {}) };
           }),
         };
@@ -161,7 +161,63 @@ export const marketRoutes =
       },
       async (req, reply) => {
         const [tok] = await db.select().from(tokens).where(eq(tokens.mint, req.params.mint)).limit(1);
-        if (!tok) return reply.code(404).send({ error: "token_not_found" });
+        if (!tok) {
+          // Canonical Paxos Global Dollar (USDG) stablecoin on Robinhood Chain
+          const m = req.params.mint.toLowerCase();
+          if (m === "0x5fc5360d0400a0fd4f2af552add042d716f1d168") {
+            return {
+              token: {
+                name: "Global Dollar",
+                symbol: "USDG",
+                mint: m,
+                image: "/brand/usdg.svg",
+                description: "Global Dollar (USDG) is the official native US dollar stablecoin on Robinhood Chain, issued by Paxos.",
+                links: ["https://paxos.com/usdg"],
+                decimals: 6,
+                price: 1.0,
+                marketCap: null,
+                liquidity: null,
+                lpBurn: null,
+                volume: null,
+                buys: null,
+                sells: null,
+                txns: null,
+                change1m: 0,
+                change5m: 0,
+                change1h: 0,
+                change6h: 0,
+                change24h: 0,
+                risk: { score: 0, rugged: false, risks: [] },
+                security: { freezeAuthority: null, mintAuthority: null },
+                transferFeeBps: 0,
+                totalSupply: null,
+                topHoldersPercent: null,
+                devHoldingsPercent: null,
+                devWallet: null,
+                sniperHoldingsPercent: null,
+                bundlerHoldingsPercent: null,
+                insidersPercent: null,
+                insidersCount: null,
+                bundlersCount: null,
+                bundlersInitialPercent: null,
+                snipersCount: null,
+                jitoFees: null,
+                jupiterVerified: true,
+                holdersCount: null,
+                creatorAddress: null,
+                buyVolume: null,
+                sellVolume: null,
+                makers: null,
+                buyers: null,
+                sellers: null,
+                poolId: null,
+                market: "uniswap",
+                createdAt: null,
+              },
+            };
+          }
+          return reply.code(404).send({ error: "token_not_found" });
+        }
         markWatched(db, [tok.mint]);
         const [m] = await db.select().from(tokenSecurityMetrics).where(eq(tokenSecurityMetrics.tokenId, tok.id)).limit(1);
         return toDetail(tok, m ?? null);
@@ -173,7 +229,7 @@ export const marketRoutes =
           .select()
           .from(memescopeCoins)
           .where(and(eq(memescopeCoins.stage, req.query.stage)))
-          // Final Stretch: paling dekat lulus dulu; lainnya: terbaru dulu (NULL di akhir).
+          // Final Stretch: closest to graduation first; others: newest first (NULLs last).
           .orderBy(
             req.query.stage === "stretch"
               ? sql`${memescopeCoins.progressPct} desc`
@@ -203,8 +259,8 @@ export const marketRoutes =
     };
     const memescopeSchema = { tags: ["market"], querystring: memescopeQuerySchema, response: { 200: memescopeResponseSchema } };
     app.get("/memescope", { schema: memescopeSchema }, memescopeHandler);
-    // Nama lama dipertahankan sementara agar frontend yang belum diperbarui tetap jalan; hapus setelah semua deploy memakai /memescope.
+    // Legacy route kept temporarily for compatibility with older frontend deployments; remove after full migration.
     app.get("/solana/memescope", { schema: { ...memescopeSchema, hide: true } }, memescopeHandler);
 
-    void z; // z dipakai oleh skema yang diimpor
+    void z; // z used by imported schema
   };

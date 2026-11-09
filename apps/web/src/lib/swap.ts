@@ -1,9 +1,9 @@
 "use client";
-// Swap lewat Uniswap v3 (SwapRouter02 + QuoterV2) atau Uniswap v4 (Universal Router + V4Quoter, lihat swap-v4.ts) dari wallet pengguna.
-// Kunci tidak pernah di server.
-// Aturan proyek: trade tetap `dry` (simulasi) sampai pemilik mengizinkan `live` secara eksplisit
-// (NEXT_PUBLIC_TRADE_MODE=live). Pada mode dry tidak ada transaksi yang dikirim: hanya kuotasi + estimasi gas.
-// Kontrak diambil dari @corvid/shared/chains (diverifikasi on-chain); testnet belum punya → swap dimatikan di sana.
+// Swap via Uniswap v3 (SwapRouter02 + QuoterV2) or Uniswap v4 (Universal Router + V4Quoter, see swap-v4.ts) from user wallet.
+// Private keys are never handled on the server.
+// Project rule: trading remains in `dry` mode (simulation) until the owner explicitly enables `live`
+// (NEXT_PUBLIC_TRADE_MODE=live). In dry mode no transaction is sent: only quotes + gas estimation.
+// Contracts are retrieved from @corvid/shared/chains (verified on-chain); unsupported testnets have swaps disabled.
 import {
   createPublicClient,
   defineChain,
@@ -20,17 +20,21 @@ import type { Eip1193Provider } from "./wallet";
 import { candidateRoutes, encodeUniversalRouterSwap, permit2Abi, permit2ApproveData, quoteRoute, type Hop, type PoolKey } from "./swap-v4";
 
 export const NATIVE: Address = "0x0000000000000000000000000000000000000000";
-const ROUTER_SELF: Address = "0x0000000000000000000000000000000000000002"; // ADDRESS_THIS di SwapRouter02
-const FEES = [500, 3000, 10000] as const;
+const ROUTER_SELF: Address = "0x0000000000000000000000000000000000000002"; // ADDRESS_THIS in SwapRouter02
+const FEES = [100, 500, 3000, 10000] as const;
+const V3_HOP_FEES = [500, 3000, 10000] as const;
 
-/** Slippage dari Settings (disimpan lokal oleh halaman Settings); bawaan 1%, dibatasi 0,01% sampai 50%. */
+const packV3Path = (a: Address, feeAB: number, b: Address, feeBC: number, c: Address): Hex =>
+  `0x${a.slice(2)}${feeAB.toString(16).padStart(6, "0")}${b.slice(2)}${feeBC.toString(16).padStart(6, "0")}${c.slice(2)}`.toLowerCase() as Hex;
+
+/** Slippage from Settings (persisted locally by Settings page); default 1%, clamped between 0.01% and 50%. */
 export function slippageBps(): number {
   try {
     const raw = localStorage.getItem("corvid.trading-prefs.v1");
     const v = raw ? Number((JSON.parse(raw) as { slippageBps?: number }).slippageBps) : NaN;
     if (Number.isFinite(v) && v >= 1 && v <= 5000) return Math.round(v);
   } catch {
-    /* penyimpanan tidak tersedia */
+    /* storage unavailable */
   }
   return 100;
 }
@@ -62,6 +66,21 @@ const quoterAbi = [
       { name: "gasEstimate", type: "uint256" },
     ],
   },
+  {
+    type: "function",
+    name: "quoteExactInput",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "path", type: "bytes" },
+      { name: "amountIn", type: "uint256" },
+    ],
+    outputs: [
+      { name: "amountOut", type: "uint256" },
+      { name: "sqrtPriceX96AfterList", type: "uint160[]" },
+      { name: "initializedTicksCrossedList", type: "uint32[]" },
+      { name: "gasEstimate", type: "uint256" },
+    ],
+  },
 ] as const;
 
 const routerAbi = [
@@ -88,6 +107,24 @@ const routerAbi = [
   },
   {
     type: "function",
+    name: "exactInput",
+    stateMutability: "payable",
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "path", type: "bytes" },
+          { name: "recipient", type: "address" },
+          { name: "amountIn", type: "uint256" },
+          { name: "amountOutMinimum", type: "uint256" },
+        ],
+      },
+    ],
+    outputs: [{ name: "amountOut", type: "uint256" }],
+  },
+  {
+    type: "function",
     name: "unwrapWETH9",
     stateMutability: "payable",
     inputs: [
@@ -106,6 +143,8 @@ const routerAbi = [
 ] as const;
 
 const erc20Abi = [
+  { type: "function", name: "symbol", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
+  { type: "function", name: "name", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
   { type: "function", name: "decimals", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] },
   { type: "function", name: "balanceOf", stateMutability: "view", inputs: [{ name: "a", type: "address" }], outputs: [{ type: "uint256" }] },
   {
@@ -136,13 +175,13 @@ export type SwapSetup = {
   quoter: Address;
   router: Address;
   client: PublicClient;
-  /** Kontrak Uniswap v4 (null bila belum diverifikasi di chain ini). */
+  /** Uniswap v4 contracts (null if unverified on this chain). */
   v4: NonNullable<ChainConfig["uniswapV4"]> | null;
   usdg: Address | null;
 };
 
 let cached: SwapSetup | null | undefined;
-/** null = swap tidak tersedia di chain aktif (mis. testnet, kontrak belum diverifikasi). */
+/** null = swap unavailable on active chain (e.g. testnet, unverified contracts). */
 export function swapSetup(): SwapSetup | null {
   if (cached !== undefined) return cached;
   const chain = getChain(process.env.NEXT_PUBLIC_CHAIN_ENV);
@@ -174,6 +213,21 @@ export async function tokenDecimals(s: SwapSetup, token: Address): Promise<numbe
   }
 }
 
+export async function readTokenMeta(s: SwapSetup, token: Address): Promise<{ symbol: string; name: string } | null> {
+  if (token === NATIVE) return { symbol: "ETH", name: "Ether" };
+  try {
+    const [symbol, name] = await Promise.all([
+      s.client.readContract({ address: token, abi: erc20Abi, functionName: "symbol" }).catch(() => ""),
+      s.client.readContract({ address: token, abi: erc20Abi, functionName: "name" }).catch(() => ""),
+    ]);
+    const sym = String(symbol ?? "").trim();
+    const nm = String(name ?? "").trim();
+    return sym ? { symbol: sym, name: nm || sym } : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function balanceOf(s: SwapSetup, token: Address, owner: Address): Promise<bigint> {
   if (token === NATIVE) return s.client.getBalance({ address: owner });
   return s.client.readContract({ address: token, abi: erc20Abi, functionName: "balanceOf", args: [owner] });
@@ -189,20 +243,20 @@ export type Plan = {
   decIn: number;
   decOut: number;
   needsApproval: boolean;
-  /** Transaksi persetujuan yang harus dikirim berurutan sebelum swap (kosong bila tidak perlu). */
+  /** Sequential approval transactions required before swap (empty if not needed). */
   approvalTxs: { to: Address; data: Hex }[];
   venue: "v3" | "v4";
-  /** Jalur tampil, mis. "ETH → USDG → token" (v4). */
+  /** Route display label, e.g. "ETH → USDG → token". */
   route?: string;
   tx: { to: Address; data: Hex; value: bigint };
-  /** Teks siap tampil. */
+  /** Preformatted display text. */
   outText: string;
   minText: string;
 };
 
 /**
- * Susun rencana swap: kuotasi terbaik di antara tier fee 0,05% / 0,3% / 1%, batas minimum sesuai slippage, dan data transaksi.
- * Hanya pasangan ETH <-> token (lewat WETH, pool v3 langsung). Mengembalikan galat yang bisa dibaca bila tidak ada pool.
+ * Build swap execution plan: best quote across fee tiers 0.05% / 0.3% / 1%, minimum amount with slippage, and transaction calldata.
+ * Primarily handles ETH <-> token pairs (via direct WETH or USDG hops). Returns readable error if no pool is available.
  */
 export async function planSwap(args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number; v4Key?: PoolKey | null }): Promise<Plan> {
   const s = swapSetup();
@@ -218,7 +272,7 @@ export async function planSwap(args: { account: Address | null; sell: Address; b
   const tokenIn = sellNative ? s.weth : args.sell;
   const tokenOut = buyNative ? s.weth : args.buy;
 
-  let best: { fee: number; out: bigint } | null = null;
+  let best: { fee: number; out: bigint; path?: Hex; route?: string } | null = null;
   await Promise.all(
     FEES.map(async (fee) => {
       try {
@@ -231,28 +285,64 @@ export async function planSwap(args: { account: Address | null; sell: Address; b
         const out = result[0];
         if (out > 0n && (!best || out > best.out)) best = { fee, out };
       } catch {
-        /* tidak ada pool di tier ini */
+        /* no pool in this fee tier */
       }
     }),
   );
-  const found = best as { fee: number; out: bigint } | null;
-  if (!found) throw new Error("No Uniswap v3 pool with liquidity for this pair");
+  // If there is no direct v3 pool with WETH, attempt a 2-hop route via USDG (WETH <-> USDG 0.3% <-> token).
+  if (!best && s.usdg && tokenIn.toLowerCase() !== s.usdg.toLowerCase() && tokenOut.toLowerCase() !== s.usdg.toLowerCase()) {
+    await Promise.all(
+      V3_HOP_FEES.map(async (fee) => {
+        try {
+          const path = sellNative ? packV3Path(tokenIn, 3000, s.usdg!, fee, tokenOut) : packV3Path(tokenIn, fee, s.usdg!, 3000, tokenOut);
+          const { result } = await s.client.simulateContract({
+            address: s.quoter,
+            abi: quoterAbi,
+            functionName: "quoteExactInput",
+            args: [path, amountIn],
+          });
+          const out = result[0];
+          if (out > 0n && (!best || out > best.out)) {
+            best = { fee, out, path, route: `${sellNative ? "ETH" : "token"} → ${buyNative ? "ETH" : "token"} via USDG` };
+          }
+        } catch {
+          /* no 2-hop route in this tier */
+        }
+      }),
+    );
+  }
+  const found = best as { fee: number; out: bigint; path?: Hex; route?: string } | null;
+  if (!found) {
+    // If the token is USDG and v3 quotes fail, fall back to the Uniswap v4 ETH/USDG pool.
+    const isUsdg = !!s.usdg && (args.sell.toLowerCase() === s.usdg.toLowerCase() || args.buy.toLowerCase() === s.usdg.toLowerCase());
+    if (isUsdg && s.v4?.ethUsdgPools[0]) {
+      const b = s.v4.ethUsdgPools[0];
+      return planSwapV4(s, { ...args, v4Key: { currency0: NATIVE, currency1: s.usdg!, fee: b.fee, tickSpacing: b.tickSpacing, hooks: b.hooks as Address } });
+    }
+    throw new Error("No Uniswap v3 pool with liquidity for this pair");
+  }
 
   const minOut = (found.out * BigInt(10_000 - args.slippageBps)) / 10_000n;
   const swapCall = (recipient: Address) =>
-    encodeFunctionData({
-      abi: routerAbi,
-      functionName: "exactInputSingle",
-      args: [{ tokenIn, tokenOut, fee: found.fee, recipient, amountIn, amountOutMinimum: buyNative ? 0n : minOut, sqrtPriceLimitX96: 0n }],
-    });
+    found.path
+      ? encodeFunctionData({
+          abi: routerAbi,
+          functionName: "exactInput",
+          args: [{ path: found.path, recipient, amountIn, amountOutMinimum: buyNative ? 0n : minOut }],
+        })
+      : encodeFunctionData({
+          abi: routerAbi,
+          functionName: "exactInputSingle",
+          args: [{ tokenIn, tokenOut, fee: found.fee, recipient, amountIn, amountOutMinimum: buyNative ? 0n : minOut, sqrtPriceLimitX96: 0n }],
+        });
 
   let tx: Plan["tx"];
   let needsApproval = false;
   if (!buyNative) {
-    // ETH -> token: router membungkus ETH yang dikirim bersama transaksi.
+    // ETH -> token: router wraps ETH sent with the transaction.
     tx = { to: s.router, data: swapCall(args.account ?? NATIVE), value: amountIn };
   } else {
-    // token -> ETH: tukar ke WETH di router lalu buka bungkusnya ke wallet pengguna (batas minimum diterapkan di unwrap).
+    // token -> ETH: swap to WETH in router then unwrap to user wallet (minimum amount enforced on unwrap).
     const acct = args.account ?? NATIVE;
     const data = encodeFunctionData({
       abi: routerAbi,
@@ -277,6 +367,7 @@ export async function planSwap(args: { account: Address | null; sell: Address; b
     needsApproval,
     approvalTxs: needsApproval ? [{ to: args.sell, data: encodeFunctionData({ abi: erc20Abi, functionName: "approve", args: [s.router, amountIn] }) }] : [],
     venue: "v3",
+    ...(found.route ? { route: found.route } : {}),
     tx,
     outText: formatUnits(found.out, decOut),
     minText: formatUnits(minOut, decOut),
@@ -347,7 +438,7 @@ async function planSwapV4(s: SwapSetup, args: { account: Address | null; sell: A
   };
 }
 
-/** Simulasi tanpa mengirim apa pun (eth_estimateGas dari akun pengguna). Aman dipakai di mode dry. */
+/** Simulate without dispatching transactions (eth_estimateGas from user account). Safe in dry mode. */
 export async function simulatePlan(plan: Plan, account: Address): Promise<{ ok: boolean; gas?: bigint; note?: string }> {
   const s = swapSetup();
   if (!s) return { ok: false, note: "Swaps are not available on this network yet" };
@@ -360,7 +451,7 @@ export async function simulatePlan(plan: Plan, account: Address): Promise<{ ok: 
   }
 }
 
-/** Pesan galat singkat dan ramah untuk pengguna; teks mentah dari pustaka (viem/ethers) tidak pernah ditampilkan. `rejected` = pengguna membatalkan sendiri (bukan kegagalan). */
+/** User-friendly error message; raw errors from viem/ethers are never displayed directly. `rejected` = user cancelled. */
 export function swapErrorText(e: unknown): { text: string | null; rejected: boolean } {
   const x = e as { code?: number; shortMessage?: string; message?: string };
   const raw = `${x?.shortMessage ?? ""} ${x?.message ?? ""}`;
@@ -374,14 +465,14 @@ export function swapErrorText(e: unknown): { text: string | null; rejected: bool
 
 const hex = (n: bigint) => `0x${n.toString(16)}`;
 
-/** Kirim transaksi nyata. Hanya dipanggil bila tradeMode() === "live"; selain itu menolak. */
+/** Execute live transactions. Only invoked when tradeMode() === "live"; otherwise rejected. */
 export async function executePlan(plan: Plan, account: Address, provider: Eip1193Provider, onStep?: (label: string) => void): Promise<Hex> {
   if (tradeMode() !== "live") throw new Error("Trading is in dry mode: transactions are not sent");
   const s = swapSetup();
   if (!s) throw new Error("Swaps are not available on this network yet");
   const send = async (to: Address, data: Hex, value: bigint) =>
     (await provider.request({ method: "eth_sendTransaction", params: [{ from: account, to, data, value: hex(value) }] })) as Hex;
-  // Persetujuan sebesar jumlah swap saja (bukan tak terbatas), dikirim berurutan; masing-masing ditunggu sampai masuk blok.
+  // Approvals for the exact swap amount only (not infinite), sent sequentially; each waits for block inclusion.
   const total = plan.approvalTxs.length + 1;
   let n = 0;
   for (const a of plan.approvalTxs) {

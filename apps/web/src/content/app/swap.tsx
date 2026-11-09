@@ -7,10 +7,10 @@ import { formatUnits, type Address } from "viem";
 import { USE_API, useApi } from "@/lib/api";
 import { tokenFallbackStyle } from "@/components/app/token-avatar";
 import { switchToAppChain, useWallet } from "@/lib/wallet";
-import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, swapErrorText, slippageBps, swapSetup, tokenDecimals, tradeMode, type Plan } from "@/lib/swap";
+import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, swapErrorText, slippageBps, swapSetup, tokenDecimals, tradeMode, readTokenMeta, type Plan } from "@/lib/swap";
 
 const EVM = /^0x[0-9a-fA-F]{40}$/;
-const GAS_RESERVE = 500_000_000_000_000n; // 0,0005 ETH disisakan saat memilih Max
+const GAS_RESERVE = 500_000_000_000_000n; // 0.0005 ETH reserved when selecting Max
 const fmt = (t: string) => Number(t).toLocaleString("en-US", { maximumFractionDigits: 6 });
 
 type SwapToken = {
@@ -18,14 +18,14 @@ type SwapToken = {
   symbol: string;
   name: string;
   image: string | null;
-  /** Id pool utama dari API. 66 karakter (32 byte) = pool Uniswap v4; 42 karakter = pool v2/v3. */
+  /** Primary pool ID from API. 66 characters (32 bytes) = Uniswap v4 pool; 42 characters = v2/v3 pool. */
   poolId?: string | null;
   price?: number;
   marketCap?: number;
   change24h?: number;
 };
 
-// Aset native Robinhood Chain adalah ETH (alamat nol = penanda aset native, bukan kontrak).
+// Native asset on Robinhood Chain is ETH (zero address is a native asset marker, not a contract).
 const NATIVE: SwapToken = {
   mint: "0x0000000000000000000000000000000000000000",
   symbol: "ETH",
@@ -33,14 +33,69 @@ const NATIVE: SwapToken = {
   image: "/brand/eth.svg",
 };
 
+/**
+ * Curated canonical tokens on Robinhood Chain with official metadata and logos.
+ * USDG (Global Dollar) is the official native stablecoin on Robinhood Chain issued by Paxos.
+ */
+export const CURATED_TOKENS: SwapToken[] = [
+  {
+    mint: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+    symbol: "USDG",
+    name: "Global Dollar",
+    image: "/brand/usdg.svg",
+    price: 1.0,
+    poolId: null,
+  },
+  {
+    mint: "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    symbol: "WETH",
+    name: "Wrapped Ether",
+    image: "/brand/eth.svg",
+    poolId: null,
+  },
+  {
+    mint: "0xc6911796042b15d7fa4f6cde69e245ddcd3d9c31",
+    symbol: "VIRTUAL",
+    name: "Virtuals Protocol",
+    image: "/brand/virtual.svg",
+    poolId: null,
+  },
+  {
+    mint: "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    symbol: "CASHCAT",
+    name: "Cash Cat",
+    image: "https://cdn.dexscreener.com/cms/images/Lq7a3pS9Wn8EuGp0?width=800&height=800&quality=95&format=auto",
+    poolId: null,
+  },
+  {
+    mint: "0x39dbed3a2bd333467115de45665cc57f813c4571",
+    symbol: "PONS",
+    name: "Pons",
+    image: "https://cdn.dexscreener.com/cms/images/dkmXs8KYMyMXjuU1?width=800&height=800&quality=95&format=auto",
+    poolId: "0x4041a6b0c2a07d2c38f2b7194f488ddf01e7498c0b5dc642c679af20f7813c45",
+  },
+];
+
+/** Lookup well-known token by contract address */
+export function findKnownToken(mint: string): SwapToken | null {
+  const m = mint.toLowerCase();
+  for (const t of CURATED_TOKENS) {
+    if (t.mint.toLowerCase() === m) return t;
+  }
+  return null;
+}
+
 function allTokens(): SwapToken[] {
-  const seen = new Set<string>([NATIVE.mint]);
+  const seen = new Set<string>([NATIVE.mint.toLowerCase()]);
   const out: SwapToken[] = [];
   const push = (t: SwapToken) => {
-    if (!t.mint || seen.has(t.mint)) return;
-    seen.add(t.mint);
-    out.push(t);
+    const k = t.mint?.toLowerCase();
+    if (!k || seen.has(k)) return;
+    seen.add(k);
+    out.push({ ...t, mint: k });
   };
+  // Curated tokens are prioritized first (USDG, WETH, etc.)
+  for (const c of CURATED_TOKENS) push(c);
   for (const t of trending.tokens)
     push({ mint: t.mint, symbol: t.symbol, name: t.name, image: t.image ?? null, price: t.price, marketCap: t.marketCap, change24h: t.change24h });
   const m = memescope as unknown as Record<string, { mint: string; symbol: string; name: string; image?: string | null; marketCapUsd?: number }[]>;
@@ -96,10 +151,35 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
     USE_API ? "/api/tokens/trending?tab=trending&limit=100" : null,
   );
   const list = useMemo<SwapToken[]>(
-    () =>
-      USE_API
-        ? (api.data?.tokens ?? []).map((t) => ({ mint: t.mint, symbol: t.symbol ?? "?", name: t.name ?? "", image: t.image, price: t.price ?? undefined, marketCap: t.marketCap ?? undefined, change24h: t.change24h ?? undefined }))
-        : allTokens(),
+    () => {
+      const seen = new Set<string>([NATIVE.mint.toLowerCase()]);
+      const out: SwapToken[] = [];
+      const push = (t: SwapToken) => {
+        const k = t.mint?.toLowerCase();
+        if (!k || seen.has(k)) return;
+        seen.add(k);
+        out.push({ ...t, mint: k });
+      };
+      // Always include curated tokens first (USDG, WETH, etc.)
+      for (const c of CURATED_TOKENS) push(c);
+
+      if (USE_API && api.data?.tokens) {
+        for (const t of api.data.tokens) {
+          push({
+            mint: t.mint,
+            symbol: t.symbol ?? "?",
+            name: t.name ?? "",
+            image: t.image,
+            price: t.price ?? undefined,
+            marketCap: t.marketCap ?? undefined,
+            change24h: t.change24h ?? undefined,
+          });
+        }
+      } else {
+        for (const t of allTokens()) push(t);
+      }
+      return out;
+    },
     [api.data],
   );
   useEffect(() => {
@@ -110,7 +190,15 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
   }, [open, onClose]);
   if (!open) return null;
   const term = q.trim().toLowerCase();
-  const shown = term ? list.filter((t) => t.symbol.toLowerCase().includes(term) || t.name.toLowerCase().includes(term) || t.mint.toLowerCase().startsWith(term)) : list;
+  const matches = (t: SwapToken) => {
+    if (t.symbol.toLowerCase().includes(term)) return true;
+    if (t.name.toLowerCase().includes(term)) return true;
+    if (t.mint.toLowerCase().startsWith(term)) return true;
+    // Allow searching "usdc", "usd", "dollar", "stable" to find USDG (Robinhood Chain's native USD stablecoin)
+    if ((term === "usdc" || term === "usd" || term === "dollar" || term === "stable") && t.symbol === "USDG") return true;
+    return false;
+  };
+  const shown = term ? list.filter(matches) : list;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ background: "rgba(0,0,0,0.6)" }} onClick={onClose}>
       <div
@@ -133,6 +221,20 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
             className="w-full h-11 px-4 rounded-full bg-transparent outline-none text-[14px]"
             style={{ border: "1px solid var(--v2-line-1)", color: "var(--v2-t-1)" }}
           />
+        </div>
+        {/* Quick select popular tokens */}
+        <div className="flex flex-wrap gap-2 px-5 pb-3">
+          {CURATED_TOKENS.map((pt) => (
+            <button
+              key={pt.mint}
+              onClick={() => onPick(pt)}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[13px] font-medium transition-colors hover:brightness-110"
+              style={{ background: "var(--v2-bg-2)", border: "1px solid var(--v2-line-1)", color: "var(--v2-t-1)" }}
+            >
+              <Avatar t={pt} size={18} />
+              <span>{pt.symbol}</span>
+            </button>
+          ))}
         </div>
         <div className="px-2 pb-3 overflow-y-auto" style={{ minHeight: 0 }}>
           <div className="px-3 pb-1 text-[12px]" style={{ color: "var(--v2-t-4)" }}>{shown.length} tokens on Robinhood Chain</div>
@@ -162,14 +264,22 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
               </span>
             </button>
           ))}
-          {EVM.test(term) && !list.some((t) => t.mint.toLowerCase() === term) && (
-            <button
-              onClick={() => onPick({ mint: term, symbol: `${term.slice(0, 6)}…${term.slice(-4)}`, name: "Custom token", image: null })}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left transition-colors hover:bg-[var(--v2-bg-2)]"
-            >
-              <span className="text-[14px]" style={{ color: "var(--v2-t-1)" }}>Use token at {term.slice(0, 6)}…{term.slice(-4)}</span>
-            </button>
-          )}
+          {EVM.test(term) && !list.some((t) => t.mint.toLowerCase() === term) && (() => {
+            const known = findKnownToken(term);
+            const cand: SwapToken = known ?? { mint: term, symbol: `${term.slice(0, 6)}…${term.slice(-4)}`, name: "Custom token", image: null };
+            return (
+              <button
+                onClick={() => onPick(cand)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left transition-colors hover:bg-[var(--v2-bg-2)]"
+              >
+                <Avatar t={cand} size={34} />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] font-semibold truncate" style={{ color: "var(--v2-t-1)" }}>{cand.symbol}</span>
+                  <span className="block text-[12px] truncate" style={{ color: "var(--v2-t-4)" }}>{cand.name} · {term.slice(0, 6)}…{term.slice(-4)}</span>
+                </span>
+              </button>
+            );
+          })()}
           {shown.length === 0 && !EVM.test(term) && <div className="px-3 py-6 text-[14px]" style={{ color: "var(--v2-t-3)" }}>No token found</div>}
         </div>
       </div>
@@ -192,24 +302,58 @@ export function ApplicationSwapContent() {
   const [busy, setBusy] = useState(false);
   const [slip, setSlip] = useState(100);
   useEffect(() => setSlip(slippageBps()), []);
-  // Tautan dari Inbox/tabel token: /application/swap?mint=0x…  (&side=sell untuk menjual)
+  // Check URL parameters: /application/swap?mint=0x… (&side=sell to sell)
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const m = (q.get("mint") ?? "").trim();
     if (EVM.test(m)) {
-      setToken({ mint: m.toLowerCase(), symbol: `${m.slice(0, 6)}…${m.slice(-4)}`, name: "Token from link", image: null });
+      const known = findKnownToken(m);
+      setToken(known ?? { mint: m.toLowerCase(), symbol: `${m.slice(0, 6)}…${m.slice(-4)}`, name: "Token from link", image: null });
       if (q.get("side") === "sell") setFlipped(true);
     }
   }, []);
   const isEvm = !!token && EVM.test(token.mint);
-  // Token dari tautan/alamat bebas belum punya nama, simbol, dan logo: ambil dari API (token yang sudah terindeks).
+
+  // Retrieve token metadata from the API if indexed
   const meta = useApi<{ token: { mint: string; symbol: string | null; name: string | null; image: string | null; poolId: string | null } }>(token && isEvm ? `/api/tokens/${token.mint}` : null);
   useEffect(() => {
     const d = meta.data?.token;
     if (!d) return;
-    setToken((t) => (t && t.poolId === undefined && t.mint === d.mint.toLowerCase() ? { ...t, symbol: d.symbol?.trim() || t.symbol, name: d.name?.trim() || t.name, image: d.image ?? t.image, poolId: d.poolId } : t));
+    const known = findKnownToken(d.mint);
+    setToken((t) =>
+      t && t.mint === d.mint.toLowerCase()
+        ? {
+            ...t,
+            symbol: known?.symbol || d.symbol?.trim() || t.symbol,
+            name: known?.name || d.name?.trim() || t.name,
+            image: known?.image ?? d.image ?? t.image,
+            poolId: t.poolId !== undefined ? t.poolId : d.poolId,
+          }
+        : t,
+    );
   }, [meta.data]);
-  // Pool utama 32 byte = Uniswap v4: PoolKey-nya dibaca API dari chain (id pool hanya hash), lalu kuotasi dan swap lewat jalur v4.
+
+  // Resolve on-chain token name & symbol via RPC if token is custom or loaded from an external link
+  useEffect(() => {
+    if (!token || !setup || !isEvm) return;
+    if (!token.symbol.includes("…") && token.name !== "Token from link" && token.name !== "Custom token") return;
+    const known = findKnownToken(token.mint);
+    if (known) {
+      setToken((t) => (t && t.mint.toLowerCase() === known.mint.toLowerCase() ? { ...t, ...known } : t));
+      return;
+    }
+    let alive = true;
+    readTokenMeta(setup, token.mint as Address).then((m) => {
+      if (m && alive) {
+        setToken((t) => (t && t.mint.toLowerCase() === token.mint.toLowerCase() ? { ...t, symbol: m.symbol, name: m.name } : t));
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [token, setup, isEvm]);
+
+  // 32-byte main pool = Uniswap v4: fetch PoolKey from event logs via API, then quote and swap via v4 path
   const isV4 = !!token?.poolId && token.poolId.length === 66;
   const poolKeyApi = useApi<{ currency0: string; currency1: string; fee: number; tickSpacing: number; hooks: string }>(isV4 && token ? `/api/v4/pool-key?poolId=${token.poolId}` : null);
   const v4Key = isV4 && poolKeyApi.data ? { ...poolKeyApi.data, currency0: poolKeyApi.data.currency0 as Address, currency1: poolKeyApi.data.currency1 as Address, hooks: poolKeyApi.data.hooks as Address } : null;
@@ -224,7 +368,7 @@ export function ApplicationSwapContent() {
     setInfo(null);
     setStep(null);
     if (!setup || !token || !isEvm || !(Number(amount) > 0)) return;
-    if (metaPending) return; // jenis pool token belum diketahui: tunggu agar tidak salah memilih jalur
+    if (metaPending) return; // Pool type is not determined yet: wait to prevent picking the wrong route
     if (isV4 && !v4Key) {
       if (poolKeyApi.error) setErr("Could not load this token's Uniswap v4 pool. Try again shortly.");
       return;
@@ -251,7 +395,7 @@ export function ApplicationSwapContent() {
       if (sellAddr === NATIVE_ADDR && p === 100) v = bal > GAS_RESERVE ? bal - GAS_RESERVE : 0n;
       setAmount(formatUnits(v, dec));
     } catch {
-      /* saldo tidak terbaca */
+      /* balance could not be read */
     }
   };
 
@@ -306,6 +450,7 @@ export function ApplicationSwapContent() {
                   : { label: plan.needsApproval ? "Approve & swap" : "Swap", disabled: false };
 
   const usd = token?.price && flipped && amount ? Number(amount) * token.price : 0;
+  const buyUsd = plan && !flipped && token?.price ? Number(plan.outText) * token.price : 0;
   const sellPill = flipped ? (
     <TokenButton token={token} onClick={() => setOpen(true)} />
   ) : (
@@ -458,7 +603,7 @@ export function ApplicationSwapContent() {
                 className="num text-[13px]"
                 style={{ color: "var(--v2-t-4)" }}
               >
-                ~$0
+                {buyUsd ? `~$${buyUsd.toLocaleString("en-US", { maximumFractionDigits: 2 })}` : "~$0"}
               </span>
             </div>
           </div>
