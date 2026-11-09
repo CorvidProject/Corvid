@@ -32,6 +32,7 @@
     4. Dashboard > Authentication: aktifkan Email; untuk uji lokal boleh matikan "Confirm email". Tambahkan `http://localhost:3000` dan `http://localhost:3217` ke URL Configuration > Redirect URLs.
 
 14. **Migrasi baru untuk Supabase (pemilik):** setiap ada file baru di `packages/db/migrations`, jalankan lagi `pnpm --filter @corvid/db migrate` (di ROOT, `DATABASE_URL` di `ROOT/.env`). Saat ini ada migrasi `0002_agent_builder` yang belum diterapkan ke Supabase (dibutuhkan untuk membuat agent).
+    - [x] `0009_signals_wallet_tier` — **SELESAI** (2026-11-10, via SQL Editor Supabase). Kolom `wallet_tier` aktif di tabel `signals`.
 
 - [ ] Supabase Auth → Providers: aktifkan **Web3 Wallet (Ethereum)** agar login wallet berfungsi; pastikan `NEXT_PUBLIC_CHAIN_ENV=testnet` di `apps/web/.env.local` (parameter chain sudah di `packages/shared/src/chains.ts`). Uji manual dengan wallet asli belum dilakukan.
 
