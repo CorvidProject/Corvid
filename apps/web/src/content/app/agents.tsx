@@ -4,6 +4,7 @@ import { Plus, Robot, Play, Pause, Trash, PencilSimple } from "@phosphor-icons/r
 import fixture from "@/data/agents.json";
 import { useSigned } from "@/components/auth/signed";
 import { apiGet, apiSend, USE_API } from "@/lib/api";
+import { usePlan } from "@/lib/plan-store";
 
 // My agents. Mode fixture: daftar contoh (status dan hapus di localStorage). Mode API: GET /api/agents,
 // PUT /api/agents/:id (jeda/lanjut), DELETE /api/agents/:id. Catatan: runner agent belum ada, jadi "Running"
@@ -29,6 +30,8 @@ const TRADE_SOON = new Set(["auto_trader", "copy_trader"]);
 
 export function ApplicationAgentsContent() {
   const signed = useSigned();
+  const { plan } = usePlan(signed);
+  const isPro = plan?.plan === "pro";
   const [list, setList] = useState<A[]>(USE_API ? [] : (fixture.agents as A[]));
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -145,10 +148,17 @@ export function ApplicationAgentsContent() {
                       )}
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 eyebrow shrink-0" style={{ color: a.running ? "var(--v2-pos)" : "var(--v2-t-4)" }}>
-                    <span className={`dot ${a.running ? "dot-pos dot-pulse" : ""}`} style={a.running ? undefined : { background: "var(--v2-t-4)" }}></span>
-                    {a.running ? "RUNNING" : "PAUSED"}
-                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {isPro && (
+                      <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded" style={{ background: "rgba(var(--v2-accent-rgb),0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.2)" }}>
+                        Priority
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1.5 eyebrow" style={{ color: a.running ? "var(--v2-pos)" : "var(--v2-t-4)" }}>
+                      <span className={`dot ${a.running ? "dot-pos dot-pulse" : ""}`} style={a.running ? undefined : { background: "var(--v2-t-4)" }}></span>
+                      {a.running ? "RUNNING" : "PAUSED"}
+                    </span>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[12px]">
                   <div>

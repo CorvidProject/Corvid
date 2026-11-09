@@ -23,15 +23,16 @@ const TYPE: Record<string, { tab: Item["tab"]; cat: string; label: string }> = {
   risk_flag: { tab: "Tokens", cat: "Alerts", label: "Risk flag on" },
 };
 
-type Sig = { id: number; type: string; symbol: string | null; mint: string; score: number; at: number };
+type Sig = { id: number; type: string; symbol: string | null; mint: string; score: number; walletTier?: string | null; at: number };
 type Inb = { id: number; kind: string; title: string; body: string | null; at: number; read: boolean };
 const sigBody = (s: Sig, api: boolean) =>
-  !api ? `Risk score ${s.score}. Fixture signal.` : s.type === "new_token" ? "First seen on-chain. Run a rugcheck before buying." : `Risk score ${s.score}.`;
+  !api ? `Risk score ${s.score}. Fixture signal.` : s.type === "new_token" ? "First seen on-chain. Run a rugcheck before buying." : `Smart money wallet${s.walletTier ? ` tier ${s.walletTier}` : ""} · Risk score ${s.score}.`;
 
 function build(sigs: Sig[] = signals.signals as Sig[], inb: Inb[] = inbox.items as Inb[], api = false): Item[] {
   const a: Item[] = sigs.map((s) => {
     const t = TYPE[s.type] ?? { tab: "Signals" as const, cat: "AI", label: s.type };
-    return { id: "sig" + s.id, tab: t.tab, cat: t.cat, title: `${t.label} ${s.symbol ?? s.mint.slice(0, 4)}`, body: sigBody(s, api), at: s.at, mint: s.mint, read: false };
+    const tierLabel = s.walletTier ? ` [${s.walletTier}]` : "";
+    return { id: "sig" + s.id, tab: t.tab, cat: t.cat, title: `${t.label} ${s.symbol ?? s.mint.slice(0, 4)}${tierLabel}`, body: sigBody(s, api), at: s.at, mint: s.mint, read: false };
   });
   const b: Item[] = inb.map((i) => ({
     id: "inb" + i.id,
