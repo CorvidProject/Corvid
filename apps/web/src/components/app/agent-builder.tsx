@@ -203,7 +203,7 @@ export function AgentBuilder() {
         const { telegram: tg, ...rest } = a.config;
         setEditId(a.id);
         setPipe(a.pipeline);
-        setMode(a.mode);
+        setMode("signal"); // auto-trade locked: force signal regardless of saved mode
         setName(a.name);
         setCfg(rest);
         setPreset(null);
@@ -427,20 +427,22 @@ export function AgentBuilder() {
           </span>
           <div className="flex-1"></div>
           <div className="relative group/mode shrink-0" data-tour="mode-toggle">
-            <button
-              onClick={() => { if (editId !== null) return say("The mode cannot be changed after the agent is created."); setMode((m) => (m === "signal" ? "trading" : "signal")); touch(); }}
-              aria-pressed={isTrading}
-              className={`flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-semibold transition-colors ${editId !== null ? "opacity-60 cursor-not-allowed" : ""}`}
-              style={{ background: isTrading ? "rgba(var(--v2-accent-rgb),0.12)" : "var(--v2-bg-2)", color: isTrading ? "var(--v2-accent-text)" : "var(--v2-t-3)", border: isTrading ? "1px solid rgba(var(--v2-accent-rgb),0.3)" : "1px solid var(--v2-line-1)" }}
-            >
-              {isTrading ? (<><Lightning size={14} weight="bold" /> Trading</>) : (<><Bell size={14} /> Signal</>)}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                disabled
+                aria-pressed={false}
+                className="flex items-center gap-1.5 h-8 px-3 rounded-sm text-[13px] font-semibold opacity-50 cursor-not-allowed"
+                style={{ background: "var(--v2-bg-2)", color: "var(--v2-t-4)", border: "1px solid var(--v2-line-1)" }}
+              >
+                <Bell size={14} /> Signal
+              </button>
+              <span className="flex items-center gap-1 h-8 px-3 rounded-sm text-[13px] font-semibold opacity-60 cursor-not-allowed" style={{ background: "var(--v2-bg-2)", color: "var(--v2-t-4)", border: "1px solid var(--v2-line-1)" }}>
+                <Lightning size={14} /> Trading
+                <span className="ml-1 text-[9px] font-bold uppercase tracking-widest px-1 py-0.5 rounded" style={{ background: "rgba(var(--v2-accent-rgb),0.15)", color: "var(--v2-accent-text)" }}>Soon</span>
+              </span>
+            </div>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 rounded-lg text-[13px] leading-relaxed whitespace-nowrap opacity-0 pointer-events-none group-hover/mode:opacity-100 transition-opacity z-50" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-              {isTrading ? (
-                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-accent-text)" }}>Trading mode</strong>: {LIVE ? "executes real trades with ETH" : "simulated trades only (live trading is locked)"}<br />Click to switch to signal-only</span>
-              ) : (
-                <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-t-1)" }}>Signal mode</strong>: alerts only, no trades executed<br />Click to switch to auto-trading</span>
-              )}
+              <span style={{ color: "var(--v2-t-2)" }}><strong style={{ color: "var(--v2-t-1)" }}>Signal mode</strong>: alerts only, no trades executed<br /><strong style={{ color: "var(--v2-accent-text)" }}>Auto-trading</strong>: coming soon</span>
             </div>
           </div>
           {isTrading && (

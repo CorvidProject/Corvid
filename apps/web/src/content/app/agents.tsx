@@ -25,6 +25,7 @@ function ago(ts: number) {
 }
 const KEY = "corvid.agents.v1";
 const TYPE: Record<string, string> = { auto_trader: "Auto trader", wallet_monitor: "Wallet monitor", signal_bot: "Signal bot", token_analyst: "Token analyst", copy_trader: "Copy trader" };
+const TRADE_SOON = new Set(["auto_trader", "copy_trader"]);
 
 export function ApplicationAgentsContent() {
   const signed = useSigned();
@@ -135,8 +136,13 @@ export function ApplicationAgentsContent() {
                     <div className="text-[14px] font-semibold truncate" style={{ color: "var(--v2-t-1)" }}>
                       {a.name}
                     </div>
-                    <div className="text-[12px]" style={{ color: "var(--v2-t-4)" }}>
-                      {TYPE[a.type] ?? a.type} · Robinhood Chain{a.tokenSymbol ? ` · $${a.tokenSymbol}` : ""}
+                    <div className="text-[12px] flex items-center gap-1.5 flex-wrap" style={{ color: "var(--v2-t-4)" }}>
+                      <span>{TYPE[a.type] ?? a.type} · Robinhood Chain{a.tokenSymbol ? ` · $${a.tokenSymbol}` : ""}</span>
+                      {TRADE_SOON.has(a.type) && (
+                        <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded" style={{ background: "rgba(var(--v2-accent-rgb),0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.2)" }}>
+                          Trade · Soon
+                        </span>
+                      )}
                     </div>
                   </div>
                   <span className="inline-flex items-center gap-1.5 eyebrow shrink-0" style={{ color: a.running ? "var(--v2-pos)" : "var(--v2-t-4)" }}>
@@ -229,14 +235,19 @@ export function ApplicationAgentsContent() {
             </p>
             <ul className="space-y-2 mb-6 text-sm" style={{ color: "var(--v2-t-2)" }}>
               {[
-                "Copy any wallet's trades automatically",
-                "Snipe new token launches based on safety filters",
-                "Auto-trade on price, volume, or liquidity triggers",
-                "Send signals to your inbox and your Telegram bot",
-              ].map((t) => (
-                <li key={t} className="flex gap-2">
+                { text: "Watch wallets and get signals on every move", soon: false },
+                { text: "Scan new token launches based on safety filters", soon: false },
+                { text: "Send signals to your inbox and your Telegram bot", soon: false },
+                { text: "Auto-trade on price, volume, or liquidity triggers", soon: true },
+              ].map(({ text, soon }) => (
+                <li key={text} className="flex items-center gap-2">
                   <span style={{ color: "var(--v2-accent-text)" }}>→</span>
-                  <span>{t}</span>
+                  <span style={{ color: soon ? "var(--v2-t-4)" : undefined }}>{text}</span>
+                  {soon && (
+                    <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded shrink-0" style={{ background: "rgba(var(--v2-accent-rgb),0.12)", color: "var(--v2-accent-text)", border: "1px solid rgba(var(--v2-accent-rgb),0.2)" }}>
+                      Soon
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
