@@ -56,6 +56,13 @@ export function ApplicationPortfolioContent() {
   const explorerChain = getChain(env);
 
   useEffect(() => {
+    const timer = setInterval(() => {
+      if (typeof document !== "undefined" && !document.hidden) setTick((t) => t + 1);
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     if (!signed || !address) {
       setRows(null);
       return;

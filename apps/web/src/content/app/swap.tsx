@@ -151,6 +151,7 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
   const [resolvedCustom, setResolvedCustom] = useState<{ mint: string; symbol: string; name: string; image: string | null } | null>(null);
   const api = useApi<{ tokens: { mint: string; symbol: string | null; name: string | null; image: string | null; price: number | null; marketCap: number | null; change24h: number | null }[] }>(
     USE_API ? "/api/tokens/trending?tab=trending&limit=100" : null,
+    30_000,
   );
   const list = useMemo<SwapToken[]>(
     () => {
