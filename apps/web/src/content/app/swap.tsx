@@ -185,34 +185,17 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
     },
     [api.data],
   );
+  const term = q.trim().toLowerCase();
+
   useEffect(() => {
     if (!open) return;
     const k = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, [open, onClose]);
-  if (!open) return null;
-  const term = q.trim().toLowerCase();
-  const matches = (t: SwapToken) => {
-    if (t.symbol.toLowerCase().includes(term)) return true;
-    if (t.name.toLowerCase().includes(term)) return true;
-    if (t.mint.toLowerCase().startsWith(term)) return true;
-    // Allow searching "usdt", "tether", "usdc", "usd", "dollar", "stable" to find USDG (Robinhood Chain's canonical USD stablecoin)
-    if (
-      (term === "usdc" ||
-        term === "usdt" ||
-        term === "tether" ||
-        term === "usd" ||
-        term === "dollar" ||
-        term === "stable") &&
-      t.symbol === "USDG"
-    )
-      return true;
-    return false;
-  };
 
   useEffect(() => {
-    if (!setup || !EVM.test(term)) {
+    if (!open || !setup || !EVM.test(term)) {
       setResolvedCustom(null);
       return;
     }
@@ -244,7 +227,27 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
     return () => {
       alive = false;
     };
-  }, [term, setup]);
+  }, [term, setup, open]);
+
+  if (!open) return null;
+
+  const matches = (t: SwapToken) => {
+    if (t.symbol.toLowerCase().includes(term)) return true;
+    if (t.name.toLowerCase().includes(term)) return true;
+    if (t.mint.toLowerCase().startsWith(term)) return true;
+    // Allow searching "usdt", "tether", "usdc", "usd", "dollar", "stable" to find USDG (Robinhood Chain's canonical USD stablecoin)
+    if (
+      (term === "usdc" ||
+        term === "usdt" ||
+        term === "tether" ||
+        term === "usd" ||
+        term === "dollar" ||
+        term === "stable") &&
+      t.symbol === "USDG"
+    )
+      return true;
+    return false;
+  };
   const shown = term ? list.filter(matches) : list;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ background: "rgba(0,0,0,0.6)" }} onClick={onClose}>
