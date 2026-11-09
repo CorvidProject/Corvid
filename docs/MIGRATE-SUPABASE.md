@@ -4,10 +4,10 @@ Dipakai bila egress project lama (Free, 5 GB/siklus) tetap melewati batas. Yang 
 
 ## Anggaran sebulan (Free: egress 5 GB, database 500 MB)
 
-| Item | Target | Dasar |
-| --- | --- | --- |
-| Egress | ≤ 160 MB/hari (5 GB / 30) | Perkiraan setelah perbaikan skoring wallet: 60-100 MB/hari. Ukur dengan `pg_stat_statements` bila melenceng |
-| Database | ≤ 350 MB stabil | Lama: 319 MB, 166 MB di antaranya `token_price_points`. Titik harga kini tiap 10 menit (bukan 3), perkiraan ~55 MB |
+| Item     | Target                     | Dasar                                                                                                                |
+| -------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Egress   | ≤ 160 MB/hari (5 GB / 30) | Perkiraan setelah perbaikan skoring wallet: 60-100 MB/hari. Ukur dengan `pg_stat_statements` bila melenceng        |
+| Database | ≤ 350 MB stabil           | Lama: 319 MB, 166 MB di antaranya `token_price_points`. Titik harga kini tiap 10 menit (bukan 3), perkiraan ~55 MB |
 
 ## Langkah (urut)
 
@@ -25,6 +25,7 @@ Dipakai bila egress project lama (Free, 5 GB/siklus) tetap melewati batas. Yang 
    $env:OLD_DATABASE_URL="<url lama>"; $env:NEW_DATABASE_URL="<url baru>"
    node scripts/migrate-data.mjs
    ```
+
    Cek jumlah baris per tabel. Skrip berhenti bila `swaps` di database lama berisi, atau tabel tujuan tidak kosong.
 6. **Tulis**: `node scripts/migrate-data.mjs --apply` (satu transaksi; gagal = batal total). Akun ikut dengan hash passwordnya, jadi login email tetap jalan. Sesi lama tidak berlaku (kunci JWT berbeda): pengguna masuk ulang satu kali.
 7. **Ganti env**:
@@ -36,6 +37,7 @@ Dipakai bila egress project lama (Free, 5 GB/siklus) tetap melewati batas. Yang 
 10. Catat project ref baru di `docs/infrastructure.md` (tanpa key) dan rotasi key lama.
 
 ## Catatan
+
 - Worker tetap berjalan selama langkah 3-6 menulis ke database **lama**; perubahan data pengguna di jeda itu (jarang) bisa tertinggal. Bila perlu, hentikan service `@corvid/api` sebentar sebelum langkah 6.
 - Pemindahan hanya benar-benar mengurangi egress jika perbaikan worker (skoring wallet 2 jam, jalur aktivitas ringan) ikut ter-deploy. Itu sudah ada di `main`.
 - Siklus tagihan project baru mulai dari tanggal dibuat, dengan kuota 5 GB baru.

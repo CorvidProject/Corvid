@@ -7,7 +7,7 @@ import { formatUnits, type Address } from "viem";
 import { USE_API, useApi } from "@/lib/api";
 import { tokenFallbackStyle } from "@/components/app/token-avatar";
 import { switchToAppChain, useWallet } from "@/lib/wallet";
-import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, swapErrorText, slippageBps, swapSetup, tokenDecimals, tradeMode, readTokenMeta, type Plan } from "@/lib/swap";
+import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, swapErrorText, slippageBps, swapSetup, tokenDecimals, tradeMode, readTokenMeta, fetchExternalTokenLogo, type Plan } from "@/lib/swap";
 
 const EVM = /^0x[0-9a-fA-F]{40}$/;
 const GAS_RESERVE = 500_000_000_000_000n; // 0.0005 ETH reserved when selecting Max
@@ -147,6 +147,8 @@ function TokenButton({ token, onClick }: { token: SwapToken | null; onClick: () 
 
 function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => void; onPick: (t: SwapToken) => void }) {
   const [q, setQ] = useState("");
+  const setup = swapSetup();
+  const [resolvedCustom, setResolvedCustom] = useState<{ mint: string; symbol: string; name: string; image: string | null } | null>(null);
   const api = useApi<{ tokens: { mint: string; symbol: string | null; name: string | null; image: string | null; price: number | null; marketCap: number | null; change24h: number | null }[] }>(
     USE_API ? "/api/tokens/trending?tab=trending&limit=100" : null,
   );
@@ -194,10 +196,54 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
     if (t.symbol.toLowerCase().includes(term)) return true;
     if (t.name.toLowerCase().includes(term)) return true;
     if (t.mint.toLowerCase().startsWith(term)) return true;
-    // Allow searching "usdc", "usd", "dollar", "stable" to find USDG (Robinhood Chain's native USD stablecoin)
-    if ((term === "usdc" || term === "usd" || term === "dollar" || term === "stable") && t.symbol === "USDG") return true;
+    // Allow searching "usdt", "tether", "usdc", "usd", "dollar", "stable" to find USDG (Robinhood Chain's canonical USD stablecoin)
+    if (
+      (term === "usdc" ||
+        term === "usdt" ||
+        term === "tether" ||
+        term === "usd" ||
+        term === "dollar" ||
+        term === "stable") &&
+      t.symbol === "USDG"
+    )
+      return true;
     return false;
   };
+
+  useEffect(() => {
+    if (!setup || !EVM.test(term)) {
+      setResolvedCustom(null);
+      return;
+    }
+    const known = findKnownToken(term);
+    if (known) {
+      setResolvedCustom({ mint: known.mint, symbol: known.symbol, name: known.name, image: known.image });
+      return;
+    }
+    let alive = true;
+    readTokenMeta(setup, term as Address).then(async (m) => {
+      if (!alive) return;
+      if (m) {
+        let img = m.image;
+        if (!img) {
+          img = await fetchExternalTokenLogo(term);
+        }
+        if (alive) {
+          setResolvedCustom({ mint: term, symbol: m.symbol, name: m.name, image: img });
+        }
+      } else {
+        const ext = await fetchExternalTokenLogo(term);
+        if (alive && ext) {
+          setResolvedCustom({ mint: term, symbol: `${term.slice(0, 6)}…${term.slice(-4)}`, name: "Token", image: ext });
+        } else if (alive) {
+          setResolvedCustom(null);
+        }
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [term, setup]);
   const shown = term ? list.filter(matches) : list;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ background: "rgba(0,0,0,0.6)" }} onClick={onClose}>
@@ -238,6 +284,12 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
         </div>
         <div className="px-2 pb-3 overflow-y-auto" style={{ minHeight: 0 }}>
           <div className="px-3 pb-1 text-[12px]" style={{ color: "var(--v2-t-4)" }}>{shown.length} tokens on Robinhood Chain</div>
+          {(term === "usdt" || term === "usdc" || term === "tether") && (
+            <div className="mx-3 my-2 px-3 py-2 rounded-xl text-[12px] flex items-center gap-2" style={{ background: "rgba(105, 184, 33, 0.12)", border: "1px solid rgba(105, 184, 33, 0.3)", color: "var(--v2-t-2)" }}>
+              <span>💡</span>
+              <span>Robinhood Chain uses <strong>USDG (Global Dollar)</strong> as its canonical USD stablecoin.</span>
+            </div>
+          )}
           {shown.map((t) => (
             <button key={t.mint} onClick={() => onPick(t)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left transition-colors hover:bg-[var(--v2-bg-2)]">
               <Avatar t={t} size={34} />
@@ -266,7 +318,12 @@ function TokenModal({ open, onClose, onPick }: { open: boolean; onClose: () => v
           ))}
           {EVM.test(term) && !list.some((t) => t.mint.toLowerCase() === term) && (() => {
             const known = findKnownToken(term);
-            const cand: SwapToken = known ?? { mint: term, symbol: `${term.slice(0, 6)}…${term.slice(-4)}`, name: "Custom token", image: null };
+            const cand: SwapToken = known ?? {
+              mint: term,
+              symbol: resolvedCustom?.symbol || `${term.slice(0, 6)}…${term.slice(-4)}`,
+              name: resolvedCustom?.name || (resolvedCustom === null ? "Searching token on-chain…" : "Custom token"),
+              image: resolvedCustom?.image ?? null,
+            };
             return (
               <button
                 onClick={() => onPick(cand)}
@@ -333,19 +390,30 @@ export function ApplicationSwapContent() {
     );
   }, [meta.data]);
 
-  // Resolve on-chain token name & symbol via RPC if token is custom or loaded from an external link
+  // Resolve on-chain token name, symbol, and logo via RPC and DexScreener if token is custom or loaded from an external link
   useEffect(() => {
     if (!token || !setup || !isEvm) return;
-    if (!token.symbol.includes("…") && token.name !== "Token from link" && token.name !== "Custom token") return;
+    if (!token.symbol.includes("…") && token.name !== "Token from link" && token.name !== "Custom token" && token.image) return;
     const known = findKnownToken(token.mint);
     if (known) {
       setToken((t) => (t && t.mint.toLowerCase() === known.mint.toLowerCase() ? { ...t, ...known } : t));
       return;
     }
     let alive = true;
-    readTokenMeta(setup, token.mint as Address).then((m) => {
-      if (m && alive) {
-        setToken((t) => (t && t.mint.toLowerCase() === token.mint.toLowerCase() ? { ...t, symbol: m.symbol, name: m.name } : t));
+    readTokenMeta(setup, token.mint as Address).then(async (m) => {
+      if (!alive) return;
+      if (m) {
+        let img = m.image;
+        if (!img) {
+          img = await fetchExternalTokenLogo(token.mint);
+        }
+        if (alive) {
+          setToken((t) =>
+            t && t.mint.toLowerCase() === token.mint.toLowerCase()
+              ? { ...t, symbol: m.symbol, name: m.name, image: img ?? t.image }
+              : t,
+          );
+        }
       }
     });
     return () => {

@@ -213,16 +213,42 @@ export async function tokenDecimals(s: SwapSetup, token: Address): Promise<numbe
   }
 }
 
-export async function readTokenMeta(s: SwapSetup, token: Address): Promise<{ symbol: string; name: string } | null> {
-  if (token === NATIVE) return { symbol: "ETH", name: "Ether" };
+/** Fetch external token image from public DexScreener API */
+export async function fetchExternalTokenLogo(address: string): Promise<string | null> {
   try {
-    const [symbol, name] = await Promise.all([
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
+    if (!res.ok) return null;
+    const data = (await res.json()) as { pairs?: { info?: { imageUrl?: string } }[] };
+    return data.pairs?.[0]?.info?.imageUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function readTokenMeta(
+  s: SwapSetup,
+  token: Address,
+): Promise<{ symbol: string; name: string; image: string | null; decimals: number } | null> {
+  if (token === NATIVE) return { symbol: "ETH", name: "Ether", image: "/brand/eth.svg", decimals: 18 };
+  try {
+    const [symbol, name, decimals] = await Promise.all([
       s.client.readContract({ address: token, abi: erc20Abi, functionName: "symbol" }).catch(() => ""),
       s.client.readContract({ address: token, abi: erc20Abi, functionName: "name" }).catch(() => ""),
+      s.client.readContract({ address: token, abi: erc20Abi, functionName: "decimals" }).catch(() => 18),
     ]);
     const sym = String(symbol ?? "").trim();
     const nm = String(name ?? "").trim();
-    return sym ? { symbol: sym, name: nm || sym } : null;
+    if (!sym) return null;
+
+    let image: string | null = null;
+    const upper = sym.toUpperCase();
+    if (upper === "USDG") image = "/brand/usdg.svg";
+    else if (upper === "USDC") image = "/brand/usdc.svg";
+    else if (upper === "USDT") image = "/brand/usdt.svg";
+    else if (upper === "WETH" || upper === "ETH") image = "/brand/eth.svg";
+    else if (upper === "VIRTUAL") image = "/brand/virtual.svg";
+
+    return { symbol: sym, name: nm || sym, image, decimals: Number(decimals) };
   } catch {
     return null;
   }
