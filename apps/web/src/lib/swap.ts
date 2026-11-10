@@ -259,7 +259,7 @@ export async function readTokenMeta(
 
     let image: string | null = null;
     const upper = sym.toUpperCase();
-    if (upper === "USDG") image = "/brand/usdg.svg";
+    if (upper === "USDG") image = "/brand/usdg.png";
     else if (upper === "USDC") image = "/brand/usdc.svg";
     else if (upper === "USDT") image = "/brand/usdt.svg";
     else if (upper === "WETH" || upper === "ETH") image = "/brand/eth.svg";

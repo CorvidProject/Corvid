@@ -19,7 +19,7 @@ const CANONICAL_TOKENS: Tok[] = [
     mint: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
     symbol: "USDG",
     name: "Global Dollar",
-    image: "/brand/usdg.svg",
+    image: "/brand/usdg.png",
     price: 1.0,
     change24h: 0,
   },
@@ -112,6 +112,51 @@ async function resolveTokenPrice(mint: string): Promise<{ price: number | null; 
   }
 }
 
+let cachedEthData = { usd: 2080, change24h: null as number | null };
+
+async function fetchEthPrice(): Promise<{ usd: number; change24h: number | null }> {
+  try {
+    const res = await apiGet<{ usd?: number; change24h?: number }>("/api/prices/native");
+    if (res && typeof res.usd === "number" && res.usd > 0) {
+      cachedEthData.usd = res.usd;
+      if (typeof res.change24h === "number") cachedEthData.change24h = res.change24h;
+      return cachedEthData;
+    }
+  } catch {}
+
+  try {
+    const dsRes = await fetch("https://api.dexscreener.com/latest/dex/tokens/0x0bd7d308f8e1639fab988df18a8011f41eacad73");
+    if (dsRes.ok) {
+      const j = (await dsRes.json()) as { pairs?: Array<{ priceUsd?: string; priceChange?: { h24?: number } }> };
+      const p = Number(j.pairs?.[0]?.priceUsd);
+      if (p > 0) {
+        cachedEthData.usd = p;
+        if (typeof j.pairs?.[0]?.priceChange?.h24 === "number") {
+          cachedEthData.change24h = j.pairs[0].priceChange.h24;
+        }
+        return cachedEthData;
+      }
+    }
+  } catch {}
+
+  try {
+    const bRes = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT");
+    if (bRes.ok) {
+      const j = (await bRes.json()) as { lastPrice?: string; priceChangePercent?: string };
+      const p = Number(j.lastPrice);
+      if (p > 0) {
+        cachedEthData.usd = p;
+        if (j.priceChangePercent) {
+          cachedEthData.change24h = Number(j.priceChangePercent);
+        }
+        return cachedEthData;
+      }
+    }
+  } catch {}
+
+  return cachedEthData;
+}
+
 const usd = (n: number) => {
   if (n > 0 && n < 0.01) return "<$0.01";
   return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -202,9 +247,9 @@ export function ApplicationPortfolioContent() {
         return;
       }
 
-      const [list, px, bsTokens] = await Promise.all([
+      const [list, ethPx, bsTokens] = await Promise.all([
         apiGet<{ tokens: Tok[] }>("/api/tokens/trending?limit=200").catch(() => ({ tokens: [] as Tok[] })),
-        apiGet<{ usd: number }>("/api/prices/native").catch(() => ({ usd: 0 })),
+        fetchEthPrice(),
         fetchBlockscoutTokens(address),
       ]);
 
@@ -250,9 +295,10 @@ export function ApplicationPortfolioContent() {
           if (lowerMint === "0x5fc5360d0400a0fd4f2af552add042d716f1d168" || sym === "USDG") {
             price = 1.0;
             change24h = 0;
-            image = image || "/brand/usdg.svg";
+            image = image || "/brand/usdg.png";
           } else if (lowerMint === "0x0bd7d308f8e1639fab988df18a8011f41eacad73" || sym === "WETH") {
-            price = px.usd;
+            price = ethPx.usd;
+            change24h = ethPx.change24h;
             image = image || "/brand/eth.svg";
           } else if (sym.includes("USDC") || sym.includes("USDT")) {
             price = price ?? 1.0;
@@ -288,9 +334,9 @@ export function ApplicationPortfolioContent() {
           name: "Ether",
           image: "/brand/eth.svg",
           amount: eth,
-          priceUsd: px.usd,
-          change24h: null,
-          valueUsd: eth * px.usd,
+          priceUsd: ethPx.usd,
+          change24h: ethPx.change24h,
+          valueUsd: eth * ethPx.usd,
         },
         ...resolvedHoldings,
       ]);

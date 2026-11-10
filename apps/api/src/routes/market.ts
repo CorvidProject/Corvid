@@ -256,7 +256,7 @@ export const marketRoutes =
                 name: "Global Dollar",
                 symbol: "USDG",
                 mint: m,
-                image: "/brand/usdg.svg",
+                image: "/brand/usdg.png",
                 description: "Global Dollar (USDG) is the official native US dollar stablecoin on Robinhood Chain, issued by Paxos.",
                 links: ["https://paxos.com/usdg"],
                 decimals: 6,
