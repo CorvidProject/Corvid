@@ -948,29 +948,10 @@ function ageLabel(createdAt: number | null | undefined) {
 }
 
 function MemePanel() {
-  // New tokens on Robinhood Chain. If fewer than 6 tokens are returned from the "new" tab,
-  // backfill with verified new launchpad tokens so the panel always renders 6 newest tokens.
+  // New tokens on Robinhood Chain from GET /api/tokens/trending?tab=new&limit=6
   const live = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=new&limit=6" : null, 30_000);
-
-  const combined: FreshToken[] = [];
-  const seen = new Set<string>();
-
-  for (const t of live.data?.tokens ?? []) {
-    if (!t.mint || seen.has(t.mint.toLowerCase())) continue;
-    seen.add(t.mint.toLowerCase());
-    combined.push(t);
-  }
-
-  if (combined.length < 6) {
-    for (const t of (freshTokens.tokens as FreshToken[]) ?? []) {
-      if (!t.mint || seen.has(t.mint.toLowerCase())) continue;
-      seen.add(t.mint.toLowerCase());
-      combined.push(t);
-      if (combined.length >= 6) break;
-    }
-  }
-
-  const items = combined.slice(0, 6).map((t) => ({
+  const source: FreshToken[] = live.data?.tokens ?? (USE_API ? [] : (freshTokens.tokens as FreshToken[]));
+  const items = source.slice(0, 6).map((t) => ({
     mint: t.mint,
     image: t.image,
     symbol: t.symbol ?? "?",

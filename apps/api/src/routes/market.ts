@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import {
   memescopeCoins,
@@ -68,19 +68,56 @@ export const marketRoutes =
       { schema: { tags: ["market"], querystring: trendingQuerySchema, response: { 200: trendingResponseSchema } } },
       async (req) => {
         const { tab, limit } = req.query;
-        const latest = db
-          .select({ at: sql<Date>`max(${tokenTrending.snapshotAt})`.as("at") })
-          .from(tokenTrending)
-          .where(eq(tokenTrending.tab, tab))
-          .as("latest");
-        const rows = await db
-          .select({ token: tokens })
-          .from(tokenTrending)
-          .innerJoin(tokens, eq(tokens.id, tokenTrending.tokenId))
-          .innerJoin(latest, eq(latest.at, tokenTrending.snapshotAt))
-          .where(eq(tokenTrending.tab, tab))
-          .orderBy(tokenTrending.rank)
-          .limit(limit);
+        let rows: Array<{ token: typeof tokens.$inferSelect }>;
+
+        if (tab === "new") {
+          // Tab "new": get new tokens across recent snapshots (15m, 1h, up to 24h),
+          // sorted by on-chain pool creation time descending (newest first).
+          const newTokensSubquery = db
+            .select({ tokenId: tokenTrending.tokenId })
+            .from(tokenTrending)
+            .where(eq(tokenTrending.tab, "new"));
+
+          rows = await db
+            .select({ token: tokens })
+            .from(tokens)
+            .where(inArray(tokens.id, newTokensSubquery))
+            .orderBy(desc(tokens.createdAtChain), desc(tokens.id))
+            .limit(limit);
+
+          // If fewer than limit, also include any tokens with on-chain creation timestamp (newest first)
+          if (rows.length < limit) {
+            const existingIds = new Set(rows.map((r) => r.token.id));
+            const recentOnChain = await db
+              .select({ token: tokens })
+              .from(tokens)
+              .where(
+                and(
+                  sql`${tokens.createdAtChain} is not null`,
+                  existingIds.size > 0 ? notInArray(tokens.id, Array.from(existingIds)) : sql`true`,
+                ),
+              )
+              .orderBy(desc(tokens.createdAtChain), desc(tokens.id))
+              .limit(limit - rows.length);
+
+            rows.push(...recentOnChain);
+          }
+        } else {
+          const latest = db
+            .select({ at: sql<Date>`max(${tokenTrending.snapshotAt})`.as("at") })
+            .from(tokenTrending)
+            .where(eq(tokenTrending.tab, tab))
+            .as("latest");
+          rows = await db
+            .select({ token: tokens })
+            .from(tokenTrending)
+            .innerJoin(tokens, eq(tokens.id, tokenTrending.tokenId))
+            .innerJoin(latest, eq(latest.at, tokenTrending.snapshotAt))
+            .where(eq(tokenTrending.tab, tab))
+            .orderBy(tokenTrending.rank)
+            .limit(limit);
+        }
+
         const sparks = await loadSparks(db, rows.map((r) => r.token.id));
         return {
           tokens: rows.map((r) => {
