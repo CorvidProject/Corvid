@@ -336,3 +336,12 @@ a.pf-row:hover { background: var(--v2-bg-2); }
 /* Redam glow: tombol chrome cukup bayangan gelap dan highlight tipis, tanpa cahaya biru. */
 :root[data-brand="corvid"] .crv-chrome-btn { box-shadow: 0 8px 22px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
 :root[data-brand="corvid"] .crv-chrome-btn:hover { box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+
+
+/* Tombol flip swap: tetap di tempat, rotasi halus saat diklik, tanpa loncat posisi saat hover */
+.crv-swap-flip {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s, background 0.2s !important;
+}
+.crv-swap-flip:hover {
+  transform: none !important;
+}

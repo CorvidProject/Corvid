@@ -634,11 +634,19 @@ export function ApplicationSwapContent() {
               </div>
             </div>
           </div>
-          <div className="relative h-2 z-10">
+          <div className="relative my-[-14px] z-10 flex justify-center items-center pointer-events-none">
             <button
-              aria-label="Flip direction"
+              type="button"
+              aria-label="Flip swap direction"
               onClick={() => setFlipped((f) => !f)}
-              className="crv-swap-flip absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center"
+              className="pointer-events-auto w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-300 ease-out hover:scale-105 active:scale-95"
+              style={{
+                background: "var(--v2-bg-1)",
+                border: "4px solid var(--v2-bg-0)",
+                boxShadow: "0 0 0 1px var(--v2-line-2)",
+                color: "var(--v2-t-2)",
+                transform: flipped ? "rotate(180deg)" : "rotate(0deg)",
+              }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
