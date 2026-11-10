@@ -42,7 +42,7 @@ export const CURATED_TOKENS: SwapToken[] = [
     mint: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
     symbol: "USDG",
     name: "Global Dollar",
-    image: "/brand/usdg.svg",
+    image: "/brand/usdg.png",
     price: 1.0,
     poolId: null,
   },
@@ -57,7 +57,7 @@ export const CURATED_TOKENS: SwapToken[] = [
     mint: "0xc6911796042b15d7fa4f6cde69e245ddcd3d9c31",
     symbol: "VIRTUAL",
     name: "Virtuals Protocol",
-    image: "/brand/virtual.svg",
+    image: "/brand/virtual.png",
     poolId: null,
   },
   {
