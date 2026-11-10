@@ -188,7 +188,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
                 {i + 1}
               </span>
               <a className="flex items-center gap-3 min-w-0" href={`/application/tokens/${t.mint}?chain=robinhood`}>
-                <TokenAvatar src={t.image} symbol={t.symbol} size={36} />
+                <TokenAvatar src={t.image} symbol={t.symbol} seed={t.mint} size={36} />
                 <span className="min-w-0">
                   <span className="flex items-center gap-2">
                     <span className="text-[14px] font-semibold truncate" style={{ color: "var(--v2-t-1)" }}>

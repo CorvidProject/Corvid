@@ -329,6 +329,24 @@ export async function refreshImagesGt(deps: Deps, opts: { limit?: number; retryH
     await deps.db.update(tokens).set({ imageUrl: url, updatedAt: now }).where(and(eq(tokens.mint, mint), isNull(tokens.imageUrl)));
     await deps.db.update(memescopeCoins).set({ imageUrl: url }).where(and(eq(memescopeCoins.mint, mint), isNull(memescopeCoins.imageUrl)));
   }
+
+  // Fallback to DexScreener for tokens where GeckoTerminal has no image
+  const missing = mints.filter((m) => !found.has(m));
+  if (missing.length > 0) {
+    try {
+      const dsTokens = await deps.ds.tokens(missing);
+      for (const t of dsTokens) {
+        if (t.image) {
+          await deps.db.update(tokens).set({ imageUrl: t.image, updatedAt: now }).where(and(eq(tokens.mint, t.mint), isNull(tokens.imageUrl)));
+          await deps.db.update(memescopeCoins).set({ imageUrl: t.image }).where(and(eq(memescopeCoins.mint, t.mint), isNull(memescopeCoins.imageUrl)));
+          found.set(t.mint, t.image);
+        }
+      }
+    } catch (e) {
+      logOf(deps)(`logo DexScreener fallback gagal: ${errText(e)}`);
+    }
+  }
+
   return { checked: mints.length, filled: found.size };
 }
 

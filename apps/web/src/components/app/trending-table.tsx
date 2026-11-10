@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowsClockwise, CaretDown, Check, Funnel, Star, X } from "@phosphor-icons/react";
-import { tokenFallbackStyle } from "@/components/app/token-avatar";
+import { TokenAvatar, tokenFallbackStyle } from "@/components/app/token-avatar";
 
 // Tab "Trending" di /application/terminal: interval, filter, dan tabel. Data dari GET /api/tokens/trending
 // (diambil di terminal.tsx dan diperbarui berkala). Logika filter mengikuti referensi.
@@ -454,16 +454,7 @@ const GRID =
   "grid grid-cols-[28px_minmax(170px,1.4fr)_minmax(70px,0.6fr)_minmax(90px,0.8fr)_72px_minmax(85px,0.7fr)_minmax(90px,0.8fr)_minmax(85px,0.7fr)_minmax(60px,0.5fr)_minmax(55px,0.5fr)_minmax(60px,0.5fr)_minmax(65px,0.5fr)_minmax(140px,1fr)_minmax(190px,0.9fr)] gap-3";
 
 function Avatar({ t, size, round = true }: { t: Tok; size: number; round?: boolean }) {
-  const [bad, setBad] = useState(false);
-  const cls = `${round ? "rounded-full" : "rounded-sm"} object-cover shrink-0`;
-  return t.image && !bad ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img alt="" width={size} height={size} className={cls} referrerPolicy="no-referrer" loading="lazy" src={t.image} onError={() => setBad(true)} style={{ width: size, height: size, background: "var(--v2-bg-2)" }} />
-  ) : (
-    <div className={`${round ? "rounded-full" : "rounded-sm"} shrink-0 flex items-center justify-center num text-[11px] font-semibold`} style={{ width: size, height: size, ...tokenFallbackStyle(t.mint || t.symbol) }}>
-      {t.symbol.trim().slice(0, 2)}
-    </div>
-  );
+  return <TokenAvatar src={t.image} symbol={t.symbol} seed={t.mint} size={size} radius={round ? "50%" : "4px"} />;
 }
 const dotCls = (t: Tok) => (t.riskChecked === false ? "bg-[var(--v2-t-4)]" : t.riskScore <= 30 ? "bg-[var(--v2-pos)]" : t.riskScore <= 60 ? "bg-[var(--v2-warn)]" : "bg-[var(--v2-neg)]");
 /** Salin alamat kontrak token tanpa membuka halaman detail (baris tabel adalah tautan). */
@@ -483,8 +474,8 @@ function CopyAddr({ address }: { address: string }) {
           setTimeout(() => setDone(false), 1400);
         } catch {}
       }}
-      className="num shrink-0"
-      style={{ fontSize: 10, lineHeight: "16px", padding: "0 5px", borderRadius: 4, cursor: "pointer", color: done ? "var(--v2-pos)" : "var(--v2-t-4)", border: "1px solid var(--v2-line-1)", background: "transparent" }}
+      className="num shrink-0 min-h-[32px] sm:min-h-0 inline-flex items-center justify-center"
+      style={{ fontSize: 10, lineHeight: "16px", padding: "4px 8px", borderRadius: 4, cursor: "pointer", color: done ? "var(--v2-pos)" : "var(--v2-t-4)", border: "1px solid var(--v2-line-1)", background: "transparent" }}
     >
       {done ? "Copied" : `${address.slice(0, 6)}…${address.slice(-4)}`}
     </button>
