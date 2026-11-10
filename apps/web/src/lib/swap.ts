@@ -215,14 +215,31 @@ export async function tokenDecimals(s: SwapSetup, token: Address): Promise<numbe
 
 /** Fetch external token image from public DexScreener API */
 export async function fetchExternalTokenLogo(address: string): Promise<string | null> {
+  const addr = address.toLowerCase();
+
+  // 1. GeckoTerminal — indexes Robinhood Chain tokens with logo URLs
   try {
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
-    if (!res.ok) return null;
-    const data = (await res.json()) as { pairs?: { info?: { imageUrl?: string } }[] };
-    return data.pairs?.[0]?.info?.imageUrl ?? null;
-  } catch {
-    return null;
-  }
+    const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${addr}`, {
+      headers: { Accept: "application/json;version=20230302" },
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { data?: { attributes?: { image_url?: string | null } } };
+      const img = data.data?.attributes?.image_url;
+      if (img) return img;
+    }
+  } catch { /* fall through */ }
+
+  // 2. DexScreener — broad EVM coverage, fallback
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
+    if (res.ok) {
+      const data = (await res.json()) as { pairs?: { info?: { imageUrl?: string } }[] };
+      const img = data.pairs?.[0]?.info?.imageUrl;
+      if (img) return img;
+    }
+  } catch { /* fall through */ }
+
+  return null;
 }
 
 export async function readTokenMeta(
