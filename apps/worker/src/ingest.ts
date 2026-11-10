@@ -590,12 +590,12 @@ export async function runRetention(db: Db, now = new Date()): Promise<Record<str
   const del = async (q: ReturnType<typeof sql>) => (await db.execute(q)).rowCount ?? 0;
   return {
     signals: await del(sql`delete from signals where at < ${ago(7 * D)}`),
-    trades: await del(sql`delete from token_trades where traded_at < ${ago(48 * H)}`),
-    candles1m: await del(sql`delete from token_candles where interval = '1m' and bucket_start < ${ago(D)}`),
-    candles5m15m: await del(sql`delete from token_candles where interval in ('5m','15m') and bucket_start < ${ago(7 * D)}`),
+    trades: await del(sql`delete from token_trades where traded_at < ${ago(24 * H)}`),
+    candles1m: await del(sql`delete from token_candles where interval = '1m' and bucket_start < ${ago(4 * H)}`),
+    candles5m15m: await del(sql`delete from token_candles where interval in ('5m','15m') and bucket_start < ${ago(3 * D)}`),
     candles1h4h: await del(sql`delete from token_candles where interval in ('1h','4h') and bucket_start < ${ago(30 * D)}`),
-    candles1d: await del(sql`delete from token_candles where interval = '1d' and bucket_start < ${ago(180 * D)}`),
-    pricePoints: await del(sql`delete from token_price_points where at < ${ago(D)}`),
+    candles1d: await del(sql`delete from token_candles where interval = '1d' and bucket_start < ${ago(90 * D)}`),
+    pricePoints: await del(sql`delete from token_price_points where at < ${ago(6 * H)}`),
     watch: await del(sql`delete from token_watch where last_viewed_at < ${ago(D)}`),
     memescope: await del(sql`delete from memescope_coins where coalesce(last_trade_at, created_at_chain, now()) < ${ago(7 * D)}`),
     // snapshot lama dibuang, snapshot terbaru per tab selalu dipertahankan
