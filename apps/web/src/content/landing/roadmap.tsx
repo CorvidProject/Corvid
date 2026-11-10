@@ -87,7 +87,7 @@ export function Roadmap() {
                     maxWidth: "320px",
                   }}
                 >
-                  A multichain AI trading platform, shipped piece by piece
+                  An AI trading platform built on Robinhood Chain, shipped piece by piece
                 </p>
               </div>
             </div>

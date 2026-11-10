@@ -50,7 +50,7 @@ export function TokenSection() {
                   "--rv-t": "translateY(32px)",
                 }}
               >
-                Powering execution across the platform
+                The planned $CRVD ecosystem token
               </h2>
               <p
                 className="font-sans text-lg font-medium mt-4 leading-relaxed"

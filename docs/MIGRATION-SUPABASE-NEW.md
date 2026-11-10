@@ -7,12 +7,12 @@ Alasan: egress lama melewati 5 GB/bulan dan database mendekati 500 MB.
 ## Ringkasan strategi
 
 - **Data user** (profiles, agents, chats, credits, orders) → export dari Supabase lama, import ke yang baru.
-- **Data pasar** (tokens, candles, trades, trending, wallets, signals, memescope, security) → **tidak perlu dipindah** — worker akan mengisi ulang dalam 1–2 jam setelah online.
+- **Data pasar** (tokens, candles, trades, trending, wallets, signals, memescope, security) → **tidak perlu dipindah** - worker akan mengisi ulang dalam 1–2 jam setelah online.
 - Ini membuat DB baru mulai kecil (~5–15 MB) lalu tumbuh terkontrol.
 
 ---
 
-## Langkah 1 — Buat Supabase project baru (pemilik)
+## Langkah 1 - Buat Supabase project baru (pemilik)
 
 1. Dashboard Supabase → **New project**, nama `corvid-v2` (atau lainnya).
 2. Catat **ref ID** baru (mis. `abcdefghijklmnop`).
@@ -22,7 +22,7 @@ Alasan: egress lama melewati 5 GB/bulan dan database mendekati 500 MB.
 
 ---
 
-## Langkah 2 — Terapkan migrasi ke DB baru
+## Langkah 2 - Terapkan migrasi ke DB baru
 
 Isi `ROOT/.env` dengan `DATABASE_URL` baru (sementara, untuk migrasi):
 
@@ -37,7 +37,7 @@ Semua 10 migrasi (`0000`–`0009`) harus berstatus `applied`.
 
 ---
 
-## Langkah 3 — Export data user dari Supabase lama (pemilik)
+## Langkah 3 - Export data user dari Supabase lama (pemilik)
 
 Buka SQL Editor di **Supabase lama**, jalankan satu per satu, simpan hasilnya sebagai CSV atau copy JSON.
 
@@ -74,7 +74,7 @@ pg_dump "CONNECTION_STRING_LAMA" --data-only --table=profiles --table=trading_pr
 
 ---
 
-## Langkah 4 — Import ke Supabase baru (pemilik)
+## Langkah 4 - Import ke Supabase baru (pemilik)
 
 ```powershell
 # Jalankan di: D:\.dev\tmp
@@ -86,7 +86,7 @@ Pastikan tidak ada error FK (urutan import: `profiles` dulu, baru tabel yang mer
 
 ---
 
-## Langkah 5 — Konfigurasi Auth Supabase baru (pemilik)
+## Langkah 5 - Konfigurasi Auth Supabase baru (pemilik)
 
 Dashboard Supabase baru:
 1. Authentication → Providers → aktifkan **Email** dan **Web3 Wallet (Ethereum)**.
@@ -97,7 +97,7 @@ Dashboard Supabase baru:
 
 ---
 
-## Langkah 6 — Update env vars Railway (pemilik)
+## Langkah 6 - Update env vars Railway (pemilik)
 
 Service `@corvid/api` dan `@corvid/worker` di Railway:
 
@@ -118,7 +118,7 @@ Tambah variabel baru untuk **kurangi egress** (lihat seksi bawah):
 
 ---
 
-## Langkah 7 — Update env vars Vercel (pemilik)
+## Langkah 7 - Update env vars Vercel (pemilik)
 
 Project `corvid` di Vercel → Settings → Environment Variables:
 
@@ -131,7 +131,7 @@ Setelah save → Redeploy (Deployments → Redeploy latest).
 
 ---
 
-## Langkah 8 — Update `.env` lokal (pemilik)
+## Langkah 8 - Update `.env` lokal (pemilik)
 
 ```
 DATABASE_URL=postgresql://postgres.REF-BARU:...
@@ -146,7 +146,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key baru>
 
 ---
 
-## Langkah 9 — Verifikasi
+## Langkah 9 - Verifikasi
 
 1. Cek Railway logs worker → harus muncul `board:trending`, `wallets`, dll. dalam 5 menit.
 2. Buka https://corvid-tau.vercel.app → login → pastikan profil/credits terbaca.
@@ -192,4 +192,4 @@ Egress estimasi per bulan setelah optimasi: **~2–3 GB** (dari 8+ GB).
 
 - **Jangan hapus Supabase lama** sampai semua data user terverifikasi sudah ada di yang baru.
 - Service role key Supabase baru: **jangan pernah masuk ke Railway/Vercel/repo**.
-- Auth: semua sesi Supabase lama akan invalid setelah pindah — user perlu login ulang.
+- Auth: semua sesi Supabase lama akan invalid setelah pindah - user perlu login ulang.

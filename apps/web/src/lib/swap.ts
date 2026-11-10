@@ -217,7 +217,7 @@ export async function tokenDecimals(s: SwapSetup, token: Address): Promise<numbe
 export async function fetchExternalTokenLogo(address: string): Promise<string | null> {
   const addr = address.toLowerCase();
 
-  // 1. GeckoTerminal — indexes Robinhood Chain tokens with logo URLs
+  // 1. GeckoTerminal: indexes Robinhood Chain tokens with logo URLs
   try {
     const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${addr}`, {
       headers: { Accept: "application/json;version=20230302" },
@@ -229,7 +229,7 @@ export async function fetchExternalTokenLogo(address: string): Promise<string | 
     }
   } catch { /* fall through */ }
 
-  // 2. DexScreener — broad EVM coverage, fallback
+  // 2. DexScreener: broad EVM coverage, fallback
   try {
     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
     if (res.ok) {

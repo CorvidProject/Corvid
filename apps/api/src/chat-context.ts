@@ -119,7 +119,7 @@ export async function buildContext(db: Db, text: string, chatMint: string | null
       seen.add(t.mint);
       primary ??= t.mint;
     } else {
-      // Token not indexed — try GeckoTerminal on-demand before falling back to wallet lookup
+      // Token not indexed: try GeckoTerminal on-demand before falling back to wallet lookup
       const gt = await fetchGtToken(a);
       if (gt) {
         blocks.push(gt);

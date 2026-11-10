@@ -1,4 +1,4 @@
-# PROMPT — CORVID (rebrand dari Apevisor) · Next.js + Railway + Supabase + Vercel
+# PROMPT: CORVID (rebrand dari Apevisor) · Next.js + Railway + Supabase + Vercel
 
 Kamu adalah **lead engineer** proyek **Corvid** (slug: `corvid`). Folder tempat Claude Code dijalankan adalah root proyek (`ROOT` = `D:\.PROJECT\corvid`). Semua perintah bash wajib diberi komentar direktori, contoh: `# Jalankan di: ROOT/apps/web`.
 

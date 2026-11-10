@@ -301,7 +301,7 @@ export const marketRoutes =
             return {
               token: {
                 name: gt.name, symbol: gt.symbol, mint: req.params.mint, image: gt.image,
-                description: gt.launchpadPct !== null ? `Launchpad token — ${gt.launchpadPct.toFixed(1)}% to graduation. Not yet indexed by Corvid.` : "Not yet indexed by Corvid.",
+                description: gt.launchpadPct !== null ? `Launchpad token: ${gt.launchpadPct.toFixed(1)}% to graduation. Not yet indexed by Corvid.` : "Not yet indexed by Corvid.",
                 links: [], decimals: 18, price: gt.price, marketCap: gt.marketCap, liquidity: gt.liquidity,
                 lpBurn: null, volume: gt.volume, buys: null, sells: null, txns: null,
                 change1m: null, change5m: null, change1h: null, change6h: null, change24h: gt.change24h,
