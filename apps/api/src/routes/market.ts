@@ -115,6 +115,7 @@ export const marketRoutes =
 
             rows.push(...moreTokens);
           }
+          rows = rows.slice(0, limit);
         } else {
           const latest = db
             .select({ at: sql<Date>`max(${tokenTrending.snapshotAt})`.as("at") })

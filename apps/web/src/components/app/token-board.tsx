@@ -43,8 +43,8 @@ const clean = (list: Raw[]): T[] =>
     }));
 
 /** logoOnly: hanya token yang punya logo asli. Top Gainers memakainya karena banyak token baru tanpa logo yang identitasnya tidak jelas. */
-const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number; logoOnly?: boolean }> = {
-  latest: { title: "Latest Tokens", sub: "New pools, newest first · Robinhood Chain", sort: "age", dir: -1, minLiq: 0 },
+const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number; logoOnly?: boolean; limit?: number }> = {
+  latest: { title: "Latest Tokens", sub: "New pools, newest first · Robinhood Chain", sort: "age", dir: -1, minLiq: 0, limit: 15 },
   gainers: { title: "Top Gainers", sub: "Up the most in 24 hours, with real liquidity and a logo · Robinhood Chain", sort: "change24h", dir: -1, minLiq: 10000, logoOnly: true },
   volume: { title: "High Volume", sub: "Most traded in 24 hours · Robinhood Chain", sort: "volume", dir: -1, minLiq: 0 },
 };
@@ -86,26 +86,28 @@ const PAGE = 25;
 
 export function TokenBoard({ mode }: { mode: BoardMode }) {
   const cfg = CFG[mode];
+  const queryLimit = cfg.limit ?? 200;
   const { data, loading, error } = useApi<{ tokens: Raw[] }>(
-    `/api/tokens/trending?tab=${mode === "latest" ? "new" : "trending"}&limit=200`,
+    `/api/tokens/trending?tab=${mode === "latest" ? "new" : "trending"}&limit=${queryLimit}`,
     30_000,
   );
   const base = useMemo(() => clean(data?.tokens ?? []), [data]);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>(cfg.sort);
   const [dir, setDir] = useState<1 | -1>(cfg.dir);
-  const [shown, setShown] = useState(PAGE);
+  const [shown, setShown] = useState(cfg.limit ?? PAGE);
   const [now] = useState(() => Date.now());
 
   const rows = useMemo(() => {
     const s = q.trim().toLowerCase();
     const val = (t: T) => (sort === "age" ? t.createdAt : (t[sort] as number));
-    return base
+    const sorted = base
       .filter((t) => t.liquidity >= cfg.minLiq)
       .filter((t) => !cfg.logoOnly || !!t.image)
       .filter((t) => !s || t.name.toLowerCase().includes(s) || t.symbol.toLowerCase().includes(s) || t.mint.toLowerCase().startsWith(s))
       .sort((a, b) => ((val(a) ?? 0) - (val(b) ?? 0)) * dir);
-  }, [base, q, sort, dir, cfg.minLiq, cfg.logoOnly]);
+    return cfg.limit ? sorted.slice(0, cfg.limit) : sorted;
+  }, [base, q, sort, dir, cfg.minLiq, cfg.logoOnly, cfg.limit]);
 
   const head = (k: SortKey, label: string) => (
     <button
@@ -151,7 +153,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
-            setShown(PAGE);
+            setShown(cfg.limit ?? PAGE);
           }}
           placeholder="Search name, symbol or mint"
           aria-label="Search tokens"
@@ -257,7 +259,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
           );
         })}
       </div>
-      {shown < rows.length && (
+      {!cfg.limit && shown < rows.length && (
         <div className="flex justify-center mt-4">
           <button className="btn-v2 btn-v2-ghost" onClick={() => setShown((n) => n + PAGE)}>
             Show more ({rows.length - shown})
