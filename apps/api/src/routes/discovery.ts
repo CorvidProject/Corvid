@@ -17,8 +17,15 @@ import {
 import type { Db } from "../app";
 import { num, toTrending } from "../mappers";
 import { markWatched } from "../live";
+import { fetchGtOhlcvOnDemand, resolvePoolAddress } from "../ondemand";
 
 const escapeLike = (s: string) => s.replace(/[\%_]/g, (c) => "\\" + c);
+
+interface CachedChart {
+  candles: Array<{ time: number; open: number; high: number; low: number; close: number; volume: number }>;
+  expiresAt: number;
+}
+const chartMemoryCache = new Map<string, CachedChart>();
 
 export const discoveryRoutes =
   (db: Db): FastifyPluginAsync =>
@@ -113,28 +120,96 @@ export const discoveryRoutes =
       async (req, reply) => {
         const { mint, type, limit } = req.query;
         markWatched(db, [mint]);
-        const [tok] = await db.select({ id: tokens.id }).from(tokens).where(eq(tokens.mint, mint)).limit(1);
+
+        reply.header("Cache-Control", "public, max-age=15, stale-while-revalidate=30");
+
+        const cacheKey = `${mint.toLowerCase()}:${type}:${limit}`;
+        const cached = chartMemoryCache.get(cacheKey);
+        if (cached && cached.expiresAt > Date.now()) {
+          return { mint, type, candles: cached.candles };
+        }
+
+        const [tok] = await db
+          .select({ id: tokens.id, poolId: tokens.poolId })
+          .from(tokens)
+          .where(eq(tokens.mint, mint))
+          .limit(1);
         if (!tok) return reply.code(404).send({ error: "token_not_found" });
+
         const rows = await db
           .select()
           .from(tokenCandles)
           .where(and(eq(tokenCandles.tokenId, tok.id), eq(tokenCandles.interval, type)))
           .orderBy(desc(tokenCandles.bucketStart))
           .limit(limit);
-        return {
-          mint,
-          type,
-          candles: rows
-            .reverse()
-            .map((c) => ({
-              time: Math.floor(c.bucketStart.getTime() / 1000),
-              open: Number(c.open),
-              high: Number(c.high),
-              low: Number(c.low),
-              close: Number(c.close),
-              volume: Number(c.volumeUsd),
-            })),
-        };
+
+        if (rows.length < 2) {
+          let pool = tok.poolId;
+          if (!pool) {
+            pool = await resolvePoolAddress(mint);
+            if (pool) {
+              db.update(tokens).set({ poolId: pool }).where(eq(tokens.id, tok.id)).catch(() => {});
+            }
+          }
+          if (pool) {
+            const fetched = await fetchGtOhlcvOnDemand(pool, type, limit);
+            if (fetched.length > 0) {
+              db.insert(tokenCandles)
+                .values(
+                  fetched.map((c) => ({
+                    tokenId: tok.id,
+                    interval: type,
+                    bucketStart: c.bucketStart,
+                    open: c.open,
+                    high: c.high,
+                    low: c.low,
+                    close: c.close,
+                    volumeUsd: c.volumeUsd,
+                  })),
+                )
+                .onConflictDoUpdate({
+                  target: [tokenCandles.tokenId, tokenCandles.interval, tokenCandles.bucketStart],
+                  set: {
+                    open: sql`excluded.open`,
+                    high: sql`excluded.high`,
+                    low: sql`excluded.low`,
+                    close: sql`excluded.close`,
+                    volumeUsd: sql`excluded.volume_usd`,
+                  },
+                })
+                .catch(() => {});
+
+              const candles = fetched.map((c) => ({
+                time: Math.floor(c.bucketStart.getTime() / 1000),
+                open: Number(c.open),
+                high: Number(c.high),
+                low: Number(c.low),
+                close: Number(c.close),
+                volume: Number(c.volumeUsd),
+              }));
+
+              chartMemoryCache.set(cacheKey, { candles, expiresAt: Date.now() + 15_000 });
+              return { mint, type, candles };
+            }
+          }
+        }
+
+        const candles = rows
+          .reverse()
+          .map((c) => ({
+            time: Math.floor(c.bucketStart.getTime() / 1000),
+            open: Number(c.open),
+            high: Number(c.high),
+            low: Number(c.low),
+            close: Number(c.close),
+            volume: Number(c.volumeUsd),
+          }));
+
+        if (candles.length > 0) {
+          chartMemoryCache.set(cacheKey, { candles, expiresAt: Date.now() + 15_000 });
+        }
+
+        return { mint, type, candles };
       },
     );
   };

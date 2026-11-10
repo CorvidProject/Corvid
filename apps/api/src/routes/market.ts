@@ -29,9 +29,24 @@ import {
 import type { Db } from "../app";
 import { num, toDetail, toTrending } from "../mappers";
 import { loadSparks, markWatched } from "../live";
-import { fetchGoplusOnDemand, resolveOnDemandToken } from "../ondemand";
+import { fetchGoplusOnDemand, fetchGtTradesOnDemand, resolveOnDemandToken, resolvePoolAddress } from "../ondemand";
 
 const secs = (d: Date | null) => (d ? Math.floor(d.getTime() / 1000) : null);
+
+interface CachedTrades {
+  trades: Array<{
+    txHash: string;
+    wallet: string;
+    type: "buy" | "sell";
+    tokenAmount: number;
+    ethAmount: number | null;
+    priceUsd: number | null;
+    marketCapUsd: number | null;
+    timestamp: number;
+  }>;
+  expiresAt: number;
+}
+const tradesMemoryCache = new Map<string, CachedTrades>();
 
 export const marketRoutes =
   (db: Db): FastifyPluginAsync =>
@@ -81,9 +96,18 @@ export const marketRoutes =
     app.get(
       "/tokens/trades",
       { schema: { tags: ["market"], querystring: tradesQuerySchema, response: { 200: tradesResponseSchema } } },
-      async (req) => {
+      async (req, reply) => {
         const { mint, limit } = req.query;
         markWatched(db, [mint]);
+
+        reply.header("Cache-Control", "public, max-age=10, stale-while-revalidate=20");
+
+        const cacheKey = `${mint.toLowerCase()}:${limit}`;
+        const cached = tradesMemoryCache.get(cacheKey);
+        if (cached && cached.expiresAt > Date.now()) {
+          return { trades: cached.trades };
+        }
+
         const rows = await db
           .select({ t: tokenTrades })
           .from(tokenTrades)
@@ -91,18 +115,74 @@ export const marketRoutes =
           .where(eq(tokens.mint, mint))
           .orderBy(desc(tokenTrades.tradedAt))
           .limit(limit);
-        return {
-          trades: rows.map(({ t }) => ({
-            txHash: t.txHash,
-            wallet: t.walletAddress,
-            type: t.side,
-            tokenAmount: Number(t.tokenAmount),
-            ethAmount: num(t.ethAmount),
-            priceUsd: num(t.priceUsd),
-            marketCapUsd: num(t.marketCapUsd),
-            timestamp: t.tradedAt.getTime(),
-          })),
-        };
+
+        if (rows.length === 0) {
+          const [tok] = await db
+            .select({ id: tokens.id, poolId: tokens.poolId })
+            .from(tokens)
+            .where(eq(tokens.mint, mint))
+            .limit(1);
+
+          let pool = tok?.poolId;
+          if (!pool && tok) {
+            pool = await resolvePoolAddress(mint);
+            if (pool) {
+              db.update(tokens).set({ poolId: pool }).where(eq(tokens.id, tok.id)).catch(() => {});
+            }
+          }
+
+          if (pool && tok) {
+            const fetched = await fetchGtTradesOnDemand(pool, mint);
+            if (fetched.length > 0) {
+              db.insert(tokenTrades)
+                .values(
+                  fetched.map((x) => ({
+                    tokenId: tok.id,
+                    txHash: x.txHash,
+                    walletAddress: x.wallet,
+                    side: x.side,
+                    tokenAmount: x.tokenAmount,
+                    ethAmount: x.ethAmount,
+                    priceUsd: x.priceUsd,
+                    tradedAt: x.at,
+                  })),
+                )
+                .onConflictDoNothing()
+                .catch(() => {});
+
+              const trades = fetched.slice(0, limit).map((t) => ({
+                txHash: t.txHash,
+                wallet: t.wallet,
+                type: t.side,
+                tokenAmount: Number(t.tokenAmount),
+                ethAmount: num(t.ethAmount),
+                priceUsd: num(t.priceUsd),
+                marketCapUsd: null,
+                timestamp: t.at.getTime(),
+              }));
+
+              tradesMemoryCache.set(cacheKey, { trades, expiresAt: Date.now() + 10_000 });
+              return { trades };
+            }
+          }
+        }
+
+        const trades = rows.map(({ t }) => ({
+          txHash: t.txHash,
+          wallet: t.walletAddress,
+          type: t.side,
+          tokenAmount: Number(t.tokenAmount),
+          ethAmount: num(t.ethAmount),
+          priceUsd: num(t.priceUsd),
+          marketCapUsd: num(t.marketCapUsd),
+          timestamp: t.tradedAt.getTime(),
+        }));
+
+        if (trades.length > 0) {
+          tradesMemoryCache.set(cacheKey, { trades, expiresAt: Date.now() + 10_000 });
+        }
+
+        return { trades };
       },
     );
 
@@ -165,6 +245,7 @@ export const marketRoutes =
         },
       },
       async (req, reply) => {
+        reply.header("Cache-Control", "public, max-age=5, stale-while-revalidate=15");
         const [tok] = await db.select().from(tokens).where(eq(tokens.mint, req.params.mint)).limit(1);
         if (!tok) {
           // Canonical Paxos Global Dollar (USDG) stablecoin on Robinhood Chain

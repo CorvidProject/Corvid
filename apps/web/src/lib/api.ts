@@ -48,28 +48,52 @@ export async function logLogin(): Promise<void> {
 
 export type ApiState<T> = { data: T | null; loading: boolean; error: string | null };
 
+const apiMemoryCache = new Map<string, { data: unknown; ts: number }>();
+
 /**
  * Ambil data per `path` (null = tidak mengambil). Dengan `refreshMs`, data diambil ulang berkala secara diam-diam:
  * data lama tetap tampil selama pengambilan ulang dan bila ia gagal; jeda saat tab tersembunyi.
+ * Menggunakan memori cache lokal (SWR) agar navigasi halaman terasa instan tanpa layar kosong berulang.
  */
 export function useApi<T>(path: string | null, refreshMs?: number): ApiState<T> {
-  const [state, setState] = useState<ApiState<T>>({ data: null, loading: path !== null, error: null });
+  const [state, setState] = useState<ApiState<T>>(() => {
+    if (!path) return { data: null, loading: false, error: null };
+    const cached = apiMemoryCache.get(path);
+    if (cached) {
+      return { data: cached.data as T, loading: false, error: null };
+    }
+    return { data: null, loading: true, error: null };
+  });
+
   useEffect(() => {
     if (path === null) return;
     const ctl = new AbortController();
-    setState((s) => ({ ...s, loading: true, error: null }));
+    const cached = apiMemoryCache.get(path);
+    if (!cached) {
+      setState((s) => ({ ...s, loading: true, error: null }));
+    }
     apiGet<T>(path, ctl.signal)
-      .then((data) => setState({ data, loading: false, error: null }))
+      .then((data) => {
+        apiMemoryCache.set(path, { data, ts: Date.now() });
+        setState({ data, loading: false, error: null });
+      })
       .catch((e: unknown) => {
         if (ctl.signal.aborted) return;
-        setState({ data: null, loading: false, error: e instanceof Error ? e.message : "request_failed" });
+        setState((s) => ({
+          data: s.data,
+          loading: false,
+          error: s.data ? null : (e instanceof Error ? e.message : "request_failed"),
+        }));
       });
     let timer: ReturnType<typeof setInterval> | undefined;
     if (refreshMs) {
       timer = setInterval(() => {
         if (typeof document !== "undefined" && document.hidden) return;
         apiGet<T>(path, ctl.signal)
-          .then((data) => setState({ data, loading: false, error: null }))
+          .then((data) => {
+            apiMemoryCache.set(path, { data, ts: Date.now() });
+            setState({ data, loading: false, error: null });
+          })
           .catch(() => {});
       }, refreshMs);
     }

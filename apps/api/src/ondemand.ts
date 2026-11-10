@@ -367,3 +367,147 @@ export async function resolveOnDemandToken(address: string): Promise<ResolvedTok
       : null,
   };
 }
+
+const GT_TF: Record<string, [string, number]> = {
+  "1m": ["minute", 1],
+  "5m": ["minute", 5],
+  "15m": ["minute", 15],
+  "1h": ["hour", 1],
+  "4h": ["hour", 4],
+  "1d": ["day", 1],
+};
+
+export interface OnDemandCandle {
+  bucketStart: Date;
+  open: string;
+  high: string;
+  low: string;
+  close: string;
+  volumeUsd: string;
+}
+
+export interface OnDemandTrade {
+  txHash: string;
+  wallet: string;
+  side: "buy" | "sell";
+  tokenAmount: string;
+  ethAmount: string | null;
+  priceUsd: string | null;
+  at: Date;
+}
+
+/** Resolve primary liquidity pool address for a token from GeckoTerminal or DexScreener */
+export async function resolvePoolAddress(mint: string): Promise<string | null> {
+  const norm = mint.toLowerCase();
+  try {
+    const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${norm}/pools`, {
+      headers: { Accept: "application/json;version=20230302" },
+      signal: AbortSignal.timeout(3500),
+    });
+    if (res.ok) {
+      const json = (await res.json()) as { data?: Array<{ attributes?: { address?: string } }> };
+      const pool = json.data?.[0]?.attributes?.address;
+      if (pool) return pool.toLowerCase();
+    }
+  } catch {}
+
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${norm}`, {
+      signal: AbortSignal.timeout(3500),
+    });
+    if (res.ok) {
+      const json = (await res.json()) as { pairs?: Array<{ pairAddress?: string }> };
+      const pool = json.pairs?.[0]?.pairAddress;
+      if (pool) return pool.toLowerCase();
+    }
+  } catch {}
+
+  return null;
+}
+
+/** Fetch live OHLCV candles from GeckoTerminal on-demand */
+export async function fetchGtOhlcvOnDemand(pool: string, interval: string, limit = 100): Promise<OnDemandCandle[]> {
+  const [tf, agg] = GT_TF[interval] ?? ["minute", 15];
+  try {
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/networks/robinhood/pools/${pool.toLowerCase()}/ohlcv/${tf}?aggregate=${agg}&limit=${limit}`,
+      {
+        headers: { Accept: "application/json;version=20230302" },
+        signal: AbortSignal.timeout(4500),
+      },
+    );
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      data?: { attributes?: { ohlcv_list?: Array<[number, number, number, number, number, number]> } };
+    };
+    const list = json.data?.attributes?.ohlcv_list;
+    if (!Array.isArray(list) || list.length === 0) return [];
+    return list
+      .map(([t, o, h, l, c, v]) => ({
+        bucketStart: new Date(t * 1000),
+        open: String(o),
+        high: String(h),
+        low: String(l),
+        close: String(c),
+        volumeUsd: String(v),
+      }))
+      .sort((a, b) => a.bucketStart.getTime() - b.bucketStart.getTime())
+      .filter((c, i, all) => i === all.length - 1 || all[i + 1].bucketStart.getTime() !== c.bucketStart.getTime());
+  } catch {
+    return [];
+  }
+}
+
+/** Fetch live trades from GeckoTerminal on-demand */
+export async function fetchGtTradesOnDemand(pool: string, baseMint: string): Promise<OnDemandTrade[]> {
+  const norm = baseMint.toLowerCase();
+  const WETH = CHAINS.mainnet.wrappedNative.toLowerCase();
+  try {
+    const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/pools/${pool.toLowerCase()}/trades`, {
+      headers: { Accept: "application/json;version=20230302" },
+      signal: AbortSignal.timeout(4500),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as {
+      data?: Array<{
+        attributes?: {
+          tx_hash: string;
+          tx_from_address: string;
+          kind: "buy" | "sell";
+          from_token_amount: string;
+          to_token_amount: string;
+          from_token_address: string;
+          to_token_address: string;
+          price_from_in_usd: string | null;
+          price_to_in_usd: string | null;
+          block_timestamp: string;
+          is_anomalous?: boolean;
+        };
+      }>;
+    };
+    const data = json.data;
+    if (!Array.isArray(data)) return [];
+    const out: OnDemandTrade[] = [];
+    for (const { attributes: t } of data) {
+      if (!t || t.is_anomalous) continue;
+      const sell = t.kind === "sell";
+      const baseAmount = sell ? t.from_token_amount : t.to_token_amount;
+      const quoteAmount = sell ? t.to_token_amount : t.from_token_amount;
+      const baseAddr = (sell ? t.from_token_address : t.to_token_address) ?? "";
+      const quoteAddr = (sell ? t.to_token_address : t.from_token_address) ?? "";
+      if (baseAddr.toLowerCase() !== norm) continue;
+      out.push({
+        txHash: t.tx_hash,
+        wallet: t.tx_from_address.toLowerCase(),
+        side: t.kind,
+        tokenAmount: baseAmount,
+        ethAmount: quoteAddr.toLowerCase() === WETH ? quoteAmount : null,
+        priceUsd: sell ? t.price_from_in_usd : t.price_to_in_usd,
+        at: new Date(t.block_timestamp),
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}

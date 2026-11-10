@@ -24,7 +24,7 @@ const env = z
     WORKER_STALE_LIMIT: z.coerce.number().int().min(30).max(600).default(300),
     /** Token yang sedang dibuka pengguna: harga tiap beberapa detik, candle/trade lebih jarang (GeckoTerminal ketat). */
     WORKER_HOT_MS: z.coerce.number().int().min(3_000).default(10_000),
-    WORKER_HOT_CHARTS_MS: z.coerce.number().int().min(10_000).default(60_000),
+    WORKER_HOT_CHARTS_MS: z.coerce.number().int().min(10_000).default(30_000),
     /** Titik harga untuk sparkline. */
     WORKER_PRICES_MS: z.coerce.number().int().min(30_000).default(60_000),
     WORKER_CANDLES_MS: z.coerce.number().int().min(30_000).default(900_000),
@@ -90,7 +90,7 @@ const timers = [
   every("images:gt", env.WORKER_IMAGES_GT_MS, () => refreshImagesGt(deps)),
   every("stale", env.WORKER_STALE_MS, () => refreshStale(deps, { olderThanMin: 1, limit: env.WORKER_STALE_LIMIT })),
   every("hot", env.WORKER_HOT_MS, () => refreshHot(deps)),
-  every("hotcharts", env.WORKER_HOT_CHARTS_MS, () => refreshHotCharts(deps, ["15m"], { limit: 1 })),
+  every("hotcharts", env.WORKER_HOT_CHARTS_MS, () => refreshHotCharts(deps, ["15m", "5m", "1h"], { limit: 2 })),
   every("prices", env.WORKER_PRICES_MS, async () => ({ points: await snapshotPrices(db) })),
   every("candles", env.WORKER_CANDLES_MS, () => refreshCandles(deps, ["15m", "1h"], env.WORKER_TOP_N)),
   every("trades", env.WORKER_TRADES_MS, () => refreshTrades(deps, env.WORKER_TOP_N)),

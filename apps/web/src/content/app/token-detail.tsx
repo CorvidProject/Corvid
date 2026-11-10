@@ -123,13 +123,73 @@ export function TokenDetailContent({ mint }: { mint: string }) {
   const [now] = useState(() => Date.now());
   const detail = useApi<Detail>(`/api/tokens/${mint}`, 5_000);
   const security = useApi<Security>(`/api/tokens/${mint}/security`);
-  const trades = useApi<Trades>(`/api/tokens/trades?mint=${mint}&limit=30`, 10_000);
-  const chart = useApi<Chart>(`/api/tokens/chart?mint=${mint}&type=${interval}`, 15_000);
+  const trades = useApi<Trades>(`/api/tokens/trades?mint=${mint}&limit=30`, 8_000);
+  const chart = useApi<Chart>(`/api/tokens/chart?mint=${mint}&type=${interval}`, 10_000);
 
   if (detail.loading)
     return (
-      <div className="max-w-[1400px] mx-auto py-24 text-center text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-        Loading token…
+      <div className="max-w-[1400px] mx-auto space-y-3 animate-pulse">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="rounded-full shrink-0" style={{ width: 48, height: 48, background: "var(--v2-bg-2)" }} />
+          <div className="space-y-2">
+            <div className="h-6 w-36 rounded-md" style={{ background: "var(--v2-bg-2)" }} />
+            <div className="h-3 w-56 rounded-md" style={{ background: "var(--v2-bg-2)" }} />
+          </div>
+          <div className="ml-auto text-right space-y-2">
+            <div className="h-7 w-28 rounded-md ml-auto" style={{ background: "var(--v2-bg-2)" }} />
+            <div className="h-3 w-16 rounded-md ml-auto" style={{ background: "var(--v2-bg-2)" }} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="rounded-xl px-3 py-3" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-1)" }}>
+              <div className="h-2.5 w-16 rounded mb-2" style={{ background: "var(--v2-bg-2)" }} />
+              <div className="h-4 w-24 rounded" style={{ background: "var(--v2-bg-2)" }} />
+            </div>
+          ))}
+        </div>
+
+        <Card title="Chart">
+          <div className="p-3">
+            <div className="h-64 w-full rounded-lg flex items-center justify-center relative overflow-hidden" style={{ background: "var(--v2-bg-2)" }}>
+              <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-20 pointer-events-none">
+                <div className="border-b border-dashed border-current w-full" />
+                <div className="border-b border-dashed border-current w-full" />
+                <div className="border-b border-dashed border-current w-full" />
+                <div className="border-b border-dashed border-current w-full" />
+              </div>
+              <div className="text-[13px] flex items-center gap-2" style={{ color: "var(--v2-t-3)" }}>
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                Loading chart…
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <Card title="Rugcheck">
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex justify-between items-center py-1">
+                  <div className="h-3 w-28 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                  <div className="h-3 w-16 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card title="Recent trades">
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex justify-between items-center py-1">
+                  <div className="h-3 w-14 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                  <div className="h-3 w-20 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                  <div className="h-3 w-24 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
     );
   if (detail.error || !detail.data)
@@ -227,8 +287,17 @@ export function TokenDetailContent({ mint }: { mint: string }) {
       >
         <div className="p-3">
           {chart.loading ? (
-            <div className="py-16 text-center text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-              Loading chart…
+            <div className="h-60 w-full rounded-lg flex items-center justify-center relative overflow-hidden animate-pulse" style={{ background: "rgba(255,255,255,0.02)" }}>
+              <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-15 pointer-events-none">
+                <div className="border-b border-dashed border-current w-full" />
+                <div className="border-b border-dashed border-current w-full" />
+                <div className="border-b border-dashed border-current w-full" />
+                <div className="border-b border-dashed border-current w-full" />
+              </div>
+              <div className="text-[13px] flex items-center gap-2" style={{ color: "var(--v2-t-3)" }}>
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                Loading chart…
+              </div>
             </div>
           ) : chart.data && chart.data.candles.length > 1 ? (
             <CandleChart candles={chart.data.candles} />
@@ -291,9 +360,22 @@ export function TokenDetailContent({ mint }: { mint: string }) {
 
         <Card title="Recent trades">
           {!trades.data || trades.data.trades.length === 0 ? (
-            <div className="px-4 py-10 text-center text-[13px]" style={{ color: "var(--v2-t-3)" }}>
-              {trades.loading ? "Loading trades…" : "No trades recorded yet."}
-            </div>
+            trades.loading ? (
+              <div className="p-4 space-y-3 animate-pulse">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex justify-between items-center py-1">
+                    <div className="h-3 w-12 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                    <div className="h-3 w-20 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                    <div className="h-3 w-24 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                    <div className="h-3 w-14 rounded" style={{ background: "var(--v2-bg-2)" }} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="px-4 py-10 text-center text-[13px]" style={{ color: "var(--v2-t-3)" }}>
+                No trades recorded yet.
+              </div>
+            )
           ) : (
             <div>
               {trades.data.trades.map((tr, i) => (
