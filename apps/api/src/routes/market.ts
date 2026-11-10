@@ -29,84 +29,9 @@ import {
 import type { Db } from "../app";
 import { num, toDetail, toTrending } from "../mappers";
 import { loadSparks, markWatched } from "../live";
+import { fetchGoplusOnDemand, resolveOnDemandToken } from "../ondemand";
 
 const secs = (d: Date | null) => (d ? Math.floor(d.getTime() / 1000) : null);
-
-type CheckState = "pass" | "warn" | "fail" | "unknown";
-const flag = (v: unknown): "1" | "0" | null => (v === null || v === undefined || v === "" ? null : String(v) === "1" ? "1" : "0");
-const flagCheck = (label: string, raw: unknown, bad: CheckState, hint: string, invert = false): { label: string; state: CheckState; value?: string; hint?: string } => {
-  const f = flag(raw);
-  if (f === null) return { label, state: "unknown" };
-  const risky = invert ? f === "0" : f === "1";
-  return { label, state: risky ? bad : "pass", value: f === "1" ? "Yes" : "No", ...(risky ? { hint } : {}) };
-};
-const taxCheck = (label: string, raw: unknown): { label: string; state: CheckState; value?: string; hint?: string } => {
-  const t = raw === null || raw === undefined || raw === "" ? null : Number(raw);
-  if (t === null || !Number.isFinite(t)) return { label, state: "unknown" };
-  const state: CheckState = t >= 0.2 ? "fail" : t > 0.05 ? "warn" : "pass";
-  return { label, state, value: `${(t * 100).toFixed(2)}%`, ...(state !== "pass" ? { hint: "Tax is taken from every swap" } : {}) };
-};
-
-/** On-demand GoPlus security fetch for tokens not yet indexed by the worker. */
-async function fetchGoplusOnDemand(address: string): Promise<{ checked: boolean; groups: { title: string; checks: { label: string; state: CheckState; value?: string; hint?: string }[] }[]; passed: number; total: number } | null> {
-  try {
-    const url = `https://api.gopluslabs.io/api/v1/token_security/4663?contract_addresses=${address}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { code?: number; result?: Record<string, Record<string, unknown>> };
-    if (json.code !== 1 || !json.result) return null;
-    const e = json.result[address] ?? json.result[address.toLowerCase()];
-    if (!e) return null;
-    const contract = { title: "Contract", checks: [
-      flagCheck("Source code verified", e.is_open_source, "warn", "Contract source is not published", true),
-      flagCheck("Upgradeable proxy", e.is_proxy, "warn", "Owner can change the contract logic"),
-      flagCheck("Mintable", e.is_mintable, "warn", "Owner can create new tokens"),
-      flagCheck("Hidden owner", e.hidden_owner, "fail", "Ownership is concealed"),
-      flagCheck("Owner can reclaim ownership", e.can_take_back_ownership, "fail", "Renounced ownership can be taken back"),
-      flagCheck("Owner can change balances", e.owner_change_balance, "fail", "Owner can edit holder balances"),
-      flagCheck("Self-destruct", e.selfdestruct, "fail", "Contract can destroy itself"),
-    ]};
-    const trading = { title: "Trading", checks: [
-      flagCheck("Honeypot", e.is_honeypot, "fail", "Buyers cannot sell"),
-      flagCheck("Buying blocked", e.cannot_buy, "fail", "Buyers are prevented from buying"),
-      flagCheck("Selling full balance blocked", e.cannot_sell_all, "fail", "Holders cannot sell their whole balance"),
-      taxCheck("Buy tax", e.buy_tax),
-      taxCheck("Sell tax", e.sell_tax),
-      flagCheck("Transfers can be paused", e.transfer_pausable, "warn", "Owner can freeze trading"),
-      flagCheck("Blacklist function", e.is_blacklisted, "warn", "Owner can block addresses"),
-    ]};
-    const groups = [contract, trading];
-    const all = [...contract.checks, ...trading.checks];
-    const passed = all.filter((c) => c.state === "pass").length;
-    return { checked: true, groups, passed, total: all.length };
-  } catch {
-    return null;
-  }
-}
-
-/** On-demand GeckoTerminal token detail fetch for tokens not yet indexed by the worker. */
-async function fetchGtTokenDetail(address: string): Promise<{ name: string | null; symbol: string | null; price: number | null; marketCap: number | null; liquidity: number | null; volume: number | null; change24h: number | null; image: string | null; launchpadPct: number | null } | null> {
-  try {
-    const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${address}`, { headers: { Accept: "application/json;version=20230302" }, signal: AbortSignal.timeout(5000) });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { data?: { attributes?: { name?: string; symbol?: string; price_usd?: string; fdv_usd?: string; volume_usd?: { h24?: string }; total_reserve_in_usd?: string; image_url?: string; launchpad_details?: { graduation_percentage?: number } } } };
-    const a = json.data?.attributes;
-    if (!a?.symbol) return null;
-    return {
-      name: a.name ?? null,
-      symbol: a.symbol ?? null,
-      price: a.price_usd ? Number(a.price_usd) : null,
-      marketCap: a.fdv_usd ? Number(a.fdv_usd) : null,
-      liquidity: a.total_reserve_in_usd ? Number(a.total_reserve_in_usd) : null,
-      volume: a.volume_usd?.h24 ? Number(a.volume_usd.h24) : null,
-      change24h: null,
-      image: a.image_url ?? null,
-      launchpadPct: a.launchpad_details?.graduation_percentage ?? null,
-    };
-  } catch {
-    return null;
-  }
-}
 
 export const marketRoutes =
   (db: Db): FastifyPluginAsync =>
@@ -296,23 +221,67 @@ export const marketRoutes =
               },
             };
           }
-          const gt = await fetchGtTokenDetail(req.params.mint);
-          if (gt) {
+          const onDemand = await resolveOnDemandToken(req.params.mint);
+          if (onDemand) {
             return {
               token: {
-                name: gt.name, symbol: gt.symbol, mint: req.params.mint, image: gt.image,
-                description: gt.launchpadPct !== null ? `Launchpad token: ${gt.launchpadPct.toFixed(1)}% to graduation. Not yet indexed by Corvid.` : "Not yet indexed by Corvid.",
-                links: [], decimals: 18, price: gt.price, marketCap: gt.marketCap, liquidity: gt.liquidity,
-                lpBurn: null, volume: gt.volume, buys: null, sells: null, txns: null,
-                change1m: null, change5m: null, change1h: null, change6h: null, change24h: gt.change24h,
-                risk: { score: null, rugged: false, risks: [] },
+                name: onDemand.name,
+                symbol: onDemand.symbol,
+                mint: req.params.mint,
+                image: onDemand.image,
+                description: onDemand.launchpadPct !== null
+                  ? `Launchpad token: ${onDemand.launchpadPct.toFixed(1)}% to graduation. Resolved on-demand.`
+                  : "Resolved on-demand from live network scans.",
+                links: [],
+                decimals: 18,
+                price: onDemand.price,
+                marketCap: onDemand.marketCap,
+                liquidity: onDemand.liquidity,
+                lpBurn: onDemand.lockedLpPercent,
+                volume: onDemand.volume,
+                buys: null,
+                sells: null,
+                txns: null,
+                change1m: null,
+                change5m: null,
+                change1h: null,
+                change6h: null,
+                change24h: onDemand.change24h,
+                risk: {
+                  score: onDemand.riskScore,
+                  rugged: onDemand.rugged,
+                  risks: onDemand.security?.groups
+                    .flatMap((g) => g.checks)
+                    .filter((c) => c.state !== "pass")
+                    .map((c) => ({ name: c.label, level: c.state, score: c.state === "fail" ? 30 : 10 })) ?? [],
+                },
                 security: { freezeAuthority: null, mintAuthority: null },
-                transferFeeBps: null, totalSupply: null, topHoldersPercent: null, devHoldingsPercent: null,
-                devWallet: null, sniperHoldingsPercent: null, bundlerHoldingsPercent: null,
-                insidersPercent: null, insidersCount: null, bundlersCount: null, bundlersInitialPercent: null,
-                snipersCount: null, jitoFees: null, jupiterVerified: null, holdersCount: null,
-                creatorAddress: null, buyVolume: null, sellVolume: null, makers: null, buyers: null, sellers: null,
-                poolId: null, market: "uniswap", createdAt: null,
+                transferFeeBps: onDemand.buyTax !== null || onDemand.sellTax !== null
+                  ? Math.round(Math.max(onDemand.buyTax ?? 0, onDemand.sellTax ?? 0) * 10_000)
+                  : null,
+                totalSupply: null,
+                topHoldersPercent: onDemand.topHoldersPercent,
+                devHoldingsPercent: onDemand.devHoldingsPercent,
+                devWallet: null,
+                sniperHoldingsPercent: null,
+                bundlerHoldingsPercent: null,
+                insidersPercent: null,
+                insidersCount: null,
+                bundlersCount: null,
+                bundlersInitialPercent: null,
+                snipersCount: null,
+                jitoFees: null,
+                jupiterVerified: null,
+                holdersCount: onDemand.holdersCount,
+                creatorAddress: null,
+                buyVolume: null,
+                sellVolume: null,
+                makers: null,
+                buyers: null,
+                sellers: null,
+                poolId: null,
+                market: "uniswap",
+                createdAt: null,
               },
             };
           }

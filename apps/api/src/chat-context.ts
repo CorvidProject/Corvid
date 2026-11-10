@@ -2,6 +2,7 @@ import { desc, eq, ilike, inArray, isNotNull, sql } from "drizzle-orm";
 import { tokenSecurityChecks, tokenSecurityGroups, tokenSecurityReports, tokens, walletActivity, wallets } from "@corvid/db";
 import type { Db } from "./app";
 import { num } from "./mappers";
+import { resolveOnDemandToken, type ResolvedTokenData } from "./ondemand";
 
 // Konteks chat: hanya data yang benar-benar ada di database Corvid. Model diminta tidak mengarang angka di luar blok ini.
 const ADDR = /0x[0-9a-fA-F]{40}/g;
@@ -77,32 +78,35 @@ async function smartBlock(db: Db): Promise<string> {
   ].join("\n");
 }
 
-/** Fetch basic token data from GeckoTerminal for tokens not yet in Corvid's index. */
-async function fetchGtToken(address: string): Promise<string | null> {
-  try {
-    const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${address}`, {
-      headers: { Accept: "application/json;version=20230302" },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { data?: { attributes?: { name?: string; symbol?: string; price_usd?: string; fdv_usd?: string; volume_usd?: { h24?: string }; total_reserve_in_usd?: string; launchpad_details?: { graduation_percentage?: number; completed?: boolean } } } };
-    const a = json.data?.attributes;
-    if (!a?.symbol) return null;
-    const price = a.price_usd ? Number(a.price_usd) : null;
-    const fdv = a.fdv_usd ? Number(a.fdv_usd) : null;
-    const vol = a.volume_usd?.h24 ? Number(a.volume_usd.h24) : null;
-    const liq = a.total_reserve_in_usd ? Number(a.total_reserve_in_usd) : null;
-    const lp = a.launchpad_details;
-    const lines = [
-      `TOKEN ${a.symbol} (${a.name ?? "unknown"}) ${address}`,
-      `price ${usd(price)}, FDV ${usd(fdv)}, liquidity ${usd(liq)}, 24h volume ${usd(vol)}`,
-      lp ? `launchpad: ${lp.graduation_percentage?.toFixed(1) ?? "?"}% to graduation${lp.completed ? " (graduated)" : ""}` : "",
-      "note: this token is not yet indexed by Corvid (no security report, no risk score, no smart-wallet activity available)",
-    ].filter(Boolean);
-    return lines.join("\n");
-  } catch {
-    return null;
+/** Build formatted context block for tokens resolved on-demand. */
+function onDemandTokenBlock(t: ResolvedTokenData): string {
+  const lines = [
+    `TOKEN ${t.symbol} (${t.name}) ${t.mint}`,
+    `price ${usd(t.price)}, market cap ${usd(t.marketCap)}, liquidity ${usd(t.liquidity)}, 24h volume ${usd(t.volume)}`,
+  ];
+  if (t.launchpadPct !== null) {
+    lines.push(`launchpad: ${t.launchpadPct.toFixed(1)}% to graduation`);
   }
+  const meta: string[] = [];
+  if (t.holdersCount !== null) meta.push(`holders ${t.holdersCount}`);
+  if (t.topHoldersPercent !== null) meta.push(`top-10 ${pct(t.topHoldersPercent)}`);
+  if (t.devHoldingsPercent !== null) meta.push(`dev ${pct(t.devHoldingsPercent)}`);
+  if (t.lockedLpPercent !== null) meta.push(`LP locked/burned ${pct(t.lockedLpPercent)}`);
+  if (meta.length) lines.push(meta.join(", "));
+
+  if (t.security) {
+    lines.push(`Corvid risk score ${t.riskScore ?? "not scored"}${t.rugged ? ", marked rugged/honeypot" : ""}`);
+    const notOk = t.security.groups
+      .flatMap((g) => g.checks)
+      .filter((c) => c.state !== "pass")
+      .slice(0, 8)
+      .map((c) => `${c.label}: ${c.state}${c.value ? ` (${c.value})` : ""}`);
+    lines.push(`security checks passed ${t.security.passed}/${t.security.total}${notOk.length ? `; not passing: ${notOk.join("; ")}` : ""}`);
+    lines.push("note: live on-demand security scan from GoPlus and market aggregators (not yet indexed in local historical DB)");
+  } else {
+    lines.push("note: this token is not yet indexed by Corvid (no security report, no risk score available)");
+  }
+  return lines.join("\n");
 }
 
 /** Blok DATA untuk satu pesan. `chatMint` = token yang dikaitkan dengan percakapan (diikutkan bila pesan tidak menyebut alamat). */
@@ -119,13 +123,15 @@ export async function buildContext(db: Db, text: string, chatMint: string | null
       seen.add(t.mint);
       primary ??= t.mint;
     } else {
-      // Token not indexed: try GeckoTerminal on-demand before falling back to wallet lookup
-      const gt = await fetchGtToken(a);
-      if (gt) {
-        blocks.push(gt);
+      // Token not indexed in DB: try live GoPlus and market aggregators on-demand
+      const resolved = await resolveOnDemandToken(a);
+      if (resolved) {
+        blocks.push(onDemandTokenBlock(resolved));
         seen.add(a);
         primary ??= a;
-      } else blocks.push(await walletBlock(db, a));
+      } else {
+        blocks.push(await walletBlock(db, a));
+      }
     }
   }
   for (const s of symbols.slice(0, MAX_TOKENS)) {

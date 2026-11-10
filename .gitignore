@@ -11,4 +11,5 @@ dist/
 
 # Acuan crawl lama (hanya lokal, jangan masuk GitHub)
 /legacy/
+graphify-out/
 packages/contracts/build/
