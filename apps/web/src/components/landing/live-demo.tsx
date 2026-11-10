@@ -948,10 +948,45 @@ function ageLabel(createdAt: number | null | undefined) {
 }
 
 function MemePanel() {
-  // Token baru di Robinhood Chain. Mode API: data live dari /api/tokens/trending?tab=new; selain itu cuplikan fixture.
-  const live = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=new&limit=6" : null, 30_000);
-  const source: FreshToken[] = live.data?.tokens ?? (USE_API ? [] : (freshTokens.tokens as FreshToken[]));
-  const items = source.slice(0, 6).map((t) => ({ mint: t.mint, image: t.image, symbol: t.symbol ?? "?", marketCapUsd: t.marketCap ?? 0, age: ageLabel(t.createdAt) }));
+  // New tokens on Robinhood Chain. If fewer than 6 tokens are returned from the "new" tab,
+  // backfill with active trending tokens so the panel always renders a rich, balanced list.
+  const liveNew = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=new&limit=6" : null, 30_000);
+  const liveTrending = useApi<{ tokens: FreshToken[] }>(USE_API ? "/api/tokens/trending?tab=trending&limit=6" : null, 30_000);
+
+  const combined: FreshToken[] = [];
+  const seen = new Set<string>();
+
+  for (const t of liveNew.data?.tokens ?? []) {
+    if (!t.mint || seen.has(t.mint.toLowerCase())) continue;
+    seen.add(t.mint.toLowerCase());
+    combined.push(t);
+  }
+
+  if (combined.length < 6) {
+    for (const t of liveTrending.data?.tokens ?? []) {
+      if (!t.mint || seen.has(t.mint.toLowerCase())) continue;
+      seen.add(t.mint.toLowerCase());
+      combined.push(t);
+      if (combined.length >= 6) break;
+    }
+  }
+
+  if (combined.length < 6) {
+    for (const t of freshTokens.tokens as FreshToken[]) {
+      if (!t.mint || seen.has(t.mint.toLowerCase())) continue;
+      seen.add(t.mint.toLowerCase());
+      combined.push(t);
+      if (combined.length >= 6) break;
+    }
+  }
+
+  const items = combined.slice(0, 6).map((t) => ({
+    mint: t.mint,
+    image: t.image,
+    symbol: t.symbol ?? "?",
+    marketCapUsd: t.marketCap ?? 0,
+    age: ageLabel(t.createdAt),
+  }));
   return (
     <Panel
       title="memescope"
@@ -963,7 +998,7 @@ function MemePanel() {
       <div className="flex-1 min-h-0 overflow-hidden p-1.5">
         {items.length === 0 && (
           <div className="px-1.5 py-6 text-center font-mono text-[12px]" style={{ color: MUTE }}>
-            {live.loading ? "loading…" : "No new tokens right now."}
+            {liveNew.loading || liveTrending.loading ? "loading…" : "No new tokens right now."}
           </div>
         )}
         {items.map((m) => (

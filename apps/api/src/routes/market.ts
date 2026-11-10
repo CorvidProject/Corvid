@@ -81,6 +81,47 @@ export const marketRoutes =
           .where(eq(tokenTrending.tab, tab))
           .orderBy(tokenTrending.rank)
           .limit(limit);
+
+        if (tab === "new" && rows.length < 15) {
+          const existingIds = new Set(rows.map((r) => r.token.id));
+          const latestTrending = db
+            .select({ at: sql<Date>`max(${tokenTrending.snapshotAt})`.as("at") })
+            .from(tokenTrending)
+            .where(eq(tokenTrending.tab, "trending"))
+            .as("latest_trending");
+
+          const trendRows = await db
+            .select({ token: tokens })
+            .from(tokenTrending)
+            .innerJoin(tokens, eq(tokens.id, tokenTrending.tokenId))
+            .innerJoin(latestTrending, eq(latestTrending.at, tokenTrending.snapshotAt))
+            .where(eq(tokenTrending.tab, "trending"))
+            .orderBy(tokenTrending.rank)
+            .limit(30);
+
+          for (const tr of trendRows) {
+            if (!existingIds.has(tr.token.id)) {
+              existingIds.add(tr.token.id);
+              rows.push(tr);
+              if (rows.length >= 15) break;
+            }
+          }
+
+          if (rows.length < 15) {
+            const more = await db
+              .select({ token: tokens })
+              .from(tokens)
+              .orderBy(desc(tokens.id))
+              .limit(20);
+            for (const m of more) {
+              if (!existingIds.has(m.token.id)) {
+                existingIds.add(m.token.id);
+                rows.push(m);
+                if (rows.length >= 15) break;
+              }
+            }
+          }
+        }
         const sparks = await loadSparks(db, rows.map((r) => r.token.id));
         return {
           tokens: rows.map((r) => {

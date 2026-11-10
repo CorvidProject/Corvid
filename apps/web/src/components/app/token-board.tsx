@@ -2,6 +2,8 @@
 import { useMemo, useState } from "react";
 import { TokenAvatar } from "@/components/app/token-avatar";
 import { useApi } from "@/lib/api";
+import freshTokens from "@/server/data/trending-robinhood-new.json";
+import trendingTokens from "@/server/data/trending-robinhood-trending.json";
 
 // Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
 // (fixture atau backend, lihat src/lib/api.ts). Hanya alamat token EVM (0x…) yang ditampilkan.
@@ -73,6 +75,7 @@ function pct(v: number | null | undefined) {
   return { t: (v > 0 ? "+" : "") + v.toFixed(2) + "%", c: v > 0 ? "var(--v2-pos)" : v < 0 ? "var(--v2-neg)" : "var(--v2-t-3)" };
 }
 function age(ts: number, now: number) {
+  if (!ts || ts <= 0) return "·";
   const s = Math.max(0, Math.floor(now / 1000 - ts));
   if (s < 60) return s + "s ago";
   if (s < 3600) return Math.floor(s / 60) + "m ago";
@@ -85,11 +88,53 @@ const PAGE = 25;
 
 export function TokenBoard({ mode }: { mode: BoardMode }) {
   const cfg = CFG[mode];
+  const isLatest = mode === "latest";
   const { data, loading, error } = useApi<{ tokens: Raw[] }>(
-    `/api/tokens/trending?tab=${mode === "latest" ? "new" : "trending"}&limit=200`,
+    `/api/tokens/trending?tab=${isLatest ? "new" : "trending"}&limit=200`,
     30_000,
   );
-  const base = useMemo(() => clean(data?.tokens ?? []), [data]);
+  const { data: trendingData } = useApi<{ tokens: Raw[] }>(
+    isLatest ? "/api/tokens/trending?tab=trending&limit=200" : null,
+    30_000,
+  );
+
+  const base = useMemo(() => {
+    const primary = clean(data?.tokens ?? []);
+    if (!isLatest) return primary;
+
+    // For latest tokens, ensure at least 15 tokens are displayed.
+    // If fewer than 15 new tokens exist, backfill with active trending tokens and seeds.
+    const result = [...primary];
+    const seen = new Set(result.map((t) => t.mint.toLowerCase()));
+
+    if (result.length < 15 && trendingData?.tokens) {
+      for (const t of clean(trendingData.tokens)) {
+        const key = t.mint.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push(t);
+          if (result.length >= 15) break;
+        }
+      }
+    }
+
+    if (result.length < 15) {
+      const seeds = [
+        ...((freshTokens as { tokens: Raw[] }).tokens ?? []),
+        ...((trendingTokens as { tokens: Raw[] }).tokens ?? []),
+      ];
+      for (const t of clean(seeds)) {
+        const key = t.mint.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push(t);
+          if (result.length >= 15) break;
+        }
+      }
+    }
+
+    return result;
+  }, [data, trendingData, isLatest]);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>(cfg.sort);
   const [dir, setDir] = useState<1 | -1>(cfg.dir);
