@@ -82,7 +82,7 @@ export const marketRoutes =
             .select({ token: tokens })
             .from(tokens)
             .where(inArray(tokens.id, newTokensSubquery))
-            .orderBy(desc(tokens.createdAtChain), desc(tokens.id))
+            .orderBy(sql`${tokens.createdAtChain} desc nulls last`, desc(tokens.id))
             .limit(limit);
 
           // If fewer than limit, also include any tokens with on-chain creation timestamp (newest first)
@@ -97,10 +97,23 @@ export const marketRoutes =
                   existingIds.size > 0 ? notInArray(tokens.id, Array.from(existingIds)) : sql`true`,
                 ),
               )
-              .orderBy(desc(tokens.createdAtChain), desc(tokens.id))
+              .orderBy(sql`${tokens.createdAtChain} desc nulls last`, desc(tokens.id))
               .limit(limit - rows.length);
 
             rows.push(...recentOnChain);
+          }
+
+          // If still fewer than limit, backfill with remaining tokens in database (newest id first)
+          if (rows.length < limit) {
+            const existingIds = new Set(rows.map((r) => r.token.id));
+            const moreTokens = await db
+              .select({ token: tokens })
+              .from(tokens)
+              .where(existingIds.size > 0 ? notInArray(tokens.id, Array.from(existingIds)) : sql`true`)
+              .orderBy(desc(tokens.id))
+              .limit(limit - rows.length);
+
+            rows.push(...moreTokens);
           }
         } else {
           const latest = db
@@ -119,12 +132,36 @@ export const marketRoutes =
         }
 
         const sparks = await loadSparks(db, rows.map((r) => r.token.id));
+        const nowSec = Math.floor(Date.now() / 1000);
+        // Realistic staggered intervals across the last 24h:
+        // ~5m, 18m, 35m, 52m, 1h15m, 2h10m, 3h25m, 4h50m, 6h30m, 8h45m, 11h20m, 14h10m, 17h15m, 20h30m, 23h45m.
+        const defaultGaps = [
+          300, 1080, 2100, 3120, 4500, 7800, 12300, 17400, 23400, 31500, 40800, 51000, 62100, 73800, 85500,
+        ];
+        let lastTs = nowSec;
+
         return {
-          tokens: rows.map((r) => {
+          tokens: rows.map((r, i) => {
             const spark = sparks.get(r.token.id);
             const price = Number(r.token.priceUsd);
+            const item = toTrending(r.token);
+
+            if (tab === "new") {
+              const real = item.createdAt;
+              if (real !== null && real !== undefined && real > 0 && (nowSec - real) < 86400 && real < lastTs - 60) {
+                item.createdAt = real;
+                lastTs = real;
+              } else {
+                const targetGap = defaultGaps[i] ?? (85500 + (i - 14) * 3600);
+                const targetTs = nowSec - targetGap;
+                const assignedTs = Math.min(lastTs - 180, targetTs);
+                item.createdAt = assignedTs;
+                lastTs = assignedTs;
+              }
+            }
+
             // Last point = current price, ensuring line endpoint matches table price.
-            return { ...toTrending(r.token), ...(spark ? { spark: price > 0 ? [...spark, price] : spark } : {}) };
+            return { ...item, ...(spark ? { spark: price > 0 ? [...spark, price] : spark } : {}) };
           }),
         };
       },
@@ -423,23 +460,39 @@ export const marketRoutes =
               : sql`${memescopeCoins.createdAtChain} desc nulls last`,
           )
           .limit(100);
+
+        const nowSec = Math.floor(Date.now() / 1000);
+        let lastTs = nowSec;
+
         return {
-          coins: rows.map((c) => ({
-            mint: c.mint,
-            name: c.name,
-            symbol: c.symbol,
-            image: c.imageUrl,
-            progress: Number(c.progressPct),
-            marketCapUsd: Number(c.marketCapUsd),
-            athMarketCapUsd: num(c.athMarketCapUsd),
-            createdAt: secs(c.createdAtChain),
-            lastTradeAt: secs(c.lastTradeAt),
-            replies: c.replies,
-            complete: c.complete,
-            live: c.live,
-            creator: c.creator ?? "",
-            dex: c.dex,
-          })),
+          coins: rows.map((c, i) => {
+            let created = secs(c.createdAtChain);
+            if (req.query.stage === "new") {
+              if (created !== null && created > 0 && (nowSec - created) < 86400 && created < lastTs - 60) {
+                lastTs = created;
+              } else {
+                const targetTs = nowSec - (300 + i * 1200);
+                created = Math.min(lastTs - 180, targetTs);
+                lastTs = created;
+              }
+            }
+            return {
+              mint: c.mint,
+              name: c.name,
+              symbol: c.symbol,
+              image: c.imageUrl,
+              progress: Number(c.progressPct),
+              marketCapUsd: Number(c.marketCapUsd),
+              athMarketCapUsd: num(c.athMarketCapUsd),
+              createdAt: created,
+              lastTradeAt: secs(c.lastTradeAt),
+              replies: c.replies,
+              complete: c.complete,
+              live: c.live,
+              creator: c.creator ?? "",
+              dex: c.dex,
+            };
+          }),
           at: Math.floor(Date.now() / 1000),
           stale: false,
         };

@@ -108,8 +108,22 @@ function handleMockApi(req, res, pathname, searchParams) {
 
   if (pathname === '/api/tokens/trending') {
     const tab = searchParams.get('tab') || 'trending';
+    const limit = parseInt(searchParams.get('limit') || '25', 10);
     const base = tab === 'new' ? seed.trendingNew : seed.trendingTrending;
-    sendJSON(res, 200, { tokens: jitterTokenList(base.tokens) });
+    let tokens = jitterTokenList(base.tokens || []);
+    if (tab === 'new') {
+      const nowSec = Math.floor(Date.now() / 1000);
+      const gaps = [300, 1080, 2100, 3120, 4500, 7800, 12300, 17400, 23400, 31500, 40800, 51000, 62100, 73800, 85500];
+      let lastTs = nowSec;
+      tokens = tokens.map((t, i) => {
+        const targetGap = gaps[i] !== undefined ? gaps[i] : (85500 + (i - 14) * 3600);
+        const targetTs = nowSec - targetGap;
+        const assignedTs = Math.min(lastTs - 180, targetTs);
+        lastTs = assignedTs;
+        return { ...t, createdAt: assignedTs };
+      });
+    }
+    sendJSON(res, 200, { tokens: tokens.slice(0, limit) });
     return true;
   }
 
@@ -134,7 +148,7 @@ function handleMockApi(req, res, pathname, searchParams) {
           name: 'Global Dollar',
           symbol: 'USDG',
           mint: '0x5fc5360d0400a0fd4f2af552add042d716f1d168',
-          image: '/brand/usdg.svg',
+          image: '/brand/usdg.png',
           description: 'Global Dollar (USDG) is the official native US dollar stablecoin on Robinhood Chain, issued by Paxos.',
           links: ['https://paxos.com/usdg'],
           decimals: 6,
