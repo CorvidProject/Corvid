@@ -77,6 +77,34 @@ async function smartBlock(db: Db): Promise<string> {
   ].join("\n");
 }
 
+/** Fetch basic token data from GeckoTerminal for tokens not yet in Corvid's index. */
+async function fetchGtToken(address: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${address}`, {
+      headers: { Accept: "application/json;version=20230302" },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { attributes?: { name?: string; symbol?: string; price_usd?: string; fdv_usd?: string; volume_usd?: { h24?: string }; total_reserve_in_usd?: string; launchpad_details?: { graduation_percentage?: number; completed?: boolean } } } };
+    const a = json.data?.attributes;
+    if (!a?.symbol) return null;
+    const price = a.price_usd ? Number(a.price_usd) : null;
+    const fdv = a.fdv_usd ? Number(a.fdv_usd) : null;
+    const vol = a.volume_usd?.h24 ? Number(a.volume_usd.h24) : null;
+    const liq = a.total_reserve_in_usd ? Number(a.total_reserve_in_usd) : null;
+    const lp = a.launchpad_details;
+    const lines = [
+      `TOKEN ${a.symbol} (${a.name ?? "unknown"}) ${address}`,
+      `price ${usd(price)}, FDV ${usd(fdv)}, liquidity ${usd(liq)}, 24h volume ${usd(vol)}`,
+      lp ? `launchpad: ${lp.graduation_percentage?.toFixed(1) ?? "?"}% to graduation${lp.completed ? " (graduated)" : ""}` : "",
+      "note: this token is not yet indexed by Corvid (no security report, no risk score, no smart-wallet activity available)",
+    ].filter(Boolean);
+    return lines.join("\n");
+  } catch {
+    return null;
+  }
+}
+
 /** Blok DATA untuk satu pesan. `chatMint` = token yang dikaitkan dengan percakapan (diikutkan bila pesan tidak menyebut alamat). */
 export async function buildContext(db: Db, text: string, chatMint: string | null): Promise<{ data: string; mint: string | null }> {
   const { addresses, symbols } = extractRefs(text);
@@ -90,7 +118,15 @@ export async function buildContext(db: Db, text: string, chatMint: string | null
       blocks.push(await tokenBlock(db, t));
       seen.add(t.mint);
       primary ??= t.mint;
-    } else blocks.push(await walletBlock(db, a));
+    } else {
+      // Token not indexed — try GeckoTerminal on-demand before falling back to wallet lookup
+      const gt = await fetchGtToken(a);
+      if (gt) {
+        blocks.push(gt);
+        seen.add(a);
+        primary ??= a;
+      } else blocks.push(await walletBlock(db, a));
+    }
   }
   for (const s of symbols.slice(0, MAX_TOKENS)) {
     if (seen.size >= MAX_TOKENS) break;
