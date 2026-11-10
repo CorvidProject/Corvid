@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowSquareOut, ArrowsClockwise, Check, Copy } from "@phosphor-icons/react";
 import { explorerAddress, getChain } from "@corvid/shared/chains";
+import { TokenAvatar } from "@/components/app/token-avatar";
 import { SignInGate, useSigned } from "@/components/auth/signed";
 import { apiGet } from "@/lib/api";
 import { readHoldings } from "@/lib/holdings";
@@ -13,21 +14,132 @@ type Tok = { mint: string; symbol: string | null; name: string | null; image: st
 type Row = { key: string; mint: string | null; symbol: string; name: string; image: string | null; amount: number; priceUsd: number | null; change24h: number | null; valueUsd: number | null };
 type Sort = "value" | "change";
 
-const usd = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const usdPrice = (n: number) => (n >= 1 ? usd(n) : "$" + n.toPrecision(3));
-const qty = (n: number) => n.toLocaleString("en-US", { maximumFractionDigits: n >= 1000 ? 0 : 4 });
+const CANONICAL_TOKENS: Tok[] = [
+  {
+    mint: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+    symbol: "USDG",
+    name: "Global Dollar",
+    image: "/brand/usdg.svg",
+    price: 1.0,
+    change24h: 0,
+  },
+  {
+    mint: "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+    symbol: "WETH",
+    name: "Wrapped Ether",
+    image: "/brand/eth.svg",
+    price: null,
+    change24h: null,
+  },
+  {
+    mint: "0xc6911796042b15d7fa4f6cde69e245ddcd3d9c31",
+    symbol: "VIRTUAL",
+    name: "Virtuals Protocol",
+    image: "/brand/virtual.png",
+    price: null,
+    change24h: null,
+  },
+  {
+    mint: "0x39dbed3a2bd333467115de45665cc57f813c4571",
+    symbol: "PONS",
+    name: "Pons",
+    image: "/brand/pons.png",
+    price: null,
+    change24h: null,
+  },
+  {
+    mint: "0x020bfc650a365f8bb26819deaabf3e21291018b4",
+    symbol: "CASHCAT",
+    name: "Cash Cat",
+    image: "/brand/cashcat.png",
+    price: null,
+    change24h: null,
+  },
+];
+
+async function fetchBlockscoutTokens(owner: string): Promise<Tok[]> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3500);
+    const res = await fetch(`https://robinhoodchain.blockscout.com/api/v2/addresses/${owner}/token-balances`, {
+      signal: ctrl.signal,
+      headers: { Accept: "application/json" },
+    });
+    clearTimeout(timer);
+    if (!res.ok) return [];
+    const data = (await res.json()) as Array<{
+      token?: { address?: string; symbol?: string; name?: string; icon_url?: string };
+      value?: string;
+    }>;
+    if (!Array.isArray(data)) return [];
+    const out: Tok[] = [];
+    for (const item of data) {
+      const addr = item.token?.address;
+      if (!addr || !/^0x[0-9a-fA-F]{40}$/.test(addr)) continue;
+      if (!item.value || item.value === "0") continue;
+      out.push({
+        mint: addr,
+        symbol: item.token?.symbol ?? null,
+        name: item.token?.name ?? null,
+        image: item.token?.icon_url ?? null,
+        price: null,
+        change24h: null,
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+async function resolveTokenPrice(mint: string): Promise<{ price: number | null; change24h: number | null; image: string | null }> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return { price: null, change24h: null, image: null };
+    const data = (await res.json()) as { pairs?: Array<{ priceUsd?: string; priceChange?: { h24?: number }; info?: { imageUrl?: string } }> };
+    const p = data.pairs?.[0];
+    if (!p) return { price: null, change24h: null, image: null };
+    return {
+      price: p.priceUsd ? Number(p.priceUsd) : null,
+      change24h: p.priceChange?.h24 ?? null,
+      image: p.info?.imageUrl ?? null,
+    };
+  } catch {
+    return { price: null, change24h: null, image: null };
+  }
+}
+
+const usd = (n: number) => {
+  if (n > 0 && n < 0.01) return "<$0.01";
+  return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+const usdPrice = (n: number) => {
+  if (n >= 1) return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (n >= 0.0001) return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+  return "$" + n.toPrecision(3);
+};
+const qty = (n: number) => {
+  if (n >= 1000) return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  if (n >= 1) return n.toLocaleString("en-US", { maximumFractionDigits: 4 });
+  return n.toLocaleString("en-US", { maximumFractionDigits: 6 });
+};
 const pct = (n: number) => `${n > 0 ? "+" : n < 0 ? "-" : ""}${Math.abs(n).toFixed(2)}%`;
 const toneCls = (n: number | null) => (n === null || n === 0 ? "pf-flat" : n > 0 ? "pf-pos" : "pf-neg");
 // Opasitas aksen untuk batang alokasi (satu hue, hanya beda tingkat terang).
 const SHADES = [1, 0.75, 0.55, 0.4, 0.28];
 
 function Avatar({ row }: { row: Row }) {
-  const [bad, setBad] = useState(false);
-  if (row.image && !bad) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={row.image} alt="" onError={() => setBad(true)} className="pf-av" />;
-  }
-  return <span className="pf-av">{row.symbol.slice(0, 1).toUpperCase()}</span>;
+  return (
+    <TokenAvatar
+      src={row.image}
+      symbol={row.symbol}
+      size={36}
+      seed={row.mint ?? row.symbol}
+    />
+  );
 }
 
 function Skeleton() {
@@ -74,26 +186,113 @@ export function ApplicationPortfolioContent() {
       if (env === "testnet") {
         const { eth } = await readHoldings(address, [], "testnet");
         if (!alive) return;
-        // ETH testnet tidak bernilai: tanpa harga dan tanpa nilai USD.
-        setRows([{ key: "eth", mint: null, symbol: "ETH", name: "Ether (testnet)", image: null, amount: eth, priceUsd: null, change24h: null, valueUsd: null }]);
+        setRows([
+          {
+            key: "eth",
+            mint: null,
+            symbol: "ETH",
+            name: "Ether (testnet)",
+            image: "/brand/eth.svg",
+            amount: eth,
+            priceUsd: null,
+            change24h: null,
+            valueUsd: null,
+          },
+        ]);
         return;
       }
-      const [list, px] = await Promise.all([apiGet<{ tokens: Tok[] }>("/api/tokens/trending?limit=200"), apiGet<{ usd: number }>("/api/prices/native")]);
-      const { eth, holdings } = await readHoldings(address, list.tokens);
+
+      const [list, px, bsTokens] = await Promise.all([
+        apiGet<{ tokens: Tok[] }>("/api/tokens/trending?limit=200").catch(() => ({ tokens: [] as Tok[] })),
+        apiGet<{ usd: number }>("/api/prices/native").catch(() => ({ usd: 0 })),
+        fetchBlockscoutTokens(address),
+      ]);
+
+      const tokenMap = new Map<string, Tok>();
+      for (const t of CANONICAL_TOKENS) {
+        tokenMap.set(t.mint.toLowerCase(), t);
+      }
+      for (const t of list.tokens) {
+        if (!t.mint) continue;
+        const k = t.mint.toLowerCase();
+        const cur = tokenMap.get(k);
+        if (cur) {
+          tokenMap.set(k, {
+            ...cur,
+            ...t,
+            image: cur.image || t.image,
+            price: t.price ?? cur.price,
+            change24h: t.change24h ?? cur.change24h,
+          });
+        } else {
+          tokenMap.set(k, t);
+        }
+      }
+      for (const t of bsTokens) {
+        const k = t.mint.toLowerCase();
+        if (!tokenMap.has(k)) {
+          tokenMap.set(k, t);
+        }
+      }
+
+      const allTokens = Array.from(tokenMap.values());
+      const { eth, holdings } = await readHoldings(address, allTokens);
+      if (!alive) return;
+
+      const resolvedHoldings = await Promise.all(
+        holdings.map(async ({ token: t, amount }) => {
+          let price = t.price;
+          let change24h = t.change24h;
+          let image = t.image;
+          const sym = (t.symbol ?? "").toUpperCase();
+          const lowerMint = t.mint.toLowerCase();
+
+          if (lowerMint === "0x5fc5360d0400a0fd4f2af552add042d716f1d168" || sym === "USDG") {
+            price = 1.0;
+            change24h = 0;
+            image = image || "/brand/usdg.svg";
+          } else if (lowerMint === "0x0bd7d308f8e1639fab988df18a8011f41eacad73" || sym === "WETH") {
+            price = px.usd;
+            image = image || "/brand/eth.svg";
+          } else if (sym.includes("USDC") || sym.includes("USDT")) {
+            price = price ?? 1.0;
+            image = image || (sym.includes("USDC") ? "/brand/usdc.svg" : "/brand/usdt.svg");
+          } else if (price === null) {
+            const extra = await resolveTokenPrice(t.mint);
+            if (extra.price !== null) price = extra.price;
+            if (extra.change24h !== null) change24h = extra.change24h;
+            if (extra.image && !image) image = extra.image;
+          }
+
+          const valueUsd = price === null ? null : price * amount;
+          return {
+            key: t.mint,
+            mint: t.mint,
+            symbol: t.symbol ?? shortAddress(t.mint),
+            name: t.name ?? "",
+            image,
+            amount,
+            priceUsd: price,
+            change24h,
+            valueUsd,
+          };
+        }),
+      );
+
       if (!alive) return;
       setRows([
-        { key: "eth", mint: null, symbol: "ETH", name: "Ether", image: null, amount: eth, priceUsd: px.usd, change24h: null, valueUsd: eth * px.usd },
-        ...holdings.map(({ token: t, amount }) => ({
-          key: t.mint,
-          mint: t.mint,
-          symbol: t.symbol ?? shortAddress(t.mint),
-          name: t.name ?? "",
-          image: t.image,
-          amount,
-          priceUsd: t.price,
-          change24h: t.change24h,
-          valueUsd: t.price === null ? null : t.price * amount,
-        })),
+        {
+          key: "eth",
+          mint: null,
+          symbol: "ETH",
+          name: "Ether",
+          image: "/brand/eth.svg",
+          amount: eth,
+          priceUsd: px.usd,
+          change24h: null,
+          valueUsd: eth * px.usd,
+        },
+        ...resolvedHoldings,
       ]);
     })()
       .catch(() => alive && setError("Could not read balances. Try again shortly."))
@@ -286,7 +485,7 @@ export function ApplicationPortfolioContent() {
           <p className="pf-note">
             {env === "testnet"
               ? "Robinhood Chain testnet: only the ETH balance is shown. Tracked tokens and prices exist on mainnet."
-              : "Balances from Robinhood Chain mainnet. Tokens Corvid does not track are not listed, and PnL needs trade history so it is not shown."}
+              : "Balances read directly on-chain from your wallet on Robinhood Chain across canonical, indexed, and wallet-held tokens."}
           </p>
         </>
       )}
