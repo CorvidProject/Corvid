@@ -101,7 +101,7 @@ export async function upsertToken(db: Db, v: TokenValues, now: Date): Promise<{ 
 const TRENDING_PAGES = 1;
 const TOP_VOLUME_PAGES = 4;
 const BASE_ASSETS = [CHAINS.mainnet.wrappedNative, CHAINS.mainnet.usdg?.address].filter((a): a is string => !!a).map((a) => a.toLowerCase());
-const NEW_PAGES = 1;
+const NEW_PAGES = 3;
 
 /** Perbarui papan token (tab trending/new) dan simpan snapshot peringkat. */
 export async function refreshBoard(deps: Deps, tab: "trending" | "new", limit = 160): Promise<{ tokens: number; withDexScreener: number; newSignals: number }> {

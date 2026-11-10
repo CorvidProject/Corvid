@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { TokenAvatar } from "@/components/app/token-avatar";
 import { useApi } from "@/lib/api";
 import freshTokens from "@/server/data/trending-robinhood-new.json";
-import trendingTokens from "@/server/data/trending-robinhood-trending.json";
 
 // Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
 // (fixture atau backend, lihat src/lib/api.ts). Hanya alamat token EVM (0x…) yang ditampilkan.
@@ -93,37 +92,18 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
     `/api/tokens/trending?tab=${isLatest ? "new" : "trending"}&limit=200`,
     30_000,
   );
-  const { data: trendingData } = useApi<{ tokens: Raw[] }>(
-    isLatest ? "/api/tokens/trending?tab=trending&limit=200" : null,
-    30_000,
-  );
 
   const base = useMemo(() => {
     const primary = clean(data?.tokens ?? []);
     if (!isLatest) return primary;
 
-    // For latest tokens, ensure at least 15 tokens are displayed.
-    // If fewer than 15 new tokens exist, backfill with active trending tokens and seeds.
+    // For latest tokens, ensure at least 15 newest tokens are displayed.
+    // If fewer than 15 new tokens exist from the API, backfill from verified new launchpad tokens.
     const result = [...primary];
     const seen = new Set(result.map((t) => t.mint.toLowerCase()));
 
-    if (result.length < 15 && trendingData?.tokens) {
-      for (const t of clean(trendingData.tokens)) {
-        const key = t.mint.toLowerCase();
-        if (!seen.has(key)) {
-          seen.add(key);
-          result.push(t);
-          if (result.length >= 15) break;
-        }
-      }
-    }
-
-    if (result.length < 15) {
-      const seeds = [
-        ...((freshTokens as { tokens: Raw[] }).tokens ?? []),
-        ...((trendingTokens as { tokens: Raw[] }).tokens ?? []),
-      ];
-      for (const t of clean(seeds)) {
+    if (result.length < 15 && freshTokens?.tokens) {
+      for (const t of clean(freshTokens.tokens as Raw[])) {
         const key = t.mint.toLowerCase();
         if (!seen.has(key)) {
           seen.add(key);
@@ -134,7 +114,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
     }
 
     return result;
-  }, [data, trendingData, isLatest]);
+  }, [data, isLatest]);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>(cfg.sort);
   const [dir, setDir] = useState<1 | -1>(cfg.dir);
