@@ -244,7 +244,14 @@ export async function signInWithWallet(): Promise<{ error: string | null; sessio
     });
     const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
     if (!res.ok || typeof data.access_token !== "string") {
-      return { error: String(data.error_description ?? data.msg ?? data.message ?? "Wallet sign-in failed") };
+      const raw = String(data.error_description ?? data.msg ?? data.message ?? "Wallet sign-in failed");
+      if (raw.toLowerCase().includes("uri which is not allowed") || raw.toLowerCase().includes("signed for another app")) {
+        const origin = typeof window !== "undefined" ? window.location.origin : "";
+        return {
+          error: `Domain ${origin} belum didaftarkan di Supabase Auth. Tambahkan "${origin}/**" dan "https://*.vercel.app/**" di Supabase Dashboard > Authentication > URL Configuration > Redirect URLs.`,
+        };
+      }
+      return { error: raw };
     }
     const session = data as unknown as AuthSession;
     saveSession(session);
