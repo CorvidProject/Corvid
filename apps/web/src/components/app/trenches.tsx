@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useApi } from "@/lib/api";
-import { tokenFallbackStyle } from "@/components/app/token-avatar";
+import { hasLogo, tokenFallbackStyle } from "@/components/app/token-avatar";
 
 // Mode "Trenches" di /application/terminal: tiga kolom (New / Trending / High Volume).
 // Data dari GET /api/tokens/trending, diambil ulang berkala.
@@ -266,7 +266,7 @@ export function Trenches() {
     const fresh = clean(newData?.tokens).sort((a, b) => b.createdAt - a.createdAt).slice(0, 12);
     const all = clean(trendData?.tokens);
     const trend = all.slice(0, 12);
-    const vol = [...all].sort((a, b) => b.volume - a.volume).slice(0, 12);
+    const vol = all.filter(hasLogo).sort((a, b) => b.volume - a.volume).slice(0, 12);
     return { fresh, trend, vol };
   }, [newData, trendData]);
   return (
