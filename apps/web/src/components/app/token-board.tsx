@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { TokenAvatar } from "@/components/app/token-avatar";
+import { hasLogo, TokenAvatar } from "@/components/app/token-avatar";
 import { useApi } from "@/lib/api";
 
 // Tabel token untuk /application/latest, /gainers, /volume. Data dari GET /api/tokens/trending
@@ -46,7 +46,7 @@ const clean = (list: Raw[]): T[] =>
 const CFG: Record<BoardMode, { title: string; sub: string; sort: SortKey; dir: 1 | -1; minLiq: number; logoOnly?: boolean; limit?: number }> = {
   latest: { title: "Latest Tokens", sub: "New pools, newest first · Robinhood Chain", sort: "age", dir: -1, minLiq: 0, limit: 15 },
   gainers: { title: "Top Gainers", sub: "Up the most in 24 hours, with real liquidity and a logo · Robinhood Chain", sort: "change24h", dir: -1, minLiq: 10000, logoOnly: true },
-  volume: { title: "High Volume", sub: "Most traded in 24 hours · Robinhood Chain", sort: "volume", dir: -1, minLiq: 0 },
+  volume: { title: "High Volume", sub: "Most traded in 24 hours, with a logo · Robinhood Chain", sort: "volume", dir: -1, minLiq: 0, logoOnly: true },
 };
 
 export function money(n: number | null | undefined) {
@@ -103,7 +103,7 @@ export function TokenBoard({ mode }: { mode: BoardMode }) {
     const val = (t: T) => (sort === "age" ? t.createdAt : (t[sort] as number));
     const sorted = base
       .filter((t) => t.liquidity >= cfg.minLiq)
-      .filter((t) => !cfg.logoOnly || !!t.image)
+      .filter((t) => !cfg.logoOnly || hasLogo(t))
       .filter((t) => !s || t.name.toLowerCase().includes(s) || t.symbol.toLowerCase().includes(s) || t.mint.toLowerCase().startsWith(s))
       .sort((a, b) => ((val(a) ?? 0) - (val(b) ?? 0)) * dir);
     return cfg.limit ? sorted.slice(0, cfg.limit) : sorted;
