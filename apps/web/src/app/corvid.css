@@ -345,3 +345,7 @@ a.pf-row:hover { background: var(--v2-bg-2); }
 .crv-swap-flip:hover {
   transform: none !important;
 }
+
+/* Alamat kontrak $CRVD: putih, biru aksen saat hover. */
+.crv-ca { display: block; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; color: #fff; word-break: break-all; text-decoration: none; text-shadow: none; transition: color .15s; }
+.crv-ca:hover { color: var(--v2-accent-text); }

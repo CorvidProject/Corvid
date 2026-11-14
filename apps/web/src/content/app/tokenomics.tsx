@@ -2,13 +2,14 @@
 import { useState } from "react";
 import { Flame } from "@phosphor-icons/react";
 import { WindowTabs } from "@/components/app/window-tabs";
+import { ContractAddress, hasContractAddress } from "@/components/site/contract-address";
 import data from "@/data/tokenomics.json";
 
 // Your fees: ringkasan fee 1% swap. Token $CRVD belum diluncurkan (status not_launched), jadi tidak ada
 // pembakaran/pembagian yang bisa ditampilkan. Diganti /tokenomics/summary di Tahap 2.
 export function ApplicationTokenomicsContent() {
   const [w, setW] = useState("7d");
-  const launched = data.status !== "not_launched";
+  const launched = data.status !== "not_launched" || hasContractAddress;
   const stats = [
     { l: "Fees paid", v: "$0.00" },
     { l: "Burned", v: `${data.burned} ${data.token}` },
@@ -28,6 +29,7 @@ export function ApplicationTokenomicsContent() {
           <p className="text-[14px] m-0" style={{ color: "var(--v2-t-3)" }}>
             Where the 1% fee on your swaps goes
           </p>
+          <ContractAddress className="mt-2" />
         </div>
         <div className="flex gap-1 p-1 rounded-md" style={{ background: "var(--v2-bg-1)", border: "1px solid var(--v2-line-2)" }}>
           <WindowTabs initial="7d" onChange={setW} />

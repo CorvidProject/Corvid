@@ -1,5 +1,6 @@
 import { PixelGlow } from "@/components/landing/pixel-glow";
 import { HeroComposer, HeroPill } from "@/components/landing/hero-composer";
+import { ContractAddress } from "@/components/site/contract-address";
 
 export function Hero() {
   return (
@@ -214,6 +215,7 @@ export function Hero() {
               "--rv-t": "translateY(6px)",
             }}
           >
+            <ContractAddress />
             <span
               className="flex items-center gap-2 text-[14px]"
               style={{ color: "rgba(255,255,255,0.5)" }}

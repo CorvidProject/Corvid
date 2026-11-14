@@ -1,4 +1,5 @@
 import { site } from "@/lib/site";
+import { ContractAddress } from "@/components/site/contract-address";
 
 const BORDER = "1px solid rgba(255,255,255,0.08)";
 
@@ -32,6 +33,7 @@ export function Footer() {
           <p className="font-sans text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
             {site.tagline}
           </p>
+          <ContractAddress className="mt-3" />
         </div>
         <div className="flex flex-col gap-4 md:items-end">
           <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-6 gap-y-1">
