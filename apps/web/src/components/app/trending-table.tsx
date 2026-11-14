@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowsClockwise, CaretDown, Check, Funnel, Star, X } from "@phosphor-icons/react";
-import { TokenAvatar, tokenFallbackStyle } from "@/components/app/token-avatar";
+import { hasLogo, TokenAvatar, tokenFallbackStyle } from "@/components/app/token-avatar";
 
 // Tab "Trending" di /application/terminal: interval, filter, dan tabel. Data dari GET /api/tokens/trending
 // (diambil di terminal.tsx dan diperbarui berkala). Logika filter mengikuti referensi.
@@ -40,10 +40,10 @@ export type Tok = {
 
 const EVM_ADDR = /^0x[0-9a-fA-F]{40}$/;
 type RawTok = { [K in keyof Tok]: Tok[K] | null };
-/** Respons API boleh berisi null; tabel butuh angka. Hanya alamat EVM yang ditampilkan. */
+/** Respons API boleh berisi null; tabel butuh angka. Hanya alamat EVM yang punya logo yang ditampilkan (token tanpa logo umumnya klon/spam). */
 export function cleanTokens(list: RawTok[] | undefined | null): Tok[] {
   return (list ?? [])
-    .filter((t) => t.mint && EVM_ADDR.test(t.mint))
+    .filter((t) => t.mint && EVM_ADDR.test(t.mint) && hasLogo(t))
     .map((t) => ({
       ...t,
       name: t.name ?? "",

@@ -15,14 +15,17 @@ const KNOWN_LOGOS: Record<string, string> = {
   usdc: "/brand/usdc.svg",
   usdt: "/brand/usdt.svg",
   virtual: "/brand/virtual.png",
-  pons: "/brand/pons.png",
-  cashcat: "/brand/cashcat.png",
   "0x5fc5360d0400a0fd4f2af552add042d716f1d168": "/brand/usdg.png",
   "0x0bd7d308f8e1639fab988df18a8011f41eacad73": "/brand/eth.svg",
   "0xc6911796042b15d7fa4f6cde69e245ddcd3d9c31": "/brand/virtual.png",
-  "0x39dbed3a2bd333467115de45665cc57f813c4571": "/brand/pons.png",
-  "0x020bfc650a365f8bb26819deaabf3e21291018b4": "/brand/cashcat.png",
 };
+
+/** True jika token punya logo di DB atau di daftar logo lokal. */
+export function hasLogo(t: { image?: string | null; mint?: string | null; symbol?: string | null }): boolean {
+  if (t.image) return true;
+  const sym = (t.symbol ?? "").replace(/^\$/, "").toLowerCase().trim();
+  return !!(KNOWN_LOGOS[(t.mint ?? "").toLowerCase()] ?? KNOWN_LOGOS[sym]);
+}
 
 function hash(str: string): number {
   let h = 0x811c9dc5;
