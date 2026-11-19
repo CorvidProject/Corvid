@@ -16,6 +16,14 @@ type Sort = "value" | "change";
 
 const CANONICAL_TOKENS: Tok[] = [
   {
+    mint: "0x2bbee5170c23435b595fa6689490e82357c6b620",
+    symbol: "CRVD",
+    name: "Corvid",
+    image: "/brand/corvid-logo.png",
+    price: null,
+    change24h: null,
+  },
+  {
     mint: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
     symbol: "USDG",
     name: "Global Dollar",
@@ -93,23 +101,27 @@ async function fetchBlockscoutTokens(owner: string): Promise<Tok[]> {
 }
 
 async function resolveTokenPrice(mint: string): Promise<{ price: number | null; change24h: number | null; image: string | null }> {
-  try {
+  const none = { price: null, change24h: null, image: null };
+  const get = async (url: string, headers?: Record<string, string>) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 3000);
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`, { signal: ctrl.signal });
-    clearTimeout(timer);
-    if (!res.ok) return { price: null, change24h: null, image: null };
-    const data = (await res.json()) as { pairs?: Array<{ priceUsd?: string; priceChange?: { h24?: number }; info?: { imageUrl?: string } }> };
-    const p = data.pairs?.[0];
-    if (!p) return { price: null, change24h: null, image: null };
-    return {
-      price: p.priceUsd ? Number(p.priceUsd) : null,
-      change24h: p.priceChange?.h24 ?? null,
-      image: p.info?.imageUrl ?? null,
-    };
-  } catch {
-    return { price: null, change24h: null, image: null };
-  }
+    try {
+      const res = await fetch(url, { signal: ctrl.signal, headers });
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  const ds = (await get(`https://api.dexscreener.com/latest/dex/tokens/${mint}`)) as { pairs?: Array<{ priceUsd?: string; priceChange?: { h24?: number }; info?: { imageUrl?: string } }> | null } | null;
+  const p = ds?.pairs?.[0];
+  if (p) return { price: p.priceUsd ? Number(p.priceUsd) : null, change24h: p.priceChange?.h24 ?? null, image: p.info?.imageUrl ?? null };
+  // Cadangan: token yang belum diindeks DexScreener (mis. masih di bonding curve) tetap punya harga di GeckoTerminal.
+  const gt = (await get(`https://api.geckoterminal.com/api/v2/networks/robinhood/tokens/${mint}`, { Accept: "application/json;version=20230302" })) as { data?: { attributes?: { price_usd?: string | null; image_url?: string | null } } } | null;
+  const a = gt?.data?.attributes;
+  if (!a?.price_usd) return none;
+  return { price: Number(a.price_usd), change24h: null, image: a.image_url ?? null };
 }
 
 let cachedEthData = { usd: 2080, change24h: null as number | null };
