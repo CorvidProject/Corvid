@@ -7,6 +7,7 @@ import { formatUnits, type Address } from "viem";
 import { USE_API, useApi } from "@/lib/api";
 import { tokenFallbackStyle } from "@/components/app/token-avatar";
 import { switchToAppChain, useWallet } from "@/lib/wallet";
+import { isCurveAddress } from "@/lib/swap-pons";
 import { NATIVE as NATIVE_ADDR, balanceOf, executePlan, planSwap, simulatePlan, swapErrorText, slippageBps, swapSetup, tokenDecimals, tradeMode, readTokenMeta, fetchExternalTokenLogo, type Plan } from "@/lib/swap";
 
 const EVM = /^0x[0-9a-fA-F]{40}$/;
@@ -38,6 +39,14 @@ const NATIVE: SwapToken = {
  * USDG (Global Dollar) is the official native stablecoin on Robinhood Chain issued by Paxos.
  */
 export const CURATED_TOKENS: SwapToken[] = [
+  {
+    // $CRVD: token Corvid, masih di bonding curve Pons V2 (poolId diambil dari API; rute kurva diverifikasi on-chain saat swap).
+    mint: "0x2bbee5170c23435b595fa6689490e82357c6b620",
+    symbol: "CRVD",
+    name: "Corvid",
+    image: "/brand/corvid-logo.png",
+    poolId: null,
+  },
   {
     mint: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
     symbol: "USDG",
@@ -72,7 +81,7 @@ export const CURATED_TOKENS: SwapToken[] = [
     symbol: "PONS",
     name: "Pons",
     image: "https://cdn.dexscreener.com/cms/images/dkmXs8KYMyMXjuU1?width=800&height=800&quality=95&format=auto",
-    poolId: "0x4041a6b0c2a07d2c38f2b7194f488ddf01e7498c0b5dc642c679af20f7813c45",
+    poolId: null,
   },
 ];
 
@@ -388,7 +397,7 @@ export function ApplicationSwapContent() {
             symbol: known?.symbol || d.symbol?.trim() || t.symbol,
             name: known?.name || d.name?.trim() || t.name,
             image: known?.image ?? d.image ?? t.image,
-            poolId: t.poolId !== undefined ? t.poolId : d.poolId,
+            poolId: d.poolId ?? (t.poolId !== undefined ? t.poolId : d.poolId), // pool dari API lebih diutamakan daripada bawaan lokal yang bisa basi
           }
         : t,
     );
@@ -447,7 +456,7 @@ export function ApplicationSwapContent() {
     }
     let alive = true;
     const t = setTimeout(() => {
-      planSwap({ account: (w.address as Address | null) ?? null, sell: sellAddr, buy: buyAddr, amount, slippageBps: slip, v4Key })
+      planSwap({ account: (w.address as Address | null) ?? null, sell: sellAddr, buy: buyAddr, amount, slippageBps: slip, v4Key, curve: isCurveAddress(token.poolId) ? token.poolId : null })
         .then((p) => alive && setPlan(p))
         .catch((e: unknown) => alive && setErr(e instanceof Error ? e.message.split("\n")[0] : "Could not get a quote"));
     }, 450);
@@ -696,7 +705,7 @@ export function ApplicationSwapContent() {
           </button>
           {plan && (
             <p className="px-3 pt-2 text-[12px]" style={{ color: "var(--v2-t-4)" }}>
-              {plan.venue === "v4" ? `Uniswap v4 · ${(plan.route ?? "").replace("token", token?.symbol ?? "token")} · pool fee is dynamic` : `Uniswap v3 · fee ${(plan.fee / 10000).toString()}%`} · slippage {slip / 100}% · minimum received {fmt(plan.minText)}
+              {plan.venue === "pons" ? "Pons V2 bonding curve · fee about 1% plus curve fees" : plan.venue === "v4" ? `Uniswap v4 · ${(plan.route ?? "").replace("token", token?.symbol ?? "token")} · pool fee is dynamic` : `Uniswap v3 · fee ${(plan.fee / 10000).toString()}%`} · slippage {slip / 100}% · minimum received {fmt(plan.minText)}
               {tradeMode() === "dry" ? " · dry mode: no transactions are sent" : ""}
             </p>
           )}

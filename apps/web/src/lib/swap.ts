@@ -17,6 +17,7 @@ import {
 } from "viem";
 import { getChain, type ChainConfig } from "@corvid/shared/chains";
 import type { Eip1193Provider } from "./wallet";
+import { buyData, isActiveCurve, quoteBuy, quoteSell, sellData } from "./swap-pons";
 import { candidateRoutes, encodeUniversalRouterSwap, permit2Abi, permit2ApproveData, quoteRoute, type Hop, type PoolKey } from "./swap-v4";
 
 export const NATIVE: Address = "0x0000000000000000000000000000000000000000";
@@ -288,7 +289,7 @@ export type Plan = {
   needsApproval: boolean;
   /** Sequential approval transactions required before swap (empty if not needed). */
   approvalTxs: { to: Address; data: Hex }[];
-  venue: "v3" | "v4";
+  venue: "v3" | "v4" | "pons";
   /** Route display label, e.g. "ETH → USDG → token". */
   route?: string;
   tx: { to: Address; data: Hex; value: bigint };
@@ -301,10 +302,15 @@ export type Plan = {
  * Build swap execution plan: best quote across fee tiers 0.05% / 0.3% / 1%, minimum amount with slippage, and transaction calldata.
  * Primarily handles ETH <-> token pairs (via direct WETH or USDG hops). Returns readable error if no pool is available.
  */
-export async function planSwap(args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number; v4Key?: PoolKey | null }): Promise<Plan> {
+export async function planSwap(args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number; v4Key?: PoolKey | null; curve?: Address | null }): Promise<Plan> {
   const s = swapSetup();
   if (!s) throw new Error("Swaps are not available on this network yet");
   if (args.v4Key) return planSwapV4(s, { ...args, v4Key: args.v4Key });
+  // Token Pons V2 yang masih di bonding curve: perdagangan lewat kontrak kurva (diverifikasi on-chain); setelah lulus, jatuh ke Uniswap.
+  if (args.curve && (args.sell === NATIVE) !== (args.buy === NATIVE)) {
+    const t = args.sell === NATIVE ? args.buy : args.sell;
+    if (await isActiveCurve(s.client, args.curve, t)) return planSwapPons(s, { ...args, curve: args.curve });
+  }
   const sellNative = args.sell === NATIVE;
   const buyNative = args.buy === NATIVE;
   if (sellNative === buyNative) throw new Error("Pick ETH on one side and a token on the other");
@@ -477,6 +483,54 @@ async function planSwapV4(s: SwapSetup, args: { account: Address | null; sell: A
     route: `${sellNative ? "ETH" : "token"} → ${buyNative ? "ETH" : "token"}${via}`,
     tx: { to: router, data: enc.data, value: enc.value },
     outText: formatUnits(best.out, decOut),
+    minText: formatUnits(minOut, decOut),
+  };
+}
+
+/**
+ * Swap lewat bonding curve Pons V2 (token belum lulus). Beli: ETH -> token (payable, tanpa approve). Jual: token -> ETH
+ * (approve jumlah persis ke kontrak kurva). Kuotasi lewat eth_call; minOut dari slippage.
+ */
+async function planSwapPons(s: SwapSetup, args: { account: Address | null; sell: Address; buy: Address; amount: string; slippageBps: number; curve: Address }): Promise<Plan> {
+  const sellNative = args.sell === NATIVE;
+  const token = sellNative ? args.buy : args.sell;
+  const decIn = await tokenDecimals(s, args.sell);
+  const decOut = await tokenDecimals(s, args.buy);
+  const amountIn = parseUnits(args.amount, decIn);
+  if (amountIn <= 0n) throw new Error("Enter an amount");
+  const acct = args.account ?? NATIVE;
+
+  let out: bigint;
+  if (sellNative) {
+    out = await quoteBuy(s.client, args.curve, amountIn, args.account);
+  } else {
+    if (args.account && (await balanceOf(s, token, args.account)) < amountIn) throw new Error("Not enough tokens in your wallet");
+    out = await quoteSell(s.client, args.curve, token, amountIn, args.account);
+  }
+  const minOut = (out * BigInt(10_000 - args.slippageBps)) / 10_000n;
+
+  let approvalTxs: Plan["approvalTxs"] = [];
+  if (!sellNative && args.account) {
+    const allowance = await s.client.readContract({ address: token, abi: erc20Abi, functionName: "allowance", args: [args.account, args.curve] });
+    if (allowance < amountIn) approvalTxs = [{ to: token, data: encodeFunctionData({ abi: erc20Abi, functionName: "approve", args: [args.curve, amountIn] }) }];
+  }
+  return {
+    sell: args.sell,
+    buy: args.buy,
+    amountIn,
+    amountOut: out,
+    minOut,
+    fee: 0,
+    decIn,
+    decOut,
+    needsApproval: approvalTxs.length > 0,
+    approvalTxs,
+    venue: "pons",
+    route: `${sellNative ? "ETH" : "token"} → ${sellNative ? "token" : "ETH"} on the Pons curve`,
+    tx: sellNative
+      ? { to: args.curve, data: buyData(amountIn, minOut, acct), value: amountIn }
+      : { to: args.curve, data: sellData(amountIn, minOut, acct), value: 0n },
+    outText: formatUnits(out, decOut),
     minText: formatUnits(minOut, decOut),
   };
 }
