@@ -347,5 +347,9 @@ a.pf-row:hover { background: var(--v2-bg-2); }
 }
 
 /* Alamat kontrak $CRVD: putih, biru aksen saat hover. */
-.crv-ca { display: block; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; color: #fff; word-break: break-all; text-decoration: none; text-shadow: none; transition: color .15s; }
-.crv-ca:hover { color: var(--v2-accent-text); }
+.crv-ca { text-shadow: none; display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 8px 8px 8px 12px; border-radius: 12px; border: 1px solid var(--v2-accent, #AABBC5); background: color-mix(in srgb, var(--v2-accent, #AABBC5) 12%, transparent); box-shadow: 0 0 24px color-mix(in srgb, var(--v2-accent, #AABBC5) 22%, transparent); }
+.crv-ca-label { flex: none; font-size: 11px; font-weight: 700; letter-spacing: .08em; padding: 3px 7px; border-radius: 6px; background: var(--v2-accent, #AABBC5); color: var(--v2-btn-text, #262626); }
+.crv-ca-addr { min-width: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; font-weight: 600; color: #fff; word-break: break-all; text-decoration: none; transition: color .15s; }
+.crv-ca-addr:hover { color: var(--v2-accent-text); }
+.crv-ca-copy { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--v2-accent, #AABBC5); background: transparent; color: #fff; cursor: pointer; transition: background .15s, color .15s; }
+.crv-ca-copy:hover { background: var(--v2-accent, #AABBC5); color: var(--v2-btn-text, #262626); }
